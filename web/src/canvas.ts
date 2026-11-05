@@ -16,11 +16,12 @@ export function color(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#888";
 }
 
-export function fmtBRL(v: number): string {
+/** Compact BRL amount; `units` holds the language's suffixes (pt: bi/mi/mil, en: bn/M/k). */
+export function fmtBRL(v: number, units = { bn: "bi", mn: "mi", k: "mil" }): string {
   const a = Math.abs(v);
-  if (a >= 1e9) return `R$ ${(v / 1e9).toFixed(2)} bi`;
-  if (a >= 1e6) return `R$ ${(v / 1e6).toFixed(2)} mi`;
-  if (a >= 1e3) return `R$ ${(v / 1e3).toFixed(1)} mil`;
+  if (a >= 1e9) return `R$ ${(v / 1e9).toFixed(2)} ${units.bn}`;
+  if (a >= 1e6) return `R$ ${(v / 1e6).toFixed(2)} ${units.mn}`;
+  if (a >= 1e3) return `R$ ${(v / 1e3).toFixed(1)} ${units.k}`;
   return `R$ ${v.toFixed(0)}`;
 }
 

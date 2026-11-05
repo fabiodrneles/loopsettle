@@ -41,6 +41,10 @@ h2 { font-size: 16px; }
 
 .page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 40px; }
 .masthead { padding-bottom: 24px; border-bottom: 2px solid var(--ink); margin-bottom: 24px; }
+.masthead-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.lang { flex: none; min-height: 36px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+.lang:hover { border-color: var(--ink); }
+.lang:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .lede { max-width: 62ch; color: var(--muted); margin: 12px 0 0; font-size: 16px; }
 
 .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 32px; align-items: start; }
