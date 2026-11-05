@@ -301,8 +301,152 @@ pub fn stress(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String>
     res.set("outage_unlimited", Json::Arr(hit.results.iter().map(|r| r.to_json(hit.ub(), hit.lb())).collect()));
     res.set("outage_constrained", Json::Arr(cons.results.iter().map(|r| r.to_json(base.ub(), base.lb())).collect()));
     eprintln!("{}", table(&header, &rows));
+
+    // Redesigned stress (REVIEW 39): who goes offline and when matters more than "the largest
+    // participant at 10:00". Cases = targets x start times; for each we measure the spillover
+    // on everyone else's liquidity need and, with openings fixed at the baseline UB, how much
+    // value each engine rejects.
+    let (crows, cjson) = stress_cases(doc, cfg, &base, o_spec.duration_ms)?;
+    res.csv("cases.csv", &table(CASE_HEADER, &crows));
+    res.set("cases", Json::Arr(cjson));
+    eprintln!("{}", table(CASE_HEADER, &crows));
     res.finish();
     Ok(())
+}
+
+const CASE_HEADER: &[&str] = &[
+    "target",
+    "participant",
+    "participant_net_position_brl",
+    "start",
+    "deferred_payments",
+    "deferred_value_brl",
+    "ub_total_change_pct",
+    "target_ub_change_brl",
+    "others_ub_increase_brl",
+    "others_ub_decrease_brl",
+    "others_ub_net_change_pct",
+    "others_with_higher_ub",
+    "largest_other_increase_brl",
+    "largest_other_increase_pct_of_its_ub",
+    "engine",
+    "rejected_value_share_at_baseline_ub",
+    "rejected_payments_at_baseline_ub",
+    "payers_with_rejections",
+];
+
+/// Time of the first minimum of `who`'s cumulative gross position (its debit peak), if any.
+fn first_min_time(cfg: &ScenarioConfig, who: u32) -> Option<u64> {
+    let (mut x, mut min, mut t) = (0i64, 0i64, None);
+    for p in loopsettle_sim::PaymentStream::new(cfg) {
+        if p.payer == who {
+            x -= p.amount;
+            if x < min {
+                min = x;
+                t = Some(p.t_arrival);
+            }
+        } else if p.payee == who {
+            x += p.amount;
+        }
+    }
+    t
+}
+
+fn hhmm(ms: u64) -> String {
+    format!("{:02}:{:02}", ms / 3_600_000, (ms / 60_000) % 60)
+}
+
+fn stress_cases(doc: &Doc, cfg: &ScenarioConfig, base: &RunOutput, duration_ms: u64) -> Result<(Vec<Vec<String>>, Vec<Json>), String> {
+    let n = cfg.participants;
+    let targets = doc.str_array("stress.case_targets").unwrap_or_else(|| vec!["largest".into(), "top_net_payer".into(), "top_net_receiver".into()]);
+    let starts: Vec<u64> = doc.i64_array("stress.case_start_ms").unwrap_or_else(|| vec![36_000_000, 64_800_000]).into_iter().map(|v| v as u64).collect();
+    let before_peak = doc.str("stress.case_before_own_peak").map(|s| s == "true").unwrap_or(true);
+    let specs = specs_from(doc, "stress.case_engines", &["gross", "micro:shortfall:1000:10000", "micro:all:1000:10000"])?;
+    let net: Vec<i64> = (0..n as u32).map(|i| base.flow.net_position(i)).collect();
+    let base_ubs = base.flow.ubs();
+    let opening = Opening::Given(base_ubs.clone());
+    let (mut rows, mut out) = (Vec::new(), Vec::new());
+    for t in &targets {
+        let who = match t.as_str() {
+            "largest" => 0u32,
+            "top_net_payer" => (0..n).min_by_key(|&i| net[i]).unwrap_or(0) as u32,
+            "top_net_receiver" => (0..n).max_by_key(|&i| net[i]).unwrap_or(0) as u32,
+            other => other.parse::<u32>().map_err(|_| format!("stress.case_targets: unknown target {other:?}"))?,
+        };
+        let mut when: Vec<(String, u64)> = starts.iter().map(|&s| (hhmm(s), s)).collect();
+        if before_peak {
+            if let Some(ts) = first_min_time(cfg, who) {
+                let s = ts.saturating_sub(duration_ms);
+                when.push((format!("before_own_peak({})", hhmm(s)), s));
+            }
+        }
+        for (label, start) in when {
+            let o_spec = OutageSpec { participant: who, start_ms: start, duration_ms };
+            let hit = run_engines(cfg, &[EngineSpec::Gross], &Opening::Unlimited, false, Some(o_spec));
+            let cons = run_engines(cfg, &specs, &opening, false, Some(o_spec));
+            let (dc, dv, _) = hit.outage_deferred.unwrap_or((0, 0, 0));
+            let hit_ubs = hit.flow.ubs();
+            let (mut up, mut down, mut n_up, mut worst, mut worst_rel) = (0i128, 0i128, 0u32, 0i64, 0.0f64);
+            let mut others_base = 0i128;
+            for i in (0..n).filter(|&i| i as u32 != who) {
+                let d = hit_ubs[i] - base_ubs[i];
+                others_base += base_ubs[i] as i128;
+                if d > 0 {
+                    up += d as i128;
+                    n_up += 1;
+                    if d > worst {
+                        worst = d;
+                        worst_rel = if base_ubs[i] > 0 { d as f64 / base_ubs[i] as f64 } else { f64::INFINITY };
+                    }
+                } else {
+                    down += (-d) as i128;
+                }
+            }
+            let total_change = 100.0 * (hit.ub() - base.ub()) as f64 / base.ub().max(1) as f64;
+            let others_net = 100.0 * (up - down) as f64 / others_base.max(1) as f64;
+            let mut cj = Json::obj()
+                .set("target", t.clone())
+                .set("participant", who)
+                .set("start", label.clone())
+                .set("start_ms", start)
+                .set("deferred_payments", dc)
+                .set("deferred_value_brl", dv as f64 / 100.0)
+                .set("ub_total_change_pct", total_change)
+                .set("others_ub_increase_brl", up as f64 / 100.0)
+                .set("others_ub_decrease_brl", down as f64 / 100.0)
+                .set("others_with_higher_ub", n_up);
+            let mut ej = Vec::new();
+            for r in &cons.results {
+                let m = &r.metrics;
+                let total = (m.settled_value + m.rejected_value).max(1) as f64;
+                let payers = m.rejected_value_by_payer.iter().filter(|&&v| v > 0).count();
+                rows.push(vec![
+                    t.clone(),
+                    who.to_string(),
+                    f(net[who as usize] as f64 / 100.0),
+                    label.clone(),
+                    dc.to_string(),
+                    f(dv as f64 / 100.0),
+                    f(total_change),
+                    f((hit_ubs[who as usize] - base_ubs[who as usize]) as f64 / 100.0),
+                    f(up as f64 / 100.0),
+                    f(down as f64 / 100.0),
+                    f(others_net),
+                    n_up.to_string(),
+                    f(worst as f64 / 100.0),
+                    f(100.0 * worst_rel),
+                    r.name.clone(),
+                    f(m.rejected_value as f64 / total),
+                    m.rejected_count.to_string(),
+                    payers.to_string(),
+                ]);
+                ej.push(Json::obj().set("engine", r.name.clone()).set("rejected_value_share", m.rejected_value as f64 / total).set("rejected_payments", m.rejected_count).set("payers_with_rejections", payers));
+            }
+            cj.push("constrained_at_baseline_ub", Json::Arr(ej));
+            out.push(cj);
+        }
+    }
+    Ok((rows, out))
 }
 
 // ---------------------------------------------------------------------------------------

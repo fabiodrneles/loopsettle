@@ -17,9 +17,9 @@
 | W2b | Calibrate receiver bias to the WP 619 per-bank distribution (p25 18–45%, median 57–80%) | yes | Claude | **done**: σ = 1.0 (`results/bias-calibration/`) |
 | W9 | Becoming a reference (see section W9) | yes | Owner + Claude | item 1 **done** (`loopsettle bound/settle/export`); items 2–5 to do |
 | W3 | Liquidity need as the BCB rules define it (K3) | yes | Claude, after W0 | **done**: `funding-windows` — the weekend is the binding window; K3 not fired |
-| W4 | Literature check for novelty (K2) | yes | Claude + owner | **mostly done**: closest work is McMahon et al. (2024, large-value); K2 not fired; their full paper still to read |
+| W4 | Literature check for novelty (K2) | yes | Claude + owner | **done**: closest work is McMahon et al. (arXiv 2023 / Management Science 2024, LVTS, real data; read); K2 not fired |
 | W5 | Delay bound: theorem, curve over d, tightness | yes | Claude | **done**: `regimes/fig_bound.svg`, realised ≈ 3–5% of the bound for every d |
-| W6 | Remaining weaknesses (strict FIFO, stress, Hodge null) | partly | Claude | Hodge null **done** (summary §2); stress to redesign or drop; strict FIFO optional |
+| W6 | Remaining weaknesses (strict FIFO, stress, Hodge null) | **done** (required items) | Claude | Hodge null **done** (summary §2); stress **redesigned** (`results/stress/cases.csv`); strict FIFO optional |
 | W7 | Paper and software packaging (outline, JOSS, preprint, Zenodo) | yes | Claude + owner | to do |
 | W8 | Run the UI on the reference laptop (i3, 4 GB) | no | Owner | to do |
 
@@ -128,7 +128,7 @@ page number of the source.
 |---|---|---|
 | Hodge null | report (m − n + 1)/m next to every Hodge number, or drop Hodge from the main ladder | yes |
 | Strict FIFO | optional strict per-payer FIFO in `QueueOnShortfall` (REVIEW 14) | no |
-| Stress | outage at the participant's peak time, or with partial abandonment (REVIEW 39) — or drop it from the paper | yes (either way) |
+| Stress | **done**: 3 targets (largest, top net payer, top net receiver) × 3 start times (10:00, 18:00, 30 min before the target's own debit peak); spillover on others ≤ 0.063% of their UB, rejections at baseline UB ≤ 0.08% of value (REVIEW 77). Partial abandonment not modelled. | yes (done) |
 | BFF CDFD | proportional CDFD (D6), after W0 #5 | no |
 | On-chain | external validation on stablecoin transfers (Phase 8) | no |
 

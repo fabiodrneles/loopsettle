@@ -178,7 +178,9 @@ The verdict stays **PIVOT**, with the claim above. No kill criterion has fired.
 - **K2 not fired, but the closest work changed.** McMahon et al. (2024) report 14–30% savings from
   sub-5 s reordering in T2. `regimes` shows why this is consistent with LoopSettle: the delay bound
   scales with payment lumpiness (10 s bound 0.76% in retail vs 13.7% with 2,000 large payments a
-  day). Their full paper must still be read.
+  day). Their paper (arXiv v3, read on 5 Nov 2026) is on Canada's LVTS with real data: batches of
+  70 payments (≈ 90 s) save C$240 M a day vs FIFO, about 1–2% of allocated liquidity — the same
+  order as LoopSettle's retail bound at 60 s (2.7% of UB), with the same measure (mNDP = UB).
 - **W5 done.** Across d from 10 s to one day, realised netting saves 3–5% of the bound
   (`regimes/bound_curve.csv`): the bound is loose but by a stable factor.
 - **W9.1 done.** `loopsettle bound/settle` run on real payment files with aggregate-only output.
@@ -186,8 +188,8 @@ The verdict stays **PIVOT**, with the claim above. No kill criterion has fired.
 ### Can we start writing?
 
 **Yes — the preprint and the JOSS paper can be drafted now.** Every required workstream is done or
-reduced to checks that do not change the results: reading the McMahon et al. paper (W4), redesigning
-or dropping the stress experiment (W6), and the owner-side items (reference laptop, submission). The
+reduced to checks that do not change the results. The McMahon et al. paper was read (W4) and the
+stress experiment was redesigned (W6, `results/stress/cases.csv`); what remains are the owner-side items (reference laptop, submission). The
 revised outline is in [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md). What must stay out of the text until
 real per-participant data exist: any number for the potential saving in real Pix beyond the
 0.2–3% band, and any claim about other countries' systems.
