@@ -7,11 +7,12 @@
 
 ## Estado atual
 
-- **Fase atual:** 9 — Documentação e publicação
-- **Próximo passo exato:** Fase 8 qualitativa (correlação potencial de Hodge × posição
-  líquida, já calculada em `results/baseline`); on-chain fica documentado como pendente
-  (exige baixar dados externos). Depois README, METHODOLOGY final, Zenodo, `make all`,
-  pacote de revisão (REVIEW, SUMMARY, CLAIMS, NOVELTY, PAPER_OUTLINE).
+- **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
+- **Próximo passo exato:** revisão humana guiada por `REVIEW.md` (61 pontos). Sugestões de
+  trabalho adicional estão nos pontos 13, 14, 36, 39 e 41 do `REVIEW.md`. Reservar o nome
+  (GitHub/crates.io) só quando o usuário pedir ("vamos reservar o nome").
+- **Verificar manualmente:** abrir a interface (`cd web && npm run dev`) no navegador e no
+  celular — não foi possível verificar visualmente nesta sessão.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -41,6 +42,7 @@ Notas de ambiente:
 | 6 | `experiment baseline` (inclui topologia de 10.492 arestas e 4 sensibilidades) | 5,9 s | 16 MiB | < 1 GB ✅ |
 | 7 | `wasm-pack build --release` (primeiro build, baixa wasm-bindgen-cli) | 432 s | 1,16 GB | < 2,5 GB ✅ |
 | 7 | wasm `simulate` 50 part./100 mil pagamentos (Node) | 0,6 s | — | fluido ✅ |
+| 10 | `make rebuild` completo | 120 s | < 1,2 GB (build wasm) | ✅ |
 | 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
@@ -112,5 +114,12 @@ Notas de ambiente:
     (Spearman) no baseline (reproduz qualitativamente; quase mecânico em grafo denso).
     Comando `loopsettle topology <csv>` para qualquer lista `from,to,amount`.
   - Pendente: baixar amostra on-chain de stablecoin (ver `data/README.md`).
-- [ ] Fase 9 — Documentação
-- [ ] Fase 10 — Pacote de revisão
+- [x] Fase 9 — Documentação
+  - README bilíngue, `docs/METHODOLOGY.md` completo, `docs/LIMITATIONS.md`,
+    `CITATION.cff`, `.zenodo.json` (Zenodo); JOSS fica para depois.
+- [x] Fase 10 — Pacote de revisão
+  - `REVIEW.md`, `results/SUMMARY.md` (gerado por `scripts/summarize.py`), `docs/CLAIMS.md`,
+    `docs/NOVELTY.md`, `docs/PAPER_OUTLINE.md`; figuras SVG em `results/*/`.
+  - Aceite: `make rebuild` (do zero: testes + 6 experimentos + resumo + build web + teste de
+    fumaça do wasm) terminou com exit 0 em 120 s. Rodar os experimentos de novo reproduz
+    `summary.json`, CSV, SVG e `SUMMARY.md` byte a byte (só `run.json`, com tempo e RAM, varia).

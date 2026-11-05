@@ -1,7 +1,7 @@
 # Resumo dos resultados
 
 Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à mão: rode `make all`.
-Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
+Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 pagamentos reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
 ## 1. Calibração (real vs simulado)
 _seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
