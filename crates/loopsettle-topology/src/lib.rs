@@ -72,6 +72,11 @@ pub struct TopologyReport {
     /// Pearson correlation between the Hodge potential and the net position of each node
     /// (a qualitative check reported by Hodge studies of money flows).
     pub potential_vs_net_corr: f64,
+    /// Hodge potential of each node.
+    pub potential: Vec<f64>,
+    /// CG diagnostics: (iterations, relative residual) of the gradient and curl solves.
+    pub cg_gradient: (usize, f64),
+    pub cg_curl: (usize, f64),
 }
 
 impl TopologyReport {
@@ -81,6 +86,10 @@ impl TopologyReport {
             .set("net", self.net.to_json())
             .set("bilateral_share", self.bilateral_share)
             .set("hodge_potential_vs_net_position_corr", self.potential_vs_net_corr)
+            .set("cg_gradient_iterations", self.cg_gradient.0)
+            .set("cg_gradient_rel_residual", self.cg_gradient.1)
+            .set("cg_curl_iterations", self.cg_curl.0)
+            .set("cg_curl_rel_residual", self.cg_curl.1)
     }
 }
 
@@ -126,6 +135,9 @@ pub fn analyze(g: &FlowGraph, cfg: &HodgeConfig) -> TopologyReport {
         net: net_l,
         bilateral_share: if g.total_flow() == 0 { 0.0 } else { bilateral as f64 / g.total_flow() as f64 },
         potential_vs_net_corr: pearson(&h.potential, &net_pos),
+        cg_gradient: (h.cg_gradient.iterations, h.cg_gradient.rel_residual),
+        cg_curl: (h.cg_curl.iterations, h.cg_curl.rel_residual),
+        potential: h.potential.clone(),
     }
 }
 

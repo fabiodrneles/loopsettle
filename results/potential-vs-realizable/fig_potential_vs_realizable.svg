@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="70" y="24" font-size="15" font-weight="bold">Liquidity saving vs maximum settlement wait</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
+<text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
+<line x1="70" y1="314.1" x2="540.0" y2="314.1" stroke="#e5e5e5"/>
+<text x="64.0" y="318.1" text-anchor="end" fill="#444">2</text>
+<line x1="70" y1="243.2" x2="540.0" y2="243.2" stroke="#e5e5e5"/>
+<text x="64.0" y="247.2" text-anchor="end" fill="#444">4</text>
+<line x1="70" y1="172.3" x2="540.0" y2="172.3" stroke="#e5e5e5"/>
+<text x="64.0" y="176.3" text-anchor="end" fill="#444">6</text>
+<line x1="70" y1="101.3" x2="540.0" y2="101.3" stroke="#e5e5e5"/>
+<text x="64.0" y="105.3" text-anchor="end" fill="#444">8</text>
+<line x1="155.8" y1="40" x2="155.8" y2="385.0" stroke="#f0f0f0"/>
+<text x="155.8" y="401.0" text-anchor="middle" fill="#444">10</text>
+<line x1="248.0" y1="40" x2="248.0" y2="385.0" stroke="#f0f0f0"/>
+<text x="248.0" y="401.0" text-anchor="middle" fill="#444">100</text>
+<line x1="340.1" y1="40" x2="340.1" y2="385.0" stroke="#f0f0f0"/>
+<text x="340.1" y="401.0" text-anchor="middle" fill="#444">1000</text>
+<line x1="432.3" y1="40" x2="432.3" y2="385.0" stroke="#f0f0f0"/>
+<text x="432.3" y="401.0" text-anchor="middle" fill="#444">10k</text>
+<line x1="524.5" y1="40" x2="524.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="524.5" y="401.0" text-anchor="middle" fill="#444">100k</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#333"/>
+<line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
+<text x="305.0" y="426.0" text-anchor="middle">maximum wait (s, log): deferred cycle interval or micro-cycle max_delay</text>
+<text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">liquidity saving vs gross UB (%)</text>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="518.6,56.4 490.9,229.8 463.1,252.2 426.5,301.5 391.4,347.6 335.9,373.5 291.9,379.7 227.5,382.5 155.8,384.0"/>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#0072B2"/>
+<circle cx="490.9" cy="229.8" r="3.5" fill="#0072B2"/>
+<circle cx="463.1" cy="252.2" r="3.5" fill="#0072B2"/>
+<circle cx="426.5" cy="301.5" r="3.5" fill="#0072B2"/>
+<circle cx="391.4" cy="347.6" r="3.5" fill="#0072B2"/>
+<circle cx="335.9" cy="373.5" r="3.5" fill="#0072B2"/>
+<circle cx="291.9" cy="379.7" r="3.5" fill="#0072B2"/>
+<circle cx="227.5" cy="382.5" r="3.5" fill="#0072B2"/>
+<circle cx="155.8" cy="384.0" r="3.5" fill="#0072B2"/>
+<rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
+<text x="570.0" y="50.0">Deferred net cycles</text>
+<circle cx="155.8" cy="384.5" r="3.5" fill="#D55E00"/>
+<circle cx="155.8" cy="384.6" r="3.5" fill="#D55E00"/>
+<circle cx="128.0" cy="384.9" r="3.5" fill="#D55E00"/>
+<circle cx="91.4" cy="384.9" r="3.5" fill="#D55E00"/>
+<rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
+<text x="570.0" y="68.0">Atomic micro-cycles</text>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">Potential (end of day)</text>
+</svg>

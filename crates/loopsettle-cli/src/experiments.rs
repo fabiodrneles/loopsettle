@@ -11,6 +11,10 @@ use loopsettle_sim::{calibrate, run as run_engines, EngineResult, EngineSpec, Op
 pub const ALL: &[(&str, &str)] = &[
     ("calibration", "real vs simulated public Pix aggregates"),
     ("microcycle-sweep", "liquidity saving x p95 delay of atomic micro-cycles"),
+    ("baseline", "UB, LB, circularity ladder and sensitivity"),
+    ("potential-vs-realizable", "potential vs realizable liquidity savings (central comparison)"),
+    ("stress", "largest participant offline for 30 minutes"),
+    ("finland-replication", "fixed clearing cycles vs instant settlement"),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -19,14 +23,19 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         cfg.payments_per_day /= 10.0;
         cfg.scale_factor *= 10.0;
     }
+    use crate::experiments2 as e2;
     match name {
         "calibration" => calibration(path, doc, &cfg),
         "microcycle-sweep" => microcycle_sweep(path, doc, &cfg),
+        "baseline" => e2::baseline(path, doc, &cfg),
+        "potential-vs-realizable" => e2::potential_vs_realizable(path, doc, &cfg),
+        "stress" => e2::stress(path, doc, &cfg),
+        "finland-replication" => e2::finland(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
     }
 }
 
-fn scenario_json(cfg: &ScenarioConfig) -> loopsettle_core::json::Json {
+pub(crate) fn scenario_json(cfg: &ScenarioConfig) -> loopsettle_core::json::Json {
     use loopsettle_core::json::Json;
     Json::obj()
         .set("participants", cfg.participants)
@@ -105,7 +114,7 @@ pub(crate) fn flow_json(o: &RunOutput) -> Json {
         .set("potential_offset_fraction", o.flow.potential_offset_fraction())
 }
 
-fn f64_list(doc: &Doc, key: &str, default: &[f64]) -> Vec<f64> {
+pub(crate) fn f64_list(doc: &Doc, key: &str, default: &[f64]) -> Vec<f64> {
     doc.f64_array(key).unwrap_or_else(|| default.to_vec())
 }
 

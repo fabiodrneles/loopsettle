@@ -1,0 +1,363 @@
+//! Phase 6 experiments: baseline, potential-vs-realizable, stress, finland-replication.
+
+use crate::experiments::{engine_row, f64_list, flow_json, scenario_json, ENGINE_HEADER};
+use crate::out::{f, table, Results};
+use crate::svg::{bars, Chart, Series};
+use loopsettle_core::json::Json;
+use loopsettle_sim::toml_lite::Doc;
+use loopsettle_sim::{run as run_engines, EngineSpec, Opening, OutageSpec, Population, RunOutput, ScenarioConfig};
+use loopsettle_topology::{analyze, FlowGraph, HodgeConfig, TopologyReport};
+use std::time::Instant;
+
+fn specs_from(doc: &Doc, key: &str, default: &[&str]) -> Result<Vec<EngineSpec>, String> {
+    let v = doc.str_array(key).unwrap_or_else(|| default.iter().map(|s| s.to_string()).collect());
+    v.iter().map(|s| EngineSpec::parse(s)).collect()
+}
+
+pub(crate) fn topology(o: &RunOutput, doc: &Doc) -> (TopologyReport, f64) {
+    let g = FlowGraph::gross_from(&o.flow);
+    let cfg = HodgeConfig { max_triangles: doc.i64("topology.max_triangles").unwrap_or(500_000) as usize, ..Default::default() };
+    let t = Instant::now();
+    let r = analyze(&g, &cfg);
+    (r, t.elapsed().as_secs_f64())
+}
+
+const LADDER_HEADER: &[&str] =
+    &["graph", "edges", "total_flow_brl", "hodge_l1_cyclic", "hodge_l2_curl", "hodge_l2_cyclic", "cdfd_max", "cycle_netting", "hodge_triangles", "triangles_capped"];
+
+fn ladder_rows(t: &TopologyReport) -> Vec<Vec<String>> {
+    [("gross", &t.gross), ("net", &t.net)]
+        .iter()
+        .map(|(n, l)| {
+            vec![
+                n.to_string(),
+                l.edges.to_string(),
+                f(l.total_flow as f64 / 100.0),
+                f(l.hodge_l1),
+                f(l.hodge_curl_l2),
+                f(l.hodge_cyclic_l2),
+                f(l.cdfd_max),
+                f(l.cycles),
+                l.hodge_triangles.to_string(),
+                l.hodge_triangles_capped.to_string(),
+            ]
+        })
+        .collect()
+}
+
+fn quoted(s: &str) -> String {
+    format!("\"{}\"", s.replace('"', "'"))
+}
+
+// ---------------------------------------------------------------------------------------
+// baseline
+// ---------------------------------------------------------------------------------------
+
+pub fn baseline(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
+    let specs = [EngineSpec::Gross, EngineSpec::Deferred { cycles_per_day: 1 }, EngineSpec::Deferred { cycles_per_day: 10 }];
+    let o = run_engines(cfg, &specs, &Opening::Unlimited, true, None);
+    let (ub, lb) = (o.ub(), o.lb());
+    let (topo, topo_s) = topology(&o, doc);
+    eprintln!("  topology: {} gross edges in {:.1} s", topo.gross.edges, topo_s);
+    let mut res = Results::new("baseline", cfg.seed, path);
+
+    res.csv("ladder.csv", &table(LADDER_HEADER, &ladder_rows(&topo)));
+    let erows: Vec<Vec<String>> = o.results.iter().map(|r| engine_row(r, ub, lb)).collect();
+    res.csv("engines.csv", &table(ENGINE_HEADER, &erows));
+
+    // Per-participant table (also used by the Phase 8 qualitative Hodge check).
+    let pop = Population::build(cfg);
+    let prow: Vec<Vec<String>> = (0..cfg.participants)
+        .map(|i| {
+            let p = i as u32;
+            vec![
+                i.to_string(),
+                pop.class[i].name().to_string(),
+                f(pop.activity[i]),
+                f(o.flow.out_value[i] as f64 / 100.0),
+                f(o.flow.in_value[i] as f64 / 100.0),
+                f(o.flow.net_position(p) as f64 / 100.0),
+                f(o.flow.ub(p) as f64 / 100.0),
+                f(o.flow.lb(p) as f64 / 100.0),
+                f(topo.potential[i] / 100.0),
+            ]
+        })
+        .collect();
+    res.csv(
+        "participants.csv",
+        &table(&["participant", "class", "activity_share", "out_brl", "in_brl", "net_brl", "ub_brl", "lb_brl", "hodge_potential_brl"], &prow),
+    );
+
+    let fig = bars(
+        "Circularity ladder (gross graph, share of gross flow)",
+        "fraction of total flow (Hodge L1 can exceed 1)",
+        &[
+            ("Hodge L1 (diagnostic)".into(), topo.gross.hodge_l1),
+            ("Potential offset (BCB style)".into(), o.flow.potential_offset_fraction()),
+            ("CDFD maximum (static ceiling)".into(), topo.gross.cdfd_max),
+            ("Cycle netting (greedy)".into(), topo.gross.cycles),
+            ("Bilateral netting only".into(), topo.bilateral_share),
+        ],
+    );
+    res.csv("fig_ladder.svg", &fig);
+
+    // Sensitivity to the receiver bias (main bilateral-structure ASSUMPTION).
+    let sigmas = f64_list(doc, "sensitivity.receiver_bias_sigma", &[0.0, 0.2, 0.4, 0.8]);
+    let micro = EngineSpec::parse(doc.str("sensitivity.micro_engine").unwrap_or("micro:all:1000:10000"))?;
+    let mut srows = Vec::new();
+    let mut sjson = Vec::new();
+    for &sg in &sigmas {
+        let c = ScenarioConfig { receiver_bias_sigma: sg, ..cfg.clone() };
+        let os = run_engines(&c, &[EngineSpec::Gross, micro.clone()], &Opening::Unlimited, true, None);
+        let (ts, _) = topology(&os, doc);
+        let (u, l) = (os.ub(), os.lb());
+        srows.push(vec![
+            f(sg),
+            f(u as f64 / 100.0),
+            f(l as f64 / 100.0),
+            f(l as f64 / u.max(1) as f64),
+            f(os.flow.potential_offset_fraction()),
+            f(ts.gross.hodge_l1),
+            f(ts.gross.cdfd_max),
+            f(ts.gross.cycles),
+            f(ts.net.cdfd_max),
+            f(100.0 * os.results[1].saving_vs(u)),
+            os.results[1].delay_q(0.95).to_string(),
+        ]);
+        sjson.push(Json::obj().set("receiver_bias_sigma", sg).set("flow", flow_json(&os)).set("topology", ts.to_json()).set("micro", os.results[1].to_json(u, l)));
+    }
+    let sh = [
+        "receiver_bias_sigma",
+        "ub_brl",
+        "lb_brl",
+        "lb_over_ub",
+        "potential_offset",
+        "hodge_l1_gross",
+        "cdfd_max_gross",
+        "cycles_gross",
+        "cdfd_max_net",
+        "micro_saving_pct",
+        "micro_p95_ms",
+    ];
+    res.csv("sensitivity.csv", &table(&sh, &srows));
+
+    res.set("scenario", scenario_json(cfg));
+    res.set("flow", flow_json(&o));
+    res.set("topology", topo.to_json());
+    res.set("topology_seconds", topo_s);
+    res.set("engines", Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()));
+    res.set("sensitivity", Json::Arr(sjson));
+    eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&topo)));
+    eprintln!("{}", table(&sh, &srows));
+    res.finish();
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------------------
+// potential-vs-realizable
+// ---------------------------------------------------------------------------------------
+
+pub fn potential_vs_realizable(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
+    let cpd = doc.i64_array("compare.deferred_cycles_per_day").unwrap_or_else(|| vec![1, 10, 96, 1440, 8640]);
+    let micro = specs_from(doc, "compare.micro_engines", &["micro:all:1000:10000"])?;
+    let mut specs = vec![EngineSpec::Gross];
+    specs.extend(cpd.iter().map(|&c| EngineSpec::Deferred { cycles_per_day: c as u32 }));
+    specs.extend(micro.iter().cloned());
+    let o = run_engines(cfg, &specs, &Opening::Unlimited, true, None);
+    let (ub, lb) = (o.ub(), o.lb());
+    let (topo, _) = topology(&o, doc);
+    let mut res = Results::new("potential-vs-realizable", cfg.seed, path);
+
+    // Engine table with the maximum wait each design imposes.
+    let mut header = vec!["max_wait_s"];
+    header.extend_from_slice(ENGINE_HEADER);
+    let mut rows = Vec::new();
+    let (mut dpts, mut mpts) = (Vec::new(), Vec::new());
+    for r in &o.results {
+        let wait = match r.spec {
+            EngineSpec::Gross => 0.0,
+            EngineSpec::Deferred { cycles_per_day } => 86_400.0 / cycles_per_day as f64,
+            EngineSpec::Micro(m) => m.max_delay_ms as f64 / 1000.0,
+        };
+        let mut row = vec![f(wait)];
+        row.extend(engine_row(r, ub, lb));
+        rows.push(row);
+        match r.spec {
+            EngineSpec::Deferred { .. } => dpts.push((wait, 100.0 * r.saving_vs(ub))),
+            EngineSpec::Micro(_) => mpts.push((wait, 100.0 * r.saving_vs(ub))),
+            _ => {}
+        }
+    }
+    res.csv("engines.csv", &table(&header, &rows));
+
+    // The central table: potential (static, order ignored) vs realizable (in time).
+    let best_micro = o
+        .results
+        .iter()
+        .filter(|r| matches!(r.spec, EngineSpec::Micro(_)))
+        .max_by(|a, b| a.saving_vs(ub).partial_cmp(&b.saving_vs(ub)).unwrap());
+    let potential_liq = if ub == 0 { 0.0 } else { (ub - lb) as f64 / ub as f64 };
+    let mut central: Vec<(String, f64, &str, &str)> = vec![
+        ("potential_offset_fraction_bcb_style".into(), o.flow.potential_offset_fraction(), "share of gross outflows fundable by same-day inflows, order ignored", "measured, no time"),
+        ("potential_liquidity_saving_end_of_day".into(), potential_liq, "(UB - LB) / UB: saving of one end-of-day net settlement", "measured"),
+        ("static_ceiling_cdfd_max_gross".into(), topo.gross.cdfd_max, "max circulation respecting edge bounds / gross flow", "measured, aggregated, no time"),
+        ("static_greedy_cycle_netting_gross".into(), topo.gross.cycles, "greedy cycle cancellation / gross flow", "measured, aggregated, no time"),
+        ("hodge_l1_cyclic_gross".into(), topo.gross.hodge_l1, "diagnostic; can exceed 1", "measured, aggregated, no time"),
+    ];
+    if let Some(b) = best_micro {
+        central.push((format!("realizable_liquidity_saving_{}", b.name), b.saving_vs(ub), "best atomic micro-cycle config: 1 - liquidity / UB", "measured in time"));
+        let cyc_share = b.metrics.value_by_kind[1] as f64 / b.metrics.settled_value.max(1) as f64;
+        central.push((format!("realizable_value_in_cycles_{}", b.name), cyc_share, "value settled inside atomic cycles / settled value", "measured in time"));
+    }
+    for r in &o.results {
+        if let EngineSpec::Deferred { cycles_per_day } = r.spec {
+            if cycles_per_day == 8640 || cycles_per_day == 96 {
+                central.push((format!("realizable_liquidity_saving_{}", r.name), r.saving_vs(ub), "deferred net settlement at this frequency", "measured in time"));
+            }
+        }
+    }
+    let chead = ["measure", "value", "meaning", "status"];
+    let crow: Vec<Vec<String>> = central.iter().map(|(k, v, m, s)| vec![k.clone(), f(*v), quoted(m), quoted(s)]).collect();
+    res.csv("central.csv", &table(&chead, &crow));
+
+    let chart = Chart {
+        title: "Liquidity saving vs maximum settlement wait".into(),
+        x_label: "maximum wait (s, log): deferred cycle interval or micro-cycle max_delay".into(),
+        y_label: "liquidity saving vs gross UB (%)".into(),
+        series: vec![
+            Series { label: "Deferred net cycles".into(), points: dpts, line: true },
+            Series { label: "Atomic micro-cycles".into(), points: mpts, line: false },
+            Series { label: "Potential (end of day)".into(), points: vec![(86_400.0, 100.0 * potential_liq)], line: false },
+        ],
+        log_x: true,
+    };
+    res.csv("fig_potential_vs_realizable.svg", &chart.render());
+
+    res.set("scenario", scenario_json(cfg));
+    res.set("flow", flow_json(&o));
+    res.set("topology", topo.to_json());
+    res.set(
+        "central",
+        Json::Arr(central.iter().map(|(k, v, m, s)| Json::obj().set("measure", k.clone()).set("value", *v).set("meaning", *m).set("status", *s)).collect()),
+    );
+    res.set("engines", Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()));
+    eprintln!("{}", table(&chead, &crow));
+    eprintln!("{}", table(&header, &rows));
+    res.finish();
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------------------
+// stress
+// ---------------------------------------------------------------------------------------
+
+pub fn stress(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
+    let who = doc.i64("stress.participant").unwrap_or(0) as u32;
+    let o_spec = OutageSpec {
+        participant: who,
+        start_ms: doc.i64("stress.start_ms").unwrap_or(36_000_000) as u64,
+        duration_ms: doc.i64("stress.duration_ms").unwrap_or(1_800_000) as u64,
+    };
+    let specs = specs_from(doc, "stress.engines", &["gross", "micro:all:1000:10000"])?;
+    let base = run_engines(cfg, &specs, &Opening::Unlimited, false, None);
+    let hit = run_engines(cfg, &specs, &Opening::Unlimited, false, Some(o_spec));
+    let mut res = Results::new("stress", cfg.seed, path);
+    let mut header = vec!["scenario", "ub_total_brl", "ub_of_offline_participant_brl"];
+    header.extend_from_slice(ENGINE_HEADER);
+    let mut rows = Vec::new();
+    for (label, o) in [("baseline", &base), ("outage", &hit)] {
+        for r in &o.results {
+            let mut row = vec![label.to_string(), f(o.ub() as f64 / 100.0), f(o.flow.ub(who) as f64 / 100.0)];
+            row.extend(engine_row(r, o.ub(), o.lb()));
+            rows.push(row);
+        }
+    }
+    // Constrained: everyone opens with fraction x its *baseline* UB; the outage then causes
+    // rejections under gross settlement. Does queueing absorb them?
+    let fr = doc.f64("stress.constrained_fraction_of_ub").unwrap_or(1.0);
+    let opening: Vec<i64> = base.flow.ubs().iter().map(|&u| (u as f64 * fr).floor() as i64).collect();
+    let cons = run_engines(cfg, &specs, &Opening::Given(opening), false, Some(o_spec));
+    for r in &cons.results {
+        let mut row = vec![format!("outage_constrained_{}xUB", f(fr)), f(cons.ub() as f64 / 100.0), f(cons.flow.ub(who) as f64 / 100.0)];
+        row.extend(engine_row(r, base.ub(), base.lb()));
+        rows.push(row);
+    }
+    res.csv("stress.csv", &table(&header, &rows));
+    let (dc, dv, ds) = hit.outage_deferred.unwrap_or((0, 0, 0));
+    res.set("scenario", scenario_json(cfg));
+    res.set(
+        "outage",
+        Json::obj()
+            .set("participant", who)
+            .set("start_ms", o_spec.start_ms)
+            .set("duration_ms", o_spec.duration_ms)
+            .set("deferred_payments", dc)
+            .set("deferred_value_brl", dv as f64 / 100.0)
+            .set("mean_deferral_ms", if dc == 0 { 0.0 } else { ds as f64 / dc as f64 }),
+    );
+    res.set("baseline_flow", flow_json(&base));
+    res.set("outage_flow", flow_json(&hit));
+    res.set("baseline", Json::Arr(base.results.iter().map(|r| r.to_json(base.ub(), base.lb())).collect()));
+    res.set("outage_unlimited", Json::Arr(hit.results.iter().map(|r| r.to_json(hit.ub(), hit.lb())).collect()));
+    res.set("outage_constrained", Json::Arr(cons.results.iter().map(|r| r.to_json(base.ub(), base.lb())).collect()));
+    eprintln!("{}", table(&header, &rows));
+    res.finish();
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------------------
+// finland-replication
+// ---------------------------------------------------------------------------------------
+
+pub fn finland(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
+    let cpd = doc.i64_array("finland.cycles_per_day").unwrap_or_else(|| vec![1, 2, 4, 6, 10, 24, 48]);
+    let seeds = doc.i64_array("finland.seeds").unwrap_or_else(|| vec![cfg.seed as i64]);
+    let mut specs = vec![EngineSpec::Gross];
+    specs.extend(cpd.iter().map(|&c| EngineSpec::Deferred { cycles_per_day: c as u32 }));
+    let sigmas = f64_list(doc, "finland.receiver_bias_sigma", &[cfg.receiver_bias_sigma]);
+    let mut rows = Vec::new();
+    let mut series = Vec::new();
+    let mut per_seed = Vec::new();
+    for &sg in &sigmas {
+        // ratios[k][s] = instant liquidity / deferred(k) liquidity for seed s
+        let mut ratios = vec![Vec::new(); cpd.len()];
+        for &sd in &seeds {
+            let c = ScenarioConfig { seed: sd as u64, receiver_bias_sigma: sg, ..cfg.clone() };
+            let o = run_engines(&c, &specs, &Opening::Unlimited, false, None);
+            let inst = o.results[0].liquidity as f64;
+            let mut js = Json::obj().set("receiver_bias_sigma", sg).set("seed", sd).set("instant_liquidity_brl", inst / 100.0).set("lb_brl", o.lb() as f64 / 100.0);
+            for (k, r) in o.results[1..].iter().enumerate() {
+                ratios[k].push(inst / (r.liquidity as f64).max(1.0));
+                js.push(&format!("deferred_{}x_liquidity_brl", cpd[k]), r.liquidity as f64 / 100.0);
+            }
+            per_seed.push(js);
+        }
+        let mut pts = Vec::new();
+        for (k, &c) in cpd.iter().enumerate() {
+            let v = &ratios[k];
+            let mean = v.iter().sum::<f64>() / v.len() as f64;
+            let sd = (v.iter().map(|x| (x - mean) * (x - mean)).sum::<f64>() / (v.len().max(2) - 1) as f64).sqrt();
+            let (lo, hi) = v.iter().fold((f64::MAX, f64::MIN), |(a, b), &x| (a.min(x), b.max(x)));
+            rows.push(vec![f(sg), c.to_string(), f(mean), f(sd), f(lo), f(hi), v.len().to_string()]);
+            pts.push((c as f64, mean));
+        }
+        series.push(Series { label: format!("receiver bias sigma {}", f(sg)), points: pts, line: true });
+    }
+    let header = ["receiver_bias_sigma", "cycles_per_day", "instant_over_deferred_liquidity_mean", "sd", "min", "max", "seeds"];
+    let mut res = Results::new("finland-replication", cfg.seed, path);
+    res.csv("ratios.csv", &table(&header, &rows));
+    let chart = Chart {
+        title: "Instant (gross) vs fixed-cycle liquidity need".into(),
+        x_label: "clearing cycles per day (log scale)".into(),
+        y_label: "liquidity instant / liquidity cycles (x)".into(),
+        series,
+        log_x: true,
+    };
+    res.csv("fig_finland.svg", &chart.render());
+    res.set("scenario", scenario_json(cfg));
+    res.set("seeds", Json::Arr(seeds.iter().map(|&s| Json::Int(s as i128)).collect()));
+    res.set("per_seed", Json::Arr(per_seed));
+    eprintln!("{}", table(&header, &rows));
+    res.finish();
+    Ok(())
+}

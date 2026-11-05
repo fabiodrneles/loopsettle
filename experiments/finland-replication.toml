@@ -1,0 +1,19 @@
+# Logic of Hellqvist & Korpinen (Bank of Finland, 2021): liquidity needed by a system
+# that settles in fixed clearing cycles vs an instant (gross, real-time) system, on our
+# synthetic calibrated scenario. Order-of-magnitude comparison only.
+[experiment]
+name = "finland-replication"
+description = "Fixed clearing cycles vs instant settlement liquidity"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[finland]
+cycles_per_day = [1, 2, 4, 6, 10, 24, 48]
+seeds = [20260930, 1, 2, 3, 4]
+# Sensitivity to the main ASSUMPTION (receiver bias drives net positions).
+receiver_bias_sigma = [0.0, 0.2, 0.4]

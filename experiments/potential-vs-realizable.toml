@@ -1,0 +1,18 @@
+# The central comparison: "potential" netting capacity (BCB Pix study style: same-day
+# inflows vs outflows, order ignored) vs what is realizable in time, by settlement
+# granularity (deferred net cycles from 1/day down to 10 s) and by atomic micro-cycles.
+[experiment]
+name = "potential-vs-realizable"
+description = "Potential vs realizable liquidity savings"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[compare]
+# deferred net cycles per day: 1/day ... 8640/day (= every 10 s)
+deferred_cycles_per_day = [1, 2, 4, 10, 24, 96, 288, 1440, 8640]
+micro_engines = ["micro:all:500:10000", "micro:all:1000:10000", "micro:all:1000:5000", "micro:all:500:2000"]

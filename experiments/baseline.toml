@@ -1,0 +1,19 @@
+# Baseline: UB, LB and the circularity ladder (Hodge / CDFD / cycle netting) in the
+# calibrated scenario, plus sensitivity to the main ASSUMPTION (receiver bias).
+[experiment]
+name = "baseline"
+description = "UB, LB, potential netting and circular fractions in the calibrated scenario"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[topology]
+max_triangles = 500_000
+
+[sensitivity]
+receiver_bias_sigma = [0.0, 0.2, 0.4, 0.8]
+micro_engine = "micro:all:1000:10000"

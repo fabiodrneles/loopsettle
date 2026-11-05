@@ -7,6 +7,7 @@
 //! Argument parsing is hand-written (no `clap`) to keep compile times low.
 
 mod experiments;
+mod experiments2;
 mod out;
 mod svg;
 

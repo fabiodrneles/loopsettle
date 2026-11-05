@@ -7,10 +7,10 @@
 
 ## Estado atual
 
-- **Fase atual:** 6 — Experimentos reprodutíveis (`loopsettle-cli`)
-- **Próximo passo exato:** experimentos `baseline` (UB, LB, escada topológica, sensibilidade
-  ao viés recebedor), `potential-vs-realizable`, `stress` (maior participante fora 30 min),
-  `finland-replication` (ciclos fixos vs instantâneo); cada um com TOML em `experiments/`.
+- **Fase atual:** 7 — Interface web (`loopsettle-wasm` + `web/`)
+- **Próximo passo exato:** bindings wasm-bindgen (`simulate(json) -> json`), `wasm-pack build
+  --target web`, app Vite+React+TS com Web Worker e Canvas 2D (rede, sliders, gráficos,
+  painel potencial vs realizável), modo reduzido para celular.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -37,6 +37,7 @@ Notas de ambiente:
 | 0 | `cargo test --workspace` (frio, com proptest) | 61 s | 502 MB | < 120 s e < 2,5 GB ✅ |
 | 3 | `bench_stream` (1.000.984 pagamentos, GRT + matriz de pares, 2×) | 0,23 s/execução | 4,1 MB | < 60 s e < 1 GB ✅ |
 | 5 | `experiment microcycle-sweep` (16 motores + 3×3 restritos, 1M pagamentos) | 11,6 s | 6 MiB | — |
+| 6 | `experiment baseline` (inclui topologia de 10.492 arestas e 4 sensibilidades) | 5,9 s | 16 MiB | < 1 GB ✅ |
 | 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
@@ -79,7 +80,19 @@ Notas de ambiente:
     → `results/microcycle-sweep/{sweep.csv,shortfall.csv,fig_tradeoff.svg,summary.json}`.
   - Achado preliminar: com liquidez ilimitada os micro-ciclos (≤10 s) liquidam até 63% do
     valor em ciclos mas economizam ≤0,015% do UB; no cenário calibrado LB/UB ≈ 0,91.
-- [ ] Fase 6 — Experimentos reprodutíveis
+- [x] Fase 6 — Experimentos reprodutíveis
+  - Pronto: `experiment {calibration, baseline, potential-vs-realizable, microcycle-sweep,
+    stress, finland-replication}` → `results/<nome>/` (CSV + `summary.json` com seed,
+    versão do código, comando, pico de RAM; SVGs).
+  - Números principais (seed 20260930, 1M pagamentos, 200 participantes):
+    - UB = R$ 71,27 mi; LB = R$ 64,67 mi (LB/UB = 0,91); volume bruto R$ 443 mi.
+    - Potencial estilo BCB = 0,854; economia potencial fim do dia (UB−LB)/UB = 9,27%.
+    - Escada bruta: Hodge L1 1,18 > CDFD 0,83 > ciclos 0,80; líquida: Hodge L2 0,98 ≫
+      CDFD 0,17 > ciclos 0,14.
+    - Realizável: micro-ciclo melhor (w500, d10s) economiza 0,0147% do UB, liquidando 63%
+      do valor em ciclos; DeferredNet a cada 10 s: 0,028%; a cada 15 min: 0,32%.
+    - Finlândia: instantâneo/1 ciclo por dia = 1,10× (σ=0,4) a 1,50× (σ=0).
+    - Stress (maior participante fora 30 min): efeito desprezível no UB total.
 - [ ] Fase 7 — Interface web
 - [ ] Fase 8 — Validação externa (opcional)
 - [ ] Fase 9 — Documentação
