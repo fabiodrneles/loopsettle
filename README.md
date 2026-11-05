@@ -225,7 +225,7 @@ entre si**, e o LoopSettle tem um motor para cada modelo:
 |---|---|---|
 | Bruto em tempo real | Pix (Brasil), FedNow (EUA), TIPS (zona do euro), NPP (Austrália) | `GrossRealTime` |
 | Bruto, conta pré-financiada | RTP (EUA), Real-Time Rail (Canadá, em lançamento) | `GrossRealTime` com saldo limitado |
-| Compensação diferida em ciclos | UPI (Índia, 10/dia), Faster Payments (Reino Unido, 3/dia), Interac e-Transfer (Canadá, 1/dia) | `DeferredNet` |
+| Compensação diferida em ciclos | UPI (Índia, 10/dia), Faster Payments (Reino Unido, 3/dia), FAST (Singapura, 2/dia), Interac e-Transfer (Canadá, 1/dia) | `DeferredNet` |
 | Compensação a cada poucos segundos | SPEI (México, em média a cada 1,9 s) | `AtomicMicroCycle` |
 
 </td>
@@ -628,7 +628,7 @@ has an engine for each model:
 |---|---|---|
 | Real-time gross | Pix (Brazil), FedNow (US), TIPS (euro area), NPP (Australia) | `GrossRealTime` |
 | Gross, prefunded account | RTP (US), Real-Time Rail (Canada, launching) | `GrossRealTime` with limited balance |
-| Deferred netting in cycles | UPI (India, 10/day), Faster Payments (UK, 3/day), Interac e-Transfer (Canada, 1/day) | `DeferredNet` |
+| Deferred netting in cycles | UPI (India, 10/day), Faster Payments (UK, 3/day), FAST (Singapore, 2/day), Interac e-Transfer (Canada, 1/day) | `DeferredNet` |
 | Netting every few seconds | SPEI (Mexico, every 1.9 s on average) | `AtomicMicroCycle` |
 
 </td>
