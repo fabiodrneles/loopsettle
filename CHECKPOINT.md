@@ -17,8 +17,8 @@
   travamento de `npm run dev` (React StrictMode encerrava o Web Worker; ver REVIEW 66). Falta
   abrir no notebook real (i3, 4 GB).
 - **Documentação bilíngue (D17):** README com seções completas em PT e EN (capturas em cada
-  idioma: `docs/img/` e `docs/img/en/`), `docs/en/*`, `DECISIONS.en.md`, `REVIEW.en.md`,
-  `results/SUMMARY.en.md` (gerado junto com o PT por `scripts/summarize.py`), `data/README.md`
+  idioma: `docs/img/` e `docs/img/en/`); inglês é o nome padrão e o português tem sufixo `.pt-BR.md` (D17),
+  `results/SUMMARY.md` + `SUMMARY.pt-BR.md` (gerados por `scripts/summarize.py`), `data/README.md`
   nos dois idiomas, interface com seletor PT/EN (`?lang=pt|en`). Regra: mudou um documento,
   muda o gêmeo no mesmo commit.
 - **Referências conferidas** por busca pública: ver `docs/REFERENCES.md` (PixSim não

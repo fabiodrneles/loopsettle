@@ -19,16 +19,16 @@
 
 <p align="center">
   <b>🇧🇷 <a href="#português">Português</a></b> ·
-  <a href="results/SUMMARY.md">Resultados</a> ·
-  <a href="docs/METHODOLOGY.md">Metodologia</a> ·
-  <a href="docs/LIMITATIONS.md">Limitações</a> ·
-  <a href="docs/REFERENCES.md">Referências</a>
+  <a href="results/SUMMARY.pt-BR.md">Resultados</a> ·
+  <a href="docs/METHODOLOGY.pt-BR.md">Metodologia</a> ·
+  <a href="docs/LIMITATIONS.pt-BR.md">Limitações</a> ·
+  <a href="docs/REFERENCES.pt-BR.md">Referências</a>
   <br>
   <b>🇬🇧 <a href="#english">English</a></b> ·
-  <a href="results/SUMMARY.en.md">Results</a> ·
-  <a href="docs/en/METHODOLOGY.md">Methodology</a> ·
-  <a href="docs/en/LIMITATIONS.md">Limitations</a> ·
-  <a href="docs/en/REFERENCES.md">References</a>
+  <a href="results/SUMMARY.md">Results</a> ·
+  <a href="docs/METHODOLOGY.md">Methodology</a> ·
+  <a href="docs/LIMITATIONS.md">Limitations</a> ·
+  <a href="docs/REFERENCES.md">References</a>
 </p>
 
 ---
@@ -85,12 +85,12 @@ pagamentos por dia, semente `20260930`):
 > **Volume compensável não é liquidez economizada.** O LoopSettle torna visível e mensurável a
 > distância entre essas duas medidas.
 
-Todos os números estão em [`results/SUMMARY.md`](results/SUMMARY.md), com a semente, a versão
+Todos os números estão em [`results/SUMMARY.pt-BR.md`](results/SUMMARY.pt-BR.md), com a semente, a versão
 do código e o comando que os gerou. O que o estudo pode e não pode afirmar está em
-[`docs/CLAIMS.md`](docs/CLAIMS.md).
+[`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md).
 
 *(As figuras geradas pelos experimentos têm rótulos em inglês, a língua do código; as legendas
-e o [`results/SUMMARY.md`](results/SUMMARY.md) explicam cada uma em português.)*
+e o [`results/SUMMARY.pt-BR.md`](results/SUMMARY.pt-BR.md) explicam cada uma em português.)*
 
 ### A interface
 
@@ -199,7 +199,7 @@ flowchart LR
   compensação diária exigiria.
 - **Economia de um desenho** = 1 − liquidez do desenho ÷ UB.
 
-Definições formais, exemplo à mão e provas em [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
+Definições formais, exemplo à mão e provas em [`docs/METHODOLOGY.pt-BR.md`](docs/METHODOLOGY.pt-BR.md).
 
 ### Resultados em números
 
@@ -260,11 +260,11 @@ Por isso ela não volta com compensação em segundos, por mais valor que os mic
 liquidar dentro de ciclos.
 
 > Isto **não é uma replicação** do estudo finlandês: aplicamos a mesma lógica a outro cenário e
-> comparamos ordens de grandeza (ver [`docs/CLAIMS.md`](docs/CLAIMS.md), item "não pode" 5).
+> comparamos ordens de grandeza (ver [`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md), item "não pode" 5).
 
 [^bof]: O valor de 8,6% vem do resumo da discussão do trabalho no Economics of Payments X
     (Banco da Finlândia, 2021) e precisa ser conferido no texto integral. Situação de cada
-    referência em [`docs/REFERENCES.md`](docs/REFERENCES.md).
+    referência em [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md).
 
 #### Os outros trabalhos
 
@@ -274,7 +274,7 @@ liquidar dentro de ciclos.
 | Homs-Dones, MacKay, Sansom & Zhou, **CDFD** (arXiv 2506.12546, 2025) | Decompõe o fluxo de uma rede em parte circular e parte direcional respeitando conservação e o limite de cada aresta | Implementa a decomposição de **circularidade máxima** de forma exata (fluxo de custo mínimo) e a usa como teto estático; a variante proporcional (BFF) fica para depois |
 | Bech & Soramäki, **BoF DP 9/2001** | Algoritmos de resolução de *gridlock* por ciclos em sistemas interbancários | Netting por ciclos e a base dos micro-ciclos atômicos, agora com atraso máximo e a meta de tempo do Pix |
 
-Comparação completa, ponto a ponto, em [`docs/NOVELTY.md`](docs/NOVELTY.md).
+Comparação completa, ponto a ponto, em [`docs/NOVELTY.pt-BR.md`](docs/NOVELTY.pt-BR.md).
 
 ### Comece em 3 comandos
 
@@ -318,7 +318,7 @@ Hodge; determinismo total; e o caso fixo do triângulo.
 | [`loopsettle-cli`](crates/loopsettle-cli) | experimentos reprodutíveis, saída em CSV, JSON e SVG |
 | [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | interface Vite + React + Canvas 2D, simulação num Web Worker, português e inglês |
 | [`data/`](data) | download dos agregados públicos do Pix (API Olinda do BCB) |
-| [`docs/`](docs) | metodologia, parâmetros, limitações, afirmações, novidade, referências |
+| [`docs/`](docs) | metodologia, parâmetros, limitações, afirmações, novidade, referências (arquivos `*.pt-BR.md`) |
 
 O núcleo não tem dependências externas: álgebra linear esparsa, gerador aleatório e formatos de
 arquivo foram implementados no próprio projeto.
@@ -327,19 +327,19 @@ arquivo foram implementados no próprio projeto.
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | cada métrica em linguagem simples e formal, com exemplo à mão |
-| [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | cada parâmetro do gerador: `SOURCED`, `CALIBRATED` ou `ASSUMPTION`; tabela real × simulado |
-| [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | limitações conhecidas |
-| [`docs/CLAIMS.md`](docs/CLAIMS.md) | o que o estudo pode e não pode afirmar, com a evidência |
-| [`docs/NOVELTY.md`](docs/NOVELTY.md) | comparação ponto a ponto com os trabalhos de referência |
-| [`docs/REFERENCES.md`](docs/REFERENCES.md) | referências e situação de verificação de cada uma |
-| [`docs/PAPER_OUTLINE.md`](docs/PAPER_OUTLINE.md) | esqueleto do artigo, com figuras e tabelas |
-| [`DECISIONS.md`](DECISIONS.md) | decisões de desenho: alternativas, motivo e como reverter |
-| [`REVIEW.md`](REVIEW.md) | pontos abertos para a revisão antes do artigo |
-| [`results/SUMMARY.md`](results/SUMMARY.md) | todos os números, gerados por comando |
+| [`docs/METHODOLOGY.pt-BR.md`](docs/METHODOLOGY.pt-BR.md) | cada métrica em linguagem simples e formal, com exemplo à mão |
+| [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md) | cada parâmetro do gerador: `SOURCED`, `CALIBRATED` ou `ASSUMPTION`; tabela real × simulado |
+| [`docs/LIMITATIONS.pt-BR.md`](docs/LIMITATIONS.pt-BR.md) | limitações conhecidas |
+| [`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md) | o que o estudo pode e não pode afirmar, com a evidência |
+| [`docs/NOVELTY.pt-BR.md`](docs/NOVELTY.pt-BR.md) | comparação ponto a ponto com os trabalhos de referência |
+| [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md) | referências e situação de verificação de cada uma |
+| [`docs/PAPER_OUTLINE.pt-BR.md`](docs/PAPER_OUTLINE.pt-BR.md) | esqueleto do artigo, com figuras e tabelas |
+| [`DECISIONS.pt-BR.md`](DECISIONS.pt-BR.md) | decisões de desenho: alternativas, motivo e como reverter |
+| [`REVIEW.pt-BR.md`](REVIEW.pt-BR.md) | pontos abertos para a revisão antes do artigo |
+| [`results/SUMMARY.pt-BR.md`](results/SUMMARY.pt-BR.md) | todos os números, gerados por comando |
 | [`data/README.md`](data/README.md) | dados públicos e como baixá-los |
 
-Todos os documentos têm versão em inglês (link no topo de cada arquivo).
+Todos os documentos existem nos dois idiomas: o nome sem sufixo é a versão em inglês e `*.pt-BR.md` é a versão em português (link no topo de cada arquivo).
 
 ### Limitações
 
@@ -353,9 +353,9 @@ O LoopSettle é explícito sobre o que não sabe:
 - **Micro-ciclos heurísticos:** a busca de ciclos é simples, não um otimizador completo.
 - **Horizonte de um dia** e perfil horário sem rajadas; o cenário de estresse ainda é fraco.
 
-Lista completa em [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md); hipóteses e fonte de cada
-parâmetro em [`docs/PARAMETERS.md`](docs/PARAMETERS.md); pontos abertos para revisão em
-[`REVIEW.md`](REVIEW.md).
+Lista completa em [`docs/LIMITATIONS.pt-BR.md`](docs/LIMITATIONS.pt-BR.md); hipóteses e fonte de cada
+parâmetro em [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md); pontos abertos para revisão em
+[`REVIEW.pt-BR.md`](REVIEW.pt-BR.md).
 
 ### Referências
 
@@ -371,7 +371,7 @@ parâmetro em [`docs/PARAMETERS.md`](docs/PARAMETERS.md); pontos abertos para re
 - Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of
   Finland Discussion Papers 9/2001.
 
-Situação de verificação de cada referência em [`docs/REFERENCES.md`](docs/REFERENCES.md).
+Situação de verificação de cada referência em [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md).
 
 ### Como citar
 
@@ -444,9 +444,9 @@ payments per day, seed `20260930`):
 > **Nettable volume is not saved liquidity.** LoopSettle makes the gap between the two visible
 > and measurable.
 
-All numbers are in [`results/SUMMARY.en.md`](results/SUMMARY.en.md), with the seed, code version
+All numbers are in [`results/SUMMARY.md`](results/SUMMARY.md), with the seed, code version
 and command that produced them. What the study can and cannot claim is in
-[`docs/en/CLAIMS.md`](docs/en/CLAIMS.md).
+[`docs/CLAIMS.md`](docs/CLAIMS.md).
 
 ### The interface
 
@@ -555,7 +555,7 @@ flowchart LR
   would require.
 - **Saving of a design** = 1 − design liquidity ÷ UB.
 
-Formal definitions, a worked example and proofs in [`docs/en/METHODOLOGY.md`](docs/en/METHODOLOGY.md).
+Formal definitions, a worked example and proofs in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
 
 ### Results at a glance
 
@@ -615,12 +615,12 @@ adds:** the lost liquidity sits almost entirely on hour-long horizons, so second
 does not bring it back, however much value micro-cycles settle inside cycles.
 
 > This is **not a replication** of the Finnish study: we apply the same logic to a different
-> scenario and compare orders of magnitude (see [`docs/en/CLAIMS.md`](docs/en/CLAIMS.md),
+> scenario and compare orders of magnitude (see [`docs/CLAIMS.md`](docs/CLAIMS.md),
 > "cannot claim" item 5).
 
 [^bof-en]: The 8.6% figure comes from the discussant's summary at Economics of Payments X (Bank
     of Finland, 2021) and still has to be checked against the full text. Verification status of
-    every reference is in [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md).
+    every reference is in [`docs/REFERENCES.md`](docs/REFERENCES.md).
 
 #### Other works
 
@@ -630,7 +630,7 @@ does not bring it back, however much value micro-cycles settle inside cycles.
 | Homs-Dones, MacKay, Sansom & Zhou, **CDFD** (arXiv 2506.12546, 2025) | Decomposes network flow into circular and directional parts, respecting conservation and edge bounds | Implements the **maximum circularity** decomposition exactly (min-cost flow) as a static ceiling; the proportional (BFF) variant is future work |
 | Bech & Soramäki, **BoF DP 9/2001** | Cycle-based gridlock resolution in interbank systems | Cycle netting and the basis for atomic micro-cycles, now with a maximum delay and the Pix time target |
 
-Full point-by-point comparison in [`docs/en/NOVELTY.md`](docs/en/NOVELTY.md).
+Full point-by-point comparison in [`docs/NOVELTY.md`](docs/NOVELTY.md).
 
 ### Quick start
 
@@ -673,7 +673,7 @@ smallest payment; Hodge consistency; full determinism; and the fixed triangle ca
 | [`loopsettle-cli`](crates/loopsettle-cli) | reproducible experiments, CSV/JSON/SVG output |
 | [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | Vite + React + Canvas 2D UI, simulation in a Web Worker, Portuguese and English |
 | [`data/`](data) | download of public Pix aggregates (BCB Olinda API) |
-| [`docs/en/`](docs/en) | methodology, parameters, limitations, claims, novelty, references |
+| [`docs/`](docs) | methodology, parameters, limitations, claims, novelty, references (Portuguese twins: `*.pt-BR.md`) |
 
 The core has no external dependencies: sparse linear algebra, the random generator and file
 formats are implemented in the project itself. Code and code comments are in English.
@@ -682,16 +682,16 @@ formats are implemented in the project itself. Code and code comments are in Eng
 
 | Document | Contents |
 |---|---|
-| [`docs/en/METHODOLOGY.md`](docs/en/METHODOLOGY.md) | every metric in plain and formal language, with a worked example |
-| [`docs/en/PARAMETERS.md`](docs/en/PARAMETERS.md) | every generator parameter: `SOURCED`, `CALIBRATED` or `ASSUMPTION`; real vs simulated table |
-| [`docs/en/LIMITATIONS.md`](docs/en/LIMITATIONS.md) | known limitations |
-| [`docs/en/CLAIMS.md`](docs/en/CLAIMS.md) | what the study can and cannot claim, with the evidence |
-| [`docs/en/NOVELTY.md`](docs/en/NOVELTY.md) | point-by-point comparison with the reference works |
-| [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md) | references and the verification status of each |
-| [`docs/en/PAPER_OUTLINE.md`](docs/en/PAPER_OUTLINE.md) | paper outline, with figures and tables |
-| [`DECISIONS.en.md`](DECISIONS.en.md) | design decisions: alternatives, rationale and how to revert |
-| [`REVIEW.en.md`](REVIEW.en.md) | open points for review before the paper |
-| [`results/SUMMARY.en.md`](results/SUMMARY.en.md) | every number, generated by a command |
+| [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | every metric in plain and formal language, with a worked example |
+| [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | every generator parameter: `SOURCED`, `CALIBRATED` or `ASSUMPTION`; real vs simulated table |
+| [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | known limitations |
+| [`docs/CLAIMS.md`](docs/CLAIMS.md) | what the study can and cannot claim, with the evidence |
+| [`docs/NOVELTY.md`](docs/NOVELTY.md) | point-by-point comparison with the reference works |
+| [`docs/REFERENCES.md`](docs/REFERENCES.md) | references and the verification status of each |
+| [`docs/PAPER_OUTLINE.md`](docs/PAPER_OUTLINE.md) | paper outline, with figures and tables |
+| [`DECISIONS.md`](DECISIONS.md) | design decisions: alternatives, rationale and how to revert |
+| [`REVIEW.md`](REVIEW.md) | open points for review before the paper |
+| [`results/SUMMARY.md`](results/SUMMARY.md) | every number, generated by a command |
 | [`data/README.md`](data/README.md#english) | public data and how to download it |
 
 ### Limitations
@@ -706,9 +706,9 @@ LoopSettle is explicit about what it does not know:
 - **Heuristic micro-cycles:** the cycle search is simple, not a full optimiser.
 - **One-day horizon** and an hourly profile without bursts; the stress scenario is still weak.
 
-Full list in [`docs/en/LIMITATIONS.md`](docs/en/LIMITATIONS.md); assumptions and the source of
-every parameter in [`docs/en/PARAMETERS.md`](docs/en/PARAMETERS.md); open review points in
-[`REVIEW.en.md`](REVIEW.en.md).
+Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md); assumptions and the source of
+every parameter in [`docs/PARAMETERS.md`](docs/PARAMETERS.md); open review points in
+[`REVIEW.md`](REVIEW.md).
 
 ### References
 
@@ -724,7 +724,7 @@ every parameter in [`docs/en/PARAMETERS.md`](docs/en/PARAMETERS.md); open review
 - Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of
   Finland Discussion Papers 9/2001.
 
-Verification status of every reference in [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md).
+Verification status of every reference in [`docs/REFERENCES.md`](docs/REFERENCES.md).
 
 ### How to cite
 

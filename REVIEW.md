@@ -1,164 +1,161 @@
-# REVIEW — pontos a revisar antes de escrever o artigo
+# REVIEW — points to review before writing the paper
 
-> 🇬🇧 [English version](REVIEW.en.md)
+> 🇧🇷 [Versão em português](REVIEW.pt-BR.md)
 
-Cada ponto: **o que foi feito**, **onde está**, **resultado** e **risco/dúvida**.
-Números de `results/SUMMARY.md` (seed 20260930, 200 participantes, 1 milhão de pagamentos,
-calibração set/2026). Reproduzir tudo: `make rebuild`.
+Each point: **what was done**, **where it is**, **result** and **risk/question**.
+Numbers from [`results/SUMMARY.md`](results/SUMMARY.md) (seed 20260930, 200 participants,
+1 million payments, Sep 2026 calibration). Reproduce everything: `make rebuild`.
 
 ---
 
-## A. Decisões de desenho (`DECISIONS.md`)
+## A. Design decisions ([`DECISIONS.md`](DECISIONS.md))
 
-1. **D0 — `CHECKPOINT.md` no lugar de `PROGRESS.md`.** Pedido do usuário. Sem impacto em
-   resultados.
-2. **D1 — PRNG, CSV, JSON e TOML feitos à mão.** `core/src/{rng,json}.rs`,
-   `sim/src/toml_lite.rs`. Resultado: determinismo bit a bit testado (invariante 7), inclusive
-   entre execuções do `make`. Risco: o parser TOML aceita só um subconjunto (sem tabelas
-   aninhadas nem strings multilinha); um TOML válido mais rico falha com mensagem de linha.
-3. **D2 — Dependências:** `proptest` (dev), `minilp` (dev, oráculo), `wasm-bindgen`. Risco:
-   nenhum no caminho principal.
-4. **D3 — Liquidez = pico de queda do saldo com saldo "ilimitado".** `core/src/ledger.rs`.
-   Resultado: no bruto coincide com o UB (teste `ub_is_tight`). Dúvida para o revisor: é a
-   medida de Hellqvist & Korpinen? Conferir a definição exata no artigo deles. Para
-   micro-ciclos, a medida ignora que esperar 10 s também pode reduzir rejeições em liquidez
-   restrita (tratado à parte no experimento com liquidez restrita).
-5. **D4 — Hodge no grafo líquido, L1 e L2.** `topology/src/hodge.rs`, `lib.rs`. Resultado:
-   Hodge L2 rotacional = 0,977 no grafo líquido; L1 = 1,73 (líquido), 1,18 (bruto). Risco:
-   a soma da massa bilateral à massa de Hodge no grafo bruto é uma convenção nossa; o
-   revisor deve decidir se a escada no artigo usa o grafo líquido (mais limpo) ou o bruto.
-6. **D5 — CDFD máxima via transbordo de custo mínimo.** `topology/src/cdfd.rs`. Resultado:
-   igual ao `minilp` em 1.000 grafos; parte direcional acíclica (teste). Dúvida: confirmar
-   que a "decomposição de circularidade máxima" do arXiv 2506.12546 é exatamente este
-   problema (maximizar Σc com 0 ≤ c ≤ F e conservação). Ver também ponto 7.
-7. **D6 — CDFD proporcional/local (BFF) não implementada.** Risco: o artigo da CDFD dá
-   destaque à variante local; sem ela, a comparação com o artigo fica parcial.
-8. **D7 — Netting por ciclos guloso (DFS, ordem de entrada).** `topology/src/netting.rs`.
-   Resultado: 0,795 (bruto) vs CDFD 0,831 — a ordem gulosa perde 3,6 p.p. Dúvida: a ordem
-   (lexicográfica por id de participante) favorece participantes de id baixo (os maiores).
-9. **D8 — Poisson com taxa constante por hora.** `sim/src/stream.rs`. Risco: sem rajadas.
-10. **D9 — Recebedor gravitacional com viés recebedor.** `sim/src/stream.rs`. Resultado: é o
-    parâmetro que mais move os resultados (LB/UB de 0,59 a 0,95 quando σ vai de 0 a 0,8).
-    **Maior risco do estudo** (ver ponto 15).
-11. **D10 — Valores: corpo lognormal + cauda B2B.** `sim/src/calibrate.rs`. Resultado: erros
-    ≤ 1,5% nos agregados.
-12. **D11 — Tamanho ∝ chaves Pix.** Risco: chaves ≠ transações.
-13. **D12 — Micro-ciclos: uma cabeça por aresta, ciclos ≤ 6, bloqueio na falta de saldo.**
-    `core/src/engines.rs`. Risco: heurística; um otimizador completo pode compensar mais.
-    Teste de sensibilidade com `max_cycle_len` ∈ {2, 3, 6, 10} ainda não rodado.
-14. **D13 — `QueueOnShortfall` sem FIFO por pagador.** Resultado: com 25% do UB, rejeita
-    **mais** valor que o bruto (23,23% vs 22,95%). Dúvida: implementar FIFO estrito como
-    alternativa configurável antes de concluir algo sobre LSM.
-15. **D14 — Vencidos vão para bruto; sem saldo, rejeitados.**
-16. **D15 — `DeferredNet` sempre liquida (DNS colateralizado).** Saldo pode ficar negativo
-    no modo restrito — por isso o `deferred_net_10x` nunca rejeita no estresse.
-17. **D16 — Interface: uma função wasm que devolve JSON.**
+1. **D0 — `CHECKPOINT.md` instead of `PROGRESS.md`.** User request. No impact on results.
+2. **D1 — Hand-written PRNG, CSV, JSON and TOML.** `core/src/{rng,json}.rs`,
+   `sim/src/toml_lite.rs`. Result: bit-for-bit determinism tested (invariant 7), including across
+   `make` runs. Risk: the TOML parser accepts only a subset (no nested tables or multi-line
+   strings); a richer valid TOML fails with a line-numbered message.
+3. **D2 — Dependencies:** `proptest` (dev), `minilp` (dev, oracle), `wasm-bindgen`. Risk: none on
+   the main path.
+4. **D3 — Liquidity = peak balance drawdown with an "unlimited" balance.** `core/src/ledger.rs`.
+   Result: for gross settlement it equals UB (test `ub_is_tight`). Question for the reviewer: is
+   this Hellqvist & Korpinen's measure? Check the exact definition in their paper. For
+   micro-cycles, the measure ignores that waiting 10 s may also reduce rejections under
+   constrained liquidity (handled separately in the constrained-liquidity experiment).
+5. **D4 — Hodge on the net graph, L1 and L2.** `topology/src/hodge.rs`, `lib.rs`. Result: Hodge L2
+   curl = 0.977 on the net graph; L1 = 1.73 (net), 1.18 (gross). Risk: adding the bilateral mass
+   to the Hodge mass on the gross graph is our own convention; the reviewer should decide whether
+   the paper's ladder uses the net graph (cleaner) or the gross one.
+6. **D5 — Maximum CDFD via min-cost transshipment.** `topology/src/cdfd.rs`. Result: equal to
+   `minilp` on 1,000 graphs; acyclic directional part (tested). Question: confirm that the
+   "maximum circularity decomposition" of arXiv 2506.12546 is exactly this problem (maximise Σc
+   with 0 ≤ c ≤ F and conservation). See also point 7.
+7. **D6 — Proportional/local CDFD (BFF) not implemented.** Risk: the CDFD paper gives prominence
+   to the local variant; without it, the comparison with the paper is partial.
+8. **D7 — Greedy cycle netting (DFS, input order).** `topology/src/netting.rs`. Result: 0.795
+   (gross) vs CDFD 0.831 — the greedy order loses 3.6 p.p. Question: the order (lexicographic by
+   participant id) favours low-id participants (the largest ones).
+9. **D8 — Poisson with a constant rate per hour.** `sim/src/stream.rs`. Risk: no bursts.
+10. **D9 — Gravity payee with receiver bias.** `sim/src/stream.rs`. Result: it is the parameter
+    that moves the results most (LB/UB from 0.59 to 0.95 as σ goes from 0 to 0.8). **The study's
+    biggest risk** (see point 26).
+11. **D10 — Amounts: lognormal body + B2B tail.** `sim/src/calibrate.rs`. Result: errors ≤ 1.5%
+    on the aggregates.
+12. **D11 — Size ∝ Pix keys.** Risk: keys ≠ transactions.
+13. **D12 — Micro-cycles: one head per edge, cycles ≤ 6, blocking on shortfall.**
+    `core/src/engines.rs`. Risk: heuristic; a full optimiser could net more. Sensitivity test with
+    `max_cycle_len` ∈ {2, 3, 6, 10} not yet run.
+14. **D13 — `QueueOnShortfall` without per-payer FIFO.** Result: with 25% of UB, it rejects
+    **more** value than gross settlement (23.23% vs 22.95%). Question: implement strict FIFO as a
+    configurable alternative before concluding anything about LSMs.
+15. **D14 — Expired payments go gross; without funds, they are rejected.**
+16. **D15 — `DeferredNet` always settles (collateralised DNS).** Balances may go negative in
+    constrained mode — that is why `deferred_net_10x` never rejects under stress.
+17. **D16 — Interface: one wasm function returning JSON.**
 
-## B. Hipóteses (`ASSUMPTION` em `docs/PARAMETERS.md`)
+## B. Assumptions (`ASSUMPTION` in [`docs/PARAMETERS.md`](docs/PARAMETERS.md))
 
-18. `participants = 200` (escala). 19. `days = 1`. 20. `payments_per_day = 1.000.000`.
-21. `zipf_s` (não usado com calibração). 22. `n_big = 5`, `n_mid = 15`.
-23. `fintech_frac = 0,5`. 24. `payee_size_exp = 1`. 25. `homophily = 0,3`.
-26. **`receiver_bias_sigma = 0,4`** — ver ponto 10; sem calibração possível com dados
-    públicos usados. Sugestão: buscar algum agregado público de posições líquidas/uso de
-    liquidez no SPI para ancorar LB/UB.
-27. `pi_receiver_mult = 1,3`. 28. Perfil horário (`hourly`). 29. `body_sigma = 1,4`.
-30. `tail_alpha = 1,3`. 31. `max_amount = R$ 5 mi`. 32. Estresse: 100% re-enviados.
-33. Proxy embutido: B2B = "cauda" de valores grandes (pagamentos B2B não são
-    necessariamente os maiores).
+18. `participants = 200` (scale). 19. `days = 1`. 20. `payments_per_day = 1,000,000`.
+21. `zipf_s` (unused with calibration). 22. `n_big = 5`, `n_mid = 15`.
+23. `fintech_frac = 0.5`. 24. `payee_size_exp = 1`. 25. `homophily = 0.3`.
+26. **`receiver_bias_sigma = 0.4`** — see point 10; it cannot be calibrated with the public data
+    used. Suggestion: look for a public aggregate of net positions/liquidity use in the SPI to
+    anchor LB/UB.
+27. `pi_receiver_mult = 1.3`. 28. Hourly profile (`hourly`). 29. `body_sigma = 1.4`.
+30. `tail_alpha = 1.3`. 31. `max_amount = R$ 5 M`. 32. Stress: 100% resubmitted.
+33. Embedded proxy: B2B = the "tail" of large amounts (B2B payments are not necessarily the
+    largest).
 
-## C. Resultados a examinar
+## C. Results to examine
 
-34. **Potencial vs realizável (resultado central).** Potencial estilo BCB = 85,4% do volume;
-    economia potencial de liquidez com uma compensação no fim do dia = 9,27% do UB;
-    realizável com micro-ciclos (≤10 s) = 0,0147% do UB, embora 63% do valor seja liquidado
-    dentro de ciclos. Compensação a cada 10 s: 0,028%; a cada 15 min: 0,32%.
-    Interpretação proposta: o UB é dominado por desequilíbrios de horas (deriva), não por
-    ruído de segundos. **Risco:** depende da escala (ponto 41) e do viés (ponto 10). Com
-    σ = 0, a economia sobe para 0,048% — continua desprezível.
-35. **Escada:** bruto Hodge L1 1,18 > potencial 0,85 > CDFD 0,83 > ciclos 0,80;
-    líquido Hodge L2 0,98 ≫ CDFD 0,17 > ciclos 0,14. A desigualdade "Hodge ≥ CDFD" valeu em
-    todas as sensibilidades, mas não é um teorema (por isso o "≥?" do CLAUDE.md).
-36. **Hodge em grafo denso** (LIMITATIONS 11): a fração rotacional alta pode ser efeito de
-    dimensão. Sugestão de teste: Hodge sobre fluxos puramente aleatórios simétricos (sem
-    estrutura) no mesmo grafo — se der ≈0,97 também, a métrica não discrimina estrutura.
-37. **Correlação potencial de Hodge × posição líquida = 0,997** (Spearman 0,93). Quase
-    mecânica em grafo denso (φ ≈ posição/n). Não deve ser vendida como descoberta.
-38. **Finlândia:** instantâneo precisa de 1,10× (σ=0,4) a 1,50× (σ=0) a liquidez de 1 ciclo
-    por dia; 1,01–1,03× com 48 ciclos. Dúvida: comparar com a ordem de grandeza publicada
-    por Hellqvist & Korpinen (conferir o número no artigo).
-39. **Estresse:** efeito desprezível no UB (+0,005%). O UB do participante 0 não muda porque
-    seu pico de posição devedora está no fim do dia, e todos os pagamentos adiados são
-    re-enviados. Dúvida: o cenário de estresse é fraco; considerar abandono parcial, ou
-    indisponibilidade no horário do pico do participante, ou de um recebedor líquido.
-40. **Liquidez restrita:** micro-ciclos `QueueAll` reduzem pouco a rejeição (22,43% vs 22,95%
-    com 25% do UB) ao custo de p95 = 10 s e só 42% liquidados em até 2,8 s (meta do Pix: 50%).
-    Só a configuração com atraso de 2 s cumpre a meta.
-41. **Escala:** com 239× menos pagamentos por segundo, cada janela tem 239× menos candidatos
-    a ciclo. Sugestão: rodar o `microcycle-sweep` com 10 e 30 milhões de pagamentos
-    (cabe na memória: uso atual ~6 MiB; o tempo cresce ~linearmente a partir de 16 s por
-    milhão, ou seja ~3 min e ~8 min).
-42. **Percentis quantizados:** o histograma reporta o limite inferior do balde (ex.: 9.984 ms
-    para 10.000 ms). Diferença < 1,6%; documentado.
+34. **Potential vs realizable (central result).** BCB-style potential = 85.4% of volume;
+    potential liquidity saving from one end-of-day netting = 9.27% of UB; realizable with
+    micro-cycles (≤10 s) = 0.0147% of UB, although 63% of value settles inside cycles. Netting
+    every 10 s: 0.028%; every 15 min: 0.32%. Proposed interpretation: UB is dominated by
+    hour-long imbalances (drift), not by second-scale noise. **Risk:** it depends on scale
+    (point 41) and on the bias (point 10). With σ = 0 the saving rises to 0.048% — still
+    negligible.
+35. **Ladder:** gross Hodge L1 1.18 > potential 0.85 > CDFD 0.83 > cycles 0.80; net Hodge L2 0.98 ≫
+    CDFD 0.17 > cycles 0.14. The inequality "Hodge ≥ CDFD" held in every sensitivity run, but it is
+    not a theorem (hence the "≥?" in CLAUDE.md).
+36. **Hodge on a dense graph** (LIMITATIONS 11): the high curl fraction may be a dimension effect.
+    Suggested test: Hodge on purely random symmetric flows (no structure) on the same graph — if it
+    also gives ≈0.97, the metric does not discriminate structure.
+37. **Hodge potential × net position correlation = 0.997** (Spearman 0.93). Almost mechanical on a
+    dense graph (φ ≈ position/n). It should not be presented as a finding.
+38. **Finland:** instant needs 1.10× (σ=0.4) to 1.50× (σ=0) the liquidity of one cycle per day;
+    1.01–1.03× with 48 cycles. Question: compare with the order of magnitude published by
+    Hellqvist & Korpinen (check the figure in the paper; see point 64).
+39. **Stress:** negligible effect on UB (+0.005%). Participant 0's UB does not change because its
+    debit peak is at the end of the day, and all delayed payments are resubmitted. Question: the
+    stress scenario is weak; consider partial abandonment, an outage at the participant's peak
+    time, or an outage of a net receiver.
+40. **Constrained liquidity:** `QueueAll` micro-cycles reduce rejection only slightly (22.43% vs
+    22.95% at 25% of UB) at the cost of a 10 s p95.
+41. **Scale:** with 239× fewer payments per second, each window has 239× fewer cycle candidates.
+    Suggestion: run `microcycle-sweep` with 10 and 30 million payments (fits in memory: current
+    use ~6 MiB; time grows ~linearly from 16 s per million, i.e. ~3 min and ~8 min).
+42. **Quantised percentiles:** the histogram reports the bucket's lower bound (e.g. 9,984 ms for
+    10,000 ms). Difference < 1.6%; documented.
 
-## D. Testes difíceis de passar / armadilhas encontradas
+## D. Tests that were hard to pass / pitfalls found
 
-43. `hodge_invariants` falhou no grafo vazio: tolerância `1e-7·|E|` virava 0 (`0 < 0`).
-    Corrigido para `|E| + 1`. Não era erro do algoritmo.
-44. Busca de ciclos limitada por comprimento: a primeira versão marcava como "explorado" um
-    nó cuja subárvore foi cortada pelo limite — podia perder ciclos. Corrigido antes do
-    primeiro teste (flag `truncated` propagada). Os testes de propriedade passaram de
-    primeira depois disso; vale o revisor ler `find_cycle` com atenção.
-45. Underflow possível no salto de janelas ociosas (`t - next_tick`), corrigido na revisão do
-    código, antes dos testes.
-46. API Olinda: `$skip` devolve HTTP 500 e datas exigem literal OData sem aspas; o script
-    baixa tudo numa requisição e aborta se puder ter truncado.
-47. Reprodutibilidade dos arquivos: a versão do código mudava ao commitar os próprios
-    resultados; agora é o último commit fora de `results/`, e tempos/RAM vão para `run.json`.
+43. `hodge_invariants` failed on the empty graph: the tolerance `1e-7·|E|` became 0 (`0 < 0`).
+    Fixed to `|E| + 1`. Not an algorithm error.
+44. Length-limited cycle search: the first version marked as "explored" a node whose subtree had
+    been cut by the limit — it could miss cycles. Fixed before the first test (`truncated` flag
+    propagated). The property tests passed first time after that; the reviewer should read
+    `find_cycle` carefully.
+45. Possible underflow when skipping idle windows (`t - next_tick`), fixed in code review, before
+    the tests.
+46. Olinda API: `$skip` returns HTTP 500 and dates require an unquoted OData literal; the script
+    downloads everything in one request and aborts if it may have been truncated.
+47. File reproducibility: the code version changed when committing the results themselves; it is
+    now the last commit outside `results/`, and times/RAM go to `run.json`.
 
-## E. Limitações conhecidas (`docs/LIMITATIONS.md`)
+## E. Known limitations ([`docs/LIMITATIONS.md`](docs/LIMITATIONS.md))
 
-48. Dados sintéticos; 49. estrutura bilateral hipotética; 50. chaves como proxy; 51. escala;
-52. perfil horário sem fonte e sem rajadas; 53. horizonte de um dia; 54. micro-ciclos
-heurísticos; 55. atraso medido é só o do motor; 56. sem CDFD proporcional; 57. validação
-on-chain não feita; 58. Hodge em grafo denso; 59. interface: **verificada visualmente em
-05/11/2026** (Chromium desktop 1440 px e iPhone 13 emulado, em português e inglês; capturas em
-`docs/img/` e `docs/img/en/`,
-geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 4 GB).
+48. Synthetic data; 49. hypothetical bilateral structure; 50. keys as a proxy; 51. scale;
+52. hourly profile without a source and without bursts; 53. one-day horizon; 54. heuristic
+micro-cycles; 55. the measured delay is only the engine's; 56. no proportional CDFD; 57. on-chain
+validation not done; 58. Hodge on a dense graph; 59. interface: **checked visually on 5 Nov 2026**
+(desktop Chromium 1440 px and an emulated iPhone 13, in Portuguese and English; screenshots in
+`docs/img/` and `docs/img/en/`, generated by `node scripts/screenshots.cjs`). Still to be tested on
+the real laptop (i3, 4 GB).
 
-## F. Itens que dependem do revisor
+## F. Items that depend on the reviewer
 
-60. Referências: conferidas por busca pública em 05/11/2026; situação de cada uma em
-    `docs/REFERENCES.md`. Ainda falta abrir os textos integrais (os PDFs do Banco da
-    Finlândia não abriram deste ambiente).
-61. URL do repositório em `Cargo.toml`/`CITATION.cff` (`github.com/fabiodrneles/loopsettle`)
-    é suposição até o repositório existir.
-62. **PixSim (arXiv 2609.30684) não localizado.** Nenhuma busca pública encontrou o trabalho.
-    Saiu do README; continua citado em `docs/NOVELTY.md` como "a confirmar". Não citar no
-    artigo sem confirmar o identificador.
-63. **Título da CDFD.** O arXiv 2506.12546 se chama *Circular Directional Flow Decomposition of
-    Networks*. O título *How circular is a directed network?* e a publicação na *Royal Society
-    Open Science*, que estavam no README, não foram confirmados; o README agora cita o arXiv.
-64. **Número do estudo finlandês (≤ 8,6%).** Vem do resumo do debatedor no Economics of
-    Payments X, não do texto do artigo. Conferir no BoFER 7/2021 e na versão JFMI 13(2), e
-    conferir quantos ciclos por dia o modelo de referência do STEP2 usa: a comparação justa
-    com o LoopSettle é contra esse número de ciclos (nosso +2,6% com 10 ciclos/dia, +9,5% com
-    1 ciclo/dia, σ = 0,4).
-65. **Heterogeneidade por banco (ponto forte do estudo finlandês).** O LoopSettle tem UB e LB
-    por participante (`baseline/participants.csv`), mas o experimento `finland-replication`
-    só reporta a razão agregada. Sugestão: adicionar a distribuição da razão instantâneo/ciclos
-    por participante (participantes com LB = 0 precisam de tratamento à parte).
-66. **Bug corrigido na interface:** em `npm run dev` a simulação nunca terminava ("Simulando…"
-    para sempre). Causa: o React StrictMode (só em desenvolvimento) desmonta e remonta o
-    componente; a limpeza encerrava o Web Worker e o `useMemo` devolvia o mesmo worker morto. O
-    build de produção não era afetado. Correção em `web/src/App.tsx` (worker criado dentro do
-    `useEffect`). Também corrigido o corte dos rótulos dos eixos nos gráficos (`canvas.ts`).
-67. **Economia negativa no navegador:** no cenário padrão da interface (40 participantes, 100
-    mil pagamentos), a economia dos micro-ciclos com janela de 1–2 s sai −0,001%. Coerente com o
-    resultado central, mas vale o revisor decidir se o artigo menciona que micro-ciclos podem
-    aumentar levemente o pico.
-68. **Documentação bilíngue (D17).** README, `docs/`, `DECISIONS`, `REVIEW`, `results/SUMMARY` e
-    a interface web existem em português e inglês. A tradução foi feita à mão a partir dos
-    originais em português; o revisor deve conferir os termos técnicos (ex.: "compensação" =
+60. References: checked by public search on 5 Nov 2026; status of each one in
+    [`docs/REFERENCES.md`](docs/REFERENCES.md). The full texts still need to be opened (the
+    Bank of Finland PDFs could not be opened from this environment).
+61. The repository URL in `Cargo.toml`/`CITATION.cff` (`github.com/fabiodrneles/loopsettle`) is an
+    assumption until the repository is public.
+62. **PixSim (arXiv 2609.30684) not found.** No public search found the work. Removed from the
+    README; still listed in `docs/NOVELTY.md` as "not found". Do not cite it in the paper without
+    confirming the identifier.
+63. **CDFD title.** arXiv 2506.12546 is called *Circular Directional Flow Decomposition of
+    Networks*. The title *How circular is a directed network?* and publication in *Royal Society
+    Open Science*, which were in the README, were not confirmed; the README now cites the arXiv.
+64. **The Finnish study's figure (≤ 8.6%).** It comes from the discussant's summary at Economics of
+    Payments X, not from the paper's text. Check it in BoFER 7/2021 and in the JFMI 13(2) version,
+    and check how many cycles per day the STEP2 reference model uses: the fair comparison with
+    LoopSettle is against that number of cycles (our +2.6% with 10 cycles/day, +9.5% with 1
+    cycle/day, σ = 0.4).
+65. **Per-bank heterogeneity (a strength of the Finnish study).** LoopSettle has UB and LB per
+    participant (`baseline/participants.csv`), but the `finland-replication` experiment reports only
+    the aggregate ratio. Suggestion: add the distribution of the instant/cycles ratio per
+    participant (participants with LB = 0 need separate treatment).
+66. **Interface bug fixed:** under `npm run dev` the simulation never finished ("Simulando…"
+    forever). Cause: React StrictMode (development only) unmounts and remounts the component; the
+    cleanup terminated the Web Worker and `useMemo` returned the same dead worker. The production
+    build was not affected. Fixed in `web/src/App.tsx` (worker created inside `useEffect`). Clipped
+    chart axis labels were also fixed (`canvas.ts`).
+67. **Negative saving in the browser:** in the interface's default scenario (40 participants,
+    100,000 payments), the micro-cycle saving with a 1–2 s window comes out at −0.001%. Consistent
+    with the central result, but the reviewer should decide whether the paper mentions that
+    micro-cycles can slightly increase the peak.
+68. **Bilingual documentation (D17).** README, `docs/`, `DECISIONS`, `REVIEW`, `results/SUMMARY` and
+    the web UI exist in Portuguese and English. The translation was done by hand from the
+    Portuguese originals; the reviewer should check the technical terms (e.g. "compensação" =
     netting, "liquidação bruta em tempo real" = real-time gross settlement, "Conta PI" = Pix
     settlement account).

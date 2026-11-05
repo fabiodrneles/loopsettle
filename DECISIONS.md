@@ -1,170 +1,173 @@
-# DECISIONS — decisões de desenho
+# DECISIONS — design decisions
 
-> 🇬🇧 [English version](DECISIONS.en.md)
+> 🇧🇷 [Versão em português](DECISIONS.pt-BR.md)
 
-Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
+Each entry: what was decided, alternatives, why, and how to revert.
 
-## D0 — Arquivo de progresso chama-se `CHECKPOINT.md`
-- **Decisão:** o `PROGRESS.md` do `CLAUDE.md` é o `CHECKPOINT.md` (pedido explícito do usuário).
-- **Reverter:** `git mv CHECKPOINT.md PROGRESS.md`.
+## D0 — The progress file is called `CHECKPOINT.md`
+- **Decision:** the `PROGRESS.md` required by `CLAUDE.md` is `CHECKPOINT.md` (explicit user request).
+- **Revert:** `git mv CHECKPOINT.md PROGRESS.md`.
 
-## D1 — Sem dependências para RNG, CSV, JSON e TOML
-- **Decisão:** PRNG (SplitMix64/xoshiro256**), escrita de CSV/JSON e um parser de um
-  subconjunto de TOML são implementados à mão.
-- **Alternativas:** `rand`, `serde`/`serde_json`, `toml`.
-- **Por quê:** a regra de dependências mínimas (seção 2) e o determinismo bit a bit
-  (invariante 7) — um PRNG próprio não muda de comportamento com atualizações de crates.
-- **Reverter:** trocar os módulos `rng`, `json`, `toml_lite` pelos crates equivalentes.
+## D1 — No dependencies for RNG, CSV, JSON and TOML
+- **Decision:** the PRNG (SplitMix64/xoshiro256**), CSV/JSON writing and a parser for a subset of
+  TOML are hand-written.
+- **Alternatives:** `rand`, `serde`/`serde_json`, `toml`.
+- **Why:** the minimal-dependency rule (CLAUDE.md, section 2) and bit-for-bit determinism
+  (invariant 7) — an in-house PRNG does not change behaviour when crates are updated.
+- **Revert:** replace the `rng`, `json`, `toml_lite` modules with the equivalent crates.
 
-## D2 — Dependências aceitas
-- `proptest` (dev): exigido pela seção 3.
-- `minilp` (dev, só em `loopsettle-topology`): oráculo de PL nos testes da CDFD (seção 7, Fase 2).
-- `wasm-bindgen` (só em `loopsettle-wasm`): bindings do navegador; sem ele seria preciso
-  escrever a ABI JS↔wasm à mão.
+## D2 — Accepted dependencies
+- `proptest` (dev): required by section 3.
+- `minilp` (dev, only in `loopsettle-topology`): LP oracle in the CDFD tests (section 7, Phase 2).
+- `wasm-bindgen` (only in `loopsettle-wasm`): browser bindings; without it the JS↔wasm ABI would
+  have to be written by hand.
 
-## D3 — Liquidez de um motor = pico de queda do saldo com saldo "ilimitado"
-- **Decisão:** para medir a liquidez que cada motor exige, todos os participantes começam
-  com `UNLIMITED = 2^50` centavos; a liquidez necessária é `saldo_inicial − menor saldo`.
-  No `GrossRealTime` isso coincide com o UB (provado por teste de propriedade).
-- **Alternativas:** busca binária do menor saldo inicial que não gera rejeições/atrasos
-  acima de um limite (mais cara: várias execuções por participante).
-- **Por quê:** corresponde à medida atribuída a Hellqvist & Korpinen (liquidez como máximo
-  da posição devedora acumulada — **a conferir no texto integral**, ver `docs/REFERENCES.md`), roda em uma única passada e mantém a invariante 3 (saldo nunca
-  negativo) válida mesmo no modo de medição.
-- **Reverter / alternativa:** os motores também aceitam saldos finitos (modo restrito),
-  usado no experimento com `QueueOnShortfall` (ver D-futuras).
+## D3 — An engine's liquidity = peak balance drawdown with an "unlimited" balance
+- **Decision:** to measure the liquidity each engine needs, every participant starts with
+  `UNLIMITED = 2^50` cents; liquidity needed is `opening_balance − lowest balance`. In
+  `GrossRealTime` this equals UB (proven by a property test).
+- **Alternatives:** binary search for the smallest opening balance that produces no
+  rejections/delays above a threshold (costlier: several runs per participant).
+- **Why:** it matches the measure attributed to Hellqvist & Korpinen (liquidity as the maximum
+  accumulated debit position — **to be checked against the full text**, see
+  [`docs/REFERENCES.md`](docs/REFERENCES.md)), runs in a single pass and keeps invariant 3
+  (balance never negative) valid even in measurement mode.
+- **Revert / alternative:** the engines also accept finite balances (constrained mode), used in
+  the experiment with `QueueOnShortfall`.
 
-## D4 — Hodge sobre o grafo **líquido**, com normas L2 e L1
-- **Decisão:** a decomposição de Hodge usa o fluxo líquido bilateral (uma aresta por par,
-  orientada do pagador líquido). Reportamos `‖curl‖/‖F‖` (L2, a "fração circular" da seção 5),
-  `‖curl+harm‖/‖F‖` (L2) e `Σ|curl+harm| / ΣF` (L1, mesma unidade monetária da CDFD e do
-  netting, usada na "escada"). No grafo bruto, a parte bilateral compensada (2-ciclos) é
-  somada à massa L1 de Hodge, para comparar com CDFD/ciclos brutos.
-- **Alternativas:** só L2 (padrão na literatura de Hodge) — mas não é comparável com valores
-  em reais; Hodge sobre fluxo bruto — matematicamente não definido (o fluxo de aresta do
-  complexo é antissimétrico).
-- **Por quê:** a escada (Hodge ≥ CDFD ≥ ciclos) só faz sentido na mesma unidade. Resultado
-  observado: a massa L1 de Hodge pode passar de 100% do fluxo (componentes com sinal oposto
-  ao fluxo), o que mostra que Hodge é diagnóstico, não montante compensável.
-- **Triângulos:** limite configurável `HodgeConfig::max_triangles` (padrão 500 mil); ciclos
-  não cobertos vão para o componente harmônico (reportado à parte).
-- **Reverter:** `Ladder::hodge_curl_l2` já está disponível; trocar a coluna usada na escada.
+## D4 — Hodge on the **net** graph, with L2 and L1 norms
+- **Decision:** the Hodge decomposition uses the bilateral net flow (one edge per pair, oriented
+  from the net payer). We report `‖curl‖/‖F‖` (L2, the "circular fraction" of section 5),
+  `‖curl+harm‖/‖F‖` (L2) and `Σ|curl+harm| / ΣF` (L1, the same monetary unit as CDFD and
+  netting, used in the "ladder"). On the gross graph, the bilateral offset part (2-cycles) is
+  added to the Hodge L1 mass, for comparison with gross CDFD/cycles.
+- **Alternatives:** L2 only (standard in the Hodge literature) — but not comparable with amounts
+  in reais; Hodge on gross flow — not mathematically defined (edge flow on the complex is
+  antisymmetric).
+- **Why:** the ladder (Hodge ≥ CDFD ≥ cycles) only makes sense in the same unit. Observed result:
+  the Hodge L1 mass can exceed 100% of the flow (components with the opposite sign to the flow),
+  which shows that Hodge is a diagnostic, not a nettable amount.
+- **Triangles:** configurable limit `HodgeConfig::max_triangles` (default 500,000); cycles not
+  covered go into the harmonic component (reported separately).
+- **Revert:** `Ladder::hodge_curl_l2` is already available; switch the column used in the ladder.
 
-## D5 — CDFD máxima via transbordo de custo mínimo (caminhos mínimos sucessivos)
-- **Decisão:** em vez de "circulação de custo −1" com cancelamento de ciclos negativos,
-  resolvemos o problema equivalente: minimizar `Σ d_e` com `0 ≤ d ≤ F` e mesma divergência
-  de `F` (custos unitários não negativos), por caminhos mínimos sucessivos com Dijkstra +
-  potenciais de Johnson, em centavos inteiros. `c = F − d`.
-- **Alternativas:** cancelamento de ciclos negativos (mínimo ciclo médio); PL genérico.
-- **Por quê:** é exato, inteiro, sem dependências e simples; custos não negativos evitam
-  Bellman-Ford. Validado contra `minilp` em 1.000 grafos aleatórios.
-- **Reverter:** substituir `cdfd::cdfd_max`; o teste de oráculo continua valendo.
+## D5 — Maximum CDFD via min-cost transshipment (successive shortest paths)
+- **Decision:** instead of a "cost −1 circulation" with negative-cycle cancelling, we solve the
+  equivalent problem: minimise `Σ d_e` with `0 ≤ d ≤ F` and the same divergence as `F`
+  (non-negative unit costs), by successive shortest paths with Dijkstra + Johnson potentials, in
+  integer cents. `c = F − d`.
+- **Alternatives:** negative-cycle cancelling (minimum mean cycle); generic LP.
+- **Why:** it is exact, integer, dependency-free and simple; non-negative costs avoid
+  Bellman-Ford. Validated against `minilp` on 1,000 random graphs.
+- **Revert:** replace `cdfd::cdfd_max`; the oracle test still applies.
 
-## D6 — Variante proporcional/local da CDFD (BFF) adiada
-- **Decisão:** não implementada nesta versão.
-- **Por quê:** a especificação exata do algoritmo local precisa ser conferida no artigo
-  (arXiv 2506.12546) antes de implementar; implementar "de memória" arriscaria publicar uma
-  métrica com nome do artigo e semântica diferente. A CDFD máxima (teto estático) já
-  responde à pergunta central.
-- **Como completar:** ler a seção do algoritmo local no artigo, implementar em
-  `cdfd.rs` como `cdfd_proportional`, e adicionar a coluna à escada.
+## D6 — Proportional/local CDFD variant (BFF) postponed
+- **Decision:** not implemented in this version.
+- **Why:** the exact specification of the local algorithm must be checked in the paper
+  (arXiv 2506.12546) before implementing; implementing it "from memory" would risk publishing a
+  metric with the paper's name and different semantics. The maximum CDFD (static ceiling)
+  already answers the central question.
+- **How to complete:** read the local-algorithm section of the paper, implement it in `cdfd.rs`
+  as `cdfd_proportional`, and add the column to the ladder.
 
-## D7 — Netting por ciclos: DFS determinística com "arco corrente"
-- **Decisão:** cancelamento guloso de ciclos (mínimo do ciclo), explorando arestas na ordem
-  de entrada (determinístico), custo O(n·m). Roda no grafo bruto (inclui 2-ciclos
-  bilaterais) e no líquido.
-- **Alternativas:** ordem por valor (maiores primeiro), ciclos curtos primeiro.
-- **Por quê:** reproduz o espírito de Bech & Soramäki (resolver gridlock cancelando ciclos)
-  e é o algoritmo "realizável" mais simples; a CDFD dá o teto. A diferença entre os dois é
-  reportada.
-- **Reverter / alternativa:** mudar a ordem de `adj` em `netting.rs`.
+## D7 — Cycle netting: deterministic DFS with a "current arc"
+- **Decision:** greedy cycle cancelling (cycle minimum), exploring edges in input order
+  (deterministic), cost O(n·m). Runs on the gross graph (including bilateral 2-cycles) and on
+  the net graph.
+- **Alternatives:** order by value (largest first), shortest cycles first.
+- **Why:** it reproduces the spirit of Bech & Soramäki (resolving gridlock by cancelling cycles)
+  and is the simplest "realizable" algorithm; CDFD gives the ceiling. The gap between the two is
+  reported.
+- **Revert / alternative:** change the order of `adj` in `netting.rs`.
 
-## D8 — Processo de chegada: Poisson com taxa constante por hora
-- **Decisão:** intensidade por partes (24 pesos horários), simulação exata por exponenciais.
-- **Alternativas:** taxa contínua (ex.: soma de senoides) com *thinning*; processos com
-  autoexcitação (Hawkes) para rajadas.
-- **Por quê:** simples, exato, rápido e calibrável com dados horários se surgirem.
-  Não modela rajadas (ex.: dia de pagamento de salário) — listado como limitação.
-- **Reverter:** trocar `PaymentStream::next`.
+## D8 — Arrival process: Poisson with a constant rate per hour
+- **Decision:** piecewise intensity (24 hourly weights), exact simulation by exponentials.
+- **Alternatives:** continuous rate (e.g. a sum of sinusoids) with *thinning*; self-exciting
+  processes (Hawkes) for bursts.
+- **Why:** simple, exact, fast and calibratable with hourly data if it becomes available. It does
+  not model bursts (e.g. payday) — listed as a limitation.
+- **Revert:** replace `PaymentStream::next`.
 
-## D9 — Recebedor por modelo gravitacional com viés recebedor
-- **Decisão:** `P(j | i) ∝ atividade_j^β · viés_j · (1 + h·[mesma classe])`, `P(i→i) = 0`.
-- **Por quê:** gera rede densa e majoritariamente recíproca (como o P2P do Pix) mais um
-  componente direcional controlado (viés recebedor), sem precisar de dados bilaterais que
-  não são públicos. Os parâmetros do viés controlam diretamente a fração circular e estão
-  marcados `ASSUMPTION`; a análise de sensibilidade fica no experimento `baseline`.
-- **Reverter:** pesos em `PaymentStream::with_population`.
+## D9 — Payee by a gravity model with receiver bias
+- **Decision:** `P(j | i) ∝ activity_j^β · bias_j · (1 + h·[same class])`, `P(i→i) = 0`.
+- **Why:** it produces a dense, mostly reciprocal network (like Pix P2P) plus a controlled
+  directional component (receiver bias), without needing bilateral data that are not public.
+  The bias parameters directly control the circular fraction and are flagged `ASSUMPTION`; the
+  sensitivity analysis is in the `baseline` experiment.
+- **Revert:** weights in `PaymentStream::with_population`.
 
-## D10 — Calibração dos valores por mistura "corpo + cauda B2B"
-- **Decisão:** a cauda de Pareto representa pagamentos empresariais grandes: sua
-  probabilidade = participação do B2B na quantidade (4,30%) e sua média é resolvida para
-  que carregue a participação do B2B no valor (52,05%); o corpo lognormal fica com o resto.
-  O ticket médio (R$ 449,83) sai exato analiticamente.
-- **Alternativas:** ajustar só o ticket médio (um parâmetro livre, cauda arbitrária);
-  usar faixas de valor (não publicadas pela API).
-- **Por quê:** usa dois agregados públicos em vez de um, e a fração de valor concentrada em
-  poucos pagamentos grandes é o que mais pesa na liquidez.
-- **Reverter:** `calibrate::apply`; ou sobrescrever `tail_prob`/`tail_xm_brl` no TOML.
+## D10 — Amount calibration by a "body + B2B tail" mixture
+- **Decision:** the Pareto tail represents large business payments: its probability = the B2B
+  share of count (4.30%) and its mean is solved so that it carries the B2B share of value
+  (52.05%); the lognormal body takes the rest. The mean ticket (R$ 449.83) is exact analytically.
+- **Alternatives:** fit only the mean ticket (one free parameter, arbitrary tail); use value
+  bands (not published by the API).
+- **Why:** it uses two public aggregates instead of one, and the share of value concentrated in a
+  few large payments is what weighs most on liquidity.
+- **Revert:** `calibrate::apply`; or override `tail_prob`/`tail_xm_brl` in the TOML.
 
-## D11 — Tamanho dos participantes ∝ chaves Pix por ISPB
-- **Decisão:** a participação de cada instituição como pagadora/recebedora usa a
-  participação em chaves Pix (`ChavesPix`, 2026-09-30), dado público por participante.
-- **Alternativas:** não há dado público de transações por participante na API usada.
-- **Risco:** chaves ≠ transações (bancos digitais têm muitas chaves por cliente). Marcado como
-  proxy SOURCED com ASSUMPTION embutida.
+## D11 — Participant size ∝ Pix keys per ISPB
+- **Decision:** each institution's share as payer/payee uses its share of Pix keys (`ChavesPix`,
+  2026-09-30), public data per participant.
+- **Alternatives:** there are no public per-participant transaction data in the API used.
+- **Risk:** keys ≠ transactions (digital banks have many keys per customer). Flagged as a SOURCED
+  proxy with an embedded ASSUMPTION.
 
-## D12 — Micro-ciclos: uma cabeça de fila por aresta, ciclos de até 6 participantes
-- **Decisão:** filas FIFO por par (pagador, recebedor). A cada janela, DFS procura um ciclo
-  dirigido entre arestas com fila não vazia (comprimento ≤ `max_cycle_len`, padrão 6) e tenta
-  liquidar atomicamente **o pagamento mais antigo de cada aresta** do ciclo (`try_batch`).
-  Se faltar saldo a algum participante para cobrir sua posição líquida no ciclo, a aresta de
-  saída dele é bloqueada naquela janela e a busca continua. Repete até não haver ciclo.
-- **Alternativas:** resolver um problema de otimização por janela (máximo subconjunto
-  liquidável, como nos algoritmos de gridlock completos); combinar vários pagamentos da
-  mesma aresta num ciclo.
-- **Por quê:** é a forma mais simples, determinística e barata que respeita FIFO por aresta,
-  atomicidade e o limite "nunca compensa mais que o menor pagamento do ciclo". Subestima o
-  potencial de um otimizador completo — registrado como limitação.
-- **Configurável:** `max_cycle_len` (`micro:<modo>:<janela>:<atraso>:<len>`).
+## D12 — Micro-cycles: one queue head per edge, cycles of up to 6 participants
+- **Decision:** FIFO queues per (payer, payee) pair. In each window, a DFS looks for a directed
+  cycle among edges with a non-empty queue (length ≤ `max_cycle_len`, default 6) and tries to
+  settle atomically **the oldest payment on each edge** of the cycle (`try_batch`). If any
+  participant lacks funds to cover its net position in the cycle, its outgoing edge is blocked
+  for that window and the search continues. Repeats until no cycle is left.
+- **Alternatives:** solve an optimisation problem per window (maximum settleable subset, as in
+  full gridlock algorithms); combine several payments from the same edge in one cycle.
+- **Why:** it is the simplest, deterministic and cheapest form that respects per-edge FIFO,
+  atomicity and the rule "never nets more than the cycle's smallest payment". It underestimates
+  what a full optimiser could do — recorded as a limitation.
+- **Configurable:** `max_cycle_len` (`micro:<mode>:<window>:<delay>:<len>`).
 
-## D13 — `QueueOnShortfall`: sem FIFO por pagador (bypass)
-- **Decisão:** um pagamento liquida bruto na chegada se houver saldo, mesmo que o pagador
-  tenha pagamentos mais antigos na fila; os enfileirados são re-tentados brutos a cada
-  janela, em ordem de chegada (FIFO por aresta), e rejeitados no prazo se ainda faltar saldo.
-- **Alternativas:** FIFO estrito por pagador (como em vários RTGS).
-- **Por quê:** é o comportamento mais favorável à liquidação imediata do Pix. Efeito
-  observado: com liquidez restrita, o bypass pode **aumentar** levemente a rejeição em valor
-  (pagamentos novos consomem o saldo que liberaria os antigos). Documentado nos resultados.
+## D13 — `QueueOnShortfall`: no per-payer FIFO (bypass)
+- **Decision:** a payment settles gross on arrival if funds suffice, even if the payer has older
+  payments in the queue; queued payments are retried gross in each window, in arrival order
+  (per-edge FIFO), and rejected at the deadline if funds are still short.
+- **Alternatives:** strict per-payer FIFO (as in several RTGS systems).
+- **Why:** it is the behaviour most favourable to Pix's immediate settlement. Observed effect:
+  with constrained liquidity, the bypass can slightly **increase** rejection by value (new
+  payments consume the balance that would release the old ones). Documented in the results.
 
-## D14 — Pagamentos vencidos vão para bruto; se faltar saldo, rejeitados
-- **Decisão:** no prazo `chegada + max_delay_ms` (exato, não arredondado à janela), o
-  pagamento é tentado bruto; sem saldo, é rejeitado (como o Pix rejeita). Uma janela que
-  coincide com o prazo roda antes (última chance de compensar).
+## D14 — Expired payments go gross; if funds are short, they are rejected
+- **Decision:** at the deadline `arrival + max_delay_ms` (exact, not rounded to the window), the
+  payment is tried gross; without funds, it is rejected (as Pix rejects). A window that
+  coincides with the deadline runs first (last chance to net).
 
-## D15 — `DeferredNet` liquida sempre (DNS colateralizado)
-- **Decisão:** cada ciclo aplica as posições líquidas sem checar saldo (pode ficar negativo
-  no modo restrito); o atraso de cada pagamento é conhecido na chegada (próximo ciclo), então
-  o motor guarda só os deltas por participante (memória O(n)).
-- **Por quê:** é como se mede a liquidez de sistemas de compensação diferida (ex.: UPI,
-  estudo finlandês): a necessidade é a posição devedora nos horários de liquidação.
+## D15 — `DeferredNet` always settles (collateralised DNS)
+- **Decision:** each cycle applies the net positions without checking balances (they may go
+  negative in constrained mode); each payment's delay is known on arrival (next cycle), so the
+  engine keeps only per-participant deltas (O(n) memory).
+- **Why:** this is how the liquidity of deferred net systems is measured (e.g. UPI, the Finnish
+  study): the need is the debit position at settlement times.
 
-## D16 — Interface: uma função wasm que devolve JSON; React só desenha
-- **Decisão:** o wasm expõe `simulate(seed, participantes, pagamentos, janela, atraso,
-  viés, fração de liquidez) -> string JSON`; o Web Worker chama e o React desenha em Canvas
-  2D. Calibração pública embutida com `include_str!`. Limites: 50 participantes, 100 mil
-  pagamentos. `wasm-opt` desligado (evita download extra; o .wasm tem 332 KB).
-- **Alternativas:** expor objetos Rust ao JS (mais bindings, mais código de cola).
-- **Por quê:** fronteira mínima e testável nativamente (`cargo test -p loopsettle-wasm`).
+## D16 — Interface: one wasm function returning JSON; React only draws
+- **Decision:** the wasm module exposes `simulate(seed, participants, payments, window, delay,
+  bias, liquidity fraction) -> JSON string`; the Web Worker calls it and React draws on Canvas
+  2D. Public calibration embedded with `include_str!`. Limits: 50 participants, 100,000
+  payments. `wasm-opt` disabled (avoids an extra download; the .wasm is 332 KB).
+- **Alternatives:** expose Rust objects to JS (more bindings, more glue code).
+- **Why:** a minimal boundary that is testable natively (`cargo test -p loopsettle-wasm`).
 
-## D17 — Documentação e interface bilíngues (português e inglês)
-- **Decisão:** o README tem duas seções completas (português e inglês), com capturas em cada
-  idioma. Todo documento tem um gêmeo em inglês: `docs/<NOME>.md` ↔ `docs/en/<NOME>.md`,
-  `DECISIONS.md` ↔ `DECISIONS.en.md`, `REVIEW.md` ↔ `REVIEW.en.md`, `results/SUMMARY.md` ↔
-  `results/SUMMARY.en.md` (ambos gerados por `scripts/summarize.py`), `data/README.md` (os dois
-  idiomas no mesmo arquivo). A interface web tem seletor PT/EN (`?lang=pt|en`, lembrado por
-  visitante; padrão pelo idioma do navegador). O `CHECKPOINT.md` (diário interno) fica em
-  português.
-- **Alternativas:** `README.pt-BR.md` separado; documentação só em português.
-- **Por quê:** pedido do usuário (documentação completa nos dois idiomas); o público-alvo
-  (bancos centrais, pesquisadores de pagamentos, revisores do JOSS) é internacional.
-- **Regra:** qualquer mudança num documento deve ser feita nos dois idiomas no mesmo commit.
+## D17 — Bilingual documentation and interface (Portuguese and English)
+- **Decision:** the README has two complete sections (Portuguese and English) with screenshots
+  in each language (`docs/img/` and `docs/img/en/`). **English is the default for every other
+  file**, following the usual GitHub convention: the plain name is English and the Portuguese
+  twin sits next to it with a `.pt-BR.md` suffix — `docs/<NAME>.md` ↔ `docs/<NAME>.pt-BR.md`,
+  `DECISIONS.md` ↔ `DECISIONS.pt-BR.md`, `REVIEW.md` ↔ `REVIEW.pt-BR.md`, `CHECKPOINT.md` ↔
+  `CHECKPOINT.pt-BR.md`, `results/SUMMARY.md` ↔ `results/SUMMARY.pt-BR.md` (both generated by
+  `scripts/summarize.py`); `data/README.md` and `results/README.md` hold both languages in one
+  file. The web UI has a PT/EN switch (`?lang=pt|en`, remembered per viewer; default from the
+  browser language). `CLAUDE.md` is the owner's build brief for the coding agent and stays as
+  written.
+- **Alternatives:** separate `README.pt-BR.md`; Portuguese as the default name (rejected: an
+  English reader opening a folder on GitHub would land on Portuguese).
+- **Why:** the user asked for complete documentation in both languages; the target audience
+  (central banks, payments researchers, JOSS reviewers) is international.
+- **Rule:** any change to a document must be made in both languages in the same commit.
