@@ -42,3 +42,30 @@ pagamentos: um sistema que pudesse compensar tudo no fim do período a economiza
 Cada motor roda com saldo inicial "ilimitado" (`UNLIMITED = 2^50` centavos). A liquidez que
 o motor precisou é o **pico de queda do saldo** (`saldo_inicial − menor saldo atingido`).
 Para `GrossRealTime` isso é exatamente o UB. Ver `DECISIONS.md`, D3.
+
+## 3. Três lentes de circularidade (a "escada")
+
+Seja `F` o grafo agregado de fluxos (bruto: `i→j` e `j→i` podem coexistir).
+
+1. **Hodge (diagnóstico).** No fluxo líquido `f`, `f = B1ᵀφ + B2ψ + h`: gradiente
+   (fluxo "morro abaixo" de um potencial φ por participante), rotacional (circulação em
+   triângulos) e harmônico (ciclos maiores). `L0 φ = B1 f` e `(B2ᵀB2) ψ = B2ᵀ(f − B1ᵀφ)`,
+   ambos resolvidos por gradiente conjugado.
+2. **CDFD máxima (teto estático).** Maior circulação `c` com `0 ≤ c_e ≤ F_e` e conservação
+   em cada nó. Respeita o limite de cada aresta.
+3. **Netting por ciclos (executável).** Cancela, ciclo a ciclo, o menor fluxo do ciclo.
+
+**Triângulo (teste fixo, invariante 8):** A→B 10, B→C 5, C→A 5.
+
+| lente | por aresta | total | fração |
+|---|---|---|---|
+| Hodge (rotacional) | 6,67 | 20 | 100% (L1) |
+| CDFD máxima | 5 | 15 | 75% |
+| Netting por ciclos | 5 | 15 | 75% |
+
+Hodge projeta `f` na direção do ciclo `(1,1,1)` e atribui a média 20/3 = 6,67 a cada
+aresta, **acima** do fluxo de 5 em B→C e C→A: não respeita limites de aresta. Por isso é um
+diagnóstico (quanta "forma circular" o fluxo tem), não um valor compensável.
+
+Em geral: CDFD ≥ netting guloso (teste de propriedade) e, no benchmark de 200 nós / 5.000
+arestas, Hodge L1 ≫ CDFD > netting (ver `CHECKPOINT.md`).

@@ -9,3 +9,9 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+loopsettle-core = { path = "../loopsettle-core" }
+
+[dev-dependencies]
+proptest = { version = "1", default-features = false, features = ["std"] }
+# LP solver used ONLY as a test oracle for the CDFD on small graphs (DECISIONS.md D2).
+minilp = "0.2"

@@ -7,9 +7,10 @@
 
 ## Estado atual
 
-- **Fase atual:** 2 — Topologia (`loopsettle-topology`)
-- **Próximo passo exato:** grafo agregado, B1/B2 esparsas (CSR), CG, Hodge, netting por
-  ciclos, CDFD (min-cost flow), oráculo `minilp`; testes das invariantes 2, 5, 6, 8.
+- **Fase atual:** 3 — Gerador sintético e simulação em streaming (`loopsettle-sim`)
+- **Próximo passo exato:** participantes heterogêneos, Poisson não homogêneo (thinning),
+  matriz de preferência (alias tables), valores de cauda pesada, iterador em streaming;
+  benchmark 1M pagamentos (<60 s, <1 GB) e teste de determinismo.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -34,6 +35,7 @@ Notas de ambiente:
 | Fase | Comando | Tempo | RAM de pico | Aceite |
 |---|---|---|---|---|
 | 0 | `cargo test --workspace` (frio, com proptest) | 61 s | 502 MB | < 120 s e < 2,5 GB ✅ |
+| 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
 
@@ -45,7 +47,14 @@ Notas de ambiente:
     log-linear de atrasos, PRNG próprio + alias table, escritor JSON.
   - Testar: `cargo test -p loopsettle-core` (11 testes; invariantes 1, 3, 7 por proptest;
     exemplo à mão em `docs/METHODOLOGY.md`).
-- [ ] Fase 2 — Topologia
+- [x] Fase 2 — Topologia
+  - Pronto: `FlowGraph` (bruto/líquido), CSR + CG à mão, Hodge (B1, B2 matrix-free,
+    limite de triângulos), netting por ciclos (DFS arco corrente), CDFD máxima
+    (min-cost flow exato), `analyze()` → escada bruta e líquida + correlação potencial×posição.
+  - Testar: `cargo test -p loopsettle-topology` (invariantes 2, 5, 6, 8; CDFD = `minilp`
+    em 1.000 grafos; parte direcional acíclica).
+  - Benchmark: `cargo run --release -p loopsettle-topology --example bench_topology`.
+  - Pendente (D6): variante proporcional/local da CDFD.
 - [ ] Fase 3 — Gerador sintético e streaming
 - [ ] Fase 4 — Calibração com dados públicos
 - [ ] Fase 5 — Motores alternativos
