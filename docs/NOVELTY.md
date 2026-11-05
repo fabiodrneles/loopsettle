@@ -1,5 +1,7 @@
 # NOVELTY — o que o LoopSettle faz em relação aos trabalhos de referência
 
+> 🇬🇧 [English version](en/NOVELTY.md)
+
 > Para a seção de contribuição do artigo. As colunas dos outros trabalhos resumem o que o
 > `CLAUDE.md` diz sobre eles; **o revisor deve conferir cada célula nas fontes** antes de
 > publicar (marcadas "a conferir" quando dependem de detalhe que não verificamos).

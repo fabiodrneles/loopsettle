@@ -1,5 +1,7 @@
 # Referências — situação de verificação
 
+> 🇬🇧 [English version](en/REFERENCES.md)
+
 > Base para a bibliografia dos artigos. Cada referência tem um **status**:
 > **confirmada** (título, autores e ano conferidos em fonte pública), **parcial** (existe, mas
 > algum detalhe ainda precisa ser conferido no texto integral) ou **não localizada** (não

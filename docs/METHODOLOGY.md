@@ -1,5 +1,7 @@
 # Metodologia
 
+> 🇬🇧 [English version](en/METHODOLOGY.md)
+
 > Cada métrica em linguagem simples e formal. Números: `results/SUMMARY.md`.
 
 ## 1. Liquidez necessária: limite superior (UB) e inferior (LB)

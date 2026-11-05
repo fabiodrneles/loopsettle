@@ -1,5 +1,7 @@
 # DECISIONS — decisões de desenho
 
+> 🇬🇧 [English version](DECISIONS.en.md)
+
 Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 
 ## D0 — Arquivo de progresso chama-se `CHECKPOINT.md`
@@ -26,8 +28,8 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   No `GrossRealTime` isso coincide com o UB (provado por teste de propriedade).
 - **Alternativas:** busca binária do menor saldo inicial que não gera rejeições/atrasos
   acima de um limite (mais cara: várias execuções por participante).
-- **Por quê:** é a medida usada por Hellqvist & Korpinen (liquidez como máximo da posição
-  devedora acumulada), roda em uma única passada e mantém a invariante 3 (saldo nunca
+- **Por quê:** corresponde à medida atribuída a Hellqvist & Korpinen (liquidez como máximo
+  da posição devedora acumulada — **a conferir no texto integral**, ver `docs/REFERENCES.md`), roda em uma única passada e mantém a invariante 3 (saldo nunca
   negativo) válida mesmo no modo de medição.
 - **Reverter / alternativa:** os motores também aceitam saldos finitos (modo restrito),
   usado no experimento com `QueueOnShortfall` (ver D-futuras).
@@ -153,3 +155,16 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   pagamentos. `wasm-opt` desligado (evita download extra; o .wasm tem 332 KB).
 - **Alternativas:** expor objetos Rust ao JS (mais bindings, mais código de cola).
 - **Por quê:** fronteira mínima e testável nativamente (`cargo test -p loopsettle-wasm`).
+
+## D17 — Documentação e interface bilíngues (português e inglês)
+- **Decisão:** o README tem duas seções completas (português e inglês), com capturas em cada
+  idioma. Todo documento tem um gêmeo em inglês: `docs/<NOME>.md` ↔ `docs/en/<NOME>.md`,
+  `DECISIONS.md` ↔ `DECISIONS.en.md`, `REVIEW.md` ↔ `REVIEW.en.md`, `results/SUMMARY.md` ↔
+  `results/SUMMARY.en.md` (ambos gerados por `scripts/summarize.py`), `data/README.md` (os dois
+  idiomas no mesmo arquivo). A interface web tem seletor PT/EN (`?lang=pt|en`, lembrado por
+  visitante; padrão pelo idioma do navegador). O `CHECKPOINT.md` (diário interno) fica em
+  português.
+- **Alternativas:** `README.pt-BR.md` separado; documentação só em português.
+- **Por quê:** pedido do usuário (documentação completa nos dois idiomas); o público-alvo
+  (bancos centrais, pesquisadores de pagamentos, revisores do JOSS) é internacional.
+- **Regra:** qualquer mudança num documento deve ser feita nos dois idiomas no mesmo commit.

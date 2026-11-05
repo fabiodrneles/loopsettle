@@ -1,5 +1,7 @@
 # CLAIMS — o que o estudo pode e não pode afirmar
 
+> 🇬🇧 [English version](en/CLAIMS.md)
+
 Evidência = arquivo em `results/` gerado por comando (ver `results/SUMMARY.md`).
 
 ## Pode afirmar (com a evidência indicada)
