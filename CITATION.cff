@@ -4,8 +4,8 @@ title: "LoopSettle: an open simulator of circular liquidity in instant payment s
 version: 0.1.0
 license: Apache-2.0
 authors:
-  - family-names: Neles
-    given-names: Fabio
+  - family-names: Dorneles
+    given-names: Fabio D.
     email: fabiodrneles@gmail.com
 repository-code: "https://github.com/fabiodrneles/loopsettle"
 keywords:

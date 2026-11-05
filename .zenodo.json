@@ -2,7 +2,7 @@
   "title": "LoopSettle: an open simulator of circular liquidity in instant payment systems",
   "upload_type": "software",
   "description": "Open simulator that measures how much of the liquidity required by an instant gross settlement system (such as Brazil's Pix) is circular flow, how much of it is recoverable under real constraints, and the delay cost of recovering it with atomic micro-cycles. Synthetic flows calibrated to public Banco Central do Brasil aggregates.",
-  "creators": [{ "name": "Neles, Fabio" }],
+  "creators": [{ "name": "Dorneles, Fabio D." }],
   "license": "Apache-2.0",
   "keywords": ["instant payments", "Pix", "liquidity", "netting", "Hodge decomposition", "payment systems simulation"],
   "version": "0.1.0"

@@ -12,7 +12,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-authors = ["Fabio Neles <fabiodrneles@gmail.com>"]
+authors = ["Fabio D. Dorneles <fabiodrneles@gmail.com>"]
 repository = "https://github.com/fabiodrneles/loopsettle"
 rust-version = "1.75"
 
