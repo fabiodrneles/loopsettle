@@ -12,10 +12,20 @@ pub struct Results {
 }
 
 /// Code version: `git describe` of the working tree if available, else the crate version.
+/// The tree counts as "dirty" only for changes outside `results/` (writing results must not
+/// change the version recorded by the next experiment of the same `make all`).
 pub fn code_version() -> String {
-    let git = std::process::Command::new("git").args(["describe", "--always", "--dirty", "--tags"]).output();
+    use std::process::Command;
+    let git = Command::new("git").args(["describe", "--always", "--tags"]).output();
     match git {
-        Ok(o) if o.status.success() => format!("{}+git.{}", env!("CARGO_PKG_VERSION"), String::from_utf8_lossy(&o.stdout).trim()),
+        Ok(o) if o.status.success() => {
+            let dirty = Command::new("git")
+                .args(["status", "--porcelain", "--untracked-files=no", "--", ".", ":(exclude)results"])
+                .output()
+                .map(|s| !s.stdout.is_empty())
+                .unwrap_or(false);
+            format!("{}+git.{}{}", env!("CARGO_PKG_VERSION"), String::from_utf8_lossy(&o.stdout).trim(), if dirty { "-dirty" } else { "" })
+        }
         _ => env!("CARGO_PKG_VERSION").to_string(),
     }
 }

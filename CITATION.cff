@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use LoopSettle, please cite it as below."
+title: "LoopSettle: an open simulator of circular liquidity in instant payment systems"
+version: 0.1.0
+license: Apache-2.0
+authors:
+  - family-names: Neles
+    given-names: Fabio
+    email: fabiodrneles@gmail.com
+repository-code: "https://github.com/fabiodrneles/loopsettle"
+keywords:
+  - instant payments
+  - Pix
+  - liquidity
+  - netting
+  - Hodge decomposition
+  - payment systems simulation
