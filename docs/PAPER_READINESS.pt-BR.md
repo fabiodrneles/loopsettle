@@ -17,9 +17,9 @@
 | W2b | Calibrar o viés recebedor na distribuição por banco do WP 619 (p25 18–45%, mediana 57–80%) | sim | Claude | **feito**: σ = 1,0 (`results/bias-calibration/`) |
 | W9 | Virar referência (ver a seção W9) | sim | Você + Claude | item 1 **feito** (`loopsettle bound/settle/export`); itens 2–5 a fazer |
 | W3 | Liquidez necessária como as regras do BCB definem (K3) | sim | Claude, depois de W0 | **feito**: `funding-windows` — o fim de semana é a janela que restringe; K3 não disparou |
-| W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | **quase feito**: o trabalho mais próximo é McMahon et al. (2024, alto valor); K2 não disparou; falta ler o artigo completo |
+| W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | **feito**: o trabalho mais próximo é McMahon et al. (arXiv 2023 / Management Science 2024, LVTS, dados reais; lido); K2 não disparou |
 | W5 | Limite de atraso: teorema, curva em d, folga | sim | Claude | **feito**: `regimes/fig_bound.svg`, obtido ≈ 3–5% do limite para todo d |
-| W6 | Fraquezas restantes (FIFO estrito, estresse, nulo de Hodge) | em parte | Claude | nulo de Hodge **feito** (resumo §2); estresse a refazer ou tirar; FIFO estrito opcional |
+| W6 | Fraquezas restantes (FIFO estrito, estresse, nulo de Hodge) | **feito** (itens obrigatórios) | Claude | nulo de Hodge **feito** (resumo §2); estresse **refeito** (`results/stress/cases.csv`); FIFO estrito opcional |
 | W7 | Empacotamento do artigo e do software (esqueleto, JOSS, preprint, Zenodo) | sim | Claude + você | a fazer |
 | W8 | Rodar a interface no notebook de referência (i3, 4 GB) | não | Você | a fazer |
 
@@ -133,7 +133,7 @@ resolvidos, com o número da página da fonte.
 |---|---|---|
 | Nulo de Hodge | reportar (m − n + 1)/m ao lado de cada número de Hodge, ou tirar Hodge da escada principal | sim |
 | FIFO estrito | FIFO estrito por pagador, opcional, no `QueueOnShortfall` (REVIEW 14) | não |
-| Estresse | indisponibilidade no horário de pico do participante, ou com abandono parcial (REVIEW 39) — ou tirar do artigo | sim (um dos dois) |
+| Estresse | **feito**: 3 alvos (maior, maior pagador líquido, maior recebedor líquido) × 3 horários (10h, 18h, 30 min antes do pico devedor do próprio alvo); efeito sobre os outros ≤ 0,063% do UB deles, rejeições com saldo = UB de base ≤ 0,08% do valor (REVIEW 77). Abandono parcial não modelado. | sim (feito) |
 | CDFD BFF | CDFD proporcional (D6), depois da fonte W0 nº 5 | não |
 | On-chain | validação externa com transferências de stablecoins (Fase 8) | não |
 

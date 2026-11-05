@@ -73,9 +73,11 @@ PT = {
     "c_sweep": ["janela (ms)", "atraso máx. (ms)", "economia vs UB", "p50 (ms)", "p95 (ms)", "p99 (ms)", "≤ 2,8 s", "valor em ciclos"],
     "constrained": "Liquidez restrita (saldo inicial = fração do UB de cada participante):",
     "c_short": ["fração do UB", "motor", "valor rejeitado", "p95 (ms)", "≤ 2,8 s", "valor em ciclos"],
-    "h5": "## 5. Estresse: maior participante fora do ar por 30 minutos",
+    "h5": "## 5. Estresse: participante fora do ar por 30 minutos",
     "outage": "Participante {p} fora de {h}h por {m} min: {n} pagamentos (R$ {v}) adiados, em média {s} s.",
     "c_stress": ["cenário", "UB total (R$)", "UB do participante (R$)", "motor", "liquidez (R$)", "valor rejeitado", "p95 (ms)"],
+    "cases": "Estresse redesenhado (REVIEW 39): quem cai e quando. Para cada caso, o efeito sobre a liquidez necessária dos **outros** participantes (UB com liquidez ilimitada) e, com saldo inicial igual ao UB de base de cada um, o valor rejeitado por motor (100% reenviado na volta; ASSUMPTION).",
+    "c_cases": ["alvo", "part.", "posição líquida (R$)", "início", "pagamentos adiados", "Δ UB total", "Δ UB dos outros (líq.)", "outros com UB maior", "maior aumento (R$)", "motor", "valor rejeitado"],
     "h6": "## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo",
     "ratio": "Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre sementes):",
     "c_fin": ["σ viés", "ciclos/dia", "razão média", "dp", "mín", "máx", "sementes"],
@@ -137,9 +139,11 @@ EN = {
     "c_sweep": ["window (ms)", "max delay (ms)", "saving vs UB", "p50 (ms)", "p95 (ms)", "p99 (ms)", "≤ 2.8 s", "value in cycles"],
     "constrained": "Constrained liquidity (opening balance = a fraction of each participant's UB):",
     "c_short": ["fraction of UB", "engine", "value rejected", "p95 (ms)", "≤ 2.8 s", "value in cycles"],
-    "h5": "## 5. Stress: largest participant offline for 30 minutes",
+    "h5": "## 5. Stress: a participant offline for 30 minutes",
     "outage": "Participant {p} offline from {h}h for {m} min: {n} payments (R$ {v}) delayed, on average {s} s.",
     "c_stress": ["scenario", "total UB (R$)", "participant's UB (R$)", "engine", "liquidity (R$)", "value rejected", "p95 (ms)"],
+    "cases": "Redesigned stress (REVIEW 39): who goes offline and when. For each case, the effect on the liquidity need of **everyone else** (UB with unlimited liquidity) and, with each opening balance equal to its baseline UB, the value each engine rejects (100% resubmitted on return; ASSUMPTION).",
+    "c_cases": ["target", "part.", "net position (R$)", "start", "deferred payments", "Δ total UB", "Δ others' UB (net)", "others with higher UB", "largest increase (R$)", "engine", "value rejected"],
     "h6": "## 6. Finnish study logic: fixed cycles vs instant",
     "ratio": "Ratio of instant liquidity to liquidity with N cycles per day (mean over seeds):",
     "c_fin": ["σ bias", "cycles/day", "mean ratio", "sd", "min", "max", "seeds"],
@@ -249,6 +253,12 @@ def build(T):
     md.append(table(T["c_stress"],
                     [[r["scenario"], num(r["ub_total_brl"]), num(r["ub_of_offline_participant_brl"]), r["engine"], num(r["liquidity_brl"]), pct(r["rejected_value_share"], 4), r["delay_p95_ms"]]
                      for r in rows("stress", "stress.csv")]))
+    md += ["", T["cases"], ""]
+    md.append(table(T["c_cases"],
+                    [[r["target"], r["participant"], num(r["participant_net_position_brl"]), r["start"], r["deferred_payments"],
+                      f"{float(r['ub_total_change_pct']):.4f}%", f"{float(r['others_ub_net_change_pct']):.4f}%", r["others_with_higher_ub"],
+                      num(r["largest_other_increase_brl"]), r["engine"], pct(r["rejected_value_share_at_baseline_ub"], 4)]
+                     for r in rows("stress", "cases.csv")]))
     md.append("")
 
     # --- finland

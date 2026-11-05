@@ -130,8 +130,8 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
-## 5. Estresse: maior participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+## 5. Estresse: participante fora do ar por 30 minutos
+_seed `20260930`, código `0.1.0+git.66c1d3f`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -149,6 +149,38 @@ Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados
 | outage_constrained_1xUB | 71 274 781 | 3 137 734 | micro_cycle_all_w1000_d10000 | 71 258 821 | 0.0015% | 9984 |
 | outage_constrained_1xUB | 71 274 781 | 3 137 734 | micro_cycle_shortfall_w1000_d10000 | 71 263 981 | 0.0027% | 0 |
 | outage_constrained_1xUB | 71 274 781 | 3 137 734 | deferred_net_10x | 69 592 930 | 0.0000% | 8192000 |
+
+Estresse redesenhado (REVIEW 39): quem cai e quando. Para cada caso, o efeito sobre a liquidez necessária dos **outros** participantes (UB com liquidez ilimitada) e, com saldo inicial igual ao UB de base de cada um, o valor rejeitado por motor (100% reenviado na volta; ASSUMPTION).
+
+| alvo | part. | posição líquida (R$) | início | pagamentos adiados | Δ UB total | Δ UB dos outros (líq.) | outros com UB maior | maior aumento (R$) | motor | valor rejeitado |
+|---|---|---|---|---|---|---|---|---|---|---|
+| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | gross_real_time | 0.0027% |
+| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | micro_cycle_shortfall_w1000_d10000 | 0.0027% |
+| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | micro_cycle_all_w1000_d10000 | 0.0015% |
+| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | gross_real_time | 0.0000% |
+| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0001% |
+| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | gross_real_time | 0.0467% |
+| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | micro_cycle_shortfall_w1000_d10000 | 0.0467% |
+| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | micro_cycle_all_w1000_d10000 | 0.0494% |
+| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | gross_real_time | 0.0022% |
+| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | micro_cycle_shortfall_w1000_d10000 | 0.0009% |
+| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | micro_cycle_all_w1000_d10000 | 0.0010% |
+| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | gross_real_time | 0.0005% |
+| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | micro_cycle_shortfall_w1000_d10000 | 0.0005% |
+| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | micro_cycle_all_w1000_d10000 | 0.0006% |
+| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | gross_real_time | 0.0239% |
+| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | micro_cycle_shortfall_w1000_d10000 | 0.0221% |
+| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | micro_cycle_all_w1000_d10000 | 0.0231% |
+| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | gross_real_time | 0.0000% |
+| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0001% |
+| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | gross_real_time | 0.0005% |
+| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | micro_cycle_shortfall_w1000_d10000 | 0.0005% |
+| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | micro_cycle_all_w1000_d10000 | 0.0006% |
+| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | gross_real_time | 0.0025% |
+| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_shortfall_w1000_d10000 | 0.0025% |
+| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_all_w1000_d10000 | 0.0822% |
 
 ## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo
 _seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._

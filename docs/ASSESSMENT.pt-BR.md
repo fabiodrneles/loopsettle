@@ -180,7 +180,10 @@ O veredito continua **PIVOTAR**, com a afirmação acima. Nenhum critério de mo
 - **K2 não disparou, mas o trabalho mais próximo mudou.** McMahon et al. (2024) relatam 14–30% de
   economia com reordenação abaixo de 5 s no T2. O `regimes` mostra por que isso é coerente com o
   LoopSettle: o limite de atraso cresce com o tamanho dos pagamentos (limite de 10 s de 0,76% no
-  varejo contra 13,7% com 2.000 pagamentos grandes por dia). Ainda é preciso ler o artigo completo.
+  varejo contra 13,7% com 2.000 pagamentos grandes por dia). O artigo (arXiv v3, lido em 5/11/2026)
+  trata do LVTS do Canadá com dados reais: lotes de 70 pagamentos (≈ 90 s) economizam C$ 240
+  milhões por dia contra FIFO, cerca de 1–2% da liquidez alocada — a mesma ordem do limite do
+  LoopSettle no varejo com 60 s (2,7% do UB), com a mesma medida (mNDP = UB).
 - **W5 feita.** Para d de 10 s a um dia, a compensação obtida fica em 3–5% do limite
   (`regimes/bound_curve.csv`): o limite é folgado, mas por um fator estável.
 - **W9.1 feita.** `loopsettle bound/settle` rodam em arquivos de pagamentos reais, com saída só de
@@ -189,8 +192,8 @@ O veredito continua **PIVOTAR**, com a afirmação acima. Nenhum critério de mo
 ### Já dá para começar a escrever?
 
 **Sim — o preprint e o artigo do JOSS podem ser rascunhados agora.** Todas as frentes obrigatórias
-estão feitas ou reduzidas a conferências que não mudam os resultados: ler o artigo de McMahon et al.
-(W4), refazer ou tirar o experimento de estresse (W6) e os itens do seu lado (notebook de referência,
+estão feitas ou reduzidas a conferências que não mudam os resultados. O artigo de McMahon et al. foi
+lido (W4) e o experimento de estresse foi refeito (W6, `results/stress/cases.csv`); faltam os itens do seu lado (notebook de referência,
 submissão). O esqueleto revisto está em [`PAPER_OUTLINE.pt-BR.md`](PAPER_OUTLINE.pt-BR.md). O que deve
 ficar fora do texto até existirem dados reais por participante: qualquer número de economia potencial
 no Pix real além da faixa de 0,2–3%, e qualquer afirmação sobre sistemas de outros países.

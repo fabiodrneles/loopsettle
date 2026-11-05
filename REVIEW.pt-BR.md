@@ -90,7 +90,7 @@ calibração set/2026). Reproduzir tudo: `make rebuild`.
 39. **Estresse:** efeito desprezível no UB (+0,005%). O UB do participante 0 não muda porque
     seu pico de posição devedora está no fim do dia, e todos os pagamentos adiados são
     re-enviados. Dúvida: o cenário de estresse é fraco; considerar abandono parcial, ou
-    indisponibilidade no horário do pico do participante, ou de um recebedor líquido.
+    indisponibilidade no horário do pico do participante, ou de um recebedor líquido. → Refeito no item 77.
 40. **Liquidez restrita:** micro-ciclos `QueueAll` reduzem pouco a rejeição (22,43% vs 22,95%
     com 25% do UB) ao custo de p95 = 10 s e só 42% liquidados em até 2,8 s (meta do Pix: 50%).
     Só a configuração com atraso de 2 s cumpre a meta.
@@ -199,5 +199,20 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     comportamento real de aportes.
 76. **McMahon et al. (2024)** é o trabalho mais próximo (alto valor, 14–30% de economia com
     reordenação < 5 s). O `regimes` mostra que o limite é 13,7% num cenário de alto valor com poucos
-    pagamentos grandes, contra 0,76% no varejo. É preciso ler o artigo completo antes de submeter; a
-    base deles (FIFO com fila) não é o nosso UB.
+    pagamentos grandes, contra 0,76% no varejo. **Lido em 5/11/2026 (arXiv v3):** o artigo trata do
+    LVTS do Canadá com dados reais (lotes de 70 pagamentos, ≈ 90 s, C$ 240 milhões por dia
+    economizados contra FIFO, ≈ 1–2% da liquidez alocada); a medida dele (soma dos mNDP) é igual
+    ao nosso UB. Os 14–30% vêm da palestra separada de 2024 sobre o T2, cuja base (FIFO com fila)
+    não é o nosso UB. O revisor deve conferir a linha em `docs/REFERENCES.pt-BR.md` §7.
+77. **Estresse refeito (REVIEW 39, W6).** `results/stress/cases.csv`: 3 alvos (maior, maior
+    pagador líquido, maior recebedor líquido) × 3 horários (10h, 18h, 30 min antes do pico
+    devedor do próprio alvo). Efeito sobre o UB dos outros ≤ 0,063%; valor rejeitado com saldo
+    inicial = UB de base ≤ 0,08%. Uma queda de 30 minutos com reenvio total quase não muda a
+    liquidez necessária, porque ela é definida pela deriva acumulada do dia, não pelo horário
+    dentro do dia — o mesmo motivo de os micro-ciclos economizarem pouco. Não modelado: abandono
+    parcial, quedas acima de 30 min.
+78. **PDFs de referência no repositório.** `docs/references/pdf/` guarda 19 dos 20 documentos citados
+    (o preprint da CDFD só tem link: a licença do arXiv não permite redistribuir), com índice e
+    `references.bib`. Cada um é redistribuído como publicado pelo autor ou
+    instituição, com o link original; o revisor deve confirmar que a licença de cada um permite
+    isso antes de divulgar o repositório (a remoção a pedido está declarada).

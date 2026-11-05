@@ -89,7 +89,7 @@ Numbers from [`results/SUMMARY.md`](results/SUMMARY.md) (seed 20260930, 200 part
 39. **Stress:** negligible effect on UB (+0.005%). Participant 0's UB does not change because its
     debit peak is at the end of the day, and all delayed payments are resubmitted. Question: the
     stress scenario is weak; consider partial abandonment, an outage at the participant's peak
-    time, or an outage of a net receiver.
+    time, or an outage of a net receiver. → Redesigned in item 77.
 40. **Constrained liquidity:** `QueueAll` micro-cycles reduce rejection only slightly (22.43% vs
     22.95% at 25% of UB) at the cost of a 10 s p95.
 41. **Scale:** with 239× fewer payments per second, each window has 239× fewer cycle candidates.
@@ -192,5 +192,19 @@ the real laptop (i3, 4 GB).
     peak); netting at its end saves 0.4–1.0%. Open question: holidays and real top-up behaviour.
 76. **McMahon et al. (2024)** is the closest work (large-value, 14–30% savings with < 5 s
     reordering). `regimes` shows the bound is 13.7% in a lumpy large-value scenario vs 0.76% in
-    retail. Their full paper must be read before submission; their FIFO-with-queue baseline is
-    not our UB.
+    retail. **Read on 5 Nov 2026 (arXiv v3):** the paper is on Canada's LVTS with real data
+    (batches of 70 payments, ≈ 90 s, C$240 M/day saved vs FIFO, ≈ 1–2% of allocated liquidity);
+    its measure (aggregate mNDP) equals our UB. The 14–30% figure is from the separate 2024 T2
+    talk, whose FIFO-with-queue baseline is not our UB. The reviewer should check the row in
+    `docs/REFERENCES.md` §7.
+77. **Stress redesigned (REVIEW 39, W6).** `results/stress/cases.csv`: 3 targets (largest, top net
+    payer, top net receiver) × 3 starts (10:00, 18:00, 30 min before the target's own debit
+    peak). Spillover on the others' UB ≤ 0.063%; rejected value with openings at the baseline UB
+    ≤ 0.08%. A 30-minute outage with full resubmission barely moves liquidity needs, because
+    they are set by the day's cumulative drift, not by intraday timing — the same reason
+    micro-cycles save little. Not modelled: partial abandonment, outages longer than 30 min.
+78. **Reference PDFs in the repository.** `docs/references/pdf/` holds 19 of the 20 documents
+    cited (the CDFD preprint is only linked: its arXiv licence does not allow redistribution),
+    with an index and `references.bib`. Each is redistributed as published by its
+    author or institution, with the original link; the reviewer should confirm that each
+    licence allows it before the repository is promoted (removal on request is stated).
