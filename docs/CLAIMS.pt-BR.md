@@ -1,6 +1,6 @@
 # CLAIMS — o que o estudo pode e não pode afirmar
 
-> 🇬🇧 [English version](CLAIMS.md)
+> [English version](CLAIMS.md)
 
 Evidência = arquivo em `results/` gerado por comando (ver `results/SUMMARY.pt-BR.md`).
 

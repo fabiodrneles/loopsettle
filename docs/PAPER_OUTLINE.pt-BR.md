@@ -1,6 +1,6 @@
 # Esqueleto do artigo
 
-> 🇬🇧 [English version](PAPER_OUTLINE.md)
+> [English version](PAPER_OUTLINE.md)
 
 Só títulos e a lista de figuras/tabelas de cada seção. O texto será escrito com o revisor.
 

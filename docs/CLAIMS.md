@@ -1,6 +1,6 @@
 # CLAIMS — what the study can and cannot claim
 
-> 🇧🇷 [Versão em português](CLAIMS.pt-BR.md)
+> [Versão em português](CLAIMS.pt-BR.md)
 
 Evidence = a file in `results/` produced by a command (see
 [`results/SUMMARY.md`](../results/SUMMARY.md)).

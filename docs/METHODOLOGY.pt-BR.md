@@ -1,6 +1,6 @@
 # Metodologia
 
-> 🇬🇧 [English version](METHODOLOGY.md)
+> [English version](METHODOLOGY.md)
 
 > Cada métrica em linguagem simples e formal. Números: `results/SUMMARY.pt-BR.md`.
 

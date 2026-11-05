@@ -1,6 +1,6 @@
 # References — verification status
 
-> 🇧🇷 [Versão em português](REFERENCES.pt-BR.md)
+> [Versão em português](REFERENCES.pt-BR.md)
 >
 > Basis for the papers' bibliography. Each reference has a **status**: **confirmed** (title,
 > authors and year checked against a public source), **partial** (it exists, but some detail

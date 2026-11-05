@@ -1,6 +1,6 @@
 # PARAMETERS — parâmetros do gerador sintético
 
-> 🇬🇧 [English version](PARAMETERS.md)
+> [English version](PARAMETERS.md)
 
 Status: **SOURCED** (vem diretamente de dado público), **CALIBRATED** (ajustado para
 reproduzir um agregado público) ou **ASSUMPTION** (escolha de modelagem sem fonte direta).

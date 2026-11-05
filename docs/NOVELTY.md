@@ -1,6 +1,6 @@
 # NOVELTY — what LoopSettle does relative to the reference works
 
-> 🇧🇷 [Versão em português](NOVELTY.pt-BR.md)
+> [Versão em português](NOVELTY.pt-BR.md)
 >
 > For the paper's contribution section. The columns for the other works summarise what
 > `CLAUDE.md` says about them; **the reviewer must check every cell against the sources** before

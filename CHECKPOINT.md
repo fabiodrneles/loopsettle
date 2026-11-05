@@ -1,6 +1,6 @@
 # CHECKPOINT — LoopSettle build progress
 
-> 🇧🇷 [Versão em português](CHECKPOINT.pt-BR.md)
+> [Versão em português](CHECKPOINT.pt-BR.md)
 >
 > This file is the `PROGRESS.md` required by `CLAUDE.md` (the owner asked for the name
 > "checkpoint"). It must make it possible to resume work in a new session with no context.

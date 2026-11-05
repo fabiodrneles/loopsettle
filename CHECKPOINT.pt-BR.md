@@ -1,6 +1,6 @@
 # CHECKPOINT — progresso da construção do LoopSettle
 
-> 🇬🇧 [English version](CHECKPOINT.md)
+> [English version](CHECKPOINT.md)
 
 > Este arquivo é o `PROGRESS.md` exigido pelo `CLAUDE.md` (o usuário pediu o nome
 > "checkpoint"). Ele deve permitir retomar o trabalho numa sessão nova, sem contexto.
