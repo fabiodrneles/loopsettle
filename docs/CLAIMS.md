@@ -31,3 +31,4 @@ Evidence = a file in `results/` produced by a command (see
 | 6 | "The Hodge potential × net position correlation validates the model." | On a dense graph it is almost mechanical. |
 | 7 | "A large participant going offline does not affect liquidity." | Weak stress scenario (full resubmission, peak at the end of the day). |
 | 8 | Any claim about the proportional CDFD variant or about on-chain data. | Not implemented / not run. |
+| 9 | "FedNow / TIPS / UPI would save X% of liquidity." | The scenario is calibrated to Pix only; other systems need their own public aggregates. The engines and the qualitative mechanism apply ([`INSTANT_PAYMENTS.md`](INSTANT_PAYMENTS.md)); the numbers do not carry over. |

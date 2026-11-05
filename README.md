@@ -42,26 +42,35 @@
 
 ### Em uma frase
 
-O Pix precisa que cada banco tenha dinheiro em caixa antes de cada transferência. Parte desse
-dinheiro só "dá voltas" (A paga B, B paga C, C paga A). O LoopSettle mede quanto é essa parte,
+Nos sistemas de pagamentos instantâneos com liquidação bruta — Pix (Brasil), FedNow (EUA), TIPS
+(zona do euro), NPP (Austrália) — cada banco precisa ter dinheiro em caixa antes de cada
+transferência. Parte desse dinheiro só "dá voltas" (A paga B, B paga C, C paga A). O LoopSettle
+mede quanto é essa parte,
 quanto dela daria para compensar e, principalmente, **quanto dessa compensação vira liquidez
 economizada de verdade** quando se respeita a ordem em que os pagamentos acontecem.
 
 ### O problema
 
-O Pix liquida cada pagamento de forma **bruta e em tempo real**: cada instituição precisa ter
-saldo na sua Conta PI antes de cada transferência. Nos sistemas antigos, os bancos podiam
-acumular pagamentos e compensar entradas com saídas (*netting*), economizando liquidez. O
-estudo do Banco Central sobre o Pix (Working Paper 619) mostra que os bancos perderam essa
-capacidade de adiar e compensar, e passaram a reter mais ativos líquidos.
+Cada vez mais países adotam pagamentos instantâneos liquidados de forma **bruta e em tempo
+real**: cada pagamento é liquidado sozinho, na hora, e o banco pagador precisa ter saldo no banco
+central antes de cada transferência. Nos sistemas antigos, os bancos podiam acumular pagamentos e
+compensar entradas com saídas (*netting*), economizando liquidez. No Brasil, onde o Pix funciona
+assim desde 2020, o estudo do Banco Central (Working Paper 619) mostra que os bancos perderam essa
+capacidade de adiar e compensar, e passaram a reter mais ativos líquidos. O Banco da Finlândia
+fez a mesma pergunta para a Europa.
+
+O LoopSettle usa o **Pix como caso calibrado**, porque ele publica os agregados necessários, mas
+os motores e as métricas valem para qualquer sistema do mesmo tipo. Veja
+[onde o seu sistema se encaixa](#onde-o-seu-sistema-se-encaixa).
 
 Uma pergunta continuava sem resposta: **quanto dessa compensação perdida vira, de fato,
 liquidez que poderia ser liberada?** E dá para recuperar parte dela sem abrir mão da
 experiência instantânea do usuário?
 
-> **Pergunta de pesquisa.** Quanto da liquidez que os participantes do Pix precisam manter é
-> circular, quanto disso é recuperável na prática, e qual o custo em atraso de recuperá-la com
-> micro-ciclos atômicos?
+> **Pergunta de pesquisa.** Num sistema de pagamentos instantâneos com liquidação bruta — com o
+> Pix como caso calibrado —, quanto da liquidez que os participantes precisam manter é circular,
+> quanto disso é recuperável na prática, e qual o custo em atraso de recuperá-la com micro-ciclos
+> atômicos?
 
 ### O resultado principal
 
@@ -109,7 +118,7 @@ e o [`results/SUMMARY.pt-BR.md`](results/SUMMARY.pt-BR.md) explicam cada uma em 
   </tr>
   <tr>
     <td align="center"><sub><b>O dia em 15 minutos.</b> A soma das posições devedoras (linha escura) cresce por horas: é isso que exige liquidez, e micro-ciclos de segundos não alcançam.</sub></td>
-    <td align="center"><sub><b>Liquidez necessária por desenho</b>, do bruto em tempo real (Pix) ao mínimo teórico (LB).</sub></td>
+    <td align="center"><sub><b>Liquidez necessária por desenho</b>, do bruto em tempo real ao mínimo teórico (LB).</sub></td>
   </tr>
   <tr>
     <td><img src="docs/img/ui-sweep.png" alt="Economia de liquidez dos micro-ciclos para cada janela de busca"></td>
@@ -162,10 +171,10 @@ As capturas, nos dois idiomas, são regeneradas por comando: `node scripts/scree
 
 ```mermaid
 flowchart LR
-  A["Dados abertos do Pix<br/>(API Olinda / BCB)"] --> B["Gerador sintético<br/>calibrado, em streaming"]
+  A["Dados públicos<br/>(caso calibrado: Pix,<br/>API Olinda / BCB)"] --> B["Gerador sintético<br/>calibrado, em streaming"]
   B --> C["Motores de liquidação"]
-  C --> C1["Bruto em tempo real<br/>(como o Pix)"]
-  C --> C2["Compensação diferida<br/>1× ao dia … a cada 10 s"]
+  C --> C1["Bruto em tempo real<br/>(Pix, FedNow, TIPS, NPP)"]
+  C --> C2["Compensação diferida<br/>1× ao dia … a cada 10 s<br/>(UPI, Faster Payments)"]
   C --> C3["Micro-ciclos atômicos<br/>(mecanismo novo)"]
   B --> D["Topologia do fluxo"]
   D --> D1["Hodge<br/>(diagnóstico)"]
@@ -187,8 +196,8 @@ flowchart LR
 
 | Motor | Comportamento |
 |---|---|
-| `GrossRealTime` | liquida cada pagamento na chegada, se houver saldo (o modelo do Pix) |
-| `DeferredNet` | compensação multilateral em ciclos fixos, de 1 por dia a 1 a cada 10 s (estilo UPI e estudo finlandês) |
+| `GrossRealTime` | liquida cada pagamento na chegada, se houver saldo (o modelo do Pix, FedNow, TIPS e NPP) |
+| `DeferredNet` | compensação multilateral em ciclos fixos, de 1 por dia a 1 a cada 10 s (o modelo do UPI e do Faster Payments; lógica do estudo finlandês) |
 | `AtomicMicroCycle` | espera alguns segundos, encontra ciclos na fila e liquida cada ciclo de uma vez, tudo ou nada; modos `QueueAll` (todos passam pela fila) e `QueueOnShortfall` (só na falta de saldo, estilo LSM) |
 
 **Como a liquidez é medida**
@@ -200,6 +209,37 @@ flowchart LR
 - **Economia de um desenho** = 1 − liquidez do desenho ÷ UB.
 
 Definições formais, exemplo à mão e provas em [`docs/METHODOLOGY.pt-BR.md`](docs/METHODOLOGY.pt-BR.md).
+
+### Onde o seu sistema se encaixa
+
+O Pix é o caso calibrado, mas a pergunta vale para qualquer país. Para o cliente, todos os
+sistemas abaixo são instantâneos; o que muda a liquidez é **como os bancos acertam as contas
+entre si**, e o LoopSettle tem um motor para cada modelo:
+
+<table>
+  <tr>
+    <td width="40%"><img src="docs/img/ui-fit.png" alt="Painel da interface: onde o seu sistema se encaixa, com os modelos de liquidação e exemplos de países"></td>
+    <td>
+
+| Modelo entre bancos | Exemplos | Motor |
+|---|---|---|
+| Bruto em tempo real | Pix (Brasil), FedNow (EUA), TIPS (zona do euro), NPP (Austrália) | `GrossRealTime` |
+| Bruto, conta pré-financiada | RTP (EUA) | `GrossRealTime` com saldo limitado |
+| Compensação diferida em ciclos | UPI (Índia, 10/dia), Faster Payments (Reino Unido, 3/dia) | `DeferredNet` |
+| Compensação a cada poucos segundos | SPEI (México), a conferir | `AtomicMicroCycle` |
+
+</td>
+  </tr>
+</table>
+
+- **Nos EUA**, o FedNow funciona como o Pix: o resultado central se aplica diretamente ao desenho.
+- **No Canadá**, o Interac e-Transfer é instantâneo para o cliente, mas os bancos compensam depois
+  (modelo `DeferredNet`); o novo Real-Time Rail ainda não estava em operação em novembro de 2026.
+- **Os números** (9,3%, 0,3%, 0,02%) vêm do cenário calibrado com o Pix e não valem
+  automaticamente para outro país: recalibrar exige os agregados públicos dele.
+
+Tabela completa, com operador, data de início, modelo de liquidação e fonte de cada sistema, em
+[`docs/INSTANT_PAYMENTS.pt-BR.md`](docs/INSTANT_PAYMENTS.pt-BR.md).
 
 ### Resultados em números
 
@@ -244,7 +284,7 @@ LoopSettle parte exatamente dessa lógica e a estende.
 | | Banco da Finlândia (Hellqvist & Korpinen) | LoopSettle |
 |---|---|---|
 | **Pergunta** | Quanto a mais de liquidez o instantâneo exige em relação aos ciclos? | A mesma, e o caminho inverso: quanto dá para **recuperar** sem perder o instantâneo, e a que custo em atraso? |
-| **Sistema** | STEP2, varejo, Finlândia | Pix, Brasil (instantâneo, 24×7, liquidação bruta pelo banco central) |
+| **Sistema** | STEP2, varejo, Finlândia | Pagamentos instantâneos com liquidação bruta; caso calibrado: Pix, Brasil (24×7, banco central) |
 | **Dados** | Sintéticos, imitando os fluxos do STEP2 | Sintéticos, calibrados com agregados públicos do Pix (erro ≤ 1,5%); cada parâmetro com fonte ou marcado `ASSUMPTION` |
 | **Desenhos comparados** | Ciclos fixos × instantâneo | Ciclos fixos (1 a 8.640 por dia) × instantâneo × **micro-ciclos atômicos** (novo) |
 | **Resultado agregado** | Aumento pequeno, no máximo 8,6% ao dia, segundo o resumo do debatedor[^bof] | Instantâneo exige +9,5% em relação a 1 ciclo diário e +2,6% em relação a 10 ciclos por dia (σ = 0,4): **mesma ordem de grandeza** |
@@ -327,6 +367,7 @@ arquivo foram implementados no próprio projeto.
 
 | Documento | Conteúdo |
 |---|---|
+| [`docs/INSTANT_PAYMENTS.pt-BR.md`](docs/INSTANT_PAYMENTS.pt-BR.md) | pagamentos instantâneos pelo mundo: modelo de liquidação de cada sistema e motor correspondente |
 | [`docs/METHODOLOGY.pt-BR.md`](docs/METHODOLOGY.pt-BR.md) | cada métrica em linguagem simples e formal, com exemplo à mão |
 | [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md) | cada parâmetro do gerador: `SOURCED`, `CALIBRATED` ou `ASSUMPTION`; tabela real × simulado |
 | [`docs/LIMITATIONS.pt-BR.md`](docs/LIMITATIONS.pt-BR.md) | limitações conhecidas |
@@ -392,6 +433,10 @@ Os metadados também estão em [`CITATION.cff`](CITATION.cff) (o GitHub mostra o
 
 [Apache-2.0](LICENSE).
 
+Pix é marca do Banco Central do Brasil. O LoopSettle é um projeto independente, sem afiliação
+nem endosso do Banco Central do Brasil ou de qualquer outro operador citado; os nomes dos
+sistemas são usados só para identificá-los.
+
 ---
 
 ## English
@@ -403,26 +448,32 @@ Os metadados também estão em [`CITATION.cff`](CITATION.cff) (o GitHub mostra o
 
 ### In one sentence
 
-Pix requires every bank to hold cash before every transfer. Part of that cash only goes around
-in loops (A pays B, B pays C, C pays A). LoopSettle measures how large that part is, how much of
+In instant payment systems with gross settlement — Pix (Brazil), FedNow (US), TIPS (euro area),
+NPP (Australia) — every bank must hold cash before every transfer. Part of that cash only goes
+around in loops (A pays B, B pays C, C pays A). LoopSettle measures how large that part is, how much of
 it could be netted and, above all, **how much of that netting turns into liquidity actually
 saved** once the order in which payments arrive is respected.
 
 ### The problem
 
-Brazil's Pix settles every payment **gross and in real time**: each institution must hold funds
-in its settlement account (Conta PI) before every transfer. Older systems let banks batch
-payments and offset inflows against outflows (*netting*), saving liquidity. The Banco Central do
-Brasil study of Pix (Working Paper 619) shows that banks lost this ability to delay and net
-payments and now hold more liquid assets.
+More and more countries run instant payments with **real-time gross settlement**: each payment
+settles on its own, immediately, and the payer's bank must hold funds at the central bank before
+every transfer. Older systems let banks batch payments and offset inflows against outflows
+(*netting*), saving liquidity. In Brazil, where Pix has worked this way since 2020, the Banco
+Central do Brasil study (Working Paper 619) shows that banks lost this ability to delay and net
+payments and now hold more liquid assets. The Bank of Finland asked the same question for Europe.
+
+LoopSettle uses **Pix as the calibrated case**, because it publishes the aggregates the model
+needs, but its engines and metrics apply to any system of the same kind. See
+[where your system fits](#where-your-system-fits).
 
 One question remained open: **how much of the lost netting translates into liquidity that could
 actually be freed?** And can part of it be recovered without giving up the instant user
 experience?
 
-> **Research question.** How much of the liquidity Pix participants must hold is circular, how
-> much of it is recoverable in practice, and what delay does recovering it with atomic
-> micro-cycles cost?
+> **Research question.** In an instant payment system with gross settlement — with Pix as the
+> calibrated case — how much of the liquidity participants must hold is circular, how much of it
+> is recoverable in practice, and what delay does recovering it with atomic micro-cycles cost?
 
 ### Key finding
 
@@ -465,7 +516,7 @@ and command that produced them. What the study can and cannot claim is in
   </tr>
   <tr>
     <td align="center"><sub><b>The day in 15-minute steps.</b> The sum of debit positions (dark line) builds up over hours: that is what requires liquidity, and second-scale micro-cycles cannot reach it.</sub></td>
-    <td align="center"><sub><b>Liquidity needed by design</b>, from real-time gross (Pix) to the theoretical minimum (LB).</sub></td>
+    <td align="center"><sub><b>Liquidity needed by design</b>, from real-time gross to the theoretical minimum (LB).</sub></td>
   </tr>
   <tr>
     <td><img src="docs/img/en/ui-sweep.png" alt="Micro-cycle liquidity saving for each search window"></td>
@@ -518,10 +569,10 @@ running.
 
 ```mermaid
 flowchart LR
-  A["Pix open data<br/>(BCB Olinda API)"] --> B["Calibrated synthetic<br/>generator, streaming"]
+  A["Public data<br/>(calibrated case: Pix,<br/>BCB Olinda API)"] --> B["Calibrated synthetic<br/>generator, streaming"]
   B --> C["Settlement engines"]
-  C --> C1["Real-time gross<br/>(like Pix)"]
-  C --> C2["Deferred netting<br/>1× a day … every 10 s"]
+  C --> C1["Real-time gross<br/>(Pix, FedNow, TIPS, NPP)"]
+  C --> C2["Deferred netting<br/>1× a day … every 10 s<br/>(UPI, Faster Payments)"]
   C --> C3["Atomic micro-cycles<br/>(new mechanism)"]
   B --> D["Flow topology"]
   D --> D1["Hodge<br/>(diagnostic)"]
@@ -543,8 +594,8 @@ flowchart LR
 
 | Engine | Behaviour |
 |---|---|
-| `GrossRealTime` | settles each payment on arrival if funds suffice (the Pix model) |
-| `DeferredNet` | multilateral netting at fixed cycles, from once a day down to every 10 s (UPI style, as in the Finnish study) |
+| `GrossRealTime` | settles each payment on arrival if funds suffice (the model of Pix, FedNow, TIPS and NPP) |
+| `DeferredNet` | multilateral netting at fixed cycles, from once a day down to every 10 s (the model of UPI and Faster Payments; the Finnish study's logic) |
 | `AtomicMicroCycle` | waits a few seconds, finds cycles in the queue and settles each cycle at once, all or nothing; modes `QueueAll` (everything goes through the queue) and `QueueOnShortfall` (only on shortfall, LSM style) |
 
 **How liquidity is measured**
@@ -556,6 +607,37 @@ flowchart LR
 - **Saving of a design** = 1 − design liquidity ÷ UB.
 
 Formal definitions, a worked example and proofs in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
+
+### Where your system fits
+
+Pix is the calibrated case, but the question applies to any country. To customers every system
+below is instant; what changes liquidity is **how banks settle with each other**, and LoopSettle
+has an engine for each model:
+
+<table>
+  <tr>
+    <td width="40%"><img src="docs/img/en/ui-fit.png" alt="Interface panel: where your system fits, with settlement models and example countries"></td>
+    <td>
+
+| Interbank model | Examples | Engine |
+|---|---|---|
+| Real-time gross | Pix (Brazil), FedNow (US), TIPS (euro area), NPP (Australia) | `GrossRealTime` |
+| Gross, prefunded account | RTP (US) | `GrossRealTime` with limited balance |
+| Deferred netting in cycles | UPI (India, 10/day), Faster Payments (UK, 3/day) | `DeferredNet` |
+| Netting every few seconds | SPEI (Mexico), to be checked | `AtomicMicroCycle` |
+
+</td>
+  </tr>
+</table>
+
+- **In the US**, FedNow works like Pix: the central result applies directly to its design.
+- **In Canada**, Interac e-Transfer is instant for the customer but banks settle later (the
+  `DeferredNet` model); the new Real-Time Rail was not yet live in November 2026.
+- **The numbers** (9.3%, 0.3%, 0.02%) come from the scenario calibrated to Pix and do not carry
+  over automatically to another country: re-calibrating requires that country's public aggregates.
+
+Full table, with operator, start date, settlement model and source for each system, in
+[`docs/INSTANT_PAYMENTS.md`](docs/INSTANT_PAYMENTS.md).
 
 ### Results at a glance
 
@@ -600,7 +682,7 @@ extends it.
 | | Bank of Finland (Hellqvist & Korpinen) | LoopSettle |
 |---|---|---|
 | **Question** | How much more liquidity does instant settlement need than cycles? | The same, plus the reverse path: how much can be **recovered** without losing instant settlement, at what delay cost? |
-| **System** | STEP2, retail, Finland | Pix, Brazil (instant, 24/7, gross settlement by the central bank) |
+| **System** | STEP2, retail, Finland | Instant payments with gross settlement; calibrated case: Pix, Brazil (24/7, central bank) |
 | **Data** | Synthetic, mimicking STEP2 flows | Synthetic, calibrated to public Pix aggregates (error ≤ 1.5%); every parameter sourced or flagged `ASSUMPTION` |
 | **Designs compared** | Fixed cycles × instant | Fixed cycles (1 to 8,640 per day) × instant × **atomic micro-cycles** (new) |
 | **Aggregate result** | Small increase, at most 8.6% per day according to the discussant's summary[^bof-en] | Instant needs +9.5% over 1 daily cycle and +2.6% over 10 cycles per day (σ = 0.4): **same order of magnitude** |
@@ -682,6 +764,7 @@ formats are implemented in the project itself. Code and code comments are in Eng
 
 | Document | Contents |
 |---|---|
+| [`docs/INSTANT_PAYMENTS.md`](docs/INSTANT_PAYMENTS.md) | instant payment systems around the world: settlement model of each and the matching engine |
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | every metric in plain and formal language, with a worked example |
 | [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | every generator parameter: `SOURCED`, `CALIBRATED` or `ASSUMPTION`; real vs simulated table |
 | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | known limitations |
@@ -744,3 +827,7 @@ button).
 ### License
 
 [Apache-2.0](LICENSE).
+
+Pix is a trademark of Banco Central do Brasil. LoopSettle is an independent project, not
+affiliated with or endorsed by Banco Central do Brasil or any other operator mentioned; system
+names are used only to identify them.

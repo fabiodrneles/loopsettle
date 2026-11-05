@@ -162,3 +162,11 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     originais em português; o revisor deve conferir os termos técnicos (ex.: "compensação" =
     netting, "liquidação bruta em tempo real" = real-time gross settlement, "Conta PI" = Pix
     settlement account).
+69. **Enquadramento internacional (`docs/INSTANT_PAYMENTS.pt-BR.md`).** O README, a interface e a
+    documentação agora apresentam o LoopSettle como estudo de pagamentos instantâneos com
+    liquidação bruta, com o Pix como caso calibrado, e relacionam 11 sistemas aos motores. As
+    linhas "a conferir" (FAST, SPEI, Interac e-Transfer, RTR do Canadá) dependem de fontes
+    secundárias. A linha do SPEI importa para o artigo: se o Banxico confirmar um algoritmo de
+    compensação multilateral a cada poucos segundos, o SPEI é um análogo real dos micro-ciclos
+    atômicos e uma comparação natural. Pix é marca de alto renome do BCB (INPI, junho de 2026);
+    o README e a interface dizem que o LoopSettle é independente, sem endosso do BCB.

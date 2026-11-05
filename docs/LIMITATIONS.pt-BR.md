@@ -32,3 +32,7 @@
 12. **Interface web verificada só em navegador emulado.** Em 05/11/2026 foi aberta no Chromium
     desktop (1440 px) e num iPhone 13 emulado, em português e inglês (capturas em `docs/img/`).
     Ainda não foi aberta no notebook de referência (i3, 4 GB).
+13. **Calibrado com um só sistema.** Só agregados do Pix são usados. Há motores para os modelos de
+    liquidação de outros sistemas (FedNow, TIPS, NPP, UPI, Faster Payments — ver
+    [`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)), mas nenhum outro sistema foi
+    calibrado; valores, perfil horário e concentração mudam de país para país.

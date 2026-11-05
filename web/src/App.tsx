@@ -214,6 +214,21 @@ function Results({ data, params, s }: { data: SimResult; params: SimParams; s: S
         </table>
         <p className="caption">{s.constrainedCaption}</p>
       </section>
+
+      <section className="panel" aria-labelledby="fit-h">
+        <h2 id="fit-h">{s.fitTitle}</h2>
+        <p className="caption">{s.fitIntro}</p>
+        <ul className="fit">
+          {s.fitRows.map((r) => (
+            <li key={r.model}>
+              <span className="fit-model">{r.model}</span>
+              <span className="fit-engine">{r.engine}</span>
+              <span className="fit-systems">{r.systems}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="caption">{s.fitCaption}</p>
+      </section>
     </>
   );
 }
