@@ -551,6 +551,7 @@ pub fn topology_csv(path: &str) -> Result<(), String> {
     let stem = std::path::Path::new(path).file_stem().and_then(|s| s.to_str()).unwrap_or("input");
     let name = format!("topology-{stem}");
     let mut res = Results::new(&name, 0, path);
+    res.set_command(&format!("cargo run --release -p loopsettle-cli -- topology {path}"));
     res.set("rows", rows);
     res.set("rows_skipped", skipped);
     res.set("nodes", ids.len());

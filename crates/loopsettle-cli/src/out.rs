@@ -58,6 +58,15 @@ impl Results {
         self.summary.push(key, v);
     }
 
+    /// Replace the default `experiment <name>` command (for commands that are not experiments).
+    pub fn set_command(&mut self, cmd: &str) {
+        if let Json::Obj(kv) = &mut self.summary {
+            if let Some(e) = kv.iter_mut().find(|(k, _)| k == "command") {
+                e.1 = Json::from(cmd);
+            }
+        }
+    }
+
     pub fn measure(&mut self, key: &str, v: impl Into<Json>) {
         self.run.push(key, v);
     }

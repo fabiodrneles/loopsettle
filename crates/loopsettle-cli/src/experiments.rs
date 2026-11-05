@@ -13,7 +13,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("microcycle-sweep", "liquidity saving x p95 delay of atomic micro-cycles"),
     ("baseline", "UB, LB, circularity ladder and sensitivity"),
     ("potential-vs-realizable", "potential vs realizable liquidity savings (central comparison)"),
-    ("stress", "largest participant offline for 30 minutes"),
+    ("stress", "a participant offline for 30 minutes: who and when"),
     ("finland-replication", "fixed clearing cycles vs instant settlement"),
     ("robustness", "seeds, scale, cycle length, delay bound and per-bank ratios"),
     ("bias-calibration", "fit the receiver bias to the BCB WP 619 per-bank nettable ratios"),
