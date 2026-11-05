@@ -36,3 +36,8 @@
     liquidação de outros sistemas (FedNow, TIPS, NPP, UPI, Faster Payments — ver
     [`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)), mas nenhum outro sistema foi
     calibrado; valores, perfil horário e concentração mudam de país para país.
+14. **Chegadas estacionárias.** Um perfil horário único para todos os participantes e pesos
+    bilaterais constantes (D8, D9). Com essas hipóteses, a economia da compensação de fim de dia
+    encolhe com 1/√(volume) (`results/robustness/scale.csv`); desequilíbrios intradiários
+    sistemáticos e próprios de cada participante (folha de pagamento, credenciadoras, funding de
+    fintechs) não encolheriam. Ver [`PAPER_READINESS.pt-BR.md`](PAPER_READINESS.pt-BR.md), W2.

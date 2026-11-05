@@ -177,3 +177,69 @@ Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre semen
 
 Figura: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
+## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso
+_seed `20260930`, código `0.1.0+git.1e54c5c`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
+
+R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):
+
+| σ viés | motor | sementes | economia média | dp (p.p.) | IC 95% | limite de atraso | LB/UB |
+|---|---|---|---|---|---|---|---|
+| 0 | micro:all:500:2000 | 10 | 0.0057% | 0.0065 | [0.0010; 0.0103]% | 2.175% | 0.697 |
+| 0 | micro:all:500:10000 | 10 | 0.0178% | 0.0329 | [-0.0057; 0.0414]% | 3.338% | 0.697 |
+| 0 | deferred:8640 | 10 | 0.0563% | 0.0158 | [0.0450; 0.0676]% | 3.338% | 0.697 |
+| 0 | deferred:96 | 10 | 1.9168% | 0.4515 | [1.5938; 2.2397]% | 25.450% | 0.697 |
+| 0 | deferred:1 | 10 | 30.3105% | 7.2141 | [25.1502; 35.4708]% | 727.995% | 0.697 |
+| 0.4 | micro:all:500:2000 | 10 | 0.0006% | 0.0009 | [0.0000; 0.0013]% | 0.540% | 0.922 |
+| 0.4 | micro:all:500:10000 | 10 | 0.0116% | 0.0051 | [0.0079; 0.0152]% | 0.800% | 0.922 |
+| 0.4 | deferred:8640 | 10 | 0.0185% | 0.0079 | [0.0129; 0.0242]% | 0.800% | 0.922 |
+| 0.4 | deferred:96 | 10 | 0.5021% | 0.1736 | [0.3779; 0.6262]% | 8.188% | 0.922 |
+| 0.4 | deferred:1 | 10 | 7.8040% | 4.6106 | [4.5060; 11.1020]% | 344.062% | 0.922 |
+| 0.8 | micro:all:500:2000 | 10 | 0.0002% | 0.0006 | [-0.0002; 0.0007]% | 0.643% | 0.965 |
+| 0.8 | micro:all:500:10000 | 10 | 0.0033% | 0.0040 | [0.0005; 0.0062]% | 0.696% | 0.965 |
+| 0.8 | deferred:8640 | 10 | 0.0080% | 0.0050 | [0.0045; 0.0116]% | 0.696% | 0.965 |
+| 0.8 | deferred:96 | 10 | 0.3231% | 0.3655 | [0.0617; 0.5845]% | 4.035% | 0.965 |
+| 0.8 | deferred:1 | 10 | 3.4763% | 2.6393 | [1.5884; 5.3642]% | 222.628% | 0.965 |
+
+R2 — escala (mesmo cenário, de 1 a 30 milhões de pagamentos por dia):
+
+| pagamentos/dia | fator de escala | motor | economia vs UB | limite de atraso | UB / volume |
+|---|---|---|---|---|---|
+| 1 000 000 | 239.0 | micro:all:500:2000 | 0.0016% | 0.567% | 0.1608 |
+| 1 000 000 | 239.0 | micro:all:500:10000 | 0.0147% | 0.761% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:8640 | 0.0276% | 0.761% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:96 | 0.3248% | 7.956% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:1 | 9.2669% | 275.951% | 0.1608 |
+| 3 000 000 | 79.7 | micro:all:500:2000 | 0.0005% | 0.388% | 0.1501 |
+| 3 000 000 | 79.7 | micro:all:500:10000 | 0.0027% | 0.439% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:8640 | 0.0092% | 0.439% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:96 | 0.4132% | 6.190% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:1 | 5.7640% | 233.968% | 0.1501 |
+| 10 000 000 | 23.9 | micro:all:500:2000 | 0.0002% | 0.219% | 0.1398 |
+| 10 000 000 | 23.9 | micro:all:500:10000 | -0.0004% | 0.276% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:8640 | 0.0078% | 0.276% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:96 | 0.2188% | 3.763% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:1 | 2.9492% | 257.365% | 0.1398 |
+| 30 000 000 | 8.0 | micro:all:500:2000 | 0.0001% | 0.080% | 0.1361 |
+| 30 000 000 | 8.0 | micro:all:500:10000 | -0.0016% | 0.271% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:8640 | 0.0052% | 0.271% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:96 | 0.1610% | 3.405% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:1 | 1.6789% | 248.574% | 0.1361 |
+
+R3 — comprimento máximo do micro-ciclo (janela 0,5 s, atraso 10 s):
+
+| comprimento máx. | economia vs UB | valor em ciclos |
+|---|---|---|
+| 2 | 0.0155% | 45.45% |
+| 3 | 0.0100% | 61.08% |
+| 6 | 0.0147% | 63.42% |
+| 10 | 0.0145% | 63.47% |
+
+R5 — razão por participante: liquidez instantânea / liquidez com N ciclos por dia:
+
+| ciclos/dia | participantes com razão | só precisam no instantâneo | não precisam | p10 | mediana | p90 | máx. |
+|---|---|---|---|---|---|---|---|
+| 1 | 78 | 104 | 18 | 1.001 | 1.161 | 2.897 | 19.11 |
+| 10 | 159 | 23 | 18 | 1.000 | 1.125 | 2.777 | 22.01 |
+
+Figura: [`robustness/fig_scale.svg`](robustness/fig_scale.svg)
+

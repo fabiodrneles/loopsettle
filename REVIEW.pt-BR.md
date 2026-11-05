@@ -173,3 +173,11 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     (pré-financiado, em lançamento no 4º trimestre de 2026) é um caso vivo da pergunta de migração
     do estudo finlandês. Pix é marca de alto renome do BCB (INPI, junho de 2026);
     o README e a interface dizem que o LoopSettle é independente, sem endosso do BCB.
+70. **Experimento de robustez e veredito (05/11/2026).** `results/robustness/` e
+    [`docs/ASSESSMENT.pt-BR.md`](docs/ASSESSMENT.pt-BR.md): a economia dos micro-ciclos (≈ 0,01%)
+    sobrevive a sementes, σ, escala e comprimento do ciclo; o "potencial" de fim de dia encolhe
+    com 1/√(volume), e por isso a antiga manchete de "630×" saiu. Veredito PIVOTAR; o que falta
+    está especificado em [`docs/PAPER_READINESS.pt-BR.md`](docs/PAPER_READINESS.pt-BR.md), com os
+    critérios de morte K1–K4.
+71. **Limite de atraso.** Novo módulo `crates/loopsettle-sim/src/bound.rs` e METHODOLOGY §9; o
+    revisor deve conferir a demonstração e o teste `engines_never_beat_the_delay_bound`.

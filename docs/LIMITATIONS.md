@@ -36,3 +36,8 @@
     models of other systems (FedNow, TIPS, NPP, UPI, Faster Payments — see
     [`INSTANT_PAYMENTS.md`](INSTANT_PAYMENTS.md)), but no other system has been calibrated; their
     payment sizes, intraday profiles and concentration differ.
+14. **Stationary arrivals.** One hourly profile shared by all participants and constant bilateral
+    weights (D8, D9). Under these assumptions the end-of-day netting saving shrinks as
+    1/√(volume) (`results/robustness/scale.csv`); systematic, participant-specific intraday
+    imbalances (payroll, acquirers, fintech funding) would not. See
+    [`PAPER_READINESS.md`](PAPER_READINESS.md), W2.

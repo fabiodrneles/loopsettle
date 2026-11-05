@@ -122,3 +122,34 @@ count and value, and the scale factor, all from Sep 2026 (BCB Olinda API).
   which writes `results/<name>/summary.json` with the seed, code version and command. No
   timestamp is written: re-running reproduces the files byte for byte.
 - `make rebuild` redoes everything from scratch.
+
+## 9. The delay bound
+
+**In plain language.** A mechanism that may hold each payment for at most *d* seconds can only
+change *when* payments settle, by at most *d*. At the moment a participant reaches its deepest
+debit position under gross settlement, the only payments a delay-bounded engine can still be
+holding back are those that arrived in the last *d* seconds. So the most it can save is what
+that participant paid in those *d* seconds — however clever the netting algorithm is.
+
+**Formally.** With unlimited opening balances, let `x_i(t)` be participant `i`'s cumulative
+position under `GrossRealTime` and `t*_i` the first time it reaches its minimum, so
+`UB_i = −x_i(t*_i)`. Take any engine in which every payment arriving at `a` settles in
+`[a, a + d]`, and let `y_i(t)` be `i`'s cumulative position in that engine. At `t*`, every
+payment still unsettled arrived in `[t* − d, t*]`, so
+
+```text
+y_i(t*) ≤ x_i(t*) + O_i[t* − d, t*]          (O_i = value paid by i in the window)
+L_i = max(0, −min_t y_i(t)) ≥ −y_i(t*)   ⇒   UB_i − L_i ≤ O_i[t*_i − d, t*_i].
+```
+
+The bound covers atomic micro-cycles with `max_delay_ms = d`, deferred netting every `d`, and
+any optimal gridlock solver with the same deadline. It is computed in two streaming passes
+(`loopsettle_sim::bound::delay_bounds`) and tested participant by participant against the
+engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate: in the
+calibrated scenario the realised 10 s saving is about 1.5% of it
+(`results/robustness/seeds_summary.csv`).
+
+**Hodge null value.** For random flows on a connected graph with `m` edges and `n` nodes, the
+expected share of the squared norm outside the gradient space is `(m − n + 1)/m`. On the net
+graph of the baseline (`m = 6620`, `n = 200`) that is 0.970, against an observed L2 curl share
+of 0.977: on dense graphs the Hodge curl share mostly measures graph density.

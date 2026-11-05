@@ -123,3 +123,36 @@ do B2B em quantidade e valor, e fator de escala, todos de set/2026 (API Olinda d
   que grava `results/<nome>/summary.json` com seed, versão do código e comando. Nenhum
   carimbo de tempo é gravado: rodar de novo reproduz os arquivos byte a byte.
 - `make rebuild` refaz tudo do zero.
+
+## 9. O limite de atraso
+
+**Em linguagem simples.** Um mecanismo que pode segurar cada pagamento por no máximo *d*
+segundos só consegue mudar *quando* os pagamentos liquidam, e em no máximo *d*. No momento em
+que um participante chega à sua posição devedora mais funda na liquidação bruta, os únicos
+pagamentos que um motor com prazo ainda pode estar segurando são os que chegaram nos últimos *d*
+segundos. Então o máximo que ele consegue economizar é o que esse participante pagou nesses *d*
+segundos — por mais esperto que seja o algoritmo de compensação.
+
+**Formalmente.** Com saldos de abertura ilimitados, seja `x_i(t)` a posição acumulada do
+participante `i` no `GrossRealTime` e `t*_i` o primeiro instante em que ela atinge o mínimo, de
+modo que `UB_i = −x_i(t*_i)`. Tome qualquer motor em que todo pagamento que chega em `a` liquide
+em `[a, a + d]`, e seja `y_i(t)` a posição acumulada de `i` nesse motor. Em `t*`, todo pagamento
+ainda não liquidado chegou em `[t* − d, t*]`, então
+
+```text
+y_i(t*) ≤ x_i(t*) + O_i[t* − d, t*]          (O_i = valor pago por i na janela)
+L_i = max(0, −min_t y_i(t)) ≥ −y_i(t*)   ⇒   UB_i − L_i ≤ O_i[t*_i − d, t*_i].
+```
+
+O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensação diferida a
+cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
+passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
+participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
+estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele
+(`results/robustness/seeds_summary.csv`).
+
+**Valor nulo de Hodge.** Para fluxos aleatórios num grafo conexo com `m` arestas e `n` nós, a
+fração esperada da norma ao quadrado fora do espaço gradiente é `(m − n + 1)/m`. No grafo
+líquido do baseline (`m = 6620`, `n = 200`) isso dá 0,970, contra uma fração rotacional L2
+observada de 0,977: em grafos densos, a fração rotacional de Hodge mede sobretudo a densidade do
+grafo.

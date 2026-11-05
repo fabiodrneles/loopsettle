@@ -78,18 +78,22 @@ experiência instantânea do usuário?
   <img src="results/potential-vs-realizable/fig_potential_vs_realizable.svg" alt="Economia de liquidez em função do tempo máximo de espera" width="720">
 </p>
 
-No cenário sintético calibrado com dados públicos do Pix (200 participantes, 1 milhão de
-pagamentos por dia, semente `20260930`):
+No cenário sintético calibrado com dados públicos do Pix (200 participantes; 10 sementes; de 1 a
+30 milhões de pagamentos por dia):
 
 - **85% do volume** de pagamentos poderia ser "compensado" pela medida potencial (entradas e
   saídas do mesmo dia, sem olhar a ordem no tempo).
-- Mas a **economia de liquidez realizável** depende do horizonte da compensação: **9,3%** com
-  uma compensação diária, **0,3%** a cada 15 minutos e **menos de 0,03%** com ciclos de
-  segundos.
 - **Micro-ciclos atômicos de até 10 s liquidam até 63% do valor dentro de ciclos, mas
-  economizam menos de 0,02% da liquidez.** A necessidade de liquidez vem de desequilíbrios
-  que duram horas (um banco que paga mais do que recebe a manhã inteira), não de ruído de
-  segundos.
+  economizam cerca de 0,01% da liquidez** (0,0116%, IC 95% [0,008; 0,015]%), qualquer que seja
+  o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
+- **Há um teto demonstrável:** nenhum mecanismo que segure cada pagamento por no máximo *d*
+  consegue economizar mais do que o valor pago nos *d* segundos antes do pico de cada
+  participante. Para 10 s, esse teto fica abaixo de 1% em todas as configurações testadas.
+- Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
+  com 1 milhão de pagamentos), **mas esse "potencial" encolhe com a raiz quadrada do volume**
+  (1,7% com 30 milhões). Quanto dele existe no Pix real depende de desequilíbrios intradiários
+  que os dados públicos não mostram — é a principal pergunta aberta
+  ([avaliação](docs/ASSESSMENT.pt-BR.md)).
 
 > **Volume compensável não é liquidez economizada.** O LoopSettle torna visível e mensurável a
 > distância entre essas duas medidas.
@@ -240,7 +244,7 @@ entre si**, e o LoopSettle tem um motor para cada modelo:
   migração.
 - **No México**, o SPEI já roda um algoritmo de compensação a cada 1,9 s em média: é o análogo real
   mais próximo dos micro-ciclos atômicos.
-- **Os números** (9,3%, 0,3%, 0,02%) vêm do cenário calibrado com o Pix e não valem
+- **Os números** (0,01%, 0,5%, 7,8%) vêm do cenário calibrado com o Pix e não valem
   automaticamente para outro país: recalibrar exige os agregados públicos dele.
 
 Tabela completa, com operador, data de início, modelo de liquidação e fonte de cada sistema, em
@@ -259,6 +263,11 @@ Tabela completa, com operador, data de início, modelo de liquidação e fonte d
 | Instantâneo vs 10 ciclos por dia | 1,03× a 1,11× |
 | Micro-ciclos com espera de 2 s: meta do Pix de 50% em até 2,8 s | cumprida (100%) |
 | Micro-ciclos com espera de 10 s: mesma meta | não cumprida (43%) |
+| Economia dos micro-ciclos de até 10 s † | 0,0116% do UB, IC 95% [0,008; 0,015]% |
+| Teto para qualquer mecanismo de até 10 s † | 0,80% do UB (0,27% com 30 milhões de pagamentos) |
+| Economia de uma compensação diária † | 7,8%, IC 95% [4,5; 11,1]% (1,7% com 30 milhões) |
+
+<sub>Linhas sem marca: semente `20260930`, 1 milhão de pagamentos por dia. † 10 sementes, σ = 0,4 (`results/robustness/`).</sub>
 
 <table>
   <tr>
@@ -346,6 +355,7 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `microcycle-sweep` | qual a troca entre atraso e liquidez? | `results/microcycle-sweep/` |
 | `stress` | o que acontece se um participante grande cair por 30 min? | `results/stress/` |
 | `finland-replication` | a lógica do Banco da Finlândia aplicada ao cenário | `results/finland-replication/` |
+| `robustness` | o resultado sobrevive a sementes, escala, viés e algoritmo? | `results/robustness/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
 execução): conservação do dinheiro; preservação da posição líquida de cada participante;
@@ -373,6 +383,8 @@ arquivo foram implementados no próprio projeto.
 | Documento | Conteúdo |
 |---|---|
 | [`docs/INSTANT_PAYMENTS.pt-BR.md`](docs/INSTANT_PAYMENTS.pt-BR.md) | pagamentos instantâneos pelo mundo: modelo de liquidação de cada sistema e motor correspondente |
+| [`docs/ASSESSMENT.pt-BR.md`](docs/ASSESSMENT.pt-BR.md) | avaliação crítica: o resultado se sustenta? ameaças, veredito e critérios de morte |
+| [`docs/PAPER_READINESS.pt-BR.md`](docs/PAPER_READINESS.pt-BR.md) | especificação de tudo o que falta antes de escrever o artigo |
 | [`docs/METHODOLOGY.pt-BR.md`](docs/METHODOLOGY.pt-BR.md) | cada métrica em linguagem simples e formal, com exemplo à mão |
 | [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md) | cada parâmetro do gerador: `SOURCED`, `CALIBRATED` ou `ASSUMPTION`; tabela real × simulado |
 | [`docs/LIMITATIONS.pt-BR.md`](docs/LIMITATIONS.pt-BR.md) | limitações conhecidas |
@@ -486,16 +498,21 @@ experience?
   <img src="results/potential-vs-realizable/fig_potential_vs_realizable.svg" alt="Liquidity saving as a function of the maximum wait" width="720">
 </p>
 
-In a synthetic scenario calibrated to public Pix aggregates (200 participants, 1 million
-payments per day, seed `20260930`):
+In a synthetic scenario calibrated to public Pix aggregates (200 participants; 10 seeds; 1 to 30
+million payments per day):
 
 - **85% of payment volume** is nettable under the potential measure (same-day inflows vs
   outflows, ignoring time order).
-- The **realizable liquidity saving** depends on the netting horizon: **9.3%** with one daily
-  netting cycle, **0.3%** every 15 minutes and **under 0.03%** with second-scale cycles.
-- **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save under
-  0.02% of liquidity.** Liquidity needs come from imbalances lasting hours (a bank paying out
-  more than it receives all morning), not from second-scale noise.
+- **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save about
+  0.01% of liquidity** (0.0116%, 95% CI [0.008; 0.015]%), whatever the maximum cycle length,
+  and the saving goes to zero as volume grows.
+- **There is a provable ceiling:** no mechanism that holds each payment for at most *d* can save
+  more than the value paid in the *d* seconds before each participant's peak. For 10 s that
+  ceiling is below 1% in every configuration tested.
+- Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
+  payments), **but that "potential" shrinks with the square root of volume** (1.7% at 30
+  million). How much of it exists in real Pix depends on intraday imbalances that public data do
+  not show — the main open question ([assessment](docs/ASSESSMENT.md)).
 
 > **Nettable volume is not saved liquidity.** LoopSettle makes the gap between the two visible
 > and measurable.
@@ -642,7 +659,7 @@ has an engine for each model:
   system whose migration cost the Finnish study's logic measures.
 - **In Mexico**, SPEI already runs a clearing algorithm every 1.9 s on average: the closest
   real-world analogue of atomic micro-cycles.
-- **The numbers** (9.3%, 0.3%, 0.02%) come from the scenario calibrated to Pix and do not carry
+- **The numbers** (0.01%, 0.5%, 7.8%) come from the scenario calibrated to Pix and do not carry
   over automatically to another country: re-calibrating requires that country's public aggregates.
 
 Full table, with operator, start date, settlement model and source for each system, in
@@ -661,6 +678,11 @@ Full table, with operator, start date, settlement model and source for each syst
 | Instant vs 10 cycles per day | 1.03× to 1.11× |
 | Micro-cycles with 2 s wait: Pix target of 50% within 2.8 s | met (100%) |
 | Micro-cycles with 10 s wait: same target | missed (43%) |
+| Saving of micro-cycles up to 10 s † | 0.0116% of UB, 95% CI [0.008; 0.015]% |
+| Ceiling for any mechanism up to 10 s † | 0.80% of UB (0.27% at 30 million payments) |
+| Saving of one daily netting † | 7.8%, 95% CI [4.5; 11.1]% (1.7% at 30 million) |
+
+<sub>Unmarked rows: seed `20260930`, 1 million payments per day. † 10 seeds, σ = 0.4 (`results/robustness/`).</sub>
 
 <table>
   <tr>
@@ -748,6 +770,7 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `microcycle-sweep` | what is the trade-off between delay and liquidity? | `results/microcycle-sweep/` |
 | `stress` | what happens if a large participant goes down for 30 min? | `results/stress/` |
 | `finland-replication` | the Bank of Finland logic applied to the scenario | `results/finland-replication/` |
+| `robustness` | does the result survive seeds, scale, bias and algorithm? | `results/robustness/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
 run): conservation of money; each participant's net position preserved; no negative balances;
@@ -774,6 +797,8 @@ formats are implemented in the project itself. Code and code comments are in Eng
 | Document | Contents |
 |---|---|
 | [`docs/INSTANT_PAYMENTS.md`](docs/INSTANT_PAYMENTS.md) | instant payment systems around the world: settlement model of each and the matching engine |
+| [`docs/ASSESSMENT.md`](docs/ASSESSMENT.md) | critical assessment: does the result hold? threats, verdict and kill criteria |
+| [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) | specification of everything needed before writing the paper |
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | every metric in plain and formal language, with a worked example |
 | [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | every generator parameter: `SOURCED`, `CALIBRATED` or `ASSUMPTION`; real vs simulated table |
 | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | known limitations |
