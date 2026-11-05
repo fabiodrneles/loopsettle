@@ -1,7 +1,7 @@
 {
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.66c1d3f",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
   "scenario": {
@@ -389,6 +389,296 @@
       "delay_mean_ms": 4306453.294323,
       "delay_value_weighted_mean_ms": 4334845.073133,
       "share_settled_within_2800ms": 0.000332
+    }
+  ],
+  "cases": [
+    {
+      "target": "largest",
+      "participant": 0,
+      "start": "10:00",
+      "start_ms": 36000000,
+      "deferred_payments": 11692,
+      "deferred_value_brl": 5866760.12,
+      "ub_total_change_pct": 0.005126,
+      "others_ub_increase_brl": 4140.94,
+      "others_ub_decrease_brl": 487.61,
+      "others_with_higher_ub": 4,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000027,
+          "rejected_payments": 6,
+          "payers_with_rejections": 5
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000027,
+          "rejected_payments": 6,
+          "payers_with_rejections": 5
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000015,
+          "rejected_payments": 8,
+          "payers_with_rejections": 7
+        }
+      ]
+    },
+    {
+      "target": "largest",
+      "participant": 0,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 13856,
+      "deferred_value_brl": 6141044.38,
+      "ub_total_change_pct": -0.000258,
+      "others_ub_increase_brl": 0,
+      "others_ub_decrease_brl": 183.59,
+      "others_with_higher_ub": 0,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000001,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        }
+      ]
+    },
+    {
+      "target": "largest",
+      "participant": 0,
+      "start": "before_own_peak(10:39)",
+      "start_ms": 38341781,
+      "deferred_payments": 11921,
+      "deferred_value_brl": 4353135.41,
+      "ub_total_change_pct": 0.00001,
+      "others_ub_increase_brl": 7.28,
+      "others_ub_decrease_brl": 0,
+      "others_with_higher_ub": 1,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000467,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000467,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000494,
+          "rejected_payments": 17,
+          "payers_with_rejections": 10
+        }
+      ]
+    },
+    {
+      "target": "top_net_payer",
+      "participant": 1,
+      "start": "10:00",
+      "start_ms": 36000000,
+      "deferred_payments": 5532,
+      "deferred_value_brl": 3052513.5,
+      "ub_total_change_pct": 0.002917,
+      "others_ub_increase_brl": 3022.67,
+      "others_ub_decrease_brl": 943.63,
+      "others_with_higher_ub": 3,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000022,
+          "rejected_payments": 7,
+          "payers_with_rejections": 5
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000009,
+          "rejected_payments": 4,
+          "payers_with_rejections": 3
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.00001,
+          "rejected_payments": 6,
+          "payers_with_rejections": 5
+        }
+      ]
+    },
+    {
+      "target": "top_net_payer",
+      "participant": 1,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 6537,
+      "deferred_value_brl": 2703441.11,
+      "ub_total_change_pct": -0.000006,
+      "others_ub_increase_brl": 131.86,
+      "others_ub_decrease_brl": 136,
+      "others_with_higher_ub": 1,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000005,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000005,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000006,
+          "rejected_payments": 3,
+          "payers_with_rejections": 3
+        }
+      ]
+    },
+    {
+      "target": "top_net_payer",
+      "participant": 1,
+      "start": "before_own_peak(23:29)",
+      "start_ms": 84599163,
+      "deferred_payments": 2162,
+      "deferred_value_brl": 985095.27,
+      "ub_total_change_pct": 0.030108,
+      "others_ub_increase_brl": 21458.48,
+      "others_ub_decrease_brl": 0,
+      "others_with_higher_ub": 8,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000239,
+          "rejected_payments": 23,
+          "payers_with_rejections": 9
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000221,
+          "rejected_payments": 10,
+          "payers_with_rejections": 6
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000231,
+          "rejected_payments": 26,
+          "payers_with_rejections": 9
+        }
+      ]
+    },
+    {
+      "target": "top_net_receiver",
+      "participant": 7,
+      "start": "10:00",
+      "start_ms": 36000000,
+      "deferred_payments": 3366,
+      "deferred_value_brl": 1176212.41,
+      "ub_total_change_pct": -0.008582,
+      "others_ub_increase_brl": 0,
+      "others_ub_decrease_brl": 6116.47,
+      "others_with_higher_ub": 0,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000001,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        }
+      ]
+    },
+    {
+      "target": "top_net_receiver",
+      "participant": 7,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 4009,
+      "deferred_value_brl": 1668660.28,
+      "ub_total_change_pct": 0.000121,
+      "others_ub_increase_brl": 85.99,
+      "others_ub_decrease_brl": 0,
+      "others_with_higher_ub": 1,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000005,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000005,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000006,
+          "rejected_payments": 3,
+          "payers_with_rejections": 3
+        }
+      ]
+    },
+    {
+      "target": "top_net_receiver",
+      "participant": 7,
+      "start": "before_own_peak(01:14)",
+      "start_ms": 4471344,
+      "deferred_payments": 373,
+      "deferred_value_brl": 547250.34,
+      "ub_total_change_pct": 0.000012,
+      "others_ub_increase_brl": 8.59,
+      "others_ub_decrease_brl": 0,
+      "others_with_higher_ub": 1,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000025,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000025,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000822,
+          "rejected_payments": 5,
+          "payers_with_rejections": 5
+        }
+      ]
     }
   ]
 }
