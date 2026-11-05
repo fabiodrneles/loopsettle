@@ -4,7 +4,7 @@ Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à
 Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
 ## 1. Calibração (real vs simulado)
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
 
 | agregado | real | simulado | erro relativo |
 |---|---|---|---|
@@ -19,7 +19,7 @@ _seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -52,7 +52,7 @@ Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
@@ -88,7 +88,7 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -125,7 +125,7 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: maior participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -145,7 +145,7 @@ Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados
 | outage_constrained_1xUB | 71 274 781 | 3 137 734 | deferred_net_10x | 69 592 930 | 0.0000% | 8192000 |
 
 ## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo
-_seed `20260930`, código `0.1.0+git.61de370`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
+_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
 
 Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre sementes):
 
