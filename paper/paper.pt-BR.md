@@ -117,13 +117,12 @@ interface em React que roda a simulação num Web Worker. As escolhas principais
 autor. Antes de enviar, ela precisa citar o preprint e, idealmente, algum uso externo.]
 
 O LoopSettle sustenta um estudo sobre liquidez em pagamentos instantâneos [@dorneles2027preprint]
-[PREENCHER quando o preprint estiver publicado]. Nesse estudo, num cenário calibrado com dados
-públicos do Pix, uma medida potencial do mesmo tipo da usada pelo BCB, somada para o sistema todo,
-indica que 85% do volume seria compensável (no Pix real, o banco mediano do WP 619 fica entre 57% e
-80%), mas micro-ciclos de
-até 10 segundos economizam cerca de 0,01% da liquidez, e o teto demonstrado para qualquer mecanismo
-com essa espera fica abaixo de 1%. Os mesmos comandos mostram por que a reordenação dá resultado em
-fluxos de alto valor, com poucos pagamentos grandes.
+[PREENCHER quando o preprint estiver publicado]. Nesse estudo, num cenário calibrado para
+reproduzir os quartis da medida de compensação por banco do WP 619 (36%, 61% e 83%, dentro das
+faixas medidas no Pix real), micro-ciclos de até 10 segundos economizam uma fração da liquidez que
+não se distingue de zero, e o teto demonstrado para qualquer mecanismo com essa espera vai de 0,06% a
+3,3% da liquidez nas configurações testadas. Os mesmos comandos mostram por que a reordenação pode
+dar resultado em fluxos de alto valor, com poucos pagamentos grandes.
 
 Para facilitar o reúso, o repositório traz: todos os experimentos e resultados reproduzíveis, com
 um resumo gerado por comando; os comandos `bound` e `settle`, que rodam a análise em arquivos de

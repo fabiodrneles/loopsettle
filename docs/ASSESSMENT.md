@@ -18,8 +18,9 @@ and, we think, more useful:
 
 > **New central claim.** In an instant payment system, any settlement mechanism that delays
 > each payment by at most *d* can save at most the value each participant pays in the *d*
-> seconds before its liquidity peak. For second-scale deadlines this ceiling is below 1% of the
-> liquidity need in every configuration we tested, and the realised saving is about 0.01% —
+> seconds before its liquidity peak. For a 10 s deadline this ceiling is 0.06–3.3% of the
+> liquidity need across the configurations we tested (corrected on 5 Nov 2026; an earlier version
+> said "below 1%"), and the realised saving is about 0.01% —
 > independent of the cycle-search algorithm, the random seed and the scale. "Potential netting"
 > measures (85% of volume, 9% of liquidity) therefore say almost nothing about what a
 > time-bounded mechanism can recover; whether longer horizons recover more depends on

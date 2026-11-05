@@ -129,7 +129,7 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
     let wholesale_ppd = f64_list(doc, "regimes.wholesale_payments_per_day", &[2e3, 2e4, 2e5]);
     let mut cases: Vec<(String, ScenarioConfig)> = vec![("retail (Pix calibrated)".into(), base.clone())];
     for &p in &wholesale_ppd {
-        cases.push((format!("large-value, {p:.0}/day"), wholesale(p)));
+        cases.push((format!("large-value {p:.0}/day"), wholesale(p)));
     }
     let specs = [EngineSpec::Gross, EngineSpec::parse("micro:all:500:2000").unwrap(), EngineSpec::parse("micro:all:500:5000").unwrap(), EngineSpec::parse("micro:all:500:10000").unwrap()];
     let mut rows = Vec::new();
