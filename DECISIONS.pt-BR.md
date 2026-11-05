@@ -1,6 +1,6 @@
 # DECISIONS — decisões de desenho
 
-> 🇬🇧 [English version](DECISIONS.md)
+> [English version](DECISIONS.md)
 
 Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 

@@ -1,6 +1,6 @@
 # Paper outline
 
-> 🇧🇷 [Versão em português](PAPER_OUTLINE.pt-BR.md)
+> [Versão em português](PAPER_OUTLINE.pt-BR.md)
 
 Section titles and the list of figures/tables in each section only. The text will be written
 with the reviewer.

@@ -18,13 +18,13 @@
 </p>
 
 <p align="center">
-  <b>🇧🇷 <a href="#português">Português</a></b> ·
+  <b><a href="#português">Português</a></b> ·
   <a href="results/SUMMARY.pt-BR.md">Resultados</a> ·
   <a href="docs/METHODOLOGY.pt-BR.md">Metodologia</a> ·
   <a href="docs/LIMITATIONS.pt-BR.md">Limitações</a> ·
   <a href="docs/REFERENCES.pt-BR.md">Referências</a>
   <br>
-  <b>🇬🇧 <a href="#english">English</a></b> ·
+  <b><a href="#english">English</a></b> ·
   <a href="results/SUMMARY.md">Results</a> ·
   <a href="docs/METHODOLOGY.md">Methodology</a> ·
   <a href="docs/LIMITATIONS.md">Limitations</a> ·

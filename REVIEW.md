@@ -1,6 +1,6 @@
 # REVIEW — points to review before writing the paper
 
-> 🇧🇷 [Versão em português](REVIEW.pt-BR.md)
+> [Versão em português](REVIEW.pt-BR.md)
 
 Each point: **what was done**, **where it is**, **result** and **risk/question**.
 Numbers from [`results/SUMMARY.md`](results/SUMMARY.md) (seed 20260930, 200 participants,

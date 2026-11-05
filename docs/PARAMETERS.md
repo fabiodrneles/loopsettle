@@ -1,6 +1,6 @@
 # PARAMETERS — synthetic generator parameters
 
-> 🇧🇷 [Versão em português](PARAMETERS.pt-BR.md)
+> [Versão em português](PARAMETERS.pt-BR.md)
 
 Status: **SOURCED** (taken directly from public data), **CALIBRATED** (tuned to reproduce a
 public aggregate) or **ASSUMPTION** (a modelling choice without a direct source).

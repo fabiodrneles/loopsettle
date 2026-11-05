@@ -1,6 +1,6 @@
 # Known limitations
 
-> 🇧🇷 [Versão em português](LIMITATIONS.pt-BR.md)
+> [Versão em português](LIMITATIONS.pt-BR.md)
 
 1. **Synthetic data.** No real interbank data is used. The generator reproduces public
    aggregates (volume, value, mean ticket, B2B share, concentration by keys), but not the real

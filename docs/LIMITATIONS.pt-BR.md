@@ -1,6 +1,6 @@
 # Limitações conhecidas
 
-> 🇬🇧 [English version](LIMITATIONS.md)
+> [English version](LIMITATIONS.md)
 
 1. **Dados sintéticos.** Nenhum dado interbancário real é usado. O gerador reproduz agregados
    públicos (volume, valor, ticket médio, participação do B2B, concentração por chaves), mas

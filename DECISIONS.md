@@ -1,6 +1,6 @@
 # DECISIONS — design decisions
 
-> 🇧🇷 [Versão em português](DECISIONS.pt-BR.md)
+> [Versão em português](DECISIONS.pt-BR.md)
 
 Each entry: what was decided, alternatives, why, and how to revert.
 

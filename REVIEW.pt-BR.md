@@ -1,6 +1,6 @@
 # REVIEW — pontos a revisar antes de escrever o artigo
 
-> 🇬🇧 [English version](REVIEW.md)
+> [English version](REVIEW.md)
 
 Cada ponto: **o que foi feito**, **onde está**, **resultado** e **risco/dúvida**.
 Números de `results/SUMMARY.pt-BR.md` (seed 20260930, 200 participantes, 1 milhão de pagamentos,
