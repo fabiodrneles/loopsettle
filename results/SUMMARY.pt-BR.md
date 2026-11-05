@@ -42,6 +42,8 @@ Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):
 
 Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 63.2%, mediana 78.3%, p75 90.8%. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).
 
+Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = 6620 arestas, n = 200 nós): (m − n + 1)/m = 0.970, contra 0.977 observado — em grafo denso, a fração rotacional mede sobretudo a densidade.
+
 Correlação potencial de Hodge × posição líquida: 0.9971.
 
 Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
@@ -365,4 +367,85 @@ Perfis intradiários por classe de instituição com intensidade λ (0 = um perf
 | 1 | 1 | 30 000 000 | deferred:1 | 2.8436% | 205.891% | 0.972 |
 
 Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46%; disparou: não.
+
+## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
+_seed `20260930`, código `0.1.0+git.da5dcd9`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+
+A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
+
+| pagamentos/quinta | σ viés | λ | janela | tipo | horas | pré-financiamento (R$) | economia de compensar no fim | limite 10 s | limite 15 min |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 48 041 473 | 12.36% | 1.57% | 14.15% |
+| 1 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 28 681 900 | 13.21% | 2.68% | 30.75% |
+| 1 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 64 918 764 | 9.97% | 1.16% | 17.90% |
+| 1 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 133 609 081 | 6.45% | 0.64% | 6.41% |
+| 1 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 52 699 206 | 5.66% | 0.60% | 12.41% |
+| 1 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 54 313 565 | 13.39% | 4.74% | 22.10% |
+| 1 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 40 605 856 | 16.52% | 1.07% | 26.86% |
+| 1 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 61 242 424 | 14.39% | 1.19% | 12.05% |
+| 1 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 149 299 315 | 7.78% | 1.83% | 5.68% |
+| 1 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 55 806 414 | 14.69% | 1.57% | 20.33% |
+| 1 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 84 167 839 | 4.19% | 0.54% | 7.53% |
+| 1 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 44 320 554 | 7.18% | 1.42% | 15.37% |
+| 1 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 103 115 894 | 6.47% | 0.62% | 13.36% |
+| 1 000 000 | 1 | 0 | weekend | fechada | 59.5 | 231 824 135 | 1.31% | 0.47% | 2.68% |
+| 1 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 88 224 607 | 1.92% | 0.30% | 6.81% |
+| 1 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 87 198 188 | 8.02% | 1.09% | 16.62% |
+| 1 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 55 933 077 | 5.61% | 0.33% | 8.59% |
+| 1 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 97 899 510 | 7.21% | 0.37% | 8.05% |
+| 1 000 000 | 1 | 1 | weekend | fechada | 59.5 | 253 468 278 | 2.43% | 1.27% | 3.44% |
+| 1 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 89 259 707 | 12.53% | 0.92% | 11.66% |
+| 10 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 444 044 505 | 3.56% | 0.83% | 10.58% |
+| 10 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 207 595 537 | 6.47% | 0.96% | 28.74% |
+| 10 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 486 048 138 | 3.65% | 0.82% | 13.61% |
+| 10 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 1 235 058 181 | 1.73% | 0.52% | 5.68% |
+| 10 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 436 813 862 | 5.29% | 0.30% | 12.22% |
+| 10 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 485 132 089 | 12.19% | 1.13% | 12.14% |
+| 10 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 278 663 758 | 4.59% | 1.72% | 19.00% |
+| 10 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 543 812 921 | 9.45% | 0.28% | 13.07% |
+| 10 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 1 370 840 390 | 4.49% | 0.08% | 3.96% |
+| 10 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 487 629 172 | 12.51% | 0.44% | 11.50% |
+| 10 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 812 944 806 | 1.42% | 0.31% | 5.76% |
+| 10 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 375 281 896 | 2.00% | 0.67% | 12.67% |
+| 10 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 902 980 120 | 1.21% | 0.37% | 6.59% |
+| 10 000 000 | 1 | 0 | weekend | fechada | 59.5 | 2 340 355 049 | 0.36% | 0.16% | 1.97% |
+| 10 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 811 932 785 | 0.75% | 0.10% | 6.15% |
+| 10 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 848 160 779 | 4.97% | 0.54% | 7.96% |
+| 10 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 461 463 511 | 1.86% | 0.22% | 9.90% |
+| 10 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 956 742 931 | 3.92% | 0.46% | 8.01% |
+| 10 000 000 | 1 | 1 | weekend | fechada | 59.5 | 2 537 756 124 | 0.98% | 0.23% | 2.09% |
+| 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
+
+## 11. Regimes: varejo × alto valor, e curva do limite
+_seed `20260930`, código `0.1.0+git.da5dcd9`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+
+O limite de atraso depende do tamanho dos pagamentos em relação à liquidez necessária. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
+
+| caso | participantes | pagamentos | pagamento médio / UB médio | atraso máx. (ms) | economia micro-ciclos | limite de atraso |
+|---|---|---|---|---|---|---|
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 2000.0000% | 0.000% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 5000.0000% | 0.000% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 10000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 2000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 5000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 10000.0000% | -0.018% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 2000.0000% | 0.005% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 5000.0000% | 0.006% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 10000.0000% | 0.006% |
+
+Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):
+
+| d (s) | ciclos/dia | economia obtida | limite (até 100%) | obtido / limite |
+|---|---|---|---|---|
+| 10 | 8640 | 0.0276% | 0.76% | 0.036 |
+| 60 | 1440 | 0.0712% | 2.67% | 0.027 |
+| 900 | 96 | 0.3248% | 7.96% | 0.041 |
+| 3600 | 24 | 1.0545% | 23.12% | 0.046 |
+| 21600 | 4 | 3.7443% | 100.00% | 0.030 |
+| 86400 | 1 | 9.2669% | 100.00% | 0.034 |
+
+Figura: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 

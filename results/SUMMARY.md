@@ -42,6 +42,8 @@ Ladder (fractions of the graph's total flow; Hodge L1 can exceed 1):
 
 Per-bank nettable ratio, BCB WP 619 definition (eq. 3.2, 2·min(out, in)/(out + in)): p25 63.2%, median 78.3%, p75 90.8%. On real Pix data WP 619 reports a median of 57% to 80%, p25 of 18% to 45% and p75 of 73% to 90% (from Nov 2020).
 
+Hodge null value (random flows on the same net graph, m = 6620 edges, n = 200 nodes): (m − n + 1)/m = 0.970, against 0.977 observed — on a dense graph the curl share mostly measures density.
+
 Hodge potential × net position correlation: 0.9971.
 
 Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):
@@ -365,4 +367,85 @@ Class-specific intraday profiles with strength λ (0 = one profile for everyone,
 | 1 | 1 | 30 000 000 | deferred:1 | 2.8436% | 205.891% | 0.972 |
 
 Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case 0.46%; fired: no.
+
+## 10. Conta PI funding windows: nights and the weekend (W3)
+_seed `20260930`, code `0.1.0+git.da5dcd9`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+
+The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.
+
+| payments/Thursday | σ bias | λ | window | kind | hours | prefunding need (R$) | saving of netting at the end | bound 10 s | bound 15 min |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 000 000 | 0.4 | 0 | thu_day | open | 12.5 | 48 041 473 | 12.36% | 1.57% | 14.15% |
+| 1 000 000 | 0.4 | 0 | thu_night | closed | 11.5 | 28 681 900 | 13.21% | 2.68% | 30.75% |
+| 1 000 000 | 0.4 | 0 | fri_day | open | 12.5 | 64 918 764 | 9.97% | 1.16% | 17.90% |
+| 1 000 000 | 0.4 | 0 | weekend | closed | 59.5 | 133 609 081 | 6.45% | 0.64% | 6.41% |
+| 1 000 000 | 0.4 | 0 | mon_day | open | 12.5 | 52 699 206 | 5.66% | 0.60% | 12.41% |
+| 1 000 000 | 0.4 | 1 | thu_day | open | 12.5 | 54 313 565 | 13.39% | 4.74% | 22.10% |
+| 1 000 000 | 0.4 | 1 | thu_night | closed | 11.5 | 40 605 856 | 16.52% | 1.07% | 26.86% |
+| 1 000 000 | 0.4 | 1 | fri_day | open | 12.5 | 61 242 424 | 14.39% | 1.19% | 12.05% |
+| 1 000 000 | 0.4 | 1 | weekend | closed | 59.5 | 149 299 315 | 7.78% | 1.83% | 5.68% |
+| 1 000 000 | 0.4 | 1 | mon_day | open | 12.5 | 55 806 414 | 14.69% | 1.57% | 20.33% |
+| 1 000 000 | 1 | 0 | thu_day | open | 12.5 | 84 167 839 | 4.19% | 0.54% | 7.53% |
+| 1 000 000 | 1 | 0 | thu_night | closed | 11.5 | 44 320 554 | 7.18% | 1.42% | 15.37% |
+| 1 000 000 | 1 | 0 | fri_day | open | 12.5 | 103 115 894 | 6.47% | 0.62% | 13.36% |
+| 1 000 000 | 1 | 0 | weekend | closed | 59.5 | 231 824 135 | 1.31% | 0.47% | 2.68% |
+| 1 000 000 | 1 | 0 | mon_day | open | 12.5 | 88 224 607 | 1.92% | 0.30% | 6.81% |
+| 1 000 000 | 1 | 1 | thu_day | open | 12.5 | 87 198 188 | 8.02% | 1.09% | 16.62% |
+| 1 000 000 | 1 | 1 | thu_night | closed | 11.5 | 55 933 077 | 5.61% | 0.33% | 8.59% |
+| 1 000 000 | 1 | 1 | fri_day | open | 12.5 | 97 899 510 | 7.21% | 0.37% | 8.05% |
+| 1 000 000 | 1 | 1 | weekend | closed | 59.5 | 253 468 278 | 2.43% | 1.27% | 3.44% |
+| 1 000 000 | 1 | 1 | mon_day | open | 12.5 | 89 259 707 | 12.53% | 0.92% | 11.66% |
+| 10 000 000 | 0.4 | 0 | thu_day | open | 12.5 | 444 044 505 | 3.56% | 0.83% | 10.58% |
+| 10 000 000 | 0.4 | 0 | thu_night | closed | 11.5 | 207 595 537 | 6.47% | 0.96% | 28.74% |
+| 10 000 000 | 0.4 | 0 | fri_day | open | 12.5 | 486 048 138 | 3.65% | 0.82% | 13.61% |
+| 10 000 000 | 0.4 | 0 | weekend | closed | 59.5 | 1 235 058 181 | 1.73% | 0.52% | 5.68% |
+| 10 000 000 | 0.4 | 0 | mon_day | open | 12.5 | 436 813 862 | 5.29% | 0.30% | 12.22% |
+| 10 000 000 | 0.4 | 1 | thu_day | open | 12.5 | 485 132 089 | 12.19% | 1.13% | 12.14% |
+| 10 000 000 | 0.4 | 1 | thu_night | closed | 11.5 | 278 663 758 | 4.59% | 1.72% | 19.00% |
+| 10 000 000 | 0.4 | 1 | fri_day | open | 12.5 | 543 812 921 | 9.45% | 0.28% | 13.07% |
+| 10 000 000 | 0.4 | 1 | weekend | closed | 59.5 | 1 370 840 390 | 4.49% | 0.08% | 3.96% |
+| 10 000 000 | 0.4 | 1 | mon_day | open | 12.5 | 487 629 172 | 12.51% | 0.44% | 11.50% |
+| 10 000 000 | 1 | 0 | thu_day | open | 12.5 | 812 944 806 | 1.42% | 0.31% | 5.76% |
+| 10 000 000 | 1 | 0 | thu_night | closed | 11.5 | 375 281 896 | 2.00% | 0.67% | 12.67% |
+| 10 000 000 | 1 | 0 | fri_day | open | 12.5 | 902 980 120 | 1.21% | 0.37% | 6.59% |
+| 10 000 000 | 1 | 0 | weekend | closed | 59.5 | 2 340 355 049 | 0.36% | 0.16% | 1.97% |
+| 10 000 000 | 1 | 0 | mon_day | open | 12.5 | 811 932 785 | 0.75% | 0.10% | 6.15% |
+| 10 000 000 | 1 | 1 | thu_day | open | 12.5 | 848 160 779 | 4.97% | 0.54% | 7.96% |
+| 10 000 000 | 1 | 1 | thu_night | closed | 11.5 | 461 463 511 | 1.86% | 0.22% | 9.90% |
+| 10 000 000 | 1 | 1 | fri_day | open | 12.5 | 956 742 931 | 3.92% | 0.46% | 8.01% |
+| 10 000 000 | 1 | 1 | weekend | closed | 59.5 | 2 537 756 124 | 0.98% | 0.23% | 2.09% |
+| 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
+
+## 11. Regimes: retail vs large-value, and the bound curve
+_seed `20260930`, code `0.1.0+git.da5dcd9`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+
+The delay bound depends on payment size relative to liquidity needs. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
+
+| case | participants | payments | avg payment / avg UB | max delay (ms) | micro-cycle saving | delay bound |
+|---|---|---|---|---|---|---|
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 2000.0000% | 0.000% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 5000.0000% | 0.000% |
+| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 10000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 2000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 5000.0000% | 0.000% |
+| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 10000.0000% | -0.018% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 2000.0000% | 0.005% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 5000.0000% | 0.006% |
+| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 10000.0000% | 0.006% |
+
+Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):
+
+| d (s) | cycles/day | realised saving | bound (capped at 100%) | realised / bound |
+|---|---|---|---|---|
+| 10 | 8640 | 0.0276% | 0.76% | 0.036 |
+| 60 | 1440 | 0.0712% | 2.67% | 0.027 |
+| 900 | 96 | 0.3248% | 7.96% | 0.041 |
+| 3600 | 24 | 1.0545% | 23.12% | 0.046 |
+| 21600 | 4 | 3.7443% | 100.00% | 0.030 |
+| 86400 | 1 | 9.2669% | 100.00% | 0.034 |
+
+Figure: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 

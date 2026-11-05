@@ -25,12 +25,21 @@ use loopsettle_core::{Cents, TimeMs};
 /// any mechanism whose maximum settlement delay is that value. Two streaming passes over the
 /// scenario (the stream is regenerated from the seed, so memory stays O(participants)).
 pub fn delay_bounds(cfg: &ScenarioConfig, delays_ms: &[TimeMs]) -> Vec<Vec<Cents>> {
-    let n = cfg.participants;
+    delay_bounds_from(cfg.participants, || PaymentStream::new(cfg), delays_ms)
+}
+
+/// Same bound for any payment source sorted by arrival time (e.g. a real payment file);
+/// `make` must produce the same stream every time it is called.
+pub fn delay_bounds_from<I, F>(n: usize, make: F, delays_ms: &[TimeMs]) -> Vec<Vec<Cents>>
+where
+    I: Iterator<Item = loopsettle_core::Payment>,
+    F: Fn() -> I,
+{
     // Pass 1: time of the first minimum of each participant's gross cumulative position.
     let mut x = vec![0i64; n];
     let mut min = vec![0i64; n];
     let mut t_min: Vec<Option<TimeMs>> = vec![None; n];
-    for p in PaymentStream::new(cfg) {
+    for p in make() {
         let (a, b) = (p.payer as usize, p.payee as usize);
         x[a] -= p.amount;
         x[b] += p.amount;
@@ -41,7 +50,7 @@ pub fn delay_bounds(cfg: &ScenarioConfig, delays_ms: &[TimeMs]) -> Vec<Vec<Cents
     }
     // Pass 2: outflows of each participant in [t* - d, t*], for every d.
     let mut out = vec![vec![0i64; n]; delays_ms.len()];
-    for p in PaymentStream::new(cfg) {
+    for p in make() {
         let a = p.payer as usize;
         if let Some(ts) = t_min[a] {
             if p.t_arrival <= ts {
@@ -102,5 +111,104 @@ mod tests {
         for i in 0..cfg.participants {
             assert!(b[0][i] <= b[1][i] && b[1][i] <= b[2][i]);
         }
+    }
+}
+
+/// Liquidity a participant must prefund for a window `[start, end)` in which its settlement
+/// account cannot be topped up (W3: e.g. the Conta PI outside STR hours, nights and weekends).
+#[derive(Clone, Debug, Default)]
+pub struct WindowStats {
+    /// per participant: drawdown from the window's opening position, max(0, x(start) - min x)
+    pub need: Vec<Cents>,
+    /// per participant: what one netting at the end of the window needs, max(0, x(start) - x(end))
+    pub net: Vec<Cents>,
+    /// per delay, per participant: the delay bound inside the window (section 9 of METHODOLOGY)
+    pub bound: Vec<Vec<Cents>>,
+}
+
+/// Per-window prefunding need, end-of-window netting need and delay bound, for windows that
+/// may overlap. Two streaming passes; memory O(windows x participants).
+pub fn window_stats<I, F>(n: usize, make: F, windows: &[(TimeMs, TimeMs)], delays_ms: &[TimeMs]) -> Vec<WindowStats>
+where
+    I: Iterator<Item = loopsettle_core::Payment>,
+    F: Fn() -> I,
+{
+    let w = windows.len();
+    let mut x = vec![0i64; n];
+    let mut x0 = vec![vec![0i64; n]; w];
+    let mut started = vec![false; w];
+    let mut min = vec![vec![0i64; n]; w];
+    let mut t_min: Vec<Vec<Option<TimeMs>>> = vec![vec![None; n]; w];
+    let mut xend = vec![vec![0i64; n]; w];
+    let mut ended = vec![false; w];
+    // Pass 1. A window "starts" just before the first payment at or after `start` and "ends"
+    // just before the first payment at or after `end`, so positions are taken between payments.
+    #[allow(clippy::too_many_arguments)]
+    fn open(t: TimeMs, windows: &[(TimeMs, TimeMs)], x: &[i64], started: &mut [bool], ended: &mut [bool], x0: &mut [Vec<i64>], min: &mut [Vec<i64>], xend: &mut [Vec<i64>]) {
+        for k in 0..windows.len() {
+            if !started[k] && t >= windows[k].0 {
+                started[k] = true;
+                x0[k] = x.to_vec();
+                min[k] = x.to_vec();
+            }
+            if started[k] && !ended[k] && t >= windows[k].1 {
+                ended[k] = true;
+                xend[k] = x.to_vec();
+            }
+        }
+    }
+    for p in make() {
+        open(p.t_arrival, windows, &x, &mut started, &mut ended, &mut x0, &mut min, &mut xend);
+        let (a, b) = (p.payer as usize, p.payee as usize);
+        x[a] -= p.amount;
+        x[b] += p.amount;
+        for k in 0..w {
+            if started[k] && !ended[k] && x[a] < min[k][a] {
+                min[k][a] = x[a];
+                t_min[k][a] = Some(p.t_arrival);
+            }
+        }
+    }
+    open(TimeMs::MAX, windows, &x, &mut started, &mut ended, &mut x0, &mut min, &mut xend);
+    // Pass 2: outflows in [t* - d, t*] for each window.
+    let mut bound = vec![vec![vec![0i64; n]; delays_ms.len()]; w];
+    for p in make() {
+        let a = p.payer as usize;
+        for k in 0..w {
+            if let Some(ts) = t_min[k][a] {
+                if p.t_arrival <= ts {
+                    for (j, &d) in delays_ms.iter().enumerate() {
+                        if p.t_arrival >= ts.saturating_sub(d) {
+                            bound[k][j][a] += p.amount;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    (0..w)
+        .map(|k| WindowStats {
+            need: (0..n).map(|i| (x0[k][i] - min[k][i]).max(0)).collect(),
+            net: (0..n).map(|i| (x0[k][i] - xend[k][i]).max(0)).collect(),
+            bound: std::mem::take(&mut bound[k]),
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod window_tests {
+    use super::*;
+    use loopsettle_core::Payment;
+
+    #[test]
+    fn window_need_is_drawdown_from_the_window_start() {
+        let p = |t, a, b, v| Payment { id: 0, t_arrival: t, payer: a, payee: b, amount: v };
+        // A pays 10 before the window, then inside the window pays 5 and receives 2.
+        let v = vec![p(1, 0, 1, 10), p(10, 0, 1, 5), p(12, 1, 0, 2), p(30, 0, 1, 1)];
+        let s = window_stats(2, || v.clone().into_iter(), &[(5, 20)], &[3]);
+        assert_eq!(s[0].need, vec![5, 0]);
+        assert_eq!(s[0].net, vec![3, 0]);
+        // the minimum of A inside the window is at t = 10; outflows in [7, 10] = 5
+        assert_eq!(s[0].bound[0], vec![5, 0]);
     }
 }

@@ -33,6 +33,10 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 | `amounts.tail_alpha` | 1.3 | ASSUMPTION | Pareto tail exponent. |
 | `amounts.max_amount` | R$ 5,000,000 | ASSUMPTION | Tail truncation. |
 | Outage: retry | 100% resubmitted at the end | ASSUMPTION | `stress` experiment: no payment abandoned. |
+| `hourly_profile = "spi2024"` | (option) | SOURCED | Average Pix per hour slot in 2024, BCB Relatório Anual do SPI 2024, Graph 12, p. 13 (`SPI_2024_HOURLY`); used by `funding-windows`. |
+| `day_weights` | (option) | SOURCED | Day-type volumes 2024 (Mon 157.61 M … Fri 179.60 M, Sat 157.72 M, Sun 113.54 M), same report, Graph 11, p. 12 (`SPI_2024_WEEKDAY`); used by `funding-windows`. |
+| STR window | 6:30–19:00 business days | SOURCED | 6:30–18:30 plus the 30-minute top-up window (same report, p. 15); `funding-windows`. |
+| Large-value regime | 20 participants, median R$ 1 M, tail α 1.3 | ASSUMPTION | Stylised system for `regimes` only. |
 
 ## Arrival process
 

@@ -169,3 +169,28 @@ O veredito continua **PIVOTAR**; nenhum critério de morte disparou.
   central.
 
 O veredito continua **PIVOTAR**, com a afirmação acima. Nenhum critério de morte disparou.
+
+## Atualização 3 — ferramenta para dados reais, janelas de abastecimento, regimes (05/11/2026)
+
+- **K3 não disparou (W3).** Os documentos do BCB mostram que a Conta PI só recebe aportes com o STR
+  aberto, então a restrição relevante é o pré-financiamento das noites e dos fins de semana. No
+  `funding-windows`, o fim de semana precisa de ≈ 2,7× o maior esvaziamento de um dia, e uma
+  compensação no fim do fim de semana economizaria só 0,4–1,0% disso (σ calibrado); o limite de 10 s
+  dentro dele é ≤ 0,23%. O resultado central vale, portanto, na janela que de fato restringe.
+- **K2 não disparou, mas o trabalho mais próximo mudou.** McMahon et al. (2024) relatam 14–30% de
+  economia com reordenação abaixo de 5 s no T2. O `regimes` mostra por que isso é coerente com o
+  LoopSettle: o limite de atraso cresce com o tamanho dos pagamentos (limite de 10 s de 0,76% no
+  varejo contra 13,7% com 2.000 pagamentos grandes por dia). Ainda é preciso ler o artigo completo.
+- **W5 feita.** Para d de 10 s a um dia, a compensação obtida fica em 3–5% do limite
+  (`regimes/bound_curve.csv`): o limite é folgado, mas por um fator estável.
+- **W9.1 feita.** `loopsettle bound/settle` rodam em arquivos de pagamentos reais, com saída só de
+  agregados.
+
+### Já dá para começar a escrever?
+
+**Sim — o preprint e o artigo do JOSS podem ser rascunhados agora.** Todas as frentes obrigatórias
+estão feitas ou reduzidas a conferências que não mudam os resultados: ler o artigo de McMahon et al.
+(W4), refazer ou tirar o experimento de estresse (W6) e os itens do seu lado (notebook de referência,
+submissão). O esqueleto revisto está em [`PAPER_OUTLINE.pt-BR.md`](PAPER_OUTLINE.pt-BR.md). O que deve
+ficar fora do texto até existirem dados reais por participante: qualquer número de economia potencial
+no Pix real além da faixa de 0,2–3%, e qualquer afirmação sobre sistemas de outros países.

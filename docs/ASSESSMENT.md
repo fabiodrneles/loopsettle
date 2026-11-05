@@ -167,3 +167,27 @@ The verdict stays **PIVOT**; no kill criterion has fired.
   per-participant intraday patterns — the one input that needs a central bank's data.
 
 The verdict stays **PIVOT**, with the claim above. No kill criterion has fired.
+
+## Update 3 — real-data tool, funding windows, regimes (5 Nov 2026)
+
+- **K3 not fired (W3).** The BCB documents show that the Conta PI can be topped up only while the
+  STR is open, so the binding constraint is the prefunding of nights and weekends. In
+  `funding-windows`, the weekend needs ≈ 2.7× a day's peak drawdown, and one netting at the end of
+  the weekend would save only 0.4–1.0% of it (calibrated σ); the 10 s bound inside it is ≤ 0.23%.
+  The central result therefore holds in the window that actually binds.
+- **K2 not fired, but the closest work changed.** McMahon et al. (2024) report 14–30% savings from
+  sub-5 s reordering in T2. `regimes` shows why this is consistent with LoopSettle: the delay bound
+  scales with payment lumpiness (10 s bound 0.76% in retail vs 13.7% with 2,000 large payments a
+  day). Their full paper must still be read.
+- **W5 done.** Across d from 10 s to one day, realised netting saves 3–5% of the bound
+  (`regimes/bound_curve.csv`): the bound is loose but by a stable factor.
+- **W9.1 done.** `loopsettle bound/settle` run on real payment files with aggregate-only output.
+
+### Can we start writing?
+
+**Yes — the preprint and the JOSS paper can be drafted now.** Every required workstream is done or
+reduced to checks that do not change the results: reading the McMahon et al. paper (W4), redesigning
+or dropping the stress experiment (W6), and the owner-side items (reference laptop, submission). The
+revised outline is in [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md). What must stay out of the text until
+real per-participant data exist: any number for the potential saving in real Pix beyond the
+0.2–3% band, and any claim about other countries' systems.

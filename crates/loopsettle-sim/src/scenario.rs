@@ -114,6 +114,18 @@ pub const CLASS_IN_PROFILE: [[f64; 24]; 4] = [
     [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.6, 1.0, 1.4, 1.6, 1.8, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.6, 1.5, 1.3, 1.0, 0.6, 0.3],
 ];
 
+/// SOURCED hourly profile: average number of Pix settled per hour slot in 2024, in thousands
+/// (BCB, Relatório Anual do SPI 2024, Gráfico 12, p. 13). Selected with
+/// `hourly_profile = "spi2024"`.
+pub const SPI_2024_HOURLY: [f64; 24] = [
+    3022.0, 1946.0, 1226.0, 867.0, 738.0, 1069.0, 2487.0, 4402.0, 6291.0, 7921.0, 8965.0, 9850.0, 10277.0, 9580.0, 9125.0, 9312.0, 9635.0, 10152.0, 10440.0,
+    9833.0, 8768.0, 7596.0, 6011.0, 4345.0,
+];
+
+/// SOURCED average number of Pix settled per day type in 2024, in millions (same report,
+/// Gráfico 11, p. 12), Monday to Sunday.
+pub const SPI_2024_WEEKDAY: [f64; 7] = [157.61, 157.68, 158.57, 160.50, 179.60, 157.72, 113.54];
+
 #[derive(Clone, Debug)]
 pub struct ScenarioConfig {
     pub name: String,
@@ -141,6 +153,8 @@ pub struct ScenarioConfig {
     pub hourly: Vec<f64>,
     /// strength of the class-specific intraday profiles (0 = everyone follows `hourly`)
     pub profile_strength: f64,
+    /// relative volume of each simulated day (empty = every day has `payments_per_day`)
+    pub day_weights: Vec<f64>,
     pub amounts: AmountModel,
     /// how many real payments one simulated payment stands for (documentation only)
     pub scale_factor: f64,
@@ -165,6 +179,7 @@ impl Default for ScenarioConfig {
             pi_receiver_mult: 1.3,
             hourly: DEFAULT_HOURLY.to_vec(),
             profile_strength: 0.0,
+            day_weights: Vec::new(),
             amounts: AmountModel::default(),
             scale_factor: 1.0,
         }
@@ -295,6 +310,14 @@ impl ScenarioConfig {
         num!(c.amounts.max_amount, "max_amount_brl", as_f64, f64);
         if let Some(h) = d.f64_array("scenario.hourly") {
             c.hourly = h;
+        }
+        match d.str("scenario.hourly_profile") {
+            None | Some("default") => {}
+            Some("spi2024") => c.hourly = SPI_2024_HOURLY.to_vec(),
+            Some(other) => return Err(format!("unknown hourly_profile '{other}' (use default or spi2024)")),
+        }
+        if let Some(w) = d.f64_array("scenario.day_weights") {
+            c.day_weights = w;
         }
         if let Some(path) = d.str("scenario.calibration") {
             let t = crate::calibrate::Targets::load(path)?;

@@ -25,6 +25,9 @@
   `scripts/summarize.py`); `data/README.md` and `results/README.md` in both languages; the UI has
   a PT/EN switch (`?lang=pt|en`). Rule: when a document changes, its twin changes in the same
   commit.
+- **5 Nov 2026, later:** real-data CLI (`bound`/`settle`/`export`), W2/W2b, W3 (`funding-windows`),
+  W5 (`regimes`, bound curve) done; K1–K3 not fired; the next phase is writing (preprint and JOSS,
+  `docs/PAPER_OUTLINE.md`). Remaining checks: McMahon et al. (2024) full paper, stress redesign.
 - **References checked** by public search: see [`docs/REFERENCES.md`](docs/REFERENCES.md)
   (PixSim not found; CDFD title corrected; the Finnish study's 8.6% figure to be checked).
 

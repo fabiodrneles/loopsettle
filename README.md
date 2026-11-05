@@ -95,6 +95,10 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
   compensação diária recupera **entre 0,2% e 2,8%** da liquidez, conforme o quanto os bancos têm
   padrões intradiários diferentes entre si — a pergunta que só dados por participante respondem
   ([avaliação](docs/ASSESSMENT.pt-BR.md)).
+- **A restrição real é o fim de semana.** A Conta PI só recebe aportes com o STR aberto (dias
+  úteis, 6h30–18h30), então os bancos pré-financiam as noites e as 59,5 horas do fim de semana —
+  cerca de 2,7× o pico de um dia. Mesmo aí, compensar no fim do fim de semana economizaria só
+  0,4–1,0%: a necessidade vem do desequilíbrio líquido acumulado, não de fluxo circular.
 
 > **Volume compensável não é liquidez economizada.** O LoopSettle torna visível e mensurável a
 > distância entre essas duas medidas.
@@ -344,6 +348,22 @@ Requisitos: Rust estável com o target `wasm32-unknown-unknown`, `wasm-pack` e N
 Tudo de uma vez, do zero: `make rebuild`. Roda num Intel i3 de 4ª geração com 4 GB de RAM:
 cada experimento usa menos de 20 MiB e termina em segundos.
 
+### Rode nos seus dados
+
+Bancos centrais, bancos e fintechs podem rodar o LoopSettle nos **próprios pagamentos**, sem que
+os dados saiam da máquina: o arquivo é lido em streaming e a saída tem só agregados.
+
+```bash
+cargo run --release -p loopsettle-cli -- bound  pagamentos.csv   # UB, LB e o teto de qualquer mecanismo com atraso d
+cargo run --release -p loopsettle-cli -- settle pagamentos.csv   # + economia de cada desenho (bruto, micro-ciclos, compensação)
+```
+
+O arquivo é um CSV com as colunas `time` (segundos, `HH:MM:SS` ou `t_ms` em milissegundos),
+`from`, `to` e `amount` (em unidades da moeda, convertidas em centavos sem ponto flutuante),
+ordenado pelo horário. Para testar sem dados reais: `loopsettle export baseline exemplo.csv`, ou o
+arquivo pronto [`data/samples/payments_example.csv`](data/samples/payments_example.csv). Detalhes em
+[`data/README.md`](data/README.md#português).
+
 ### Reprodutibilidade
 
 Cada número publicado vem de um comando com semente fixa. Rodar de novo reproduz os resultados
@@ -360,6 +380,8 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `robustness` | o resultado sobrevive a sementes, escala, viés e algoritmo? | `results/robustness/` |
 | `bias-calibration` | qual viés recebedor reproduz os dados reais do WP 619? | `results/bias-calibration/` |
 | `heterogeneity` | e se cada tipo de banco tiver seu próprio perfil ao longo do dia? | `results/heterogeneity/` |
+| `funding-windows` | quanto é preciso pré-financiar para as noites e o fim de semana, com o STR fechado? | `results/funding-windows/` |
+| `regimes` | o teto muda entre varejo e sistemas de alto valor? | `results/regimes/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
 execução): conservação do dinheiro; preservação da posição líquida de cada participante;
@@ -518,6 +540,10 @@ million payments per day):
   to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between
   0.2% and 2.8%** of the liquidity, depending on how differently banks behave during the day — the
   question only per-participant data can answer ([assessment](docs/ASSESSMENT.md)).
+- **The real constraint is the weekend.** The Conta PI can only be topped up while the STR is open
+  (business days, 6:30–18:30), so banks prefund the nights and the 59.5 weekend hours — about 2.7×
+  a day's peak. Even there, netting at the end of the weekend would save only 0.4–1.0%: the need
+  comes from accumulated net imbalance, not from circular flow.
 
 > **Nettable volume is not saved liquidity.** LoopSettle makes the gap between the two visible
 > and measurable.
@@ -763,6 +789,22 @@ Requirements: stable Rust with the `wasm32-unknown-unknown` target, `wasm-pack` 
 Everything from scratch: `make rebuild`. Runs on a 4th-generation Intel i3 with 4 GB of RAM:
 each experiment uses under 20 MiB and finishes in seconds.
 
+### Run it on your own data
+
+Central banks, banks and fintechs can run LoopSettle on **their own payments** without the data
+leaving the machine: the file is streamed and the output contains aggregates only.
+
+```bash
+cargo run --release -p loopsettle-cli -- bound  payments.csv   # UB, LB and the ceiling for any mechanism with delay d
+cargo run --release -p loopsettle-cli -- settle payments.csv   # + the saving of each design (gross, micro-cycles, netting)
+```
+
+The file is a CSV with columns `time` (seconds, `HH:MM:SS`, or `t_ms` in milliseconds), `from`,
+`to` and `amount` (in currency units, converted to cents without floating point), sorted by time.
+To try it without real data: `loopsettle export baseline example.csv`, or the ready-made
+[`data/samples/payments_example.csv`](data/samples/payments_example.csv). Details in
+[`data/README.md`](data/README.md#english).
+
 ### Reproducibility
 
 Every published number comes from a command with a fixed seed. Re-running reproduces the results
@@ -779,6 +821,8 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `robustness` | does the result survive seeds, scale, bias and algorithm? | `results/robustness/` |
 | `bias-calibration` | which receiver bias reproduces the real WP 619 data? | `results/bias-calibration/` |
 | `heterogeneity` | what if each type of bank has its own intraday profile? | `results/heterogeneity/` |
+| `funding-windows` | how much must be prefunded for nights and the weekend, with the STR closed? | `results/funding-windows/` |
+| `regimes` | does the ceiling differ between retail and large-value systems? | `results/regimes/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
 run): conservation of money; each participant's net position preserved; no negative balances;

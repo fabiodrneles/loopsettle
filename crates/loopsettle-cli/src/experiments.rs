@@ -18,6 +18,8 @@ pub const ALL: &[(&str, &str)] = &[
     ("robustness", "seeds, scale, cycle length, delay bound and per-bank ratios"),
     ("bias-calibration", "fit the receiver bias to the BCB WP 619 per-bank nettable ratios"),
     ("heterogeneity", "class-specific intraday profiles x scale (kill criterion K1)"),
+    ("funding-windows", "prefunding for nights and weekends outside STR hours (W3)"),
+    ("regimes", "delay bound in retail vs large-value systems"),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -37,6 +39,8 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "robustness" => crate::experiments3::robustness(path, doc, &cfg),
         "bias-calibration" => crate::experiments4::bias_calibration(path, doc, &cfg),
         "heterogeneity" => crate::experiments4::heterogeneity(path, doc, &cfg),
+        "funding-windows" => crate::experiments5::funding_windows(path, doc, &cfg),
+        "regimes" => crate::experiments5::regimes(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
     }
 }

@@ -192,3 +192,19 @@ Each entry: what was decided, alternatives, why, and how to revert.
   the conservative choice for the claim "savings are small"; the paper should quote both.
 - **Revert / alternative:** set `receiver_bias_sigma = 1.0` in the experiment TOMLs and run
   `make all`.
+
+## D20 — Funding windows: prefunding measured inside closed windows
+- **Decision:** outside STR hours the Conta PI cannot be topped up, so the relevant need is the
+  drawdown from the start of each closed window (nights, the weekend); inside open windows top-ups
+  are assumed unlimited. Five days (Thursday to Monday) with the sourced hourly profile and day
+  volumes (`funding-windows`).
+- **Alternatives:** model top-up behaviour and the Conta PI remuneration explicitly; holidays.
+- **Why:** it is how the BCB describes the liquidity constraint (Relatório Anual do SPI 2024,
+  p. 15; Relatório de Gestão do Pix 2023, p. 16).
+- **Revert:** the one-day UB of the other experiments remains available.
+
+## D21 — Real-data commands output aggregates only
+- **Decision:** `loopsettle bound/settle` stream the file, keep only per-participant state and
+  write aggregates; per-participant rows only with `--per-participant`. Output goes to
+  `loopsettle-out/` (git-ignored), never to `results/`.
+- **Why:** an institution must be able to run it on confidential data and share the output.

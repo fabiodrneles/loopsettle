@@ -192,3 +192,12 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     intradiária — a incógnita que resta, mensurável só com dados intradiários por participante
     (uma questão de parceria com o BCB). O revisor deve conferir os formatos dos perfis em
     `scenario.rs` (`CLASS_OUT_PROFILE`, `CLASS_IN_PROFILE`).
+74. **Comandos para dados reais (W9.1).** `loopsettle bound/settle/export`; o revisor deve testar
+    `bound data/samples/payments_example.csv` e conferir as regras de formato em `csvfile.rs`.
+75. **Janelas de abastecimento (W3, K3 não disparou).** O fim de semana é a janela que restringe
+    (≈ 2,7× o pico de um dia); compensar no fim dele economiza 0,4–1,0%. Em aberto: feriados e o
+    comportamento real de aportes.
+76. **McMahon et al. (2024)** é o trabalho mais próximo (alto valor, 14–30% de economia com
+    reordenação < 5 s). O `regimes` mostra que o limite é 13,7% num cenário de alto valor com poucos
+    pagamentos grandes, contra 0,76% no varejo. É preciso ler o artigo completo antes de submeter; a
+    base deles (FIFO com fila) não é o nosso UB.

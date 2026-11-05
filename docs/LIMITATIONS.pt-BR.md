@@ -44,3 +44,9 @@
     *Atualização (W2):* os perfis por classe agora existem (`profile_strength`, D18); com eles o
     potencial deixa de desabar (2,8% com 30 milhões e o σ calibrado), mas os formatos são hipóteses
     até que se usem dados intradiários por participante.
+15. **Janelas de abastecimento simplificadas.** O `funding-windows` modela o horário do STR e o fim de
+    semana, mas não feriados, o comportamento real de aportes dos participantes, os limites da
+    remuneração da Conta PI nem a linha de redesconto; nas janelas abertas, os aportes são
+    considerados ilimitados.
+16. **Regime de alto valor estilizado.** O `regimes` usa um sistema de alto valor suposto para mostrar
+    como o limite depende do tamanho dos pagamentos; não está calibrado no T2, no Lynx nem no STR.

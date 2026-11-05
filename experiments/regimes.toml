@@ -1,0 +1,14 @@
+# Delay bound and micro-cycle saving in retail (Pix calibrated) vs a stylised large-value system,
+# to reconcile with McMahon et al. (2024), who report 14-30% savings from reordering in T2.
+#
+[experiment]
+name = "regimes"
+description = "Delay bound in retail vs large-value systems"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
