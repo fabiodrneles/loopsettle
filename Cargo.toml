@@ -1,0 +1,33 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/loopsettle-core",
+    "crates/loopsettle-topology",
+    "crates/loopsettle-sim",
+    "crates/loopsettle-cli",
+    "crates/loopsettle-wasm",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Fabio Neles <fabiodrneles@gmail.com>"]
+repository = "https://github.com/fabiodrneles/loopsettle"
+rust-version = "1.75"
+
+# Light profiles for a 2-core / 4 GB machine (see CLAUDE.md section 2).
+[profile.dev]
+opt-level = 1
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.test]
+opt-level = 1
+debug = "line-tables-only"
+
+[profile.release]
+codegen-units = 4
+lto = "thin"

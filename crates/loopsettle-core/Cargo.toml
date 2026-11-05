@@ -1,0 +1,15 @@
+[package]
+name = "loopsettle-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+
+[dev-dependencies]
+# Property-based testing of the invariants (CLAUDE.md section 6).
+proptest = { version = "1", default-features = false, features = ["std"] }

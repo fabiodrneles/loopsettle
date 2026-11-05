@@ -1,0 +1,3 @@
+# Limit parallel rustc jobs: the reference machine has 2 cores and 4 GB RAM.
+[build]
+jobs = 2
