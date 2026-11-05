@@ -2,6 +2,7 @@
 //!
 //! Synthetic, calibrated payment generator and streaming simulation driver.
 
+pub mod calibrate;
 pub mod scenario;
 pub mod stream;
 pub mod toml_lite;

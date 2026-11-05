@@ -209,3 +209,50 @@ impl Population {
         self.activity.iter().take(k).sum()
     }
 }
+
+impl ScenarioConfig {
+    /// Read `[scenario]` keys from a parsed TOML document; missing keys keep defaults.
+    /// If `scenario.calibration` names a file, the public-data calibration is applied
+    /// (paths are relative to the current directory, i.e. the repository root).
+    pub fn from_doc(d: &crate::toml_lite::Doc) -> Result<Self, String> {
+        let mut c = ScenarioConfig::default();
+        let g = |k: &str| d.get(&format!("scenario.{k}"));
+        if let Some(v) = d.str("experiment.name") {
+            c.name = v.to_string();
+        }
+        macro_rules! num {
+            ($field:expr, $key:expr, $conv:ident, $t:ty) => {
+                if let Some(v) = g($key).and_then(|v| v.$conv()) {
+                    $field = v as $t;
+                }
+            };
+        }
+        num!(c.seed, "seed", as_i64, u64);
+        num!(c.participants, "participants", as_i64, usize);
+        num!(c.days, "days", as_i64, u32);
+        num!(c.payments_per_day, "payments_per_day", as_f64, f64);
+        num!(c.zipf_s, "zipf_s", as_f64, f64);
+        num!(c.n_big, "n_big", as_i64, usize);
+        num!(c.n_mid, "n_mid", as_i64, usize);
+        num!(c.fintech_frac, "fintech_frac", as_f64, f64);
+        num!(c.payee_size_exp, "payee_size_exp", as_f64, f64);
+        num!(c.homophily, "homophily", as_f64, f64);
+        num!(c.receiver_bias_sigma, "receiver_bias_sigma", as_f64, f64);
+        num!(c.pi_receiver_mult, "pi_receiver_mult", as_f64, f64);
+        num!(c.amounts.body_sigma, "body_sigma", as_f64, f64);
+        num!(c.amounts.tail_alpha, "tail_alpha", as_f64, f64);
+        num!(c.amounts.max_amount, "max_amount_brl", as_f64, f64);
+        if let Some(h) = d.f64_array("scenario.hourly") {
+            c.hourly = h;
+        }
+        if let Some(path) = d.str("scenario.calibration") {
+            let t = crate::calibrate::Targets::load(path)?;
+            crate::calibrate::apply(&mut c, &t);
+        }
+        // Explicit amount overrides win over calibration.
+        num!(c.amounts.body_median, "body_median_brl", as_f64, f64);
+        num!(c.amounts.tail_prob, "tail_prob", as_f64, f64);
+        num!(c.amounts.tail_xm, "tail_xm_brl", as_f64, f64);
+        Ok(c)
+    }
+}

@@ -9,6 +9,9 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+loopsettle-core = { path = "../loopsettle-core" }
+loopsettle-topology = { path = "../loopsettle-topology" }
+loopsettle-sim = { path = "../loopsettle-sim" }
 
 [[bin]]
 name = "loopsettle"

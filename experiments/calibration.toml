@@ -1,0 +1,11 @@
+# Calibration check: simulate the calibrated scenario and compare with public aggregates.
+[experiment]
+name = "calibration"
+description = "Real vs simulated public Pix aggregates (Phase 4)"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"

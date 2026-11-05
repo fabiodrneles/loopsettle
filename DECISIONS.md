@@ -92,3 +92,21 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   não são públicos. Os parâmetros do viés controlam diretamente a fração circular e estão
   marcados `ASSUMPTION`; a análise de sensibilidade fica no experimento `baseline`.
 - **Reverter:** pesos em `PaymentStream::with_population`.
+
+## D10 — Calibração dos valores por mistura "corpo + cauda B2B"
+- **Decisão:** a cauda de Pareto representa pagamentos empresariais grandes: sua
+  probabilidade = participação do B2B na quantidade (4,30%) e sua média é resolvida para
+  que carregue a participação do B2B no valor (52,05%); o corpo lognormal fica com o resto.
+  O ticket médio (R$ 449,83) sai exato analiticamente.
+- **Alternativas:** ajustar só o ticket médio (um parâmetro livre, cauda arbitrária);
+  usar faixas de valor (não publicadas pela API).
+- **Por quê:** usa dois agregados públicos em vez de um, e a fração de valor concentrada em
+  poucos pagamentos grandes é o que mais pesa na liquidez.
+- **Reverter:** `calibrate::apply`; ou sobrescrever `tail_prob`/`tail_xm_brl` no TOML.
+
+## D11 — Tamanho dos participantes ∝ chaves Pix por ISPB
+- **Decisão:** a participação de cada instituição como pagadora/recebedora usa a
+  participação em chaves Pix (`ChavesPix`, 2026-09-30), dado público por participante.
+- **Alternativas:** não há dado público de transações por participante na API usada.
+- **Risco:** chaves ≠ transações (bancos digitais têm muitas chaves por cliente). Marcado como
+  proxy SOURCED com ASSUMPTION embutida.

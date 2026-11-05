@@ -7,10 +7,10 @@
 
 ## Estado atual
 
-- **Fase atual:** 4 — Calibração com dados públicos
-- **Próximo passo exato:** `data/fetch_pix.py` (API Olinda do BCB, só stdlib) → salvar
-  brutos em `data/raw/` (não versionado) e agregados em `data/calibration/pix.toml`;
-  comando `calibrate` no CLI com tabela "real vs simulado" e erro relativo.
+- **Fase atual:** 5 — Motores alternativos
+- **Próximo passo exato:** `DeferredNet { cycles_per_day }` e `AtomicMicroCycle
+  { window_ms, max_delay_ms, mode: QueueAll | QueueOnShortfall }` em `loopsettle-core`;
+  teste de propriedade da invariante 4 (atomicidade); comando da curva economia × p95.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -62,7 +62,12 @@ Notas de ambiente:
     `Outage` (indisponibilidade com re-envio em rajada), `toml_lite`.
   - Testar: `cargo test -p loopsettle-sim`; benchmark
     `cargo run --release -p loopsettle-sim --example bench_stream`.
-- [ ] Fase 4 — Calibração com dados públicos
+- [x] Fase 4 — Calibração com dados públicos
+  - Pronto: `data/fetch_pix.py` (Olinda; o servidor não aceita `$skip` → requisição única
+    com verificação de truncamento), `data/calibration/pix.toml` (set/2026),
+    `loopsettle_sim::calibrate`, CLI `experiment calibration`, `ScenarioConfig::from_doc`.
+  - Testar: `cargo run --release -p loopsettle-cli -- experiment calibration`
+    (todos os erros ≤ 1,5%; tabela em `docs/PARAMETERS.md`).
 - [ ] Fase 5 — Motores alternativos
 - [ ] Fase 6 — Experimentos reprodutíveis
 - [ ] Fase 7 — Interface web
