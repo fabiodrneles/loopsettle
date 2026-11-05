@@ -1,7 +1,7 @@
 {
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.1.0+git.d17046d",
+  "code_version": "0.1.0+git.61de370",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
   "scenario": {
@@ -390,6 +390,5 @@
       "delay_value_weighted_mean_ms": 4334845.073133,
       "share_settled_within_2800ms": 0.000332
     }
-  ],
-  "peak_rss_mib": 7
+  ]
 }

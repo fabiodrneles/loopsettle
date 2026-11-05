@@ -1,7 +1,7 @@
 {
   "experiment": "finland-replication",
   "seed": 20260930,
-  "code_version": "0.1.0+git.d17046d",
+  "code_version": "0.1.0+git.61de370",
   "config_file": "experiments/finland-replication.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment finland-replication",
   "scenario": {
@@ -217,6 +217,5 @@
       "deferred_24x_liquidity_brl": 88915405.43,
       "deferred_48x_liquidity_brl": 89272592.61
     }
-  ],
-  "peak_rss_mib": 4
+  ]
 }

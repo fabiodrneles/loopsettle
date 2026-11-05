@@ -1,7 +1,7 @@
 {
   "experiment": "potential-vs-realizable",
   "seed": 20260930,
-  "code_version": "0.1.0+git.d17046d",
+  "code_version": "0.1.0+git.61de370",
   "config_file": "experiments/potential-vs-realizable.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable",
   "scenario": {
@@ -503,6 +503,5 @@
       "cycles_settled": 138106,
       "cycles_failed": 0
     }
-  ],
-  "peak_rss_mib": 15
+  ]
 }
