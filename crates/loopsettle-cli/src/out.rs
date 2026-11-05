@@ -19,7 +19,9 @@ pub struct Results {
 /// change the version recorded by the next experiment of the same `make all`).
 pub fn code_version() -> String {
     use std::process::Command;
-    let git = Command::new("git").args(["describe", "--always", "--tags"]).output();
+    // Last commit that touched anything outside results/ (committing results must not
+    // change the version they record).
+    let git = Command::new("git").args(["log", "-1", "--format=%h", "--", ".", ":(exclude)results"]).output();
     match git {
         Ok(o) if o.status.success() => {
             let dirty = Command::new("git")
