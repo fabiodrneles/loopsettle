@@ -1,5 +1,7 @@
 # REVIEW — pontos a revisar antes de escrever o artigo
 
+> 🇬🇧 [English version](REVIEW.en.md)
+
 Cada ponto: **o que foi feito**, **onde está**, **resultado** e **risco/dúvida**.
 Números de `results/SUMMARY.md` (seed 20260930, 200 participantes, 1 milhão de pagamentos,
 calibração set/2026). Reproduzir tudo: `make rebuild`.
@@ -120,7 +122,8 @@ calibração set/2026). Reproduzir tudo: `make rebuild`.
 52. perfil horário sem fonte e sem rajadas; 53. horizonte de um dia; 54. micro-ciclos
 heurísticos; 55. atraso medido é só o do motor; 56. sem CDFD proporcional; 57. validação
 on-chain não feita; 58. Hodge em grafo denso; 59. interface: **verificada visualmente em
-05/11/2026** (Chromium desktop 1440 px e iPhone 13 emulado, capturas em `docs/img/ui-*.png`,
+05/11/2026** (Chromium desktop 1440 px e iPhone 13 emulado, em português e inglês; capturas em
+`docs/img/` e `docs/img/en/`,
 geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 4 GB).
 
 ## F. Itens que dependem do revisor
@@ -154,3 +157,8 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     mil pagamentos), a economia dos micro-ciclos com janela de 1–2 s sai −0,001%. Coerente com o
     resultado central, mas vale o revisor decidir se o artigo menciona que micro-ciclos podem
     aumentar levemente o pico.
+68. **Documentação bilíngue (D17).** README, `docs/`, `DECISIONS`, `REVIEW`, `results/SUMMARY` e
+    a interface web existem em português e inglês. A tradução foi feita à mão a partir dos
+    originais em português; o revisor deve conferir os termos técnicos (ex.: "compensação" =
+    netting, "liquidação bruta em tempo real" = real-time gross settlement, "Conta PI" = Pix
+    settlement account).

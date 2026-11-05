@@ -1,5 +1,5 @@
 # Rebuild everything from scratch: tests, all experiments, the summary and the web app.
-#   make all        tests + experiments + results/SUMMARY.md + web build
+#   make all        tests + experiments + results/SUMMARY.md and SUMMARY.en.md + web build
 #   make rebuild    delete results/ first, then `make all`
 #   make data       re-download the public Pix aggregates (network access)
 CARGO ?= cargo
@@ -33,4 +33,4 @@ data:
 	$(PYTHON) -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30
 
 clean-results:
-	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/SUMMARY.md
+	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/SUMMARY.md results/SUMMARY.en.md

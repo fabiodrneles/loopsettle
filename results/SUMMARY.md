@@ -1,5 +1,7 @@
 # Resumo dos resultados
 
+> 🇬🇧 [English version](SUMMARY.en.md)
+
 Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à mão: rode `make all`.
 Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 pagamentos reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
