@@ -144,7 +144,7 @@ pub fn baseline(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), Strin
     res.set("scenario", scenario_json(cfg));
     res.set("flow", flow_json(&o));
     res.set("topology", topo.to_json());
-    res.set("topology_seconds", topo_s);
+    res.measure("topology_seconds", topo_s);
     res.set("engines", Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()));
     res.set("sensitivity", Json::Arr(sjson));
     eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&topo)));
@@ -411,7 +411,7 @@ pub fn topology_csv(path: &str) -> Result<(), String> {
     res.set("rows_skipped", skipped);
     res.set("nodes", ids.len());
     res.set("topology", r.to_json());
-    res.set("seconds", t.elapsed().as_secs_f64());
+    res.measure("seconds", t.elapsed().as_secs_f64());
     res.csv("ladder.csv", &table(LADDER_HEADER, &ladder_rows(&r)));
     eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&r)));
     res.finish();

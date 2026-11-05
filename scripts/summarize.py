@@ -42,7 +42,7 @@ def table(header, body):
 
 
 def meta(s):
-    return f"_seed `{s['seed']}`, código `{s['code_version']}`, comando `{s['command']}`, pico de RAM {s.get('peak_rss_mib', '?')} MiB._"
+    return f"_seed `{s['seed']}`, código `{s['code_version']}`, comando `{s['command']}`._"
 
 
 def main():

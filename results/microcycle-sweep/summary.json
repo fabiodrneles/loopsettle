@@ -1,7 +1,7 @@
 {
   "experiment": "microcycle-sweep",
   "seed": 20260930,
-  "code_version": "0.1.0+git.844d8c8-dirty",
+  "code_version": "0.1.0+git.d17046d",
   "config_file": "experiments/microcycle-sweep.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment microcycle-sweep",
   "scenario": {

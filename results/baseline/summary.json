@@ -1,7 +1,7 @@
 {
   "experiment": "baseline",
   "seed": 20260930,
-  "code_version": "0.1.0+git.3f11e15-dirty",
+  "code_version": "0.1.0+git.d17046d",
   "config_file": "experiments/baseline.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
   "scenario": {
@@ -63,7 +63,7 @@
     "cg_curl_iterations": 34,
     "cg_curl_rel_residual": 0
   },
-  "topology_seconds": 0.356239,
+  "topology_seconds": 0.385944,
   "engines": [
     {
       "name": "gross_real_time",

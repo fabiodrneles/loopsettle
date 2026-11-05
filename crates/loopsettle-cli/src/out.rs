@@ -9,6 +9,9 @@ use std::path::PathBuf;
 pub struct Results {
     pub dir: PathBuf,
     pub summary: Json,
+    /// machine measurements (time, memory): written to `run.json`, which is NOT expected to
+    /// be byte-identical across runs, unlike `summary.json`
+    pub run: Json,
 }
 
 /// Code version: `git describe` of the working tree if available, else the crate version.
@@ -40,7 +43,7 @@ impl Results {
             .set("code_version", code_version())
             .set("config_file", config_file)
             .set("command", format!("cargo run --release -p loopsettle-cli -- experiment {name}"));
-        Results { dir, summary }
+        Results { dir, summary, run: Json::obj() }
     }
 
     pub fn csv(&self, file: &str, content: &str) {
