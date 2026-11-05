@@ -153,3 +153,29 @@ calibrated scenario the realised 10 s saving is about 1.5% of it
 expected share of the squared norm outside the gradient space is `(m − n + 1)/m`. On the net
 graph of the baseline (`m = 6620`, `n = 200`) that is 0.970, against an observed L2 curl share
 of 0.977: on dense graphs the Hodge curl share mostly measures graph density.
+
+## 10. Funding windows
+
+The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business
+days, plus a 30-minute top-up window; BCB, Relatório Anual do SPI 2024, p. 15). Inside that window
+an intraday peak can be covered as it happens; outside it — each night and the whole weekend — a
+participant must hold, at the window's start, everything it will need until the window ends.
+For a closed window `[a, b)`, with `x_i` the cumulative position:
+
+```text
+need_i = max(0, x_i(a) − min_{a≤t<b} x_i(t))      prefunding at the start of the window
+net_i  = max(0, x_i(a) − x_i(b))                  what one netting at the end of the window needs
+```
+
+The delay bound of section 9 applies inside the window with `t*` the window's minimum. Computed
+by `loopsettle_sim::bound::window_stats`; experiment `funding-windows` (Thursday to Monday, sourced
+hourly profile and day volumes).
+
+## 11. Running on real data
+
+`loopsettle bound <file.csv>` computes UB, LB and the delay bound for several `d`;
+`loopsettle settle <file.csv>` also runs the settlement engines. The file is streamed twice (the
+bound needs two passes), memory is O(participants), and amounts are converted to cents exactly.
+The test `csv_path_equals_in_memory_path` checks that the file path gives the same UB, LB, engine
+liquidity and bound as the in-memory path.
+

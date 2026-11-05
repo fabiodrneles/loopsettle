@@ -84,3 +84,17 @@ Sources: [arXiv](https://arxiv.org/abs/2506.12546) · [WRAP Warwick](https://wra
 
 BoF-PSS (the Bank of Finland simulator) and PSSimPy: check version, licence and features before
 using them in the paper's novelty table.
+
+## 7. Second batch of full texts (5 Nov 2026)
+
+| Source | What it settles | Status |
+|---|---|---|
+| McMahon et al. — *Payment reordering as a liquidity savings mechanism in T2* (GoodLabs Studio with Korpinen and Laine; 22nd BoF Simulator Seminar, 2024; paper: *Improving the efficiency of payments systems using quantum computing*, Management Science 2024, doi 10.1287/mnsc.2023.00314) | Reordering payments in tumbling/sliding windows with most delays under 5 s saves 13.8–21.4% of liquidity in simulations, "up to 30% daily vs FIFO", in T2 (large-value). **The closest work to LoopSettle.** The baseline is FIFO with queues under constrained liquidity, not LoopSettle's unlimited-liquidity UB. | slides read; **the Management Science paper itself must be read** |
+| Hellqvist (2024), *Instant payment liquidity risk*, 22nd BoF Simulator Seminar | Liquidity *risk* of Finnish instant payments: outages (2 h, full day), contagion coefficient, topology sampling, end-customer resubmission. No netting mechanism and no bound. | slides read; K2 not fired |
+| Rivadeneyra & Zhang, Bank of Canada SDP 2020-9 | Lynx (large-value RTGS with LSM) on LVTS data: with $14.6 bn initial liquidity, 28 min weighted delay and $17.3 bn liquidity usage. | abstract read |
+| Bank of Canada SDP 2022-3 | Lynx offsetting mechanism: about $10 bn of collateral settles all payments by their deadlines, half of LVTS collateral, at the cost of delays and operational interventions. | abstract read |
+| ECB (2018), *TIPS and RT1: implications for liquidity management* | Liquidity received in TIPS/RT1 at weekends and T2 holidays can only be used on the next T2 day; weekend funding creates arbitrage between systems. | read; supports W3 |
+| Federal Reserve, *FedNow readiness guide: managing liquidity* | FedNow settles individually 24x7; intraday credit only during the Fed's business day; the discount window does not open outside standard hours; 20 s timeout also for liquidity transfers. | read; supports W3 |
+| BCB, *Relatório Anual do SPI 2024* | Hourly profile (Graph 12, p. 13) and day-type volumes (Graph 11, p. 12) — now SOURCED in LoopSettle; Conta PI top-ups via STR only 6:30–18:30 on business days plus 30 min (p. 15); top-ups exceed R$ 87 bn/day, larger on Fridays for the weekend; SPI rediscount line residual (R$ 169 M in 2024 vs R$ 13.68 tn of top-ups); Conta PI balances remunerated at Selic within limits (Res. BCB 195/2022, 412/2024). | read |
+| BCB, *Relatório de Gestão do Pix 2023* | Outside STR hours the only liquidity sources are electronic-money balances, reserve requirements on demand deposits and the costly SPI liquidity line — the last two for financial institutions only; payment institutions and small banks bore a higher opportunity cost, hence the Conta PI remuneration since Aug 2022 (PDF p. 16). | read |
+| Other 2024 seminar talks (Heijmans & van der Woerd on failing participants in LVPS; Mattern & Meyer on participant criticality in RTGS; Drott on DLT cross-border platforms; Polo, Fritz & Rodloff on T2 analytics; Vacirca on initial margin; Brown on retail payment adoption; Lubbersen & Bolt on card rebates) | Not about instant-payment liquidity saving; Heijmans & van der Woerd and Mattern & Meyer are relevant to a future, stronger stress experiment. | skimmed |

@@ -156,3 +156,29 @@ fração esperada da norma ao quadrado fora do espaço gradiente é `(m − n + 
 líquido do baseline (`m = 6620`, `n = 200`) isso dá 0,970, contra uma fração rotacional L2
 observada de 0,977: em grafos densos, a fração rotacional de Hodge mede sobretudo a densidade do
 grafo.
+
+## 10. Janelas de abastecimento
+
+A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais uma
+janela de 30 minutos para aportes; BCB, Relatório Anual do SPI 2024, p. 15). Dentro dessa janela, um
+pico intradiário pode ser coberto na hora; fora dela — toda noite e o fim de semana inteiro — o
+participante precisa ter, no início da janela, tudo o que vai precisar até ela acabar. Para uma
+janela fechada `[a, b)`, com `x_i` a posição acumulada:
+
+```text
+need_i = max(0, x_i(a) − min_{a≤t<b} x_i(t))      pré-financiamento no início da janela
+net_i  = max(0, x_i(a) − x_i(b))                  o que uma compensação no fim da janela exige
+```
+
+O limite de atraso da seção 9 vale dentro da janela, com `t*` o mínimo da janela. Calculado por
+`loopsettle_sim::bound::window_stats`; experimento `funding-windows` (quinta a segunda, perfil
+horário e volumes por dia com fonte).
+
+## 11. Rodar em dados reais
+
+`loopsettle bound <arquivo.csv>` calcula UB, LB e o limite de atraso para vários `d`;
+`loopsettle settle <arquivo.csv>` também roda os motores de liquidação. O arquivo é lido em
+streaming duas vezes (o limite precisa de duas passadas), a memória é O(participantes) e os valores
+são convertidos em centavos de forma exata. O teste `csv_path_equals_in_memory_path` confere que o
+caminho pelo arquivo dá o mesmo UB, LB, liquidez dos motores e limite que o caminho em memória.
+

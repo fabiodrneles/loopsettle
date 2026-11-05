@@ -186,3 +186,11 @@ the real laptop (i3, 4 GB).
     unknown, measurable only with per-participant intraday data (a BCB partnership question).
     The reviewer should check the profile shapes in `scenario.rs` (`CLASS_OUT_PROFILE`,
     `CLASS_IN_PROFILE`).
+74. **Real-data commands (W9.1).** `loopsettle bound/settle/export`; the reviewer should try
+    `bound data/samples/payments_example.csv` and check the format rules in `csvfile.rs`.
+75. **Funding windows (W3, K3 not fired).** The weekend is the binding window (≈ 2.7× a day's
+    peak); netting at its end saves 0.4–1.0%. Open question: holidays and real top-up behaviour.
+76. **McMahon et al. (2024)** is the closest work (large-value, 14–30% savings with < 5 s
+    reordering). `regimes` shows the bound is 13.7% in a lumpy large-value scenario vs 0.76% in
+    retail. Their full paper must be read before submission; their FIFO-with-queue baseline is
+    not our UB.

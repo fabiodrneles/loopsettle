@@ -11,15 +11,15 @@
 
 | ID | Frente | Obrigatório | Responsável | Situação |
 |---|---|---|---|---|
-| W0 | Fontes que só você consegue baixar | sim | Você | **4 de 15 recebidas** (nº 1, 4, 5 e 6 — lidas e registradas no `REFERENCES.pt-BR.md`) |
+| W0 | Fontes que só você consegue baixar | sim | Você | **quase todas recebidas** (nº 1, 4–6, 12–21 e palestras do seminário; lidas e registradas no `REFERENCES.pt-BR.md` §7). Falta: o artigo de McMahon et al. (2024) na Management Science |
 | W1 | Higiene dos resultados (várias sementes, faixas sobre σ, sem "630×") | sim | Claude | **feito** nesta mudança (experimento de robustez, CLAIMS, README) |
 | W2 | Modelo de heterogeneidade intradiária (critério K1) | sim | Claude (+ você para dados) | **feito**: K1 não disparou (`results/heterogeneity/`); calibrar os perfis com dados reais depende da fonte W0 nº 16 |
 | W2b | Calibrar o viés recebedor na distribuição por banco do WP 619 (p25 18–45%, mediana 57–80%) | sim | Claude | **feito**: σ = 1,0 (`results/bias-calibration/`) |
-| W9 | Virar referência (ver a seção W9) | sim | Você + Claude | a fazer |
-| W3 | Liquidez necessária como as regras do BCB definem (K3) | sim | Claude, depois de W0 | a fazer |
-| W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | a fazer |
-| W5 | Limite de atraso: teorema, curva em d, folga | sim | Claude | teorema e teste **feitos**; curva a fazer |
-| W6 | Fraquezas restantes (FIFO estrito, estresse, nulo de Hodge) | em parte | Claude | a fazer |
+| W9 | Virar referência (ver a seção W9) | sim | Você + Claude | item 1 **feito** (`loopsettle bound/settle/export`); itens 2–5 a fazer |
+| W3 | Liquidez necessária como as regras do BCB definem (K3) | sim | Claude, depois de W0 | **feito**: `funding-windows` — o fim de semana é a janela que restringe; K3 não disparou |
+| W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | **quase feito**: o trabalho mais próximo é McMahon et al. (2024, alto valor); K2 não disparou; falta ler o artigo completo |
+| W5 | Limite de atraso: teorema, curva em d, folga | sim | Claude | **feito**: `regimes/fig_bound.svg`, obtido ≈ 3–5% do limite para todo d |
+| W6 | Fraquezas restantes (FIFO estrito, estresse, nulo de Hodge) | em parte | Claude | nulo de Hodge **feito** (resumo §2); estresse a refazer ou tirar; FIFO estrito opcional |
 | W7 | Empacotamento do artigo e do software (esqueleto, JOSS, preprint, Zenodo) | sim | Claude + você | a fazer |
 | W8 | Rodar a interface no notebook de referência (i3, 4 GB) | não | Você | a fazer |
 

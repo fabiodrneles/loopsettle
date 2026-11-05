@@ -11,15 +11,15 @@
 
 | ID | Workstream | Required | Owner | Status |
 |---|---|---|---|---|
-| W0 | Sources only the owner can download | yes | Owner | **4 of 15 received** (#1, #4, #5, #6 — read and recorded in `REFERENCES.md`) |
+| W0 | Sources only the owner can download | yes | Owner | **most received** (#1, #4–6, #12–21 and seminar talks; read and recorded in `REFERENCES.md` §7). Missing: the McMahon et al. (2024) Management Science paper |
 | W1 | Reporting hygiene (multi-seed, bands over σ, no "630×") | yes | Claude | **done** in this change (robustness experiment, CLAIMS, README) |
 | W2 | Intraday heterogeneity model (kill criterion K1) | yes | Claude (+ owner for data) | **done**: K1 not fired (`results/heterogeneity/`); calibrating the profiles to real data needs W0 #16 |
 | W2b | Calibrate receiver bias to the WP 619 per-bank distribution (p25 18–45%, median 57–80%) | yes | Claude | **done**: σ = 1.0 (`results/bias-calibration/`) |
-| W9 | Becoming a reference (see section W9) | yes | Owner + Claude | to do |
-| W3 | Liquidity need as the BCB rules define it (K3) | yes | Claude, after W0 | to do |
-| W4 | Literature check for novelty (K2) | yes | Claude + owner | to do |
-| W5 | Delay bound: theorem, curve over d, tightness | yes | Claude | theorem and test **done**; curve to do |
-| W6 | Remaining weaknesses (strict FIFO, stress, Hodge null) | partly | Claude | to do |
+| W9 | Becoming a reference (see section W9) | yes | Owner + Claude | item 1 **done** (`loopsettle bound/settle/export`); items 2–5 to do |
+| W3 | Liquidity need as the BCB rules define it (K3) | yes | Claude, after W0 | **done**: `funding-windows` — the weekend is the binding window; K3 not fired |
+| W4 | Literature check for novelty (K2) | yes | Claude + owner | **mostly done**: closest work is McMahon et al. (2024, large-value); K2 not fired; their full paper still to read |
+| W5 | Delay bound: theorem, curve over d, tightness | yes | Claude | **done**: `regimes/fig_bound.svg`, realised ≈ 3–5% of the bound for every d |
+| W6 | Remaining weaknesses (strict FIFO, stress, Hodge null) | partly | Claude | Hodge null **done** (summary §2); stress to redesign or drop; strict FIFO optional |
 | W7 | Paper and software packaging (outline, JOSS, preprint, Zenodo) | yes | Claude + owner | to do |
 | W8 | Run the UI on the reference laptop (i3, 4 GB) | no | Owner | to do |
 

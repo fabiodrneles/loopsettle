@@ -33,3 +33,11 @@
 3. O mecanismo de **micro-ciclos atômicos** e sua curva de troca economia × atraso,
    comparada à meta de 2,8 s do Manual de Tempos do Pix.
 4. Um simulador **aberto, reprodutível e leve**, com calibração em dados públicos do Pix.
+
+## Trabalhos mais próximos encontrados depois da primeira versão (05/11/2026)
+
+| Trabalho | O que faz | O que o LoopSettle acrescenta |
+|---|---|---|
+| McMahon et al. (2024), reordenação de pagamentos no T2 | Reordenação otimizada em janelas curtas (a maior parte dos atrasos < 5 s) economiza 14–30% de liquidez contra FIFO num sistema de **alto valor** | O caso do **varejo instantâneo**, um **limite que não depende do modelo** e explica por que a mesma ideia economiza ~0 ali e pode economizar muito em fluxos de alto valor com poucos pagamentos grandes (`results/regimes/`: limite de 10 s de 0,76% no varejo contra 13,7% com 2.000 pagamentos grandes por dia), e uma implementação aberta |
+| Hellqvist (2024), risco de liquidez em pagamentos instantâneos | Risco de indisponibilidade e de contágio nos pagamentos instantâneos finlandeses com liquidez restrita | *Economia* de liquidez, e não risco; a janela de abastecimento do fim de semana; um alvo de calibração com dados reais do Pix (WP 619) |
+| Bank of Canada SDP 2020-9, 2022-3 | Eficiência de liquidez de LSMs no Lynx (alto valor) com dados reais do LVTS | Varejo instantâneo; o limite de atraso; uma ferramenta que outros bancos centrais rodam nos próprios dados (`loopsettle bound`) |

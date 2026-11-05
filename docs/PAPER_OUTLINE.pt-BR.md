@@ -1,57 +1,58 @@
 # Esqueleto do artigo
 
 > [English version](PAPER_OUTLINE.md)
+>
+> Reescrito em 05/11/2026 em torno da afirmação central revista ([`ASSESSMENT.pt-BR.md`](ASSESSMENT.pt-BR.md),
+> atualização 3). Só títulos de seções e as figuras/tabelas de cada uma; o texto será escrito com o
+> revisor.
 
-Só títulos e a lista de figuras/tabelas de cada seção. O texto será escrito com o revisor.
+**Título provisório:** *Quanta liquidez a compensação consegue recuperar em pagamentos
+instantâneos? Um limite de atraso e evidências de um simulador calibrado com o Pix.*
 
-## 1. Introdução
-- Tabela 1 — Pergunta de pesquisa e as três medidas (potencial, estática, realizável).
+## Preprint (SSRN / arXiv q-fin)
 
-## 2. Trabalhos relacionados
-- Tabela 2 — Comparação ponto a ponto (`docs/NOVELTY.pt-BR.md`).
-- Tabela 2b — Sistemas de pagamentos instantâneos por modelo de liquidação entre bancos ([`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)).
+### 1. Introdução
+- A pergunta; as quatro contribuições: o limite de atraso; potencial × realizável medido com
+  robustez; a janela de abastecimento do fim de semana; uma ferramenta aberta que roda em dados reais.
 
-## 3. Modelo
-### 3.1 Participantes, pagamentos e ledger
-### 3.2 Motores de liquidação (bruto, compensação diferida, micro-ciclos atômicos)
-- Figura 1 — Diagrama do micro-ciclo atômico (fila por aresta, ciclo, prazo).
-### 3.3 Liquidez necessária: UB, LB e pico de queda do saldo
-- Tabela 3 — Exemplo à mão (A, B, C) de `docs/METHODOLOGY.pt-BR.md`.
-### 3.4 Três lentes de circularidade
-- Figura 2 — Caso do triângulo: Hodge 6,67 vs CDFD/ciclos 5.
+### 2. Pagamentos instantâneos e sua liquidez
+- Tabela 1 — Modelos de liquidação entre bancos de 11 sistemas ([`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)).
+- 2.1 Pix: SPI, Conta PI, janela do STR, remuneração da Conta PI (relatório do SPI 2024; relatório de gestão do Pix 2023).
+- 2.2 Trabalhos relacionados: Hellqvist & Korpinen (2021/2026); BCB WP 619; Johnson, McAndrews &
+  Soramäki (2004); McMahon et al. (2024); Bank of Canada SDP 2020-9 e 2022-3; Hellqvist (2024).
+- Tabela 2 — Comparação ponto a ponto ([`NOVELTY.pt-BR.md`](NOVELTY.pt-BR.md)).
 
-## 4. Dados e calibração
-- Tabela 4 — Parâmetros e status (`docs/PARAMETERS.pt-BR.md`).
-- Tabela 5 — Real vs simulado (`results/calibration/calibration.csv`).
+### 3. Modelo
+- 3.1 Participantes, pagamentos, ledger; 3.2 gerador e calibração
+  (Tabela 3 — parâmetros e status; Tabela 4 — real × simulado, incluindo os quartis por banco do WP 619);
+- 3.3 Motores de liquidação (bruto, compensação diferida, micro-ciclos atômicos); 3.4 medidas de
+  liquidez (UB, LB, janelas de abastecimento).
 
-## 5. Implementação e validação
-- Tabela 6 — Invariantes e testes de propriedade.
-- Tabela 7 — Desempenho no hardware de referência (`CHECKPOINT.md`).
+### 4. O limite de atraso
+- Teorema e demonstração ([`METHODOLOGY.pt-BR.md`](METHODOLOGY.pt-BR.md) §9); Figura 1 — economia obtida ×
+  limite em função de d (`regimes/fig_bound.svg`); Tabela 5 — regimes, varejo × alto valor (`regimes/regimes.csv`).
 
-## 6. Resultados
-### 6.1 Liquidez e circularidade no cenário calibrado
-- Tabela 8 — UB, LB, potencial (`results/baseline/summary.json`).
-- Figura 3 — Escada de circularidade (`results/baseline/fig_ladder.svg`).
-### 6.2 Potencial vs realizável
-- Figura 4 — Economia × espera máxima (`results/potential-vs-realizable/fig_potential_vs_realizable.svg`).
-- Tabela 9 — Medidas centrais (`results/potential-vs-realizable/central.csv`).
-### 6.3 Micro-ciclos: economia × atraso
-- Figura 5 — Curva de troca (`results/microcycle-sweep/fig_tradeoff.svg`).
-- Tabela 10 — Liquidez restrita (`results/microcycle-sweep/shortfall.csv`).
-### 6.4 Ciclos fixos vs instantâneo (lógica do estudo finlandês)
-- Figura 6 — Razão de liquidez (`results/finland-replication/fig_finland.svg`).
-### 6.5 Estresse
-- Tabela 11 — Indisponibilidade de 30 min (`results/stress/stress.csv`).
+### 5. Resultados
+- 5.1 Potencial × realizável, com sementes, escala e comprimento do ciclo — Tabela 6
+  (`robustness/seeds_summary.csv`), Figura 2 (`robustness/fig_scale.svg`).
+- 5.2 Estrutura bilateral calibrada e heterogeneidade intradiária — Tabela 7 (`heterogeneity/heterogeneity.csv`).
+- 5.3 Janelas de abastecimento: noites e fim de semana — Tabela 8 (`funding-windows/windows.csv`).
+- 5.4 Heterogeneidade por banco, comparada ao estudo finlandês — Tabela 9 (`robustness/participants_ratio.csv`).
 
-## 7. Sensibilidade e robustez
-- Tabela 12 — Viés recebedor (`results/baseline/sensitivity.csv`).
-- (A fazer) Escala 10–30 milhões de pagamentos; `max_cycle_len`; FIFO estrito.
+### 6. Discussão
+- Política: LSMs de segundos em sistemas instantâneos; onde a liquidez de fato restringe (fins de
+  semana); quem arca com ela (instituições de pagamento sem acesso a reservas nem a redesconto); o que
+  um banco central consegue medir com o `loopsettle bound`.
+- Limitações ([`LIMITATIONS.pt-BR.md`](LIMITATIONS.pt-BR.md)); o que não pode ser afirmado ([`CLAIMS.pt-BR.md`](CLAIMS.pt-BR.md)).
 
-## 8. Limitações
-- Lista de `docs/LIMITATIONS.pt-BR.md`.
+### 7. Conclusão
 
-## 9. Conclusão
+### Apêndices
+- A. Invariantes e testes de propriedade; B. Reprodutibilidade (`make all`); C. Lentes de circularidade
+  (Hodge, CDFD, ciclos) e o valor nulo de Hodge; D. Rodar em dados reais.
 
-## Apêndices
-- A. Prova de que UB é o menor saldo sem rejeição; B. CDFD como transbordo de custo mínimo;
-  C. Reprodutibilidade (`make rebuild`).
+## Artigo do JOSS (software)
+- Resumo; Declaração de necessidade (simulador aberto e reprodutível de liquidação de pagamentos
+  instantâneos, que roda em arquivos reais e no navegador); Funcionalidades (motores, limite,
+  experimentos, CLI, interface web); Qualidade (testes de propriedade, CI, reprodutibilidade byte a
+  byte); Referências.

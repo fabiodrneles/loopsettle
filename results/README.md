@@ -22,6 +22,8 @@ and command of each experiment.
 | [`robustness/`](robustness) | Does the result survive seeds, scale, receiver bias and cycle length? | `… experiment robustness` | `seeds_summary.csv` (10 seeds, 95% CIs), `scale.csv` (1M–30M), `cycle_len.csv`, `participants_ratio.csv`, `fig_scale.svg` |
 | [`bias-calibration/`](bias-calibration) | Which receiver bias reproduces the per-bank nettable ratios of BCB WP 619 (real Pix data)? | `… experiment bias-calibration` | `grid.csv` (σ × payment-institution multiplier, quartiles and fit) |
 | [`heterogeneity/`](heterogeneity) | What if each type of institution has its own intraday profile? (kill criterion K1) | `… experiment heterogeneity` | `heterogeneity.csv` (λ × scale × σ, savings and delay bound) |
+| [`funding-windows/`](funding-windows) | How much must be prefunded for nights and the weekend, when the STR is closed? | `… experiment funding-windows` | `windows.csv` (need, end-of-window netting, delay bounds per window) |
+| [`regimes/`](regimes) | Does the delay bound differ between retail and large-value systems? Realised saving vs bound over d | `… experiment regimes` | `regimes.csv`, `bound_curve.csv`, `fig_bound.svg` |
 | [`topology-triangle/`](topology-triangle) | The fixed triangle case (A→B 10, B→C 5, C→A 5) | `… experiment topology-triangle` | `ladder.csv` |
 
 In each folder, `summary.json` holds the scenario, seed, code version and command;
@@ -52,6 +54,8 @@ semente, a versão do código e o comando de cada experimento.
 | [`robustness/`](robustness) | O resultado sobrevive a sementes, escala, viés recebedor e comprimento do ciclo? | `… experiment robustness` | `seeds_summary.csv` (10 sementes, IC 95%), `scale.csv` (1–30 milhões), `cycle_len.csv`, `participants_ratio.csv`, `fig_scale.svg` |
 | [`bias-calibration/`](bias-calibration) | Que viés recebedor reproduz as razões de compensação por banco do BCB WP 619 (dados reais do Pix)? | `… experiment bias-calibration` | `grid.csv` (σ × multiplicador das IPs, quartis e ajuste) |
 | [`heterogeneity/`](heterogeneity) | E se cada tipo de instituição tiver seu próprio perfil ao longo do dia? (critério de morte K1) | `… experiment heterogeneity` | `heterogeneity.csv` (λ × escala × σ, economias e limite de atraso) |
+| [`funding-windows/`](funding-windows) | Quanto é preciso pré-financiar para as noites e o fim de semana, com o STR fechado? | `… experiment funding-windows` | `windows.csv` (necessidade, compensação no fim da janela, limites de atraso por janela) |
+| [`regimes/`](regimes) | O limite de atraso muda entre varejo e sistemas de alto valor? Economia obtida × limite em função de d | `… experiment regimes` | `regimes.csv`, `bound_curve.csv`, `fig_bound.svg` |
 | [`topology-triangle/`](topology-triangle) | O caso fixo do triângulo (A→B 10, B→C 5, C→A 5) | `… experiment topology-triangle` | `ladder.csv` |
 
 Em cada pasta, `summary.json` guarda o cenário, a semente, a versão do código e o comando; o

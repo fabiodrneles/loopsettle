@@ -44,3 +44,8 @@
     *Update (W2):* class-specific profiles are now available (`profile_strength`, D18); with them
     the potential no longer collapses (2.8% at 30M with the calibrated σ), but their shapes are
     assumptions until per-participant intraday data are used.
+15. **Funding windows simplified.** `funding-windows` models STR hours and the weekend, but not
+    holidays, participants' actual top-up behaviour, the Conta PI remuneration limits, or the
+    rediscount line; open windows assume unlimited top-ups.
+16. **Large-value regime is stylised.** `regimes` uses an assumed large-value system to show how
+    the bound depends on payment lumpiness; it is not calibrated to T2, Lynx or the STR.

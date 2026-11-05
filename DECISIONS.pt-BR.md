@@ -194,3 +194,19 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   escolha conservadora para a afirmação "as economias são pequenas"; o artigo deve citar os dois.
 - **Reverter / alternativa:** pôr `receiver_bias_sigma = 1.0` nos TOMLs dos experimentos e rodar
   `make all`.
+
+## D20 — Janelas de abastecimento: pré-financiamento medido dentro das janelas fechadas
+- **Decisão:** fora do horário do STR a Conta PI não recebe aportes, então a necessidade relevante é
+  o esvaziamento a partir do início de cada janela fechada (noites, fim de semana); dentro das
+  janelas abertas, os aportes são considerados ilimitados. Cinco dias (quinta a segunda) com o
+  perfil horário e os volumes por dia com fonte (`funding-windows`).
+- **Alternativas:** modelar o comportamento de aportes e a remuneração da Conta PI; feriados.
+- **Por quê:** é como o BCB descreve a restrição de liquidez (Relatório Anual do SPI 2024, p. 15;
+  Relatório de Gestão do Pix 2023, p. 16).
+- **Reverter:** o UB de um dia dos demais experimentos continua disponível.
+
+## D21 — Os comandos para dados reais só produzem agregados
+- **Decisão:** `loopsettle bound/settle` leem o arquivo em streaming, guardam só o estado por
+  participante e escrevem agregados; linhas por participante só com `--per-participant`. A saída vai
+  para `loopsettle-out/` (ignorado pelo git), nunca para `results/`.
+- **Por quê:** uma instituição precisa poder rodar em dados confidenciais e compartilhar a saída.

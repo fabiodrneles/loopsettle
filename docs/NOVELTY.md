@@ -33,3 +33,11 @@
 3. The **atomic micro-cycle** mechanism and its saving × delay trade-off curve, compared with
    the 2.8 s target of the Pix timing manual.
 4. An **open, reproducible and lightweight** simulator calibrated to public Pix data.
+
+## Closest works found after the first draft (5 Nov 2026)
+
+| Work | What it does | What LoopSettle adds |
+|---|---|---|
+| McMahon et al. (2024), payment reordering in T2 | Optimised reordering in short windows (most delays < 5 s) saves 14–30% of liquidity vs FIFO in a **large-value** system | The **retail instant** case, a **model-free bound** that explains why the same idea saves ~0 there and can save a lot in lumpy large-value flows (`results/regimes/`: 10 s bound 0.76% retail vs 13.7% with 2,000 large payments/day), and an open implementation |
+| Hellqvist (2024), instant payment liquidity risk | Outage and contagion risk in Finnish instant payments with constrained liquidity | Liquidity *saving* rather than risk; the weekend funding window; a calibration target from real Pix data (WP 619) |
+| Bank of Canada SDPs 2020-9, 2022-3 | LSM liquidity efficiency in Lynx (large-value) with real LVTS data | Instant retail; the delay bound; a tool other central banks can run on their own data (`loopsettle bound`) |

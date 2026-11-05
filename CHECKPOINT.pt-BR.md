@@ -24,6 +24,10 @@
   `results/SUMMARY.md` + `SUMMARY.pt-BR.md` (gerados por `scripts/summarize.py`), `data/README.md`
   nos dois idiomas, interface com seletor PT/EN (`?lang=pt|en`). Regra: mudou um documento,
   muda o gêmeo no mesmo commit.
+- **05/11/2026, mais tarde:** CLI para dados reais (`bound`/`settle`/`export`), W2/W2b, W3
+  (`funding-windows`) e W5 (`regimes`, curva do limite) feitas; K1–K3 não dispararam; a próxima fase é
+  escrever (preprint e JOSS, `docs/PAPER_OUTLINE.pt-BR.md`). Conferências restantes: artigo completo de
+  McMahon et al. (2024), refazer o estresse.
 - **Referências conferidas** por busca pública: ver `docs/REFERENCES.pt-BR.md` (PixSim não
   localizado; título da CDFD corrigido; número de 8,6% do estudo finlandês a conferir).
 
