@@ -29,8 +29,8 @@ Each entry: what was decided, alternatives, why, and how to revert.
 - **Alternatives:** binary search for the smallest opening balance that produces no
   rejections/delays above a threshold (costlier: several runs per participant).
 - **Why:** it matches the measure attributed to Hellqvist & Korpinen (liquidity as the maximum
-  accumulated debit position — **to be checked against the full text**, see
-  [`docs/REFERENCES.md`](docs/REFERENCES.md)), runs in a single pass and keeps invariant 3
+  accumulated debit position — **confirmed in the full text**, BoFER 7/2021 pp. 3–4: the
+  "upper bound" in instant mode and the minimum of end-of-cycle positions with cycles), runs in a single pass and keeps invariant 3
   (balance never negative) valid even in measurement mode.
 - **Revert / alternative:** the engines also accept finite balances (constrained mode), used in
   the experiment with `QueueOnShortfall`.

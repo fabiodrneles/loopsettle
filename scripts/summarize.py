@@ -62,6 +62,7 @@ PT = {
     "ladder": "Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):",
     "c_ladder": ["grafo", "arestas", "Hodge L1", "Hodge L2 rot.", "CDFD máx.", "ciclos (guloso)", "triângulos"],
     "corr": "Correlação potencial de Hodge × posição líquida: {}.",
+    "wp619": "Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 {}, mediana {}, p75 {}. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).",
     "sens": "Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):",
     "c_sens": ["σ viés", "UB (R$)", "LB/UB", "potencial", "Hodge L1 bruto", "CDFD bruto", "ciclos bruto", "CDFD líquido", "economia micro-ciclo", "p95 (ms)"],
     "h3": "## 3. Potencial vs realizável (comparação central)",
@@ -106,6 +107,7 @@ EN = {
     "ladder": "Ladder (fractions of the graph's total flow; Hodge L1 can exceed 1):",
     "c_ladder": ["graph", "edges", "Hodge L1", "Hodge L2 curl", "max CDFD", "cycles (greedy)", "triangles"],
     "corr": "Hodge potential × net position correlation: {}.",
+    "wp619": "Per-bank nettable ratio, BCB WP 619 definition (eq. 3.2, 2·min(out, in)/(out + in)): p25 {}, median {}, p75 {}. On real Pix data WP 619 reports a median of 57% to 80%, p25 of 18% to 45% and p75 of 73% to 90% (from Nov 2020).",
     "sens": "Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):",
     "c_sens": ["σ bias", "UB (R$)", "LB/UB", "potential", "gross Hodge L1", "gross CDFD", "gross cycles", "net CDFD", "micro-cycle saving", "p95 (ms)"],
     "h3": "## 3. Potential vs realizable (central comparison)",
@@ -160,6 +162,11 @@ def build(T):
     md.append(table(T["c_ladder"],
                     [[r["graph"], r["edges"], num(r["hodge_l1_cyclic"], 4), num(r["hodge_l2_curl"], 4), num(r["cdfd_max"], 4), num(r["cycle_netting"], 4), r["hodge_triangles"]]
                      for r in rows("baseline", "ladder.csv")]))
+    # WP 619 eq. (3.2): per-bank 2*min(out, in)/(out + in), reported as quartiles across banks
+    wp = sorted(2 * min(float(r["out_brl"]), float(r["in_brl"])) / (float(r["out_brl"]) + float(r["in_brl"]))
+                for r in rows("baseline", "participants.csv") if float(r["out_brl"]) + float(r["in_brl"]) > 0)
+    qq = lambda q: wp[int(q * (len(wp) - 1))]
+    md += ["", T["wp619"].format(pct(qq(0.25), 1), pct(qq(0.5), 1), pct(qq(0.75), 1))]
     md += ["", T["corr"].format(num(s['topology']['hodge_potential_vs_net_position_corr'], 4)), "",
            T["sens"], ""]
     md.append(table(T["c_sens"],

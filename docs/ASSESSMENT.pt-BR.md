@@ -134,3 +134,17 @@ artigo no JOSS é viável por si só.
 ## Fontes
 
 As mesmas da [versão em inglês](ASSESSMENT.md#sources).
+
+## Atualização — textos integrais lidos (05/11/2026, no mesmo dia)
+
+O dono enviou quatro textos integrais. O que eles resolvem:
+
+| Ponto | Achado | Efeito na avaliação |
+|---|---|---|
+| Número finlandês (D.7) | "8,6%" é o **percentil 95** do aumento contra **6 ciclos**; a média é 2,7%. Contra um ciclo diário, o instantâneo precisa de 1,45× (BoFER 7/2021 p. 2, 9–11). LoopSettle: +3,9% (σ=0,4) a +13,7% (σ=0) contra 6 ciclos; 1,10×–1,50× contra 1 ciclo. | resolvido; mesma ordem de grandeza, agora na base certa |
+| Definição de liquidez (D3, parte da ameaça 4) | A liquidez necessária deles é exatamente o UB/LB do LoopSettle (p. 3–4). | a definição é padrão; a ameaça 4 passa a tratar só das janelas de abastecimento (W3), não da medida em si |
+| Medida do BCB WP 619 (D.7) | Eq. (3.2), por banco, apresentada em quartis: mediana 57–80%, p25 18–45%, p75 73–90% com dados reais do Pix (p. 16 do PDF). O LoopSettle na mesma estatística: mediana 78%, p75 91%, mas **p25 63%**. | resolvido; e dá o **primeiro alvo com dado real para σ**: o modelo tem poucos bancos "de mão única". Calibrar σ (ou um viés por classe) no p25 do WP 619 torna a fraqueza D.4 em parte identificável. Novo item W2b. |
+| Novidade do limite de atraso (K2) | Johnson, McAndrews & Soramäki (2004) não enunciam limite; a compensação deles em horas economiza de 2–6% (1 h) a 6–26% (6 h) do pico de descoberto no Fedwire (Tabela 3). | K2 não dispara no trabalho mais próximo; a revisão W4 continua para os trabalhos depois de 2018 |
+| CDFD | A circularidade máxima é exatamente o problema de custo mínimo com custo unitário que o LoopSettle resolve; o BFF está totalmente especificado (Algoritmo 1) (arXiv 2506.12546, §5.1–5.2). | D5 confirmada; a D6 já pode ser implementada |
+
+O veredito continua **PIVOTAR**; nenhum critério de morte disparou.

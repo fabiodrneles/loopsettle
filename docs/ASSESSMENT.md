@@ -134,3 +134,17 @@ achievable on its own.
   [RePEc](https://econpapers.repec.org/RePEc:eee:moneco:v:55:y:2008:i:3:p:554-567)
 - Bank of Canada WP 06-20, LVTS delay–liquidity trade-off: [RePEc](https://ideas.repec.org/p/bca/bocawp/06-20.html)
 - Other references: [`REFERENCES.md`](REFERENCES.md)
+
+## Update — full texts read (5 Nov 2026, same day)
+
+The owner sent four full texts. What they settle:
+
+| Point | Finding | Effect on the assessment |
+|---|---|---|
+| Finnish figure (D.7) | "8.6%" is the **95th percentile** of the increase against **6 cycles**; the average is 2.7%. Against one daily cycle, instant needs 1.45× (BoFER 7/2021 pp. 2, 9–11). LoopSettle: +3.9% (σ=0.4) to +13.7% (σ=0) against 6 cycles; 1.10×–1.50× against 1 cycle. | resolved; same order of magnitude, now on the right baseline |
+| Liquidity definition (D3, threat 4 in part) | Their liquidity need is exactly LoopSettle's UB/LB (pp. 3–4). | the definition is standard; threat 4 now concerns only the funding windows (W3), not the measure itself |
+| BCB WP 619 measure (D.7) | Eq. (3.2), per bank, reported as quartiles: median 57–80%, p25 18–45%, p75 73–90% on real Pix data (PDF p. 16). LoopSettle on the same statistic: median 78%, p75 91%, but **p25 63%**. | resolved; and it gives the **first real-data target for σ**: the model has too few one-sided banks. Calibrating σ (or a per-class bias) to WP 619's p25 makes weakness D.4 partly identifiable. New item W2b. |
+| Delay bound novelty (K2) | Johnson, McAndrews & Soramäki (2004) state no bound; their hour-scale netting saves 2–6% (1 h) to 6–26% (6 h) of peak overdraft in Fedwire (Table 3). | K2 does not fire on the closest work; the literature check W4 continues for post-2018 work |
+| CDFD | Maximum circularity is exactly the unit-cost min-cost problem LoopSettle solves; BFF is fully specified (Algorithm 1) (arXiv 2506.12546, §5.1–5.2). | D5 confirmed; D6 can now be implemented |
+
+The verdict stays **PIVOT**; no kill criterion has fired.
