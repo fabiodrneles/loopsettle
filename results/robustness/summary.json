@@ -1,7 +1,7 @@
 {
   "experiment": "robustness",
   "seed": 20260930,
-  "code_version": "0.1.0+git.1e54c5c",
+  "code_version": "0.1.0+git.6eeca1c-dirty",
   "config_file": "experiments/robustness.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment robustness",
   "scenario": {
@@ -186,6 +186,61 @@
       "saving_pct_ci95_low": 1.588406,
       "saving_pct_ci95_high": 5.364247,
       "bound_pct_mean": 222.628489
+    },
+    {
+      "receiver_bias_sigma": 1,
+      "engine": "micro:all:500:2000",
+      "max_delay_ms": 2000,
+      "seeds": 10,
+      "saving_pct_mean": -0.00056,
+      "saving_pct_sd": 0.001906,
+      "saving_pct_ci95_low": -0.001923,
+      "saving_pct_ci95_high": 0.000804,
+      "bound_pct_mean": 0.768895
+    },
+    {
+      "receiver_bias_sigma": 1,
+      "engine": "micro:all:500:10000",
+      "max_delay_ms": 10000,
+      "seeds": 10,
+      "saving_pct_mean": 0.003943,
+      "saving_pct_sd": 0.006343,
+      "saving_pct_ci95_low": -0.000594,
+      "saving_pct_ci95_high": 0.008481,
+      "bound_pct_mean": 0.889254
+    },
+    {
+      "receiver_bias_sigma": 1,
+      "engine": "deferred:8640",
+      "max_delay_ms": 10000,
+      "seeds": 10,
+      "saving_pct_mean": 0.005493,
+      "saving_pct_sd": 0.003166,
+      "saving_pct_ci95_low": 0.003228,
+      "saving_pct_ci95_high": 0.007758,
+      "bound_pct_mean": 0.889254
+    },
+    {
+      "receiver_bias_sigma": 1,
+      "engine": "deferred:96",
+      "max_delay_ms": 900000,
+      "seeds": 10,
+      "saving_pct_mean": 0.204676,
+      "saving_pct_sd": 0.221672,
+      "saving_pct_ci95_low": 0.046112,
+      "saving_pct_ci95_high": 0.363239,
+      "bound_pct_mean": 3.626783
+    },
+    {
+      "receiver_bias_sigma": 1,
+      "engine": "deferred:1",
+      "max_delay_ms": 86400000,
+      "seeds": 10,
+      "saving_pct_mean": 2.337093,
+      "saving_pct_sd": 1.707344,
+      "saving_pct_ci95_low": 1.115817,
+      "saving_pct_ci95_high": 3.558368,
+      "bound_pct_mean": 188.332543
     }
   ],
   "scale": [

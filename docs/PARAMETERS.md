@@ -21,9 +21,11 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 | `fintech_frac` | 0.5 | ASSUMPTION | Split of the remainder between fintechs and payment institutions. |
 | `payee_size_exp` (β) | 1.0 | ASSUMPTION | Payee drawn ∝ size^β ("gravity"). |
 | `homophily` | 0.3 | ASSUMPTION | Extra weight for a payee of the same class. |
-| `receiver_bias_sigma` | 0.4 | ASSUMPTION | Lognormal receiver bias per participant: creates non-zero net positions (directional flow). |
+| `receiver_bias_sigma` | 0.4 (most experiments); **1.0 calibrated** | ASSUMPTION → **CALIBRATED** (band 0.8–1.2) | Lognormal receiver bias per participant: creates non-zero net positions (directional flow). Calibrated to the per-bank nettable-ratio quartiles of BCB WP 619 eq. (3.2) on real Pix data (p25 18–45%, median 57–80%, p75 73–90%): σ = 1.0 puts all three quartiles inside (36% / 61% / 83%) (`results/bias-calibration/`). Default kept at 0.4 for continuity (D19). |
 | `pi_receiver_mult` | 1.3 | ASSUMPTION | Payment institutions (acquirers, P2B) receive relatively more. |
-| `hourly` | 24-weight profile | ASSUMPTION | Low at night, daytime plateau, late-afternoon peak. No public hourly series used. |
+| `hourly` | 24-weight profile | ASSUMPTION | Low at night, daytime plateau, late-afternoon peak. No public hourly series used yet (the BCB SPI annual report 2024 has one: W0 #16). |
+| `profile_strength` (λ) | 0 | ASSUMPTION | Strength of the class-specific intraday profiles (W2, D18); 0 = everyone follows `hourly`. Swept 0 / 0.5 / 1 in `heterogeneity`. |
+| `CLASS_OUT_PROFILE`, `CLASS_IN_PROFILE` | see `scenario.rs` | ASSUMPTION | Shapes only: payroll mornings (big banks), evening retail (fintechs), acquirers' night payouts and daytime receipts (payment institutions). Rescaled so each class keeps its daily volume. |
 | `amounts.body_median` | R$ 84.58 (calibrated) | CALIBRATED | Solves body mean = (1 − 0.5205)·449.83 / (1 − 0.04296) = R$ 225.4 with σ = 1.4. |
 | `amounts.body_sigma` | 1.4 | ASSUMPTION | Dispersion of the body. |
 | `amounts.tail_prob` | 0.04296 | SOURCED (proxy) | = B2B share of Pix count (Sep 2026). The tail represents large business payments. |

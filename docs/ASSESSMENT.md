@@ -148,3 +148,22 @@ The owner sent four full texts. What they settle:
 | CDFD | Maximum circularity is exactly the unit-cost min-cost problem LoopSettle solves; BFF is fully specified (Algorithm 1) (arXiv 2506.12546, §5.1–5.2). | D5 confirmed; D6 can now be implemented |
 
 The verdict stays **PIVOT**; no kill criterion has fired.
+
+## Update 2 — W2 and W2b (5 Nov 2026)
+
+- **Receiver bias calibrated (W2b).** σ = 1.0 puts the model's per-bank nettable-ratio quartiles
+  (36% / 61% / 83%) inside the WP 619 real-data ranges; σ = 0.4 did not (p25 64%)
+  (`results/bias-calibration/grid.csv`). Weakness D.4 is now partly identified by real data.
+- **Kill criterion K1 not fired (W2).** With class-specific intraday profiles, the 10 s delay
+  bound at 30M payments/day is at most 0.46% of UB (σ = 0.4) and 0.08% (σ = 1.0), far below 2%
+  (`results/heterogeneity/`).
+- **The potential no longer collapses with heterogeneity.** With the calibrated σ, end-of-day
+  netting at 30M saves 0.24% of UB without intraday heterogeneity and 2.8% with full class
+  profiles; 15-minute netting 0.05–0.09%; micro-cycles ≈ 0.
+- **Revised central claim:** at realistic scale and calibrated bilateral structure, netting
+  recovers between ~0.2% and ~3% of the liquidity an instant system ties up, and *only* on
+  multi-hour horizons; second-scale mechanisms recover nothing measurable, and no such mechanism
+  can recover more than the delay bound. Which end of the 0.2–3% range is true depends on
+  per-participant intraday patterns — the one input that needs a central bank's data.
+
+The verdict stays **PIVOT**, with the claim above. No kill criterion has fired.

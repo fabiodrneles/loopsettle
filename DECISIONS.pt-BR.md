@@ -172,3 +172,25 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Por quê:** pedido do usuário (documentação completa nos dois idiomas); o público-alvo
   (bancos centrais, pesquisadores de pagamentos, revisores do JOSS) é internacional.
 - **Regra:** qualquer mudança num documento deve ser feita nos dois idiomas no mesmo commit.
+
+## D18 — Heterogeneidade intradiária por classe de instituição (W2)
+- **Decisão:** multiplicadores horários de saída e entrada por classe, opcionais, misturados a um
+  perfil plano pela intensidade `profile_strength` λ e reescalados para que cada classe mantenha
+  seu volume diário. O recebedor é sorteado em duas etapas exatas (classe pela hora, depois o
+  participante), mantendo memória O(n²). λ = 0 mantém o caminho antigo do código, então todos os
+  resultados anteriores continuam idênticos byte a byte.
+- **Alternativas:** perfis por participante (sem dados para defini-los); rajadas de Hawkes (D8).
+- **Por quê:** chegadas estacionárias fazem o potencial de fim de dia sumir com 1/√N;
+  desequilíbrios sistemáticos são o único mecanismo que poderia fazer a compensação em horizontes
+  longos importar em escala, então o estudo precisa mostrar os resultados com e sem eles.
+- **Reverter:** `profile_strength = 0` (padrão).
+
+## D19 — Viés recebedor calibrado, padrão mantido em 0,4
+- **Decisão:** σ = 1,0 (faixa 0,8–1,2) é o valor calibrado no BCB WP 619; os experimentos que
+  respondem à pergunta central (`robustness`, `heterogeneity`) o reportam ao lado de σ = 0,4. O
+  padrão continua 0,4 para que os experimentos e figuras anteriores sigam comparáveis.
+- **Alternativas:** mudar o padrão para 1,0 e regenerar todos os resultados.
+- **Por quê:** σ = 1,0 deixa toda economia menor (LB/UB ≈ 0,97), então manter 0,4 como padrão é a
+  escolha conservadora para a afirmação "as economias são pequenas"; o artigo deve citar os dois.
+- **Reverter / alternativa:** pôr `receiver_bias_sigma = 1.0` nos TOMLs dos experimentos e rodar
+  `make all`.

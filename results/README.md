@@ -19,6 +19,9 @@ and command of each experiment.
 | [`microcycle-sweep/`](microcycle-sweep) | What is the trade-off between delay and liquidity saving? | `… experiment microcycle-sweep` | `sweep.csv` (window × max delay), `shortfall.csv` (constrained liquidity), `fig_tradeoff.svg` |
 | [`stress/`](stress) | What if the largest participant is offline for 30 minutes? | `… experiment stress` | `stress.csv` |
 | [`finland-replication/`](finland-replication) | The Bank of Finland logic (fixed cycles vs instant) in this scenario | `… experiment finland-replication` | `ratios.csv` (instant / N cycles per day, mean over 5 seeds), `fig_finland.svg` |
+| [`robustness/`](robustness) | Does the result survive seeds, scale, receiver bias and cycle length? | `… experiment robustness` | `seeds_summary.csv` (10 seeds, 95% CIs), `scale.csv` (1M–30M), `cycle_len.csv`, `participants_ratio.csv`, `fig_scale.svg` |
+| [`bias-calibration/`](bias-calibration) | Which receiver bias reproduces the per-bank nettable ratios of BCB WP 619 (real Pix data)? | `… experiment bias-calibration` | `grid.csv` (σ × payment-institution multiplier, quartiles and fit) |
+| [`heterogeneity/`](heterogeneity) | What if each type of institution has its own intraday profile? (kill criterion K1) | `… experiment heterogeneity` | `heterogeneity.csv` (λ × scale × σ, savings and delay bound) |
 | [`topology-triangle/`](topology-triangle) | The fixed triangle case (A→B 10, B→C 5, C→A 5) | `… experiment topology-triangle` | `ladder.csv` |
 
 In each folder, `summary.json` holds the scenario, seed, code version and command;
@@ -46,6 +49,9 @@ semente, a versão do código e o comando de cada experimento.
 | [`microcycle-sweep/`](microcycle-sweep) | Qual a troca entre atraso e economia de liquidez? | `… experiment microcycle-sweep` | `sweep.csv` (janela × atraso máximo), `shortfall.csv` (liquidez restrita), `fig_tradeoff.svg` |
 | [`stress/`](stress) | E se o maior participante ficar fora do ar por 30 minutos? | `… experiment stress` | `stress.csv` |
 | [`finland-replication/`](finland-replication) | A lógica do Banco da Finlândia (ciclos fixos × instantâneo) neste cenário | `… experiment finland-replication` | `ratios.csv` (instantâneo / N ciclos por dia, média de 5 sementes), `fig_finland.svg` |
+| [`robustness/`](robustness) | O resultado sobrevive a sementes, escala, viés recebedor e comprimento do ciclo? | `… experiment robustness` | `seeds_summary.csv` (10 sementes, IC 95%), `scale.csv` (1–30 milhões), `cycle_len.csv`, `participants_ratio.csv`, `fig_scale.svg` |
+| [`bias-calibration/`](bias-calibration) | Que viés recebedor reproduz as razões de compensação por banco do BCB WP 619 (dados reais do Pix)? | `… experiment bias-calibration` | `grid.csv` (σ × multiplicador das IPs, quartis e ajuste) |
+| [`heterogeneity/`](heterogeneity) | E se cada tipo de instituição tiver seu próprio perfil ao longo do dia? (critério de morte K1) | `… experiment heterogeneity` | `heterogeneity.csv` (λ × escala × σ, economias e limite de atraso) |
 | [`topology-triangle/`](topology-triangle) | O caso fixo do triângulo (A→B 10, B→C 5, C→A 5) | `… experiment topology-triangle` | `ladder.csv` |
 
 Em cada pasta, `summary.json` guarda o cenário, a semente, a versão do código e o comando; o

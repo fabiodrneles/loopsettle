@@ -90,9 +90,10 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
   consegue economizar mais do que o valor pago nos *d* segundos antes do pico de cada
   participante. Para 10 s, esse teto fica abaixo de 1% em todas as configurações testadas.
 - Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
-  com 1 milhão de pagamentos), **mas esse "potencial" encolhe com a raiz quadrada do volume**
-  (1,7% com 30 milhões). Quanto dele existe no Pix real depende de desequilíbrios intradiários
-  que os dados públicos não mostram — é a principal pergunta aberta
+  com 1 milhão de pagamentos), **mas esse "potencial" encolhe com o volume**. Com a estrutura
+  bilateral calibrada em dados reais do Pix (BCB WP 619) e 30 milhões de pagamentos por dia, uma
+  compensação diária recupera **entre 0,2% e 2,8%** da liquidez, conforme o quanto os bancos têm
+  padrões intradiários diferentes entre si — a pergunta que só dados por participante respondem
   ([avaliação](docs/ASSESSMENT.pt-BR.md)).
 
 > **Volume compensável não é liquidez economizada.** O LoopSettle torna visível e mensurável a
@@ -357,6 +358,8 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `stress` | o que acontece se um participante grande cair por 30 min? | `results/stress/` |
 | `finland-replication` | a lógica do Banco da Finlândia aplicada ao cenário | `results/finland-replication/` |
 | `robustness` | o resultado sobrevive a sementes, escala, viés e algoritmo? | `results/robustness/` |
+| `bias-calibration` | qual viés recebedor reproduz os dados reais do WP 619? | `results/bias-calibration/` |
+| `heterogeneity` | e se cada tipo de banco tiver seu próprio perfil ao longo do dia? | `results/heterogeneity/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
 execução): conservação do dinheiro; preservação da posição líquida de cada participante;
@@ -511,9 +514,10 @@ million payments per day):
   more than the value paid in the *d* seconds before each participant's peak. For 10 s that
   ceiling is below 1% in every configuration tested.
 - Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
-  payments), **but that "potential" shrinks with the square root of volume** (1.7% at 30
-  million). How much of it exists in real Pix depends on intraday imbalances that public data do
-  not show — the main open question ([assessment](docs/ASSESSMENT.md)).
+  payments), **but that "potential" shrinks with volume**. With the bilateral structure calibrated
+  to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between
+  0.2% and 2.8%** of the liquidity, depending on how differently banks behave during the day — the
+  question only per-participant data can answer ([assessment](docs/ASSESSMENT.md)).
 
 > **Nettable volume is not saved liquidity.** LoopSettle makes the gap between the two visible
 > and measurable.
@@ -773,6 +777,8 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `stress` | what happens if a large participant goes down for 30 min? | `results/stress/` |
 | `finland-replication` | the Bank of Finland logic applied to the scenario | `results/finland-replication/` |
 | `robustness` | does the result survive seeds, scale, bias and algorithm? | `results/robustness/` |
+| `bias-calibration` | which receiver bias reproduces the real WP 619 data? | `results/bias-calibration/` |
+| `heterogeneity` | what if each type of bank has its own intraday profile? | `results/heterogeneity/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
 run): conservation of money; each participant's net position preserved; no negative balances;

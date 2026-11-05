@@ -13,8 +13,9 @@
 |---|---|---|---|---|
 | W0 | Sources only the owner can download | yes | Owner | **4 of 15 received** (#1, #4, #5, #6 — read and recorded in `REFERENCES.md`) |
 | W1 | Reporting hygiene (multi-seed, bands over σ, no "630×") | yes | Claude | **done** in this change (robustness experiment, CLAIMS, README) |
-| W2 | Intraday heterogeneity model (kill criterion K1) | yes | Claude (+ owner for data) | to do |
-| W2b | Calibrate receiver bias to the WP 619 per-bank distribution (p25 18–45%, median 57–80%) | yes | Claude | to do |
+| W2 | Intraday heterogeneity model (kill criterion K1) | yes | Claude (+ owner for data) | **done**: K1 not fired (`results/heterogeneity/`); calibrating the profiles to real data needs W0 #16 |
+| W2b | Calibrate receiver bias to the WP 619 per-bank distribution (p25 18–45%, median 57–80%) | yes | Claude | **done**: σ = 1.0 (`results/bias-calibration/`) |
+| W9 | Becoming a reference (see section W9) | yes | Owner + Claude | to do |
 | W3 | Liquidity need as the BCB rules define it (K3) | yes | Claude, after W0 | to do |
 | W4 | Literature check for novelty (K2) | yes | Claude + owner | to do |
 | W5 | Delay bound: theorem, curve over d, tightness | yes | Claude | theorem and test **done**; curve to do |
@@ -51,6 +52,18 @@ The BCB links point to section pages; if one has moved, search the BCB site for 
 Optional, for a second-country comparison: Banxico's SPEI description
 ([PDF](https://www.banxico.org.mx/sistemas-de-pago/d/%7B89B6CCF0-6070-7389-3DD5-B27AC4ECD9D1%7D.pdf))
 and Payments Canada's RTR material ([page](https://www.payments.ca/how-canadas-real-time-rail-will-transform-account-account-payments)).
+
+
+**Added after W2/W2b (5 Nov 2026):**
+
+| # | Document | Link | What is needed from it |
+|---|---|---|---|
+| 16 | BCB — SPI annual report 2024 | [PDF](https://www.bcb.gov.br/content/estabilidadefinanceira/relatorios_SPI/relatorio_anual_spi_2024.pdf) | the section "average number of transactions by time slot": replaces the assumed hourly profile (`hourly`) with a sourced one; any breakdown by type of participant calibrates W2 |
+| 17 | BCB — Relatório de Gestão do Pix (2023) | [PDF](https://www.bcb.gov.br/content/estabilidadefinanceira/pix/relatorio_de_gestao_pix/relatorio_gestao_pix_2023.pdf) | Conta PI funding, liquidity management and SPI operating rules (W3) |
+| 18 | ECB — TIPS and RT1, implications for liquidity management (2018) | [PDF](https://www.ecb.europa.eu/paym/groups/pdf/mmcg/20181203/Item_5_2_Instant_Payment_Services_TIPS_and_RT1_Implications_for_Liquidity_Management.pdf) | how euro-area instant systems fund liquidity (W3, W4) |
+| 19 | Federal Reserve — FedNow readiness guide, managing liquidity | [PDF](https://explore.fednow.org/resources/readiness-guide-managing-liquidity-in-an-instant-payments-world.pdf) | FedNow liquidity tools and windows (W3, W4) |
+| 20 | Bank of Canada — Lynx liquidity and LSM studies | [SDP 2020-9](https://www.bankofcanada.ca/2020/09/staff-discussion-paper-2020-9/) · [SDP 2022-3](https://www.bankofcanada.ca/2022/02/staff-discussion-paper-2022-3/) | recent LSM-savings results to position ours (W4) |
+| 21 | Bank of Finland — 22nd Simulator Seminar (2024), Hellqvist: "Pitfalls on the Path to Instant Payments – Liquidity Risk on Finnish Instant Payments Market" | [seminar page](https://suomenpankki.fi/en/money-and-payments/payment-and-settlement-system-simulator/events/22nd-seminar-2024) | the slides (closest recent work; checks K2) |
 
 **Acceptance:** every "to check" item in [`REFERENCES.md`](REFERENCES.md) is resolved, with the
 page number of the source.
@@ -127,6 +140,28 @@ page number of the source.
   Zenodo release with DOI.
 - Preprint: SSRN (economics) or arXiv q-fin.GN, after W2–W4.
 - **Acceptance:** `make all` reproduces every number of the preprint; JOSS checklist satisfied.
+
+## W9 — Becoming a reference
+
+What turns a good study into a reference is that **other people use it**. In order of impact:
+
+1. **A tool central banks can run on their own data, without sharing it.** Add
+   `loopsettle bound <payments.csv>` and `loopsettle settle <payments.csv>`: given a file of real
+   payments (from, to, amount, time), report UB, LB, the delay bound for any *d* and the savings
+   of each engine. The data never leaves the institution; only aggregates come out. This is the
+   single feature most likely to get LoopSettle used by the BCB, the Bank of Canada (RTR launching
+   now) or a bank treasury. **Claude.**
+2. **Published, citable work.** JOSS paper (software) and a preprint (SSRN / arXiv q-fin) with the
+   delay bound and the calibrated results; Zenodo DOI on a v0.2.0 release. **Claude drafts; owner
+   submits.**
+3. **The right audience.** Submit to the Bank of Finland Simulator Seminar (held every late
+   August; it is where Hellqvist & Korpinen present) and to CEMLA payments forums; offer a short
+   talk to the BCB research department. **Owner.**
+4. **A public demo.** Publish the web UI on GitHub Pages so anyone can try it without installing
+   anything. **Claude.**
+5. **A data partnership.** With per-participant intraday data, the open question (0.2% vs 3% of
+   recoverable liquidity) becomes a measured number. The tool in item 1 is what makes that
+   conversation possible. **Owner.**
 
 ## W8 — Reference laptop
 

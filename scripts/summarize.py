@@ -88,6 +88,15 @@ PT = {
     "c_len": ["comprimento máx.", "economia vs UB", "valor em ciclos"],
     "r5": "R5 — razão por participante: liquidez instantânea / liquidez com N ciclos por dia:",
     "c_banks": ["ciclos/dia", "participantes com razão", "só precisam no instantâneo", "não precisam", "p10", "mediana", "p90", "máx."],
+    "h8": "## 8. Calibração do viés recebedor no BCB WP 619 (W2b)",
+    "cal_intro": "Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para cada σ e multiplicador das IPs, média de 3 sementes. Alvo, com dados reais do Pix: p25 18–45%, mediana 57–80%, p75 73–90%.",
+    "c_cal8": ["σ viés", "mult. IP", "p25", "mediana", "p75", "quartis dentro do alvo", "perda (p.p.²)", "LB/UB"],
+    "cal_best": "Melhor ajuste: σ = {}, multiplicador das IPs = {} (p25 {}, mediana {}, p75 {}).",
+    "h9": "## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)",
+    "het_intro": "Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:",
+    "c_het": ["σ viés", "λ", "pagamentos/dia", "motor", "economia vs UB", "limite de atraso", "LB/UB"],
+    "k1": "Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso {}; disparou: {}.",
+    "yes": "sim", "no": "não",
 }
 
 EN = {
@@ -133,6 +142,15 @@ EN = {
     "c_len": ["max length", "saving vs UB", "value in cycles"],
     "r5": "R5 — per-participant ratio: instant liquidity / liquidity with N cycles per day:",
     "c_banks": ["cycles/day", "participants with ratio", "need liquidity only if instant", "need none", "p10", "median", "p90", "max"],
+    "h8": "## 8. Receiver-bias calibration to BCB WP 619 (W2b)",
+    "cal_intro": "Quartiles of the per-bank nettable ratio (WP 619, eq. 3.2) for each σ and payment-institution multiplier, mean of 3 seeds. Target, on real Pix data: p25 18–45%, median 57–80%, p75 73–90%.",
+    "c_cal8": ["σ bias", "PI mult.", "p25", "median", "p75", "quartiles inside target", "loss (p.p.²)", "LB/UB"],
+    "cal_best": "Best fit: σ = {}, payment-institution multiplier = {} (p25 {}, median {}, p75 {}).",
+    "h9": "## 9. Intraday heterogeneity and scale (W2, kill criterion K1)",
+    "het_intro": "Class-specific intraday profiles with strength λ (0 = one profile for everyone, 1 = full profiles), at σ = 0.4 and at the calibrated σ:",
+    "c_het": ["σ bias", "λ", "payments/day", "engine", "saving vs UB", "delay bound", "LB/UB"],
+    "k1": "Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case {}; fired: {}.",
+    "yes": "yes", "no": "no",
 }
 
 
@@ -236,6 +254,23 @@ def build(T):
     md.append(table(T["c_banks"], [[r["cycles_per_day"], r["participants_with_ratio"], r["needs_liquidity_only_if_instant"], r["needs_no_liquidity"],
                                      num(r["ratio_p10"], 3), num(r["ratio_p50"], 3), num(r["ratio_p90"], 3), num(r["ratio_max"], 2)] for r in rows("robustness", "participants_ratio.csv")]))
     md += ["", T["fig"] + " [`robustness/fig_scale.svg`](robustness/fig_scale.svg)", ""]
+
+    # --- bias calibration (W2b)
+    s = load("bias-calibration")
+    b = s["best"]
+    md += [T["h8"], meta(s, T), "", T["cal_intro"], ""]
+    md.append(table(T["c_cal8"], [[r["receiver_bias_sigma"], r["pi_receiver_mult"], pct(r["ratio_p25"], 1), pct(r["ratio_p50"], 1), pct(r["ratio_p75"], 1),
+                                    r["quartiles_inside_wp619_ranges"], num(r["loss_pp2"], 1), num(r["lb_over_ub"], 3)] for r in rows("bias-calibration", "grid.csv")]))
+    md += ["", T["cal_best"].format(b["receiver_bias_sigma"], b["pi_receiver_mult"], pct(b["ratio_p25"], 1), pct(b["ratio_p50"], 1), pct(b["ratio_p75"], 1)), ""]
+
+    # --- heterogeneity (W2)
+    s = load("heterogeneity")
+    md += [T["h9"], meta(s, T), "", T["het_intro"], ""]
+    md.append(table(T["c_het"], [[r["receiver_bias_sigma"], r["profile_strength"], num(r["payments_per_day"], 0), r["engine"], f"{float(r['saving_vs_ub_pct']):.4f}%",
+                                   f"{float(r['delay_bound_pct']):.3f}%", num(r["lb_over_ub"], 3)] for r in rows("heterogeneity", "heterogeneity.csv")]))
+    k1 = s["kill_criterion_k1"]["cases"]
+    worst = max(c["bound_10s_pct_of_ub"] for c in k1)
+    md += ["", T["k1"].format(f"{worst:.2f}%", T["yes"] if any(c["k1_fires"] for c in k1) else T["no"]), ""]
     return "\n".join(md) + "\n"
 
 
