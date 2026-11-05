@@ -169,3 +169,10 @@ the real laptop (i3, 4 GB).
     Finnish study's migration question. Pix is a high-renown
     trademark of the BCB (INPI, June 2026); the README and the UI state that LoopSettle is
     independent and not endorsed by the BCB.
+70. **Robustness experiment and verdict (5 Nov 2026).** `results/robustness/` and
+    [`docs/ASSESSMENT.md`](docs/ASSESSMENT.md): micro-cycle saving ≈ 0.01% survives seeds, σ,
+    scale and cycle length; the end-of-day "potential" shrinks as 1/√(volume), so the old
+    "630×" headline was removed. Verdict PIVOT; the remaining work is specified in
+    [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) with kill criteria K1–K4.
+71. **Delay bound.** New module `crates/loopsettle-sim/src/bound.rs` and METHODOLOGY §9; the
+    reviewer should check the proof and the test `engines_never_beat_the_delay_bound`.

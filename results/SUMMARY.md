@@ -177,3 +177,69 @@ Ratio of instant liquidity to liquidity with N cycles per day (mean over seeds):
 
 Figure: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
+## 7. Robustness: seeds, scale, cycle length and delay bound
+_seed `20260930`, code `0.1.0+git.1e54c5c`, command `cargo run --release -p loopsettle-cli -- experiment robustness`._
+
+R1 — many seeds × receiver bias (mean, standard deviation and 95% interval; bound = ceiling for any mechanism with that maximum delay):
+
+| σ bias | engine | seeds | mean saving | sd (p.p.) | 95% CI | delay bound | LB/UB |
+|---|---|---|---|---|---|---|---|
+| 0 | micro:all:500:2000 | 10 | 0.0057% | 0.0065 | [0.0010; 0.0103]% | 2.175% | 0.697 |
+| 0 | micro:all:500:10000 | 10 | 0.0178% | 0.0329 | [-0.0057; 0.0414]% | 3.338% | 0.697 |
+| 0 | deferred:8640 | 10 | 0.0563% | 0.0158 | [0.0450; 0.0676]% | 3.338% | 0.697 |
+| 0 | deferred:96 | 10 | 1.9168% | 0.4515 | [1.5938; 2.2397]% | 25.450% | 0.697 |
+| 0 | deferred:1 | 10 | 30.3105% | 7.2141 | [25.1502; 35.4708]% | 727.995% | 0.697 |
+| 0.4 | micro:all:500:2000 | 10 | 0.0006% | 0.0009 | [0.0000; 0.0013]% | 0.540% | 0.922 |
+| 0.4 | micro:all:500:10000 | 10 | 0.0116% | 0.0051 | [0.0079; 0.0152]% | 0.800% | 0.922 |
+| 0.4 | deferred:8640 | 10 | 0.0185% | 0.0079 | [0.0129; 0.0242]% | 0.800% | 0.922 |
+| 0.4 | deferred:96 | 10 | 0.5021% | 0.1736 | [0.3779; 0.6262]% | 8.188% | 0.922 |
+| 0.4 | deferred:1 | 10 | 7.8040% | 4.6106 | [4.5060; 11.1020]% | 344.062% | 0.922 |
+| 0.8 | micro:all:500:2000 | 10 | 0.0002% | 0.0006 | [-0.0002; 0.0007]% | 0.643% | 0.965 |
+| 0.8 | micro:all:500:10000 | 10 | 0.0033% | 0.0040 | [0.0005; 0.0062]% | 0.696% | 0.965 |
+| 0.8 | deferred:8640 | 10 | 0.0080% | 0.0050 | [0.0045; 0.0116]% | 0.696% | 0.965 |
+| 0.8 | deferred:96 | 10 | 0.3231% | 0.3655 | [0.0617; 0.5845]% | 4.035% | 0.965 |
+| 0.8 | deferred:1 | 10 | 3.4763% | 2.6393 | [1.5884; 5.3642]% | 222.628% | 0.965 |
+
+R2 — scale (same scenario, 1 to 30 million payments per day):
+
+| payments/day | scale factor | engine | saving vs UB | delay bound | UB / volume |
+|---|---|---|---|---|---|
+| 1 000 000 | 239.0 | micro:all:500:2000 | 0.0016% | 0.567% | 0.1608 |
+| 1 000 000 | 239.0 | micro:all:500:10000 | 0.0147% | 0.761% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:8640 | 0.0276% | 0.761% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:96 | 0.3248% | 7.956% | 0.1608 |
+| 1 000 000 | 239.0 | deferred:1 | 9.2669% | 275.951% | 0.1608 |
+| 3 000 000 | 79.7 | micro:all:500:2000 | 0.0005% | 0.388% | 0.1501 |
+| 3 000 000 | 79.7 | micro:all:500:10000 | 0.0027% | 0.439% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:8640 | 0.0092% | 0.439% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:96 | 0.4132% | 6.190% | 0.1501 |
+| 3 000 000 | 79.7 | deferred:1 | 5.7640% | 233.968% | 0.1501 |
+| 10 000 000 | 23.9 | micro:all:500:2000 | 0.0002% | 0.219% | 0.1398 |
+| 10 000 000 | 23.9 | micro:all:500:10000 | -0.0004% | 0.276% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:8640 | 0.0078% | 0.276% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:96 | 0.2188% | 3.763% | 0.1398 |
+| 10 000 000 | 23.9 | deferred:1 | 2.9492% | 257.365% | 0.1398 |
+| 30 000 000 | 8.0 | micro:all:500:2000 | 0.0001% | 0.080% | 0.1361 |
+| 30 000 000 | 8.0 | micro:all:500:10000 | -0.0016% | 0.271% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:8640 | 0.0052% | 0.271% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:96 | 0.1610% | 3.405% | 0.1361 |
+| 30 000 000 | 8.0 | deferred:1 | 1.6789% | 248.574% | 0.1361 |
+
+R3 — maximum micro-cycle length (0.5 s window, 10 s delay):
+
+| max length | saving vs UB | value in cycles |
+|---|---|---|
+| 2 | 0.0155% | 45.45% |
+| 3 | 0.0100% | 61.08% |
+| 6 | 0.0147% | 63.42% |
+| 10 | 0.0145% | 63.47% |
+
+R5 — per-participant ratio: instant liquidity / liquidity with N cycles per day:
+
+| cycles/day | participants with ratio | need liquidity only if instant | need none | p10 | median | p90 | max |
+|---|---|---|---|---|---|---|---|
+| 1 | 78 | 104 | 18 | 1.001 | 1.161 | 2.897 | 19.11 |
+| 10 | 159 | 23 | 18 | 1.000 | 1.125 | 2.777 | 22.01 |
+
+Figure: [`robustness/fig_scale.svg`](robustness/fig_scale.svg)
+

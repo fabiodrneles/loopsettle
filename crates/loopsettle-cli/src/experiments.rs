@@ -15,6 +15,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("potential-vs-realizable", "potential vs realizable liquidity savings (central comparison)"),
     ("stress", "largest participant offline for 30 minutes"),
     ("finland-replication", "fixed clearing cycles vs instant settlement"),
+    ("robustness", "seeds, scale, cycle length, delay bound and per-bank ratios"),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -31,6 +32,7 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "potential-vs-realizable" => e2::potential_vs_realizable(path, doc, &cfg),
         "stress" => e2::stress(path, doc, &cfg),
         "finland-replication" => e2::finland(path, doc, &cfg),
+        "robustness" => crate::experiments3::robustness(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
     }
 }

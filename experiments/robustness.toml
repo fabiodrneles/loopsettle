@@ -1,0 +1,19 @@
+# Robustness of the central result (see docs/ASSESSMENT.md, threats 1-4):
+# R1 many seeds x receiver bias, with 95% CIs; R2 scale 1M..30M payments/day;
+# R3 maximum micro-cycle length; R4 analytical delay bound; R5 per-bank instant/deferred ratio.
+[experiment]
+name = "robustness"
+description = "Seeds, scale, cycle length, delay bound and per-bank ratios"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[robustness]
+seeds = [20260930, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+sigmas = [0.0, 0.4, 0.8]
+payments_per_day = [1_000_000, 3_000_000, 10_000_000, 30_000_000]
+max_cycle_len = [2, 3, 6, 10]
