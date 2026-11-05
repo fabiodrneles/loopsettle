@@ -56,13 +56,19 @@ impl Results {
         self.summary.push(key, v);
     }
 
+    pub fn measure(&mut self, key: &str, v: impl Into<Json>) {
+        self.run.push(key, v);
+    }
+
     pub fn finish(mut self) {
-        self.summary.push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
-        let p = self.dir.join("summary.json");
-        let mut s = self.summary.to_string_pretty();
-        s.push('\n');
-        fs::write(&p, s).unwrap_or_else(|e| panic!("{}: {e}", p.display()));
-        eprintln!("  wrote {}", p.display());
+        self.run.push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
+        for (name, j) in [("summary.json", &self.summary), ("run.json", &self.run)] {
+            let p = self.dir.join(name);
+            let mut s = j.to_string_pretty();
+            s.push('\n');
+            fs::write(&p, s).unwrap_or_else(|e| panic!("{}: {e}", p.display()));
+            eprintln!("  wrote {}", p.display());
+        }
     }
 }
 
