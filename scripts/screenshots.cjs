@@ -13,7 +13,7 @@ const { chromium, devices } = require("playwright");
 const base = (process.argv[2] || "http://localhost:5173/").replace(/\/?$/, "/");
 const root = path.join(__dirname, "..", "docs", "img");
 const LANGS = { pt: root, en: path.join(root, "en") };
-const PANELS = ["network", "potential-vs-realizable", "liquidity", "sweep", "day", "constrained"];
+const PANELS = ["network", "potential-vs-realizable", "liquidity", "sweep", "day", "constrained", "fit"];
 
 async function ready(page, lang) {
   await page.goto(`${base}?lang=${lang}`);

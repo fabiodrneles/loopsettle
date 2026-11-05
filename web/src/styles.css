@@ -64,6 +64,12 @@ input[type="number"] { font: inherit; padding: 6px 8px; border: 1px solid var(--
 .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .panel.hero { grid-column: 1 / -1; }
+.fit { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.fit li { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--grid); }
+.fit li:first-child { border-top: 0; padding-top: 0; }
+.fit-model { font-weight: 600; font-size: 14px; }
+.fit-engine { font-size: 12px; color: var(--circular); }
+.fit-systems { font-size: 13px; color: var(--muted); }
 .panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
 .legend { margin: 0; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .key { display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-left: 8px; }

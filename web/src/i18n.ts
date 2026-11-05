@@ -30,9 +30,9 @@ export function saveLang(lang: Lang) {
 export const LOCALE: Record<Lang, string> = { pt: "pt-BR", en: "en-US" };
 
 const pt = {
-  title: "Quanto do dinheiro do Pix só dá voltas?",
+  title: "Quanto da liquidez dos pagamentos instantâneos só dá voltas?",
   lede:
-    "Simulação sintética, calibrada com dados públicos do Banco Central (set/2026). Ajuste o desenho do sistema e veja quanta liquidez é circular, quanto disso dá para recuperar e quanto custa em atraso.",
+    "Simulação sintética de um sistema de pagamentos instantâneos com liquidação bruta em tempo real — o modelo do Pix, do FedNow, do TIPS e do NPP —, calibrada com dados públicos do Pix (Brasil, set/2026). Ajuste o desenho do sistema e veja quanta liquidez é circular, quanto disso dá para recuperar e quanto custa em atraso.",
   langSwitch: "English",
   langSwitchLabel: "Mudar o idioma para inglês",
   controlsLabel: "Parâmetros da simulação",
@@ -52,7 +52,7 @@ const pt = {
   reduced: "Modo reduzido: cenários menores para caber no aparelho.",
   loading: "Carregando o simulador…",
   footer: (k: string) =>
-    `LoopSettle 0.1 · Apache-2.0 · dados sintéticos calibrados, não dados interbancários reais. Cada pagamento simulado representa cerca de ${k} pagamentos reais.`,
+    `LoopSettle 0.1 · Apache-2.0 · dados sintéticos calibrados com agregados públicos do Pix, não dados interbancários reais. Cada pagamento simulado representa cerca de ${k} pagamentos reais do Pix. Pix é marca do Banco Central do Brasil; o LoopSettle é independente, sem afiliação nem endosso do BCB.`,
   netTitle: "A rede de um dia",
   keyCirc: "parte circular máxima (CDFD)",
   keyDir: "parte direcional",
@@ -80,23 +80,32 @@ const pt = {
   colRejected: "Valor rejeitado",
   colP95: "Atraso p95",
   colWithin: "Até 2,8 s",
-  constrainedCaption: "A meta do Manual de Tempos do Pix é liquidar 50% em até 2,8 s.",
+  constrainedCaption: "Referência: a meta do Pix é liquidar 50% dos pagamentos em até 2,8 s; o TIPS (zona do euro) liquida cada pagamento em menos de 10 s.",
   engines: {
-    gross_real_time: "Bruto em tempo real (Pix)",
+    gross_real_time: "Bruto em tempo real (Pix, FedNow, TIPS)",
     deferred_net_1x: "Compensação 1× ao dia",
     deferred_net_96x: "Compensação a cada 15 min",
     micro_all: "Micro-ciclos atômicos (fila total)",
     micro_shortfall: "Micro-ciclos só na falta de saldo",
   },
   money: { bn: "bi", mn: "mi", k: "mil" },
+  fitTitle: "Onde o seu sistema se encaixa",
+  fitIntro: "Para o cliente, todos são instantâneos. O que muda a liquidez é como os bancos acertam as contas entre si:",
+  fitRows: [
+    { model: "Liquidação bruta em tempo real", engine: "motor “Bruto em tempo real”", systems: "Pix (Brasil), FedNow (EUA), TIPS (zona do euro), NPP (Austrália)" },
+    { model: "Bruta, com conta pré-financiada", engine: "motor “Bruto” com saldo limitado", systems: "RTP (EUA)" },
+    { model: "Compensação diferida em ciclos", engine: "motor “Compensação N× ao dia”", systems: "UPI (Índia, 10 ciclos por dia), Faster Payments (Reino Unido, 3 ciclos por dia, pré-financiado)" },
+    { model: "Compensação a cada poucos segundos", engine: "motor “Micro-ciclos”", systems: "SPEI (México), segundo o Banxico" },
+  ],
+  fitCaption: "Detalhes e fontes de cada país no documento INSTANT_PAYMENTS do repositório. Os números desta tela vêm de um cenário calibrado com o Pix.",
 };
 
 export type Strings = typeof pt;
 
 const en: Strings = {
-  title: "How much of Pix money just goes around in loops?",
+  title: "How much instant-payment liquidity just goes around in loops?",
   lede:
-    "Synthetic simulation calibrated to public Banco Central do Brasil data (Sep 2026). Change the system design and see how much liquidity is circular, how much of it can be recovered and what it costs in delay.",
+    "Synthetic simulation of an instant payment system with real-time gross settlement — the model used by Pix, FedNow, TIPS and NPP — calibrated to public data from Brazil's Pix (Sep 2026). Change the system design and see how much liquidity is circular, how much of it can be recovered and what it costs in delay.",
   langSwitch: "Português",
   langSwitchLabel: "Switch language to Portuguese",
   controlsLabel: "Simulation parameters",
@@ -116,7 +125,7 @@ const en: Strings = {
   reduced: "Reduced mode: smaller scenarios to fit this device.",
   loading: "Loading the simulator…",
   footer: (k: string) =>
-    `LoopSettle 0.1 · Apache-2.0 · calibrated synthetic data, not real interbank data. Each simulated payment stands for about ${k} real payments.`,
+    `LoopSettle 0.1 · Apache-2.0 · synthetic data calibrated to public Pix aggregates, not real interbank data. Each simulated payment stands for about ${k} real Pix payments. Pix is a trademark of Banco Central do Brasil; LoopSettle is independent and not affiliated with or endorsed by the BCB.`,
   netTitle: "The network of one day",
   keyCirc: "maximum circular part (CDFD)",
   keyDir: "directional part",
@@ -144,15 +153,24 @@ const en: Strings = {
   colRejected: "Value rejected",
   colP95: "p95 delay",
   colWithin: "Within 2.8 s",
-  constrainedCaption: "The Pix timing target (Manual de Tempos) is to settle 50% within 2.8 s.",
+  constrainedCaption: "Reference: Pix targets 50% of payments settled within 2.8 s; TIPS (euro area) settles each payment in under 10 s.",
   engines: {
-    gross_real_time: "Real-time gross (Pix)",
+    gross_real_time: "Real-time gross (Pix, FedNow, TIPS)",
     deferred_net_1x: "Netting once a day",
     deferred_net_96x: "Netting every 15 min",
     micro_all: "Atomic micro-cycles (queue all)",
     micro_shortfall: "Micro-cycles on shortfall only",
   },
   money: { bn: "bn", mn: "M", k: "k" },
+  fitTitle: "Where your system fits",
+  fitIntro: "To customers they are all instant. What changes liquidity is how banks settle with each other:",
+  fitRows: [
+    { model: "Real-time gross settlement", engine: "“Real-time gross” engine", systems: "Pix (Brazil), FedNow (US), TIPS (euro area), NPP (Australia)" },
+    { model: "Gross, against a prefunded account", engine: "“Gross” engine with limited balance", systems: "RTP (US)" },
+    { model: "Deferred netting in cycles", engine: "“Netting N× a day” engine", systems: "UPI (India, 10 cycles a day), Faster Payments (UK, 3 cycles a day, prefunded)" },
+    { model: "Netting every few seconds", engine: "“Micro-cycles” engine", systems: "SPEI (Mexico), per Banxico" },
+  ],
+  fitCaption: "Details and sources for each country in the repository's INSTANT_PAYMENTS document. The numbers on this screen come from a scenario calibrated to Pix.",
 };
 
 export const STRINGS: Record<Lang, Strings> = { pt, en };
