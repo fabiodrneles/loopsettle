@@ -1,30 +1,33 @@
-# CLAIMS — o que o estudo pode e não pode afirmar
+# CLAIMS — what the study can and cannot claim
 
-Evidência = arquivo em `results/` gerado por comando (ver `results/SUMMARY.md`).
+> 🇧🇷 [Versão em português](CLAIMS.pt-BR.md)
 
-## Pode afirmar (com a evidência indicada)
+Evidence = a file in `results/` produced by a command (see
+[`results/SUMMARY.md`](../results/SUMMARY.md)).
 
-| # | Afirmação | Evidência | Condição |
+## Can claim (with the evidence shown)
+
+| # | Claim | Evidence | Condition |
 |---|---|---|---|
-| 1 | No cenário sintético calibrado, a economia **potencial** de liquidez (uma compensação no fim do dia: 9,27% do UB) é ~630× a economia **realizável** com micro-ciclos atômicos de até 10 s (0,0147% do UB). A medida potencial de volume no estilo do BCB (85% do volume) mede outra coisa e não deve ser comparada diretamente com uma economia de liquidez. | `potential-vs-realizable/central.csv` | cenário sintético; vale para σ ∈ [0; 0,8] (`baseline/sensitivity.csv`) |
-| 2 | Liquidar muito valor dentro de ciclos (até 63%) não implica economizar liquidez: o pico de liquidez é dirigido por desequilíbrios que duram horas. | `microcycle-sweep/sweep.csv`; `potential-vs-realizable/engines.csv` (economia cresce com o intervalo: 0,03% a cada 10 s, 0,32% a cada 15 min, 9,27% 1×/dia) | idem |
-| 3 | A economia de liquidez da compensação diferida cresce de forma monótona com o intervalo entre ciclos, e só uma compensação diária recupera toda a distância UB−LB. | `potential-vs-realizable/engines.csv` | sem saldos intradiários de abertura |
-| 4 | As três lentes de circularidade não coincidem: Hodge (diagnóstico) > CDFD máxima > netting guloso, com distância grande no grafo líquido (0,98 / 0,17 / 0,14). | `baseline/ladder.csv`; teste do triângulo | Hodge ≥ CDFD observado, não provado |
-| 5 | A decomposição de Hodge não respeita limites de aresta e não é um montante compensável (triângulo: 6,67 vs 5). | teste `triangle_case` | geral (matemático) |
-| 6 | A CDFD máxima pode ser calculada exatamente, sem PL, por fluxo de custo mínimo; resultado igual ao de um solver de PL em 1.000 grafos. | teste `cdfd_matches_lp_oracle_on_1000_random_graphs` | geral |
-| 7 | Micro-ciclos com atraso máximo ≥ 5 s não cumprem a meta de 50% liquidados em até 2,8 s; com 2 s cumprem. | `microcycle-sweep/sweep.csv` | atraso medido é só o do motor |
-| 8 | Na lógica do estudo finlandês, o sistema instantâneo exige 1,1–1,5× a liquidez de uma compensação diária, e a diferença cai para 1,01–1,03× com 48 ciclos por dia. | `finland-replication/ratios.csv` | depende do viés σ |
-| 9 | O simulador é reprodutível bit a bit e roda em hardware modesto (i3 de 4ª geração, 4 GB). | invariante 7; `make rebuild` em 120 s; pico < 20 MiB por experimento | — |
+| 1 | In the calibrated synthetic scenario, the **potential** liquidity saving (one end-of-day netting: 9.27% of UB) is ~630× the **realizable** saving with atomic micro-cycles of up to 10 s (0.0147% of UB). The BCB-style potential volume measure (85% of volume) measures something else and must not be compared directly with a liquidity saving. | `potential-vs-realizable/central.csv` | synthetic scenario; holds for σ ∈ [0; 0.8] (`baseline/sensitivity.csv`) |
+| 2 | Settling a lot of value inside cycles (up to 63%) does not imply saving liquidity: the liquidity peak is driven by imbalances lasting hours. | `microcycle-sweep/sweep.csv`; `potential-vs-realizable/engines.csv` (saving grows with the interval: 0.03% every 10 s, 0.32% every 15 min, 9.27% once a day) | same |
+| 3 | The liquidity saving of deferred netting grows monotonically with the interval between cycles, and only one daily netting recovers the whole UB−LB gap. | `potential-vs-realizable/engines.csv` | no intraday opening balances |
+| 4 | The three circularity lenses do not coincide: Hodge (diagnostic) > maximum CDFD > greedy netting, with a large gap on the net graph (0.98 / 0.17 / 0.14). | `baseline/ladder.csv`; triangle test | Hodge ≥ CDFD observed, not proven |
+| 5 | The Hodge decomposition does not respect edge bounds and is not a nettable amount (triangle: 6.67 vs 5). | test `triangle_case` | general (mathematical) |
+| 6 | The maximum CDFD can be computed exactly, without LP, by min-cost flow; the result equals an LP solver's on 1,000 graphs. | test `cdfd_matches_lp_oracle_on_1000_random_graphs` | general |
+| 7 | Micro-cycles with a maximum delay ≥ 5 s miss the target of 50% settled within 2.8 s; with 2 s they meet it. | `microcycle-sweep/sweep.csv` | the measured delay is only the engine's |
+| 8 | Under the Finnish study's logic, the instant system needs 1.1–1.5× the liquidity of one daily netting, and the gap falls to 1.01–1.03× with 48 cycles a day. | `finland-replication/ratios.csv` | depends on the bias σ |
+| 9 | The simulator is bit-for-bit reproducible and runs on modest hardware (4th-gen i3, 4 GB). | invariant 7; `make rebuild` in 120 s; peak < 20 MiB per experiment | — |
 
-## Não pode afirmar
+## Cannot claim
 
-| # | Afirmação proibida | Por quê |
+| # | Forbidden claim | Why |
 |---|---|---|
-| 1 | "O Pix poderia economizar R$ X bilhões de liquidez." | Dados sintéticos; a liquidez absoluta não escala linearmente com o fator 239; LB/UB depende de hipótese (σ). |
-| 2 | "X% da liquidez do Pix é circular." | Só temos agregados públicos; a estrutura bilateral é hipótese. |
-| 3 | "Micro-ciclos não funcionam no Pix real." | Escala 239× menor por janela; heurística simples; não testado com volume real por segundo. |
-| 4 | "O estudo do BCB superestima a capacidade de netting." | Não reproduzimos os dados do BCB; reproduzimos a *lógica* da medida em dados sintéticos. |
-| 5 | "Replicamos Hellqvist & Korpinen." | Aplicamos a lógica deles a outro cenário; comparação só de ordem de grandeza. |
-| 6 | "A correlação potencial × posição líquida valida o modelo." | Em grafo denso é quase mecânica. |
-| 7 | "Um participante grande fora do ar não afeta a liquidez." | Cenário de estresse fraco (re-envio total, pico no fim do dia). |
-| 8 | Qualquer afirmação sobre a variante proporcional da CDFD ou sobre dados on-chain. | Não implementado / não rodado. |
+| 1 | "Pix could save R$ X billion of liquidity." | Synthetic data; absolute liquidity does not scale linearly with the factor 239; LB/UB depends on an assumption (σ). |
+| 2 | "X% of Pix liquidity is circular." | We only have public aggregates; the bilateral structure is an assumption. |
+| 3 | "Micro-cycles do not work in real Pix." | 239× smaller scale per window; simple heuristic; not tested with real per-second volume. |
+| 4 | "The BCB study overstates netting capacity." | We did not reproduce the BCB data; we reproduce the *logic* of the measure on synthetic data. |
+| 5 | "We replicated Hellqvist & Korpinen." | We applied their logic to another scenario; the comparison is of orders of magnitude only. |
+| 6 | "The Hodge potential × net position correlation validates the model." | On a dense graph it is almost mechanical. |
+| 7 | "A large participant going offline does not affect liquidity." | Weak stress scenario (full resubmission, peak at the end of the day). |
+| 8 | Any claim about the proportional CDFD variant or about on-chain data. | Not implemented / not run. |

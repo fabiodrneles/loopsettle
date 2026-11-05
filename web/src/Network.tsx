@@ -5,7 +5,7 @@ import type { SimResult } from "./types";
 /** Participants on a ring (largest at the top, clockwise by size). Each edge is drawn
  *  twice on top of each other: the directional part in grey, the CDFD circular part
  *  in the accent colour, so the share of money that "loops" is visible at a glance. */
-export function Network({ data }: { data: SimResult }) {
+export function Network({ data, ariaLabel }: { data: SimResult; ariaLabel: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function Network({ data }: { data: SimResult }) {
       ref={ref}
       className="network"
       role="img"
-      aria-label={`Rede de ${data.nodes.length} participantes; a cor de destaque mostra o componente circular máximo (CDFD) de cada fluxo.`}
+      aria-label={ariaLabel}
     />
   );
 }
