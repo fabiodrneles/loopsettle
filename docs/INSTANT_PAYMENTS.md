@@ -8,7 +8,7 @@
 > payments. This page shows which settlement model each system uses and which LoopSettle engine
 > represents it.
 >
-> Last checked: 5 Nov 2026, by public web search. Rows marked **to check** rely on secondary
+> Last checked: 5 Nov 2026, by public web search; SPEI and Canada checked against primary sources (Banxico, Interac, Bank of Canada). Rows marked **to check** rely on secondary
 > sources and must be confirmed against the operator's rulebook before being cited.
 
 ## The key distinction: how banks settle with each other
@@ -21,7 +21,7 @@ changes the **liquidity** banks must hold is how the banks settle among themselv
 | **Real-time gross settlement (RTGS)** | each payment settles on its own, immediately, in central bank money; the payer's bank needs the funds *before* each payment | `GrossRealTime` |
 | **Gross, against a prefunded joint account** | as above, but against a pool of funds the banks prefund at the central bank | `GrossRealTime` with a limited opening balance (constrained-liquidity mode) |
 | **Deferred net settlement (DNS)** | banks exchange payments instantly but settle only their *net* positions, in a few cycles a day (often prefunded or collateralised) | `DeferredNet { cycles_per_day }` |
-| **Netting every few seconds** | a multilateral offsetting algorithm runs in quick succession | `AtomicMicroCycle` (closest analogue) |
+| **Netting every few seconds** | a clearing algorithm runs in quick succession and settles the payments the current balances allow | `AtomicMicroCycle` (closest analogue) |
 
 LoopSettle's central result — *nettable volume is not saved liquidity* — is about systems in the
 first two groups, which are the ones asking whether a liquidity-saving mechanism is worth adding.
@@ -38,11 +38,11 @@ question: how much more liquidity a move to RTGS would require.
 | **TIPS** (SCT Inst) | Euro area | Eurosystem (ECB) | Nov 2018 | RTGS in euro central bank money, each payment in under 10 s | `GrossRealTime` | confirmed |
 | **NPP** + Fast Settlement Service | Australia | NPP Australia / Reserve Bank of Australia | Feb 2018 | line-by-line real-time settlement of each payment in exchange settlement accounts, no netting | `GrossRealTime` | confirmed |
 | **FAST** | Singapore | Banking industry / MAS | 2014 | real-time service; how FAST positions settle in MEPS+ is not settled by the sources found | — | **to check** |
-| **SPEI** | Mexico | Banco de México | Aug 2004 | described by commercial sources as RTGS, but by the World Bank and a Banxico presentation as a multilateral offsetting algorithm running every few seconds | `AtomicMicroCycle` (analogue) | **to check** |
+| **SPEI** | Mexico | Banco de México | Aug 2004 | settlement by a clearing algorithm that repeatedly selects the sets of payments that can settle with participants' current balances — every 1.9 s on average, inside the system, in central bank money (Banxico) | `AtomicMicroCycle` (analogue) | confirmed (Banxico) |
 | **UPI** | India | NPCI / Reserve Bank of India | 2016 | deferred net settlement: NPCI computes net positions and settles them in the RBI's RTGS, 10 cycles a day for authorised transactions | `DeferredNet { 10 }` | confirmed (secondary sources) |
 | **Faster Payments** | United Kingdom | Pay.UK / Bank of England | May 2008 | deferred net settlement at the Bank of England, three cycles per business day, prefunded | `DeferredNet { 3 }` | confirmed (secondary sources) |
-| **Interac e-Transfer** | Canada | Interac Corp. | 2003 | instant to the customer; banks settle net obligations later through Payments Canada systems (exact current routing not confirmed) | `DeferredNet` | **to check** |
-| **Real-Time Rail (RTR)** | Canada | Payments Canada | not yet live: phased launch targeted for Q4 2026 | to be confirmed when it launches | — | **to check** |
+| **Interac e-Transfer** | Canada | Interac Corp. | 2003 | instant to the customer; deferred net settlement in 24-hour cycles: Interac computes each participant's amount and participants pay each other through Lynx (Canada's RTGS); migration to the RTR planned | `DeferredNet { 1 }` | confirmed (Interac disclosure, 2025) |
+| **Real-Time Rail (RTR)** | Canada | Payments Canada | not yet live: phased launch targeted for Q4 2026 | real-time settlement against prefunded settlement accounts at the Bank of Canada, funded and defunded through Lynx | `GrossRealTime` (limited balance) | confirmed (Bank of Canada policy); launch pending |
 
 ## What this does and does not mean
 
@@ -76,6 +76,9 @@ question: how much more liquidity a move to RTGS would require.
   [Business Today, settlement cycles from 3 Nov 2025](https://www.businesstoday.in/personal-finance/news/story/upi-users-on-alert-settlement-rules-to-change-from-november-3-heres-what-can-be-expected-495471-2025-09-24)
 - Faster Payments: [BIS CPSS 105 (UK)](https://www.bis.org/publ/cpss105_uk.pdf) ·
   [Pay.UK, net sender caps](https://www.wearepay.uk/understanding-changes-to-the-faster-payment-system-net-sender-caps/)
+- SPEI (primary): [Banco de México, SPEI description](https://www.banxico.org.mx/sistemas-de-pago/d/%7B89B6CCF0-6070-7389-3DD5-B27AC4ECD9D1%7D.pdf)
+- Interac e-Transfer (primary): [Interac, PPS self-assessment disclosure 2025](https://www.interac.ca/wp-content/uploads/2025/09/Interac-PPS-e-Transfer-Self-Assessment-2025-VF-Disclosure-Submission.pdf)
+- RTR (primary): [Bank of Canada, settlement account access policy for the Real-Time Rail](https://www.bankofcanada.ca/core-functions/financial-system/bank-canadas-settlement-account-policies-for-payments-canada-payment-systems/bank-canada-settlement-account-access-policy-real-time-rail/)
 - Canada: [Bank of Canada, payment systems it oversees](https://www.bankofcanada.ca/core-functions/financial-system/payment-systems/) ·
   [Bank of Canada designates Interac e-Transfer](https://www.finextra.com/pressarticle/83658/bank-of-canada-designates-interac-etransfer-as-a-prominent-payment-system) ·
   [Real-Time Rail on track for Q4 2026](https://platform.intelligence.regxelerator.com/updates/b02be15b633e5427f73a003899655469f4bc1a794ae83319c766dfcb8bacdf7d/payments-canada-confirms-real-time-rail-is-on-track-for-phased-q4-2026-launch-with-centralized-f)

@@ -164,9 +164,11 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     settlement account).
 69. **Enquadramento internacional (`docs/INSTANT_PAYMENTS.pt-BR.md`).** O README, a interface e a
     documentação agora apresentam o LoopSettle como estudo de pagamentos instantâneos com
-    liquidação bruta, com o Pix como caso calibrado, e relacionam 11 sistemas aos motores. As
-    linhas "a conferir" (FAST, SPEI, Interac e-Transfer, RTR do Canadá) dependem de fontes
-    secundárias. A linha do SPEI importa para o artigo: se o Banxico confirmar um algoritmo de
-    compensação multilateral a cada poucos segundos, o SPEI é um análogo real dos micro-ciclos
-    atômicos e uma comparação natural. Pix é marca de alto renome do BCB (INPI, junho de 2026);
+    liquidação bruta, com o Pix como caso calibrado, e relacionam 11 sistemas aos motores. SPEI,
+    Interac e-Transfer e o RTR do Canadá foram conferidos em fontes primárias (Banxico, Interac,
+    Bank of Canada); só o FAST continua "a conferir". A linha do SPEI importa para o artigo: o
+    Banxico descreve um algoritmo de compensação que liquida os conjuntos possíveis a cada 1,9 s
+    em média, um análogo real dos micro-ciclos atômicos e uma comparação natural; o RTR do Canadá
+    (pré-financiado, em lançamento no 4º trimestre de 2026) é um caso vivo da pergunta de migração
+    do estudo finlandês. Pix é marca de alto renome do BCB (INPI, junho de 2026);
     o README e a interface dizem que o LoopSettle é independente, sem endosso do BCB.

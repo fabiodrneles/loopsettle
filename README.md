@@ -224,17 +224,22 @@ entre si**, e o LoopSettle tem um motor para cada modelo:
 | Modelo entre bancos | Exemplos | Motor |
 |---|---|---|
 | Bruto em tempo real | Pix (Brasil), FedNow (EUA), TIPS (zona do euro), NPP (Austrália) | `GrossRealTime` |
-| Bruto, conta pré-financiada | RTP (EUA) | `GrossRealTime` com saldo limitado |
-| Compensação diferida em ciclos | UPI (Índia, 10/dia), Faster Payments (Reino Unido, 3/dia) | `DeferredNet` |
-| Compensação a cada poucos segundos | SPEI (México), a conferir | `AtomicMicroCycle` |
+| Bruto, conta pré-financiada | RTP (EUA), Real-Time Rail (Canadá, em lançamento) | `GrossRealTime` com saldo limitado |
+| Compensação diferida em ciclos | UPI (Índia, 10/dia), Faster Payments (Reino Unido, 3/dia), Interac e-Transfer (Canadá, 1/dia) | `DeferredNet` |
+| Compensação a cada poucos segundos | SPEI (México, em média a cada 1,9 s) | `AtomicMicroCycle` |
 
 </td>
   </tr>
 </table>
 
 - **Nos EUA**, o FedNow funciona como o Pix: o resultado central se aplica diretamente ao desenho.
-- **No Canadá**, o Interac e-Transfer é instantâneo para o cliente, mas os bancos compensam depois
-  (modelo `DeferredNet`); o novo Real-Time Rail ainda não estava em operação em novembro de 2026.
+- **No Canadá**, o Interac e-Transfer é instantâneo para o cliente, mas os bancos compensam o saldo
+  líquido uma vez por dia, pelo Lynx (modelo `DeferredNet`). O novo Real-Time Rail, com lançamento
+  previsto para o fim de 2026, liquida em tempo real contra contas pré-financiadas no Bank of
+  Canada: é exatamente o tipo de sistema para o qual a lógica do estudo finlandês mede o custo da
+  migração.
+- **No México**, o SPEI já roda um algoritmo de compensação a cada 1,9 s em média: é o análogo real
+  mais próximo dos micro-ciclos atômicos.
 - **Os números** (9,3%, 0,3%, 0,02%) vêm do cenário calibrado com o Pix e não valem
   automaticamente para outro país: recalibrar exige os agregados públicos dele.
 
@@ -622,17 +627,21 @@ has an engine for each model:
 | Interbank model | Examples | Engine |
 |---|---|---|
 | Real-time gross | Pix (Brazil), FedNow (US), TIPS (euro area), NPP (Australia) | `GrossRealTime` |
-| Gross, prefunded account | RTP (US) | `GrossRealTime` with limited balance |
-| Deferred netting in cycles | UPI (India, 10/day), Faster Payments (UK, 3/day) | `DeferredNet` |
-| Netting every few seconds | SPEI (Mexico), to be checked | `AtomicMicroCycle` |
+| Gross, prefunded account | RTP (US), Real-Time Rail (Canada, launching) | `GrossRealTime` with limited balance |
+| Deferred netting in cycles | UPI (India, 10/day), Faster Payments (UK, 3/day), Interac e-Transfer (Canada, 1/day) | `DeferredNet` |
+| Netting every few seconds | SPEI (Mexico, every 1.9 s on average) | `AtomicMicroCycle` |
 
 </td>
   </tr>
 </table>
 
 - **In the US**, FedNow works like Pix: the central result applies directly to its design.
-- **In Canada**, Interac e-Transfer is instant for the customer but banks settle later (the
-  `DeferredNet` model); the new Real-Time Rail was not yet live in November 2026.
+- **In Canada**, Interac e-Transfer is instant for the customer, but banks settle the net amount once
+  a day through Lynx (the `DeferredNet` model). The new Real-Time Rail, due to launch in late 2026,
+  settles in real time against prefunded accounts at the Bank of Canada: exactly the kind of
+  system whose migration cost the Finnish study's logic measures.
+- **In Mexico**, SPEI already runs a clearing algorithm every 1.9 s on average: the closest
+  real-world analogue of atomic micro-cycles.
 - **The numbers** (9.3%, 0.3%, 0.02%) come from the scenario calibrated to Pix and do not carry
   over automatically to another country: re-calibrating requires that country's public aggregates.
 
