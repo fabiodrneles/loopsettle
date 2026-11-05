@@ -1,7 +1,7 @@
 {
   "experiment": "robustness",
   "seed": 20260930,
-  "code_version": "0.1.0+git.6eeca1c-dirty",
+  "code_version": "0.1.0+git.b5a639d",
   "config_file": "experiments/robustness.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment robustness",
   "scenario": {

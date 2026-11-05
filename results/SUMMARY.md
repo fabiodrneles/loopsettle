@@ -180,7 +180,7 @@ Ratio of instant liquidity to liquidity with N cycles per day (mean over seeds):
 Figure: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
 ## 7. Robustness: seeds, scale, cycle length and delay bound
-_seed `20260930`, code `0.1.0+git.6eeca1c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment robustness`._
+_seed `20260930`, code `0.1.0+git.b5a639d`, command `cargo run --release -p loopsettle-cli -- experiment robustness`._
 
 R1 — many seeds × receiver bias (mean, standard deviation and 95% interval; bound = ceiling for any mechanism with that maximum delay):
 

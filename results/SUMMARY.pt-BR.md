@@ -180,7 +180,7 @@ Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre semen
 Figura: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
 ## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso
-_seed `20260930`, código `0.1.0+git.6eeca1c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
+_seed `20260930`, código `0.1.0+git.b5a639d`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
 
 R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):
 
