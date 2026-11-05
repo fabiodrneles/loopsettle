@@ -119,12 +119,38 @@ calibração set/2026). Reproduzir tudo: `make rebuild`.
 48. Dados sintéticos; 49. estrutura bilateral hipotética; 50. chaves como proxy; 51. escala;
 52. perfil horário sem fonte e sem rajadas; 53. horizonte de um dia; 54. micro-ciclos
 heurísticos; 55. atraso medido é só o do motor; 56. sem CDFD proporcional; 57. validação
-on-chain não feita; 58. Hodge em grafo denso; 59. interface não verificada visualmente
-(abrir `web/` no navegador e no celular).
+on-chain não feita; 58. Hodge em grafo denso; 59. interface: **verificada visualmente em
+05/11/2026** (Chromium desktop 1440 px e iPhone 13 emulado, capturas em `docs/img/ui-*.png`,
+geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 4 GB).
 
 ## F. Itens que dependem do revisor
 
-60. Referências: conferir títulos, anos e números citados nos artigos de referência
-    (os metadados vieram do `CLAUDE.md`; não foram conferidos nas fontes).
+60. Referências: conferidas por busca pública em 05/11/2026; situação de cada uma em
+    `docs/REFERENCES.md`. Ainda falta abrir os textos integrais (os PDFs do Banco da
+    Finlândia não abriram deste ambiente).
 61. URL do repositório em `Cargo.toml`/`CITATION.cff` (`github.com/fabiodrneles/loopsettle`)
     é suposição até o repositório existir.
+62. **PixSim (arXiv 2609.30684) não localizado.** Nenhuma busca pública encontrou o trabalho.
+    Saiu do README; continua citado em `docs/NOVELTY.md` como "a confirmar". Não citar no
+    artigo sem confirmar o identificador.
+63. **Título da CDFD.** O arXiv 2506.12546 se chama *Circular Directional Flow Decomposition of
+    Networks*. O título *How circular is a directed network?* e a publicação na *Royal Society
+    Open Science*, que estavam no README, não foram confirmados; o README agora cita o arXiv.
+64. **Número do estudo finlandês (≤ 8,6%).** Vem do resumo do debatedor no Economics of
+    Payments X, não do texto do artigo. Conferir no BoFER 7/2021 e na versão JFMI 13(2), e
+    conferir quantos ciclos por dia o modelo de referência do STEP2 usa: a comparação justa
+    com o LoopSettle é contra esse número de ciclos (nosso +2,6% com 10 ciclos/dia, +9,5% com
+    1 ciclo/dia, σ = 0,4).
+65. **Heterogeneidade por banco (ponto forte do estudo finlandês).** O LoopSettle tem UB e LB
+    por participante (`baseline/participants.csv`), mas o experimento `finland-replication`
+    só reporta a razão agregada. Sugestão: adicionar a distribuição da razão instantâneo/ciclos
+    por participante (participantes com LB = 0 precisam de tratamento à parte).
+66. **Bug corrigido na interface:** em `npm run dev` a simulação nunca terminava ("Simulando…"
+    para sempre). Causa: o React StrictMode (só em desenvolvimento) desmonta e remonta o
+    componente; a limpeza encerrava o Web Worker e o `useMemo` devolvia o mesmo worker morto. O
+    build de produção não era afetado. Correção em `web/src/App.tsx` (worker criado dentro do
+    `useEffect`). Também corrigido o corte dos rótulos dos eixos nos gráficos (`canvas.ts`).
+67. **Economia negativa no navegador:** no cenário padrão da interface (40 participantes, 100
+    mil pagamentos), a economia dos micro-ciclos com janela de 1–2 s sai −0,001%. Coerente com o
+    resultado central, mas vale o revisor decidir se o artigo menciona que micro-ciclos podem
+    aumentar levemente o pico.

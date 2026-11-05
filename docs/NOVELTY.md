@@ -3,8 +3,11 @@
 > Para a seção de contribuição do artigo. As colunas dos outros trabalhos resumem o que o
 > `CLAUDE.md` diz sobre eles; **o revisor deve conferir cada célula nas fontes** antes de
 > publicar (marcadas "a conferir" quando dependem de detalhe que não verificamos).
+>
+> Situação de verificação de cada referência: [`REFERENCES.md`](REFERENCES.md). O PixSim
+> (arXiv 2609.30684) **não foi localizado** em busca pública; não citar até confirmar.
 
-| Dimensão | LoopSettle | Hellqvist & Korpinen (BoF 2021; JFMI 2026) | BCB WP 619 (Pix e liquidez) | CDFD (arXiv 2506.12546) | BoF-PSS | PSSimPy | PixSim (arXiv 2609.30684) |
+| Dimensão | LoopSettle | Hellqvist & Korpinen (BoF 2021; JFMI 2026) | BCB WP 619 (Gonzalez, Ma & Zeng, 2025) | CDFD (Homs-Dones et al., arXiv 2506.12546) | BoF-PSS | PSSimPy | PixSim (arXiv 2609.30684, **não localizado**) |
 |---|---|---|---|---|---|---|---|
 | Objeto | Liquidez circular no pagamento instantâneo | Liquidez: ciclos vs instantâneo | Perda de netting no Pix | Decomposição de fluxos em rede | Simulador de RTGS/LSM | Simulador de sistemas de pagamento (a conferir) | Simulador do Pix |
 | Dados | Sintéticos calibrados com agregados públicos do Pix (set/2026), tudo com fonte ou `ASSUMPTION` | Sintéticos calibrados | Dados do BCB (a conferir: confidenciais) | Redes em geral | Dados do usuário | (a conferir) | Calibração com fonte por parâmetro |

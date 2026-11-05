@@ -8,11 +8,16 @@
 ## Estado atual
 
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
-- **Próximo passo exato:** revisão humana guiada por `REVIEW.md` (61 pontos). Sugestões de
+- **Próximo passo exato:** revisão humana guiada por `REVIEW.md` (67 pontos; 62–67 são da
+  revisão do README de 05/11/2026). Sugestões de
   trabalho adicional estão nos pontos 13, 14, 36, 39 e 41 do `REVIEW.md`. Reservar o nome
   (GitHub/crates.io) só quando o usuário pedir ("vamos reservar o nome").
-- **Verificar manualmente:** abrir a interface (`cd web && npm run dev`) no navegador e no
-  celular — não foi possível verificar visualmente nesta sessão.
+- **Interface verificada visualmente em 05/11/2026** (Chromium desktop e iPhone 13 emulado;
+  capturas em `docs/img/ui-*.png`, regeneradas por `node scripts/screenshots.cjs`). Corrigido o
+  travamento de `npm run dev` (React StrictMode encerrava o Web Worker; ver REVIEW 66). Falta
+  abrir no notebook real (i3, 4 GB).
+- **Referências conferidas** por busca pública: ver `docs/REFERENCES.md` (PixSim não
+  localizado; título da CDFD corrigido; número de 8,6% do estudo finlandês a conferir).
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 

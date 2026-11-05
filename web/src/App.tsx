@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Network } from "./Network";
 import { color, fmtBRL, fmtPct, lineChart } from "./canvas";
 import type { EngineJson, SimParams, SimResult } from "./types";
@@ -44,9 +44,16 @@ function Slider(props: { id: string; label: string; value: number; min: number; 
   );
 }
 
+// The worker is created inside the effect (not in useMemo): React StrictMode in dev runs
+// effect cleanup once and then re-runs the effect, so a memoized worker would stay terminated
+// and the UI would hang on "Simulando…".
 function useWorker() {
-  const worker = useMemo(() => new Worker(new URL("./worker.ts", import.meta.url), { type: "module" }), []);
-  useEffect(() => () => worker.terminate(), [worker]);
+  const [worker, setWorker] = useState<Worker | null>(null);
+  useEffect(() => {
+    const w = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+    setWorker(w);
+    return () => w.terminate();
+  }, []);
   return worker;
 }
 
@@ -60,6 +67,7 @@ export function App() {
   const reqId = useRef(0);
 
   useEffect(() => {
+    if (!worker) return;
     worker.onmessage = (ev) => {
       const m = ev.data;
       if (m.id !== reqId.current) return; // a newer request superseded this one
@@ -76,6 +84,7 @@ export function App() {
 
   // Debounce: re-run 250 ms after the last slider move.
   useEffect(() => {
+    if (!worker) return;
     setStatus("running");
     const t = setTimeout(() => {
       reqId.current += 1;
