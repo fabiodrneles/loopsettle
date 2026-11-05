@@ -8,8 +8,8 @@
 > instantâneos. Esta página mostra o modelo de liquidação de cada sistema e qual motor do
 > LoopSettle o representa.
 >
-> Última conferência: 05/11/2026, por busca pública na web; SPEI e Canadá conferidos em fontes primárias (Banxico, Interac, Bank of Canada). Linhas marcadas **a conferir**
-> dependem de fontes secundárias e precisam ser confirmadas no regulamento do operador antes de
+> Última conferência: 05/11/2026, por busca pública na web; SPEI, Canadá e FAST conferidos em fontes primárias (Banxico, Interac, Bank of Canada, MAS). Linhas
+> marcadas "fontes secundárias" ainda devem ser confirmadas no regulamento do operador antes de
 > serem citadas.
 
 ## A diferença que importa: como os bancos acertam as contas entre si
@@ -40,7 +40,7 @@ modelo bruto exigiria.
 | **RTP** | Estados Unidos | The Clearing House | nov/2017 | bruta em tempo real, pré-financiada, contra uma conta conjunta no Fed de Nova York | `GrossRealTime` (saldo limitado) | confirmado |
 | **TIPS** (SCT Inst) | Zona do euro | Eurosistema (BCE) | nov/2018 | bruta em tempo real em dinheiro do banco central em euro, cada pagamento em menos de 10 s | `GrossRealTime` | confirmado |
 | **NPP** + Fast Settlement Service | Austrália | NPP Australia / Reserve Bank of Australia | fev/2018 | liquidação individual em tempo real de cada pagamento nas contas de liquidação, sem compensação | `GrossRealTime` | confirmado |
-| **FAST** | Singapura | setor bancário / MAS | 2014 | serviço em tempo real; as fontes encontradas não esclarecem como as posições do FAST são liquidadas no MEPS+ | — | **a conferir** |
+| **FAST** | Singapura | Banking Computer Services (operador) / MAS (liquidação) | mar/2014 | instantâneo para o cliente; compensação diferida: a câmara compensa as obrigações do FAST e as liquida no MEPS+ (o sistema bruto do MAS) em dois ciclos por dia útil, contra garantias depositadas no MAS | `DeferredNet { 2 }` | confirmado (MAS, Banco Mundial) |
 | **SPEI** | México | Banco de México | ago/2004 | liquidação por um algoritmo de compensação que escolhe, repetidamente, os conjuntos de pagamentos que podem ser liquidados com os saldos do momento — em média a cada 1,9 s, dentro do próprio sistema, em dinheiro do banco central (Banxico) | `AtomicMicroCycle` (análogo) | confirmado (Banxico) |
 | **UPI** | Índia | NPCI / Reserve Bank of India | 2016 | compensação diferida: a NPCI calcula as posições líquidas e as liquida no sistema bruto do RBI, 10 ciclos por dia para transações autorizadas | `DeferredNet { 10 }` | confirmado (fontes secundárias) |
 | **Faster Payments** | Reino Unido | Pay.UK / Bank of England | mai/2008 | compensação diferida no Bank of England, três ciclos por dia útil, pré-financiada | `DeferredNet { 3 }` | confirmado (fontes secundárias) |

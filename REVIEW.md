@@ -162,8 +162,8 @@ the real laptop (i3, 4 GB).
 69. **International framing (`docs/INSTANT_PAYMENTS.md`).** The README, the UI and the docs now
     present LoopSettle as a study of instant payments with gross settlement, with Pix as the
     calibrated case, and map 11 systems to the engines. SPEI, Interac e-Transfer and Canada's RTR
-    were checked against primary sources (Banxico, Interac, Bank of Canada); only FAST is still
-    "to check". The SPEI row matters for the paper: Banxico describes a clearing algorithm that
+    were checked against primary sources (Banxico, Interac, Bank of Canada); Singapore's FAST was checked
+    against MAS sources too, so no row is left "to check". The SPEI row matters for the paper: Banxico describes a clearing algorithm that
     settles the payable sets every 1.9 s on average, a real-world analogue of atomic micro-cycles
     and a natural comparison; Canada's RTR (prefunded, launching Q4 2026) is a live case for the
     Finnish study's migration question. Pix is a high-renown

@@ -166,7 +166,8 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     documentação agora apresentam o LoopSettle como estudo de pagamentos instantâneos com
     liquidação bruta, com o Pix como caso calibrado, e relacionam 11 sistemas aos motores. SPEI,
     Interac e-Transfer e o RTR do Canadá foram conferidos em fontes primárias (Banxico, Interac,
-    Bank of Canada); só o FAST continua "a conferir". A linha do SPEI importa para o artigo: o
+    Bank of Canada); o FAST de Singapura também foi
+    conferido em fontes do MAS, e nenhuma linha ficou "a conferir". A linha do SPEI importa para o artigo: o
     Banxico descreve um algoritmo de compensação que liquida os conjuntos possíveis a cada 1,9 s
     em média, um análogo real dos micro-ciclos atômicos e uma comparação natural; o RTR do Canadá
     (pré-financiado, em lançamento no 4º trimestre de 2026) é um caso vivo da pergunta de migração

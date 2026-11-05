@@ -8,8 +8,9 @@
 > payments. This page shows which settlement model each system uses and which LoopSettle engine
 > represents it.
 >
-> Last checked: 5 Nov 2026, by public web search; SPEI and Canada checked against primary sources (Banxico, Interac, Bank of Canada). Rows marked **to check** rely on secondary
-> sources and must be confirmed against the operator's rulebook before being cited.
+> Last checked: 5 Nov 2026, by public web search; SPEI, Canada and FAST checked against primary sources (Banxico, Interac, Bank of Canada, MAS). Rows
+> marked "secondary sources" should still be confirmed against the operator's rulebook before
+> being cited.
 
 ## The key distinction: how banks settle with each other
 
@@ -37,7 +38,7 @@ question: how much more liquidity a move to RTGS would require.
 | **RTP** | United States | The Clearing House | Nov 2017 | prefunded real-time gross settlement against a joint account at the New York Fed | `GrossRealTime` (limited balance) | confirmed |
 | **TIPS** (SCT Inst) | Euro area | Eurosystem (ECB) | Nov 2018 | RTGS in euro central bank money, each payment in under 10 s | `GrossRealTime` | confirmed |
 | **NPP** + Fast Settlement Service | Australia | NPP Australia / Reserve Bank of Australia | Feb 2018 | line-by-line real-time settlement of each payment in exchange settlement accounts, no netting | `GrossRealTime` | confirmed |
-| **FAST** | Singapore | Banking industry / MAS | 2014 | real-time service; how FAST positions settle in MEPS+ is not settled by the sources found | — | **to check** |
+| **FAST** | Singapore | Banking Computer Services (operator) / MAS (settlement) | Mar 2014 | instant to the customer; deferred net settlement: the clearing house nets FAST obligations and settles them in MEPS+ (MAS's RTGS) in two cycles per business day, against collateral deposited with MAS | `DeferredNet { 2 }` | confirmed (MAS, World Bank) |
 | **SPEI** | Mexico | Banco de México | Aug 2004 | settlement by a clearing algorithm that repeatedly selects the sets of payments that can settle with participants' current balances — every 1.9 s on average, inside the system, in central bank money (Banxico) | `AtomicMicroCycle` (analogue) | confirmed (Banxico) |
 | **UPI** | India | NPCI / Reserve Bank of India | 2016 | deferred net settlement: NPCI computes net positions and settles them in the RBI's RTGS, 10 cycles a day for authorised transactions | `DeferredNet { 10 }` | confirmed (secondary sources) |
 | **Faster Payments** | United Kingdom | Pay.UK / Bank of England | May 2008 | deferred net settlement at the Bank of England, three cycles per business day, prefunded | `DeferredNet { 3 }` | confirmed (secondary sources) |
@@ -68,8 +69,9 @@ question: how much more liquidity a move to RTGS would require.
   [Finextra, ECB launches TIPS](https://www.finextra.com/newsarticle/33043/ecb-launches-real-time-payments-system)
 - NPP / FSS: [RBA Bulletin, Sep 2018](https://www.rba.gov.au/publications/bulletin/2018/sep/the-new-payments-platform-and-fast-settlement-service.html) ·
   [RBA, Fast Settlement Service](https://www.rba.gov.au/rits/info/fastsettlementservice.htm)
-- FAST / MEPS+: [MAS, MEPS+](https://www.mas.gov.sg/news/media-releases/2006/successful-implementation-of-meps) ·
-  [Mastercard, Singapore FAST](https://www.mastercard.com/am/en/news-and-trends/Insights/2022/singapore-fast.html)
+- FAST / MEPS+ (primary): [MAS, MEPS+ PFMI disclosure 2024](https://www.mas.gov.sg/-/media/mas/singapore-financial-centre/why-singapore/meps/references/mepsplus-pfmi-disclosure-2024.pdf) ·
+  [World Bank, Singapore FAST case study](https://fastpayments.worldbank.org/sites/default/files/2021-10/World_Bank_FPS_Singapore_FAST_Case_Study.pdf) ·
+  [MAS, MEPS+ service agreement](https://www.mas.gov.sg/-/media/MAS/Singapore-Financial-Centre/Why-Singapore/MEPS/Agreements/MEPSplus-Svc-Agreement_wef-8-Feb-2021_v2.pdf)
 - SPEI: [World Bank](https://openknowledge.worldbank.org/server/api/core/bitstreams/ac864d82-3b34-58b9-ba3a-163164442a20/content) ·
   [Banco de México at CEMLA, 2021](https://clon.cemla.org/actividades/2021-final/2021-09-ii-reunion-responsables-infraestructuras-de-mercados-financieros/4b.%20Moreno_CEMLA%20FPS%20Mexico%20SPEI%20BdeM.pdf)
 - UPI: [NPCI, UPI settlement process](https://www.npci.org.in/PDF/npci/others/UPI-Settlement-Process.pdf) ·
