@@ -10,14 +10,18 @@ mod experiments;
 mod experiments2;
 mod experiments3;
 mod experiments4;
+mod experiments5;
 mod out;
+mod realdata;
 mod svg;
 
 use loopsettle_sim::toml_lite;
 use std::time::Instant;
 
 fn usage() -> ! {
-    eprintln!("usage: loopsettle experiment <name> [--quick]\n       loopsettle list");
+    eprintln!(
+        "usage: loopsettle experiment <name> [--quick]\n       loopsettle list\n       loopsettle bound  <payments.csv> [--delays 1,10,60] [--out DIR] [--per-participant]\n       loopsettle settle <payments.csv> [--engines gross,deferred:96,micro:all:500:10000] [--delays ...] [--out DIR] [--per-participant]\n       loopsettle export <experiment> <out.csv> [--payments N] [--participants N]\n       loopsettle topology <transfers.csv>"
+    );
     std::process::exit(2)
 }
 
@@ -27,6 +31,18 @@ fn main() {
         Some("list") => {
             for (name, desc) in experiments::ALL {
                 println!("{name:28} {desc}");
+            }
+        }
+        Some("export") => {
+            if let Err(e) = realdata::export(&args[1..]) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
+        }
+        Some(cmd @ ("bound" | "settle")) => {
+            if let Err(e) = realdata::run(&args[1..], cmd == "settle") {
+                eprintln!("error: {e}");
+                std::process::exit(1);
             }
         }
         Some("topology") => {

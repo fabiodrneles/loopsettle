@@ -4,13 +4,14 @@
 
 pub mod bound;
 pub mod calibrate;
+pub mod csvfile;
 pub mod runner;
 pub mod scenario;
 pub mod stream;
 pub mod toml_lite;
 
 pub use scenario::{AmountModel, Class, Population, ScenarioConfig};
-pub use runner::{run, EngineResult, EngineSpec, Opening, OutageSpec, RunOutput};
+pub use runner::{run, run_payments, EngineResult, EngineSpec, Opening, OutageSpec, RunOutput};
 pub use stream::{Outage, PaymentStream};
 
 #[cfg(test)]

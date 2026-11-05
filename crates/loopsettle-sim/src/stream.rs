@@ -114,7 +114,8 @@ impl Iterator for PaymentStream {
             }
             let hour = ((self.t / HOUR_MS) as usize) % 24;
             let boundary = ((self.t / HOUR_MS).floor() + 1.0) * HOUR_MS;
-            let r = self.rate[hour];
+            let day = (self.t / (24.0 * HOUR_MS)) as usize;
+            let r = self.rate[hour] * self.cfg.day_weights.get(day).copied().unwrap_or(1.0);
             let gap = if r > 0.0 { self.rng.exp(r) } else { f64::INFINITY };
             if self.t + gap >= boundary {
                 self.t = boundary;

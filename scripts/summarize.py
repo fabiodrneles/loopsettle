@@ -97,6 +97,16 @@ PT = {
     "c_het": ["σ viés", "λ", "pagamentos/dia", "motor", "economia vs UB", "limite de atraso", "LB/UB"],
     "k1": "Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso {}; disparou: {}.",
     "yes": "sim", "no": "não",
+    "hodge_null": "Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = {} arestas, n = {} nós): (m − n + 1)/m = {}, contra {} observado — em grafo denso, a fração rotacional mede sobretudo a densidade.",
+    "h10": "## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)",
+    "fw_intro": "A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.",
+    "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s", "limite 15 min"],
+    "closed": "fechada", "open": "aberta",
+    "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
+    "rg_intro": "O limite de atraso depende do tamanho dos pagamentos em relação à liquidez necessária. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
+    "c_rg": ["caso", "participantes", "pagamentos", "pagamento médio / UB médio", "atraso máx. (ms)", "economia micro-ciclos", "limite de atraso"],
+    "curve": "Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):",
+    "c_curve": ["d (s)", "ciclos/dia", "economia obtida", "limite (até 100%)", "obtido / limite"],
 }
 
 EN = {
@@ -151,6 +161,16 @@ EN = {
     "c_het": ["σ bias", "λ", "payments/day", "engine", "saving vs UB", "delay bound", "LB/UB"],
     "k1": "Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case {}; fired: {}.",
     "yes": "yes", "no": "no",
+    "hodge_null": "Hodge null value (random flows on the same net graph, m = {} edges, n = {} nodes): (m − n + 1)/m = {}, against {} observed — on a dense graph the curl share mostly measures density.",
+    "h10": "## 10. Conta PI funding windows: nights and the weekend (W3)",
+    "fw_intro": "The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.",
+    "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "bound 10 s", "bound 15 min"],
+    "closed": "closed", "open": "open",
+    "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
+    "rg_intro": "The delay bound depends on payment size relative to liquidity needs. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
+    "c_rg": ["case", "participants", "payments", "avg payment / avg UB", "max delay (ms)", "micro-cycle saving", "delay bound"],
+    "curve": "Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):",
+    "c_curve": ["d (s)", "cycles/day", "realised saving", "bound (capped at 100%)", "realised / bound"],
 }
 
 
@@ -185,6 +205,9 @@ def build(T):
                 for r in rows("baseline", "participants.csv") if float(r["out_brl"]) + float(r["in_brl"]) > 0)
     qq = lambda q: wp[int(q * (len(wp) - 1))]
     md += ["", T["wp619"].format(pct(qq(0.25), 1), pct(qq(0.5), 1), pct(qq(0.75), 1))]
+    net = [r for r in rows("baseline", "ladder.csv") if r["graph"] == "net"][0]
+    m_edges, n_nodes = int(net["edges"]), int(s["scenario"]["participants"])
+    md += ["", T["hodge_null"].format(m_edges, n_nodes, num((m_edges - n_nodes + 1) / m_edges, 3), num(net["hodge_l2_curl"], 3))]
     md += ["", T["corr"].format(num(s['topology']['hodge_potential_vs_net_position_corr'], 4)), "",
            T["sens"], ""]
     md.append(table(T["c_sens"],
@@ -271,6 +294,24 @@ def build(T):
     k1 = s["kill_criterion_k1"]["cases"]
     worst = max(c["bound_10s_pct_of_ub"] for c in k1)
     md += ["", T["k1"].format(f"{worst:.2f}%", T["yes"] if any(c["k1_fires"] for c in k1) else T["no"]), ""]
+
+    # --- funding windows (W3)
+    s = load("funding-windows")
+    md += [T["h10"], meta(s, T), "", T["fw_intro"], ""]
+    md.append(table(T["c_fw"], [[num(r["payments_per_thursday"], 0), r["receiver_bias_sigma"], r["profile_strength"], r["window"], T["closed"] if r["kind"] == "closed" else T["open"], r["hours"],
+                                  num(r["prefunding_need_brl"]), f"{float(r['netting_saving_pct']):.2f}%", f"{float(r['bound_10s_pct']):.2f}%", f"{float(r['bound_15min_pct']):.2f}%"]
+                                 for r in rows("funding-windows", "windows.csv")]))
+    md.append("")
+
+    # --- regimes and the bound curve
+    s = load("regimes")
+    md += [T["h11"], meta(s, T), "", T["rg_intro"], ""]
+    md.append(table(T["c_rg"], [[r["case"], r["participants"], r["payments"], num(r["avg_payment_over_avg_participant_ub"], 4), r["max_delay_ms"], f"{float(r['micro_cycle_saving_pct']):.4f}%",
+                                  f"{float(r['delay_bound_pct']):.3f}%"] for r in rows("regimes", "regimes.csv")]))
+    md += ["", T["curve"], ""]
+    md.append(table(T["c_curve"], [[r["max_delay_s"], r["deferred_cycles_per_day"], f"{float(r['realised_saving_pct']):.4f}%", f"{float(r['delay_bound_pct_capped_100']):.2f}%",
+                                     num(r["realised_over_bound"], 3)] for r in rows("regimes", "bound_curve.csv")]))
+    md += ["", T["fig"] + " [`regimes/fig_bound.svg`](regimes/fig_bound.svg)", ""]
     return "\n".join(md) + "\n"
 
 

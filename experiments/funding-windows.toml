@@ -1,0 +1,14 @@
+# W3: prefunding of the Conta PI for nights and weekends, when the STR is closed (BCB, Relatório
+# Anual do SPI 2024, pp. 12-15). Thursday to Monday with the sourced hourly profile and day volumes.
+#
+[experiment]
+name = "funding-windows"
+description = "Prefunding for nights and weekends outside STR hours (W3)"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+

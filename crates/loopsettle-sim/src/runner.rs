@@ -149,6 +149,31 @@ impl RunOutput {
     }
 }
 
+/// Settle any payment stream (sorted by arrival time) in every engine, in one pass.
+pub fn run_payments<I: Iterator<Item = Payment>>(n: usize, payments: I, specs: &[EngineSpec], opening: &Opening, t_end: TimeMs) -> RunOutput {
+    let mut runs: Vec<EngineRun> = specs
+        .iter()
+        .map(|s| {
+            let ledger = match opening {
+                Opening::Unlimited => Ledger::unlimited(n),
+                Opening::Given(v) => Ledger::new(v.clone()),
+            };
+            EngineRun::new(s.build(n), ledger)
+        })
+        .collect();
+    let mut flow = FlowStats::new(n, false);
+    drive(payments, &mut runs, &mut flow, t_end);
+    let results = specs
+        .iter()
+        .zip(runs)
+        .map(|(spec, r)| {
+            let dd = r.ledger.peak_drawdowns();
+            EngineResult { spec: spec.clone(), name: r.engine.name(), liquidity: dd.iter().map(|&x| x as i128).sum(), liquidity_by_participant: dd, stats: r.engine.stats(), metrics: r.metrics }
+        })
+        .collect();
+    RunOutput { flow, results, outage_deferred: None }
+}
+
 /// Generate the scenario's payments and settle them in every engine, in one pass.
 pub fn run(cfg: &ScenarioConfig, specs: &[EngineSpec], opening: &Opening, with_pairs: bool, outage: Option<OutageSpec>) -> RunOutput {
     let n = cfg.participants;
