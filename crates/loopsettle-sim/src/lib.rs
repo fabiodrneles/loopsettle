@@ -3,11 +3,13 @@
 //! Synthetic, calibrated payment generator and streaming simulation driver.
 
 pub mod calibrate;
+pub mod runner;
 pub mod scenario;
 pub mod stream;
 pub mod toml_lite;
 
 pub use scenario::{AmountModel, Class, Population, ScenarioConfig};
+pub use runner::{run, EngineResult, EngineSpec, Opening, OutageSpec, RunOutput};
 pub use stream::{Outage, PaymentStream};
 
 #[cfg(test)]

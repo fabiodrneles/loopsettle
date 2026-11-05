@@ -4,6 +4,7 @@
 //! streaming metrics. No dependencies.
 
 pub mod engine;
+pub mod engines;
 pub mod json;
 pub mod ledger;
 pub mod metrics;
@@ -12,6 +13,7 @@ pub mod sys;
 pub mod types;
 
 pub use engine::{GrossRealTime, SettlementEngine, Sink};
+pub use engines::{AtomicMicroCycle, DeferredNet, MicroCycleConfig, QueueMode};
 pub use ledger::{Ledger, UNLIMITED};
 pub use metrics::{FlowStats, LogHistogram, RunMetrics};
 pub use types::*;

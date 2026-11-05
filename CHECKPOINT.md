@@ -7,10 +7,10 @@
 
 ## Estado atual
 
-- **Fase atual:** 5 — Motores alternativos
-- **Próximo passo exato:** `DeferredNet { cycles_per_day }` e `AtomicMicroCycle
-  { window_ms, max_delay_ms, mode: QueueAll | QueueOnShortfall }` em `loopsettle-core`;
-  teste de propriedade da invariante 4 (atomicidade); comando da curva economia × p95.
+- **Fase atual:** 6 — Experimentos reprodutíveis (`loopsettle-cli`)
+- **Próximo passo exato:** experimentos `baseline` (UB, LB, escada topológica, sensibilidade
+  ao viés recebedor), `potential-vs-realizable`, `stress` (maior participante fora 30 min),
+  `finland-replication` (ciclos fixos vs instantâneo); cada um com TOML em `experiments/`.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -36,6 +36,7 @@ Notas de ambiente:
 |---|---|---|---|---|
 | 0 | `cargo test --workspace` (frio, com proptest) | 61 s | 502 MB | < 120 s e < 2,5 GB ✅ |
 | 3 | `bench_stream` (1.000.984 pagamentos, GRT + matriz de pares, 2×) | 0,23 s/execução | 4,1 MB | < 60 s e < 1 GB ✅ |
+| 5 | `experiment microcycle-sweep` (16 motores + 3×3 restritos, 1M pagamentos) | 11,6 s | 6 MiB | — |
 | 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
@@ -68,7 +69,16 @@ Notas de ambiente:
     `loopsettle_sim::calibrate`, CLI `experiment calibration`, `ScenarioConfig::from_doc`.
   - Testar: `cargo run --release -p loopsettle-cli -- experiment calibration`
     (todos os erros ≤ 1,5%; tabela em `docs/PARAMETERS.md`).
-- [ ] Fase 5 — Motores alternativos
+- [x] Fase 5 — Motores alternativos
+  - Pronto: `DeferredNet` (deltas O(n)), `AtomicMicroCycle` (filas FIFO por aresta, DFS
+    limitada, `try_batch` atômico, prazos exatos, modos `QueueAll`/`QueueOnShortfall`),
+    `loopsettle_sim::runner` (vários motores numa passada, specs `gross`, `deferred:N`,
+    `micro:all|shortfall:janela:atraso[:len]`), gráficos SVG próprios.
+  - Testar: `cargo test -p loopsettle-core` (invariantes 1–5, 7 nos motores; DeferredNet
+    1×/dia = LB); curva: `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`
+    → `results/microcycle-sweep/{sweep.csv,shortfall.csv,fig_tradeoff.svg,summary.json}`.
+  - Achado preliminar: com liquidez ilimitada os micro-ciclos (≤10 s) liquidam até 63% do
+    valor em ciclos mas economizam ≤0,015% do UB; no cenário calibrado LB/UB ≈ 0,91.
 - [ ] Fase 6 — Experimentos reprodutíveis
 - [ ] Fase 7 — Interface web
 - [ ] Fase 8 — Validação externa (opcional)

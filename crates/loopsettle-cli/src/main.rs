@@ -8,6 +8,7 @@
 
 mod experiments;
 mod out;
+mod svg;
 
 use loopsettle_sim::toml_lite;
 use std::time::Instant;

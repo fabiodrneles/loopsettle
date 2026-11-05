@@ -110,3 +110,38 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Alternativas:** não há dado público de transações por participante na API usada.
 - **Risco:** chaves ≠ transações (bancos digitais têm muitas chaves por cliente). Marcado como
   proxy SOURCED com ASSUMPTION embutida.
+
+## D12 — Micro-ciclos: uma cabeça de fila por aresta, ciclos de até 6 participantes
+- **Decisão:** filas FIFO por par (pagador, recebedor). A cada janela, DFS procura um ciclo
+  dirigido entre arestas com fila não vazia (comprimento ≤ `max_cycle_len`, padrão 6) e tenta
+  liquidar atomicamente **o pagamento mais antigo de cada aresta** do ciclo (`try_batch`).
+  Se faltar saldo a algum participante para cobrir sua posição líquida no ciclo, a aresta de
+  saída dele é bloqueada naquela janela e a busca continua. Repete até não haver ciclo.
+- **Alternativas:** resolver um problema de otimização por janela (máximo subconjunto
+  liquidável, como nos algoritmos de gridlock completos); combinar vários pagamentos da
+  mesma aresta num ciclo.
+- **Por quê:** é a forma mais simples, determinística e barata que respeita FIFO por aresta,
+  atomicidade e o limite "nunca compensa mais que o menor pagamento do ciclo". Subestima o
+  potencial de um otimizador completo — registrado como limitação.
+- **Configurável:** `max_cycle_len` (`micro:<modo>:<janela>:<atraso>:<len>`).
+
+## D13 — `QueueOnShortfall`: sem FIFO por pagador (bypass)
+- **Decisão:** um pagamento liquida bruto na chegada se houver saldo, mesmo que o pagador
+  tenha pagamentos mais antigos na fila; os enfileirados são re-tentados brutos a cada
+  janela, em ordem de chegada (FIFO por aresta), e rejeitados no prazo se ainda faltar saldo.
+- **Alternativas:** FIFO estrito por pagador (como em vários RTGS).
+- **Por quê:** é o comportamento mais favorável à liquidação imediata do Pix. Efeito
+  observado: com liquidez restrita, o bypass pode **aumentar** levemente a rejeição em valor
+  (pagamentos novos consomem o saldo que liberaria os antigos). Documentado nos resultados.
+
+## D14 — Pagamentos vencidos vão para bruto; se faltar saldo, rejeitados
+- **Decisão:** no prazo `chegada + max_delay_ms` (exato, não arredondado à janela), o
+  pagamento é tentado bruto; sem saldo, é rejeitado (como o Pix rejeita). Uma janela que
+  coincide com o prazo roda antes (última chance de compensar).
+
+## D15 — `DeferredNet` liquida sempre (DNS colateralizado)
+- **Decisão:** cada ciclo aplica as posições líquidas sem checar saldo (pode ficar negativo
+  no modo restrito); o atraso de cada pagamento é conhecido na chegada (próximo ciclo), então
+  o motor guarda só os deltas por participante (memória O(n)).
+- **Por quê:** é como se mede a liquidez de sistemas de compensação diferida (ex.: UPI,
+  estudo finlandês): a necessidade é a posição devedora nos horários de liquidação.

@@ -26,6 +26,10 @@ pub trait SettlementEngine {
     fn finish(&mut self, t_end: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink);
     /// Number of payments currently waiting inside the engine.
     fn queued(&self) -> usize;
+    /// Engine-specific counters for reports (e.g. cycles settled). Default: none.
+    fn stats(&self) -> Vec<(&'static str, f64)> {
+        Vec::new()
+    }
 }
 
 /// Settles every payment on arrival if the payer has funds; otherwise rejects it.

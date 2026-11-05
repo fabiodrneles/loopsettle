@@ -1,0 +1,20 @@
+# Phase 5/6: trade-off curve "liquidity saving x p95 delay" of the atomic micro-cycle engine.
+[experiment]
+name = "microcycle-sweep"
+description = "AtomicMicroCycle sweep over window_ms x max_delay_ms (QueueAll, unlimited liquidity) plus a constrained-liquidity run of QueueOnShortfall"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[sweep]
+window_ms = [500, 1000, 2000, 5000, 10000]
+max_delay_ms = [2000, 5000, 10000]
+max_cycle_len = 6
+# Constrained run: each participant opens with this fraction of its own UB.
+shortfall_liquidity_fraction = [0.25, 0.5, 0.75]
+shortfall_window_ms = 1000
+shortfall_max_delay_ms = 10000
