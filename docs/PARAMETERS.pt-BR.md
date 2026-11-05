@@ -21,9 +21,11 @@ Os valores **CALIBRATED/SOURCED** são preenchidos na Fase 4 a partir de
 | `fintech_frac` | 0,5 | ASSUMPTION | Divisão do restante entre fintechs e instituições de pagamento. |
 | `payee_size_exp` (β) | 1,0 | ASSUMPTION | Recebedor sorteado ∝ tamanho^β ("gravidade"). |
 | `homophily` | 0,3 | ASSUMPTION | Peso extra para recebedor da mesma classe. |
-| `receiver_bias_sigma` | 0,4 | ASSUMPTION | Viés recebedor lognormal por participante: gera posições líquidas não nulas (fluxo direcional). |
+| `receiver_bias_sigma` | 0,4 (na maioria dos experimentos); **1,0 calibrado** | ASSUMPTION → **CALIBRATED** (faixa 0,8–1,2) | Viés recebedor lognormal por participante: gera posições líquidas não nulas (fluxo direcional). Calibrado nos quartis da razão de pagamentos compensáveis por banco do BCB WP 619, eq. (3.2), com dados reais do Pix (p25 18–45%, mediana 57–80%, p75 73–90%): σ = 1,0 põe os três quartis dentro (36% / 61% / 83%) (`results/bias-calibration/`). O padrão continua 0,4 por continuidade (D19). |
 | `pi_receiver_mult` | 1,3 | ASSUMPTION | IPs (credenciadores, P2B) recebem relativamente mais. |
-| `hourly` | perfil de 24 pesos | ASSUMPTION | Noite baixa, platô diurno, pico no fim da tarde. Sem série horária pública usada. |
+| `hourly` | perfil de 24 pesos | ASSUMPTION | Noite baixa, platô diurno, pico no fim da tarde. Ainda sem série horária pública usada (o relatório anual do SPI 2024 tem uma: W0 nº 16). |
+| `profile_strength` (λ) | 0 | ASSUMPTION | Intensidade dos perfis intradiários por classe (W2, D18); 0 = todos seguem `hourly`. Variado em 0 / 0,5 / 1 no `heterogeneity`. |
+| `CLASS_OUT_PROFILE`, `CLASS_IN_PROFILE` | ver `scenario.rs` | ASSUMPTION | Só formatos: folha de pagamento de manhã (grandes bancos), varejo à noite (fintechs), repasse noturno e recebimento diurno das credenciadoras (instituições de pagamento). Reescalados para que cada classe mantenha seu volume diário. |
 | `amounts.body_median` | R$ 84,58 (calibrado) | CALIBRATED | Resolve média do corpo = (1 − 0,5205)·449,83 / (1 − 0,04296) = R$ 225,4 com σ = 1,4. |
 | `amounts.body_sigma` | 1,4 | ASSUMPTION | Dispersão do corpo. |
 | `amounts.tail_prob` | 0,04296 | SOURCED (proxy) | = participação do B2B na quantidade de Pix (set/2026). A cauda representa pagamentos empresariais grandes. |

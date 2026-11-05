@@ -186,3 +186,9 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     `docs/REFERENCES.pt-BR.md` e a seção de atualização de `docs/ASSESSMENT.pt-BR.md`). Novo: os
     quartis por banco do WP 619 são um alvo com dado real para σ (p25 do modelo 63% contra 18–45%
     no Pix) — frente W2b.
+73. **W2 e W2b feitas.** σ calibrado no WP 619 (1,0; faixa 0,8–1,2, D19); perfis intradiários por
+    classe (D18). O critério K1 não disparou (limite de 10 s ≤ 0,46% do UB). Com o σ calibrado, o
+    potencial de fim de dia com 30 milhões fica entre 0,24% e 2,8%, conforme a heterogeneidade
+    intradiária — a incógnita que resta, mensurável só com dados intradiários por participante
+    (uma questão de parceria com o BCB). O revisor deve conferir os formatos dos perfis em
+    `scenario.rs` (`CLASS_OUT_PROFILE`, `CLASS_IN_PROFILE`).

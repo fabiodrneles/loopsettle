@@ -62,6 +62,37 @@ mod tests {
         assert!(out.iter().all(|p| !((p.payer == 0 || p.payee == 0) && p.t_arrival >= 36_000_000 && p.t_arrival < 37_800_000)));
     }
 
+    /// W2: with full class profiles, payment institutions send mostly at night and receive
+    /// mostly in the day, while each class keeps roughly its daily share of payments sent.
+    #[test]
+    fn class_profiles_shift_timing_but_keep_daily_volume() {
+        let base = ScenarioConfig { participants: 40, payments_per_day: 200_000.0, n_big: 3, n_mid: 6, ..Default::default() };
+        let prof = ScenarioConfig { profile_strength: 1.0, ..base.clone() };
+        let pop = Population::build(&base);
+        let pi = Class::PaymentInstitution;
+        let tally = |cfg: &ScenarioConfig| {
+            let (mut sent, mut sent_night, mut recv, mut recv_day, mut total) = (0u64, 0u64, 0u64, 0u64, 0u64);
+            for p in PaymentStream::new(cfg) {
+                let h = (p.t_arrival / 3_600_000) % 24;
+                total += 1;
+                if pop.class[p.payer as usize] == pi {
+                    sent += 1;
+                    sent_night += (h < 7) as u64;
+                }
+                if pop.class[p.payee as usize] == pi {
+                    recv += 1;
+                    recv_day += (9..21).contains(&h) as u64;
+                }
+            }
+            (sent as f64 / total as f64, sent_night as f64 / sent as f64, recv_day as f64 / recv as f64)
+        };
+        let (s0, n0, d0) = tally(&base);
+        let (s1, n1, d1) = tally(&prof);
+        assert!(n1 > 3.0 * n0, "night share of PI outflows {n0} -> {n1}");
+        assert!(d1 > d0, "daytime share of PI inflows {d0} -> {d1}");
+        assert!((s1 / s0 - 1.0).abs() < 0.15, "PI daily share of payments sent {s0} -> {s1}");
+    }
+
     #[test]
     fn population_classes_and_shares() {
         let p = Population::build(&ScenarioConfig::default());

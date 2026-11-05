@@ -41,3 +41,6 @@
     encolhe com 1/√(volume) (`results/robustness/scale.csv`); desequilíbrios intradiários
     sistemáticos e próprios de cada participante (folha de pagamento, credenciadoras, funding de
     fintechs) não encolheriam. Ver [`PAPER_READINESS.pt-BR.md`](PAPER_READINESS.pt-BR.md), W2.
+    *Atualização (W2):* os perfis por classe agora existem (`profile_strength`, D18); com eles o
+    potencial deixa de desabar (2,8% com 30 milhões e o σ calibrado), mas os formatos são hipóteses
+    até que se usem dados intradiários por participante.

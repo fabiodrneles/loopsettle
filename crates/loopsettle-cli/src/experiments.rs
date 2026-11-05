@@ -16,6 +16,8 @@ pub const ALL: &[(&str, &str)] = &[
     ("stress", "largest participant offline for 30 minutes"),
     ("finland-replication", "fixed clearing cycles vs instant settlement"),
     ("robustness", "seeds, scale, cycle length, delay bound and per-bank ratios"),
+    ("bias-calibration", "fit the receiver bias to the BCB WP 619 per-bank nettable ratios"),
+    ("heterogeneity", "class-specific intraday profiles x scale (kill criterion K1)"),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -33,6 +35,8 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "stress" => e2::stress(path, doc, &cfg),
         "finland-replication" => e2::finland(path, doc, &cfg),
         "robustness" => crate::experiments3::robustness(path, doc, &cfg),
+        "bias-calibration" => crate::experiments4::bias_calibration(path, doc, &cfg),
+        "heterogeneity" => crate::experiments4::heterogeneity(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
     }
 }

@@ -148,3 +148,24 @@ O dono enviou quatro textos integrais. O que eles resolvem:
 | CDFD | A circularidade máxima é exatamente o problema de custo mínimo com custo unitário que o LoopSettle resolve; o BFF está totalmente especificado (Algoritmo 1) (arXiv 2506.12546, §5.1–5.2). | D5 confirmada; a D6 já pode ser implementada |
 
 O veredito continua **PIVOTAR**; nenhum critério de morte disparou.
+
+## Atualização 2 — W2 e W2b (05/11/2026)
+
+- **Viés recebedor calibrado (W2b).** σ = 1,0 põe os quartis da razão de pagamentos
+  compensáveis por banco do modelo (36% / 61% / 83%) dentro das faixas do WP 619 com dados reais;
+  σ = 0,4 não punha (p25 64%) (`results/bias-calibration/grid.csv`). A fraqueza D.4 passa a ser
+  em parte identificada por dado real.
+- **Critério de morte K1 não disparou (W2).** Com perfis intradiários por classe, o limite de
+  atraso de 10 s com 30 milhões de pagamentos por dia é no máximo 0,46% do UB (σ = 0,4) e 0,08%
+  (σ = 1,0), muito abaixo de 2% (`results/heterogeneity/`).
+- **Com heterogeneidade, o potencial deixa de desabar.** Com o σ calibrado, a compensação de fim
+  de dia com 30 milhões economiza 0,24% do UB sem heterogeneidade intradiária e 2,8% com perfis por
+  classe completos; compensar a cada 15 minutos, 0,05–0,09%; micro-ciclos ≈ 0.
+- **Afirmação central revista:** em escala realista e com a estrutura bilateral calibrada, a
+  compensação recupera entre ~0,2% e ~3% da liquidez que um sistema instantâneo prende, e *só* em
+  horizontes de várias horas; mecanismos de segundos não recuperam nada mensurável, e nenhum
+  deles pode recuperar mais que o limite de atraso. Qual ponta da faixa 0,2–3% é a verdadeira
+  depende dos padrões intradiários por participante — o único insumo que exige dados de um banco
+  central.
+
+O veredito continua **PIVOTAR**, com a afirmação acima. Nenhum critério de morte disparou.

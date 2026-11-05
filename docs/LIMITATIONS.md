@@ -41,3 +41,6 @@
     1/√(volume) (`results/robustness/scale.csv`); systematic, participant-specific intraday
     imbalances (payroll, acquirers, fintech funding) would not. See
     [`PAPER_READINESS.md`](PAPER_READINESS.md), W2.
+    *Update (W2):* class-specific profiles are now available (`profile_strength`, D18); with them
+    the potential no longer collapses (2.8% at 30M with the calibrated σ), but their shapes are
+    assumptions until per-participant intraday data are used.

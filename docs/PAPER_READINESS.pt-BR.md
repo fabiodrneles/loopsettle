@@ -13,8 +13,9 @@
 |---|---|---|---|---|
 | W0 | Fontes que só você consegue baixar | sim | Você | **4 de 15 recebidas** (nº 1, 4, 5 e 6 — lidas e registradas no `REFERENCES.pt-BR.md`) |
 | W1 | Higiene dos resultados (várias sementes, faixas sobre σ, sem "630×") | sim | Claude | **feito** nesta mudança (experimento de robustez, CLAIMS, README) |
-| W2 | Modelo de heterogeneidade intradiária (critério K1) | sim | Claude (+ você para dados) | a fazer |
-| W2b | Calibrar o viés recebedor na distribuição por banco do WP 619 (p25 18–45%, mediana 57–80%) | sim | Claude | a fazer |
+| W2 | Modelo de heterogeneidade intradiária (critério K1) | sim | Claude (+ você para dados) | **feito**: K1 não disparou (`results/heterogeneity/`); calibrar os perfis com dados reais depende da fonte W0 nº 16 |
+| W2b | Calibrar o viés recebedor na distribuição por banco do WP 619 (p25 18–45%, mediana 57–80%) | sim | Claude | **feito**: σ = 1,0 (`results/bias-calibration/`) |
+| W9 | Virar referência (ver a seção W9) | sim | Você + Claude | a fazer |
 | W3 | Liquidez necessária como as regras do BCB definem (K3) | sim | Claude, depois de W0 | a fazer |
 | W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | a fazer |
 | W5 | Limite de atraso: teorema, curva em d, folga | sim | Claude | teorema e teste **feitos**; curva a fazer |
@@ -52,6 +53,18 @@ título do documento no site do BCB.
 Opcional, para comparar com outro país: a descrição do SPEI pelo Banxico
 ([PDF](https://www.banxico.org.mx/sistemas-de-pago/d/%7B89B6CCF0-6070-7389-3DD5-B27AC4ECD9D1%7D.pdf))
 e o material da Payments Canada sobre o RTR ([página](https://www.payments.ca/how-canadas-real-time-rail-will-transform-account-account-payments)).
+
+
+**Acrescentados depois de W2/W2b (05/11/2026):**
+
+| # | Documento | Link | O que preciso dele |
+|---|---|---|---|
+| 16 | BCB — Relatório Anual do SPI 2024 | [PDF](https://www.bcb.gov.br/content/estabilidadefinanceira/relatorios_SPI/relatorio_anual_spi_2024.pdf) | a seção "quantidade média de transações por faixa de horário": substitui o perfil horário suposto (`hourly`) por um com fonte; qualquer recorte por tipo de participante calibra a W2 |
+| 17 | BCB — Relatório de Gestão do Pix (2023) | [PDF](https://www.bcb.gov.br/content/estabilidadefinanceira/pix/relatorio_de_gestao_pix/relatorio_gestao_pix_2023.pdf) | abastecimento da Conta PI, gestão de liquidez e regras de funcionamento do SPI (W3) |
+| 18 | BCE — TIPS e RT1, implicações para a gestão de liquidez (2018) | [PDF](https://www.ecb.europa.eu/paym/groups/pdf/mmcg/20181203/Item_5_2_Instant_Payment_Services_TIPS_and_RT1_Implications_for_Liquidity_Management.pdf) | como os sistemas instantâneos da zona do euro abastecem a liquidez (W3, W4) |
+| 19 | Federal Reserve — guia do FedNow sobre gestão de liquidez | [PDF](https://explore.fednow.org/resources/readiness-guide-managing-liquidity-in-an-instant-payments-world.pdf) | ferramentas e janelas de liquidez do FedNow (W3, W4) |
+| 20 | Bank of Canada — estudos de liquidez e LSM no Lynx | [SDP 2020-9](https://www.bankofcanada.ca/2020/09/staff-discussion-paper-2020-9/) · [SDP 2022-3](https://www.bankofcanada.ca/2022/02/staff-discussion-paper-2022-3/) | resultados recentes de economia com LSM, para posicionar os nossos (W4) |
+| 21 | Banco da Finlândia — 22º Simulator Seminar (2024), Hellqvist: "Pitfalls on the Path to Instant Payments – Liquidity Risk on Finnish Instant Payments Market" | [página do seminário](https://suomenpankki.fi/en/money-and-payments/payment-and-settlement-system-simulator/events/22nd-seminar-2024) | os slides (o trabalho recente mais próximo; confere o K2) |
 
 **Aceite:** todos os itens "a conferir" de [`REFERENCES.pt-BR.md`](REFERENCES.pt-BR.md)
 resolvidos, com o número da página da fonte.
@@ -132,6 +145,28 @@ resolvidos, com o número da página da fonte.
   v0.2.0, release no Zenodo com DOI.
 - Preprint: SSRN (economia) ou arXiv q-fin.GN, depois de W2–W4.
 - **Aceite:** `make all` reproduz todos os números do preprint; checklist do JOSS atendido.
+
+## W9 — Virar referência
+
+O que transforma um bom estudo em referência é **outras pessoas usarem**. Em ordem de impacto:
+
+1. **Uma ferramenta que bancos centrais rodam nos próprios dados, sem compartilhá-los.**
+   Acrescentar `loopsettle bound <pagamentos.csv>` e `loopsettle settle <pagamentos.csv>`: dado um
+   arquivo de pagamentos reais (de, para, valor, horário), informar UB, LB, o limite de atraso
+   para qualquer *d* e a economia de cada motor. Os dados não saem da instituição; só saem
+   agregados. É a funcionalidade com mais chance de fazer o LoopSettle ser usado pelo BCB, pelo
+   Bank of Canada (com o RTR entrando agora) ou pela tesouraria de um banco. **Claude.**
+2. **Trabalho publicado e citável.** Artigo no JOSS (software) e um preprint (SSRN / arXiv q-fin)
+   com o limite de atraso e os resultados calibrados; DOI no Zenodo numa versão v0.2.0. **Claude
+   rascunha; você submete.**
+3. **O público certo.** Submeter ao Simulator Seminar do Banco da Finlândia (todo fim de agosto;
+   é onde Hellqvist & Korpinen apresentam) e aos fóruns de pagamentos do CEMLA; oferecer uma
+   apresentação curta ao departamento de pesquisa do BCB. **Você.**
+4. **Uma demonstração pública.** Publicar a interface no GitHub Pages, para qualquer um testar sem
+   instalar nada. **Claude.**
+5. **Uma parceria de dados.** Com dados intradiários por participante, a pergunta em aberto
+   (0,2% ou 3% de liquidez recuperável) vira um número medido. A ferramenta do item 1 é o que
+   torna essa conversa possível. **Você.**
 
 ## W8 — Notebook de referência
 

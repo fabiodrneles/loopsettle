@@ -180,3 +180,9 @@ the real laptop (i3, 4 GB).
     CDFD paper: items 4, 6 and 64 are resolved (definitions and figures confirmed, see
     `docs/REFERENCES.md` and the update section of `docs/ASSESSMENT.md`). New: WP 619's per-bank
     quartiles are a real-data target for σ (model p25 63% vs 18–45% in Pix) — workstream W2b.
+73. **W2 and W2b done.** σ calibrated to WP 619 (1.0; band 0.8–1.2, D19); class-specific intraday
+    profiles (D18). Kill criterion K1 not fired (10 s bound ≤ 0.46% of UB). With calibrated σ, the
+    end-of-day potential at 30M is 0.24%–2.8% depending on intraday heterogeneity — the remaining
+    unknown, measurable only with per-participant intraday data (a BCB partnership question).
+    The reviewer should check the profile shapes in `scenario.rs` (`CLASS_OUT_PROFILE`,
+    `CLASS_IN_PROFILE`).

@@ -171,3 +171,24 @@ Each entry: what was decided, alternatives, why, and how to revert.
 - **Why:** the user asked for complete documentation in both languages; the target audience
   (central banks, payments researchers, JOSS reviewers) is international.
 - **Rule:** any change to a document must be made in both languages in the same commit.
+
+## D18 — Intraday heterogeneity by institution class (W2)
+- **Decision:** optional class-specific out/in hourly multipliers mixed with a flat profile by
+  `profile_strength` λ and rescaled so every class keeps its daily volume. The payee is drawn in
+  two exact stages (class by hour, then participant), keeping O(n²) memory. λ = 0 keeps the old
+  code path, so every earlier result is byte-identical.
+- **Alternatives:** per-participant profiles (no data to set them); Hawkes bursts (D8).
+- **Why:** stationary arrivals make the end-of-day potential vanish as 1/√N; systematic
+  imbalances are the only mechanism that could make longer-horizon netting matter at scale, so
+  the study must show results with and without them.
+- **Revert:** set `profile_strength = 0` (default).
+
+## D19 — Calibrated receiver bias, default kept at 0.4
+- **Decision:** σ = 1.0 (band 0.8–1.2) is the value calibrated to BCB WP 619; experiments that
+  answer the central question (`robustness`, `heterogeneity`) report it next to σ = 0.4. The
+  default stays 0.4 so that earlier experiments and figures remain comparable.
+- **Alternatives:** switch the default to 1.0 and regenerate every result.
+- **Why:** σ = 1.0 makes every saving smaller (LB/UB ≈ 0.97), so keeping 0.4 as the default is
+  the conservative choice for the claim "savings are small"; the paper should quote both.
+- **Revert / alternative:** set `receiver_bias_sigma = 1.0` in the experiment TOMLs and run
+  `make all`.
