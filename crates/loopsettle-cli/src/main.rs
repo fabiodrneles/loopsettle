@@ -27,6 +27,13 @@ fn main() {
                 println!("{name:28} {desc}");
             }
         }
+        Some("topology") => {
+            let path = args.get(1).unwrap_or_else(|| usage());
+            if let Err(e) = experiments2::topology_csv(path) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
+        }
         Some("experiment") => {
             let name = args.get(1).unwrap_or_else(|| usage());
             let quick = args.iter().any(|a| a == "--quick");

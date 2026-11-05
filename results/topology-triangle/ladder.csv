@@ -1,0 +1,3 @@
+graph,edges,total_flow_brl,hodge_l1_cyclic,hodge_l2_curl,hodge_l2_cyclic,cdfd_max,cycle_netting,hodge_triangles,triangles_capped
+gross,3,20,1,0.942809,0.942809,0.75,0.75,1,false
+net,3,20,1,0.942809,0.942809,0.75,0.75,1,false

@@ -1,0 +1,4 @@
+from,to,amount
+A,B,10
+B,C,5
+C,A,5

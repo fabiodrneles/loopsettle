@@ -7,7 +7,7 @@
 
 ## Estado atual
 
-- **Fase atual:** 8 — Validação externa (opcional) → depois 9 e 10
+- **Fase atual:** 9 — Documentação e publicação
 - **Próximo passo exato:** Fase 8 qualitativa (correlação potencial de Hodge × posição
   líquida, já calculada em `results/baseline`); on-chain fica documentado como pendente
   (exige baixar dados externos). Depois README, METHODOLOGY final, Zenodo, `make all`,
@@ -107,6 +107,10 @@ Notas de ambiente:
     preview serve página, `.wasm` (application/wasm) e worker.
   - **NÃO verificado:** renderização visual num navegador real e no celular (sem
     ferramenta de navegador na sessão) — o usuário deve abrir e conferir.
-- [ ] Fase 8 — Validação externa (opcional)
+- [x] Fase 8 — Validação externa (opcional) — parcial
+  - Feito: correlação potencial de Hodge × posição líquida = 0,997 (Pearson), 0,926
+    (Spearman) no baseline (reproduz qualitativamente; quase mecânico em grafo denso).
+    Comando `loopsettle topology <csv>` para qualquer lista `from,to,amount`.
+  - Pendente: baixar amostra on-chain de stablecoin (ver `data/README.md`).
 - [ ] Fase 9 — Documentação
 - [ ] Fase 10 — Pacote de revisão

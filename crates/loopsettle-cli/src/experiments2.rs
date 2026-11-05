@@ -361,3 +361,59 @@ pub fn finland(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String
     res.finish();
     Ok(())
 }
+
+// ---------------------------------------------------------------------------------------
+// topology <edges.csv>  (Phase 8: external validation on any public transfer list)
+// ---------------------------------------------------------------------------------------
+
+/// Read `from,to,amount` rows (header required; ids are arbitrary strings, amount in
+/// currency units), aggregate them and run the circularity ladder. Streaming read: only the
+/// aggregated pair map is kept in memory.
+pub fn topology_csv(path: &str) -> Result<(), String> {
+    use std::collections::{BTreeMap, HashMap};
+    use std::io::BufRead;
+    let file = std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?;
+    let mut ids: HashMap<String, u32> = HashMap::new();
+    let mut pairs: BTreeMap<(u32, u32), i64> = BTreeMap::new();
+    let (mut rows, mut skipped) = (0u64, 0u64);
+    for (i, line) in std::io::BufReader::new(file).lines().enumerate() {
+        let line = line.map_err(|e| e.to_string())?;
+        if i == 0 || line.trim().is_empty() {
+            continue;
+        }
+        let c: Vec<&str> = line.split(',').map(str::trim).collect();
+        let amount: f64 = match c.get(2).and_then(|s| s.parse().ok()) {
+            Some(a) if a > 0.0 => a,
+            _ => {
+                skipped += 1;
+                continue;
+            }
+        };
+        if c[0] == c[1] {
+            skipped += 1;
+            continue;
+        }
+        let next = ids.len() as u32;
+        let a = *ids.entry(c[0].to_string()).or_insert(next);
+        let next = ids.len() as u32;
+        let b = *ids.entry(c[1].to_string()).or_insert(next);
+        *pairs.entry((a, b)).or_insert(0) += (amount * 100.0).round() as i64;
+        rows += 1;
+    }
+    let triples: Vec<(u32, u32, i64)> = pairs.into_iter().map(|((a, b), v)| (a, b, v)).collect();
+    let g = FlowGraph::from_triples(ids.len(), &triples);
+    let t = Instant::now();
+    let r = analyze(&g, &HodgeConfig::default());
+    let stem = std::path::Path::new(path).file_stem().and_then(|s| s.to_str()).unwrap_or("input");
+    let name = format!("topology-{stem}");
+    let mut res = Results::new(&name, 0, path);
+    res.set("rows", rows);
+    res.set("rows_skipped", skipped);
+    res.set("nodes", ids.len());
+    res.set("topology", r.to_json());
+    res.set("seconds", t.elapsed().as_secs_f64());
+    res.csv("ladder.csv", &table(LADDER_HEADER, &ladder_rows(&r)));
+    eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&r)));
+    res.finish();
+    Ok(())
+}

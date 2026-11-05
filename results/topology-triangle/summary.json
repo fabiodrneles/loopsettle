@@ -1,0 +1,46 @@
+{
+  "experiment": "topology-triangle",
+  "seed": 0,
+  "code_version": "0.1.0+git.3c3ba36-dirty",
+  "config_file": "data/samples/triangle.csv",
+  "command": "cargo run --release -p loopsettle-cli -- experiment topology-triangle",
+  "rows": 3,
+  "rows_skipped": 0,
+  "nodes": 3,
+  "topology": {
+    "gross": {
+      "nodes": 3,
+      "edges": 3,
+      "total_flow_cents": 2000,
+      "hodge_l1_cyclic": 1,
+      "hodge_l2_curl": 0.942809,
+      "hodge_l2_cyclic": 0.942809,
+      "hodge_triangles": 1,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.75,
+      "cycle_netting": 0.75,
+      "cycles_found": 1
+    },
+    "net": {
+      "nodes": 3,
+      "edges": 3,
+      "total_flow_cents": 2000,
+      "hodge_l1_cyclic": 1,
+      "hodge_l2_curl": 0.942809,
+      "hodge_l2_cyclic": 0.942809,
+      "hodge_triangles": 1,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.75,
+      "cycle_netting": 0.75,
+      "cycles_found": 1
+    },
+    "bilateral_share": 0,
+    "hodge_potential_vs_net_position_corr": 1,
+    "cg_gradient_iterations": 1,
+    "cg_gradient_rel_residual": 0,
+    "cg_curl_iterations": 1,
+    "cg_curl_rel_residual": 0
+  },
+  "seconds": 0.098553,
+  "peak_rss_mib": 4
+}
