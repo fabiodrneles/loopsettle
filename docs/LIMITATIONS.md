@@ -1,5 +1,7 @@
 # Limitações conhecidas
 
+> 🇬🇧 [English version](en/LIMITATIONS.md)
+
 1. **Dados sintéticos.** Nenhum dado interbancário real é usado. O gerador reproduz agregados
    públicos (volume, valor, ticket médio, participação do B2B, concentração por chaves), mas
    não a estrutura bilateral nem a dinâmica intradiária reais.
@@ -27,5 +29,6 @@
 11. **Hodge em grafos densos.** A fração rotacional de Hodge no grafo líquido (≈0,98) é
     dominada pela dimensão do espaço de ciclos (m − n + 1 ≫ n − 1): ruído aleatório projeta-se
     quase todo em ciclos. É um diagnóstico de forma, não um montante compensável.
-12. **Interface web não verificada visualmente** nesta construção (sem navegador na sessão);
-    build, wasm e servidor de preview foram verificados.
+12. **Interface web verificada só em navegador emulado.** Em 05/11/2026 foi aberta no Chromium
+    desktop (1440 px) e num iPhone 13 emulado, em português e inglês (capturas em `docs/img/`).
+    Ainda não foi aberta no notebook de referência (i3, 4 GB).
