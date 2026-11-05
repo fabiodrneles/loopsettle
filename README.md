@@ -9,6 +9,7 @@
   <img alt="Reproducible" src="https://img.shields.io/badge/results-bit--for--bit%20reproducible-2ea44f.svg">
   <img alt="Property tests" src="https://img.shields.io/badge/invariants-8%20property%20tests-2ea44f.svg">
   <img alt="Data" src="https://img.shields.io/badge/data-public%20%2B%20synthetic-555.svg">
+  <img alt="Docs" src="https://img.shields.io/badge/docs-PT%20%7C%20EN-555.svg">
 </p>
 
 <p align="center">
@@ -17,22 +18,27 @@
 </p>
 
 <p align="center">
-  <a href="#português">Português</a> ·
-  <a href="#english">English</a> ·
+  <b>🇧🇷 <a href="#português">Português</a></b> ·
   <a href="results/SUMMARY.md">Resultados</a> ·
   <a href="docs/METHODOLOGY.md">Metodologia</a> ·
   <a href="docs/LIMITATIONS.md">Limitações</a> ·
   <a href="docs/REFERENCES.md">Referências</a>
+  <br>
+  <b>🇬🇧 <a href="#english">English</a></b> ·
+  <a href="results/SUMMARY.en.md">Results</a> ·
+  <a href="docs/en/METHODOLOGY.md">Methodology</a> ·
+  <a href="docs/en/LIMITATIONS.md">Limitations</a> ·
+  <a href="docs/en/REFERENCES.md">References</a>
 </p>
-
-<p align="center">
-  <img src="docs/img/ui-overview.png" alt="Interface do LoopSettle: rede de participantes com o componente circular em verde, controles dos micro-ciclos e painéis de liquidez" width="100%">
-</p>
-<p align="center"><sub>A interface roda inteira no navegador (Rust → WebAssembly, num Web Worker). 40 participantes e 100 mil pagamentos simulados em 0,5 s.</sub></p>
 
 ---
 
 ## Português
+
+<p align="center">
+  <img src="docs/img/ui-overview.png" alt="Interface do LoopSettle: rede de participantes com o componente circular em verde, controles dos micro-ciclos e painéis de liquidez" width="100%">
+</p>
+<p align="center"><sub>A interface roda inteira no navegador (Rust → WebAssembly, num Web Worker): 40 participantes e 100 mil pagamentos simulados em 0,5 s. Botão no canto para trocar para inglês.</sub></p>
 
 ### Em uma frase
 
@@ -83,6 +89,9 @@ Todos os números estão em [`results/SUMMARY.md`](results/SUMMARY.md), com a se
 do código e o comando que os gerou. O que o estudo pode e não pode afirmar está em
 [`docs/CLAIMS.md`](docs/CLAIMS.md).
 
+*(As figuras geradas pelos experimentos têm rótulos em inglês, a língua do código; as legendas
+e o [`results/SUMMARY.md`](results/SUMMARY.md) explicam cada uma em português.)*
+
 ### A interface
 
 <table>
@@ -102,6 +111,14 @@ do código e o comando que os gerou. O que o estudo pode e não pode afirmar est
     <td align="center"><sub><b>O dia em 15 minutos.</b> A soma das posições devedoras (linha escura) cresce por horas: é isso que exige liquidez, e micro-ciclos de segundos não alcançam.</sub></td>
     <td align="center"><sub><b>Liquidez necessária por desenho</b>, do bruto em tempo real (Pix) ao mínimo teórico (LB).</sub></td>
   </tr>
+  <tr>
+    <td><img src="docs/img/ui-sweep.png" alt="Economia de liquidez dos micro-ciclos para cada janela de busca"></td>
+    <td><img src="docs/img/ui-constrained.png" alt="Tabela com liquidez restrita: valor rejeitado, atraso p95 e fração liquidada em até 2,8 s"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Economia × janela.</b> A economia dos micro-ciclos para cada janela de busca de ciclos: sempre perto de zero.</sub></td>
+    <td align="center"><sub><b>Liquidez restrita.</b> Com saldo inicial menor que o necessário: valor rejeitado e cumprimento da meta de 2,8 s.</sub></td>
+  </tr>
 </table>
 
 <table>
@@ -118,6 +135,8 @@ do código e o comando que os gerou. O que o estudo pode e não pode afirmar est
 - Testar **liquidez restrita**: com saldo inicial menor que o necessário, quanto valor é
   rejeitado em cada desenho e quantos pagamentos cumprem a meta do Pix (50% em até 2,8 s).
 - Trocar a **semente**: a mesma semente sempre produz o mesmo resultado.
+- Trocar o **idioma** (português/inglês) no botão do canto, ou abrir com `?lang=pt` ou
+  `?lang=en`.
 
 **No celular** a interface entra em modo reduzido (até 25 participantes e 30 mil pagamentos)
 com o mesmo modelo.
@@ -136,7 +155,8 @@ com o achado principal (economia próxima de zero), e não um erro.
 cd web && npm install && npm run wasm && npm run dev    # abre em http://localhost:5173
 ```
 
-As capturas são regeneradas por comando: `node scripts/screenshots.cjs` (com a interface no ar).
+As capturas, nos dois idiomas, são regeneradas por comando: `node scripts/screenshots.cjs`
+(com a interface no ar).
 
 ### Como funciona
 
@@ -179,6 +199,8 @@ flowchart LR
   compensação diária exigiria.
 - **Economia de um desenho** = 1 − liquidez do desenho ÷ UB.
 
+Definições formais, exemplo à mão e provas em [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
+
 ### Resultados em números
 
 | Medida | Valor |
@@ -203,6 +225,11 @@ flowchart LR
     <td align="center"><sub>Instantâneo × ciclos de compensação por dia</sub></td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="results/baseline/fig_ladder.svg" alt="Escada de circularidade: Hodge, CDFD máxima e netting por ciclos nos grafos bruto e líquido" width="720">
+</p>
+<p align="center"><sub>A escada de circularidade: o diagnóstico (Hodge) atribui ao ciclo muito mais do que o teto exato (CDFD) e do que um algoritmo de compensação consegue cancelar.</sub></p>
 
 ### Diálogo com a literatura
 
@@ -289,12 +316,30 @@ Hodge; determinismo total; e o caso fixo do triângulo.
 | [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (gradiente conjugado implementado à mão), CDFD exata, netting por ciclos |
 | [`loopsettle-sim`](crates/loopsettle-sim) | gerador sintético calibrado, em streaming |
 | [`loopsettle-cli`](crates/loopsettle-cli) | experimentos reprodutíveis, saída em CSV, JSON e SVG |
-| [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | interface Vite + React + Canvas 2D, simulação num Web Worker |
+| [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | interface Vite + React + Canvas 2D, simulação num Web Worker, português e inglês |
 | [`data/`](data) | download dos agregados públicos do Pix (API Olinda do BCB) |
 | [`docs/`](docs) | metodologia, parâmetros, limitações, afirmações, novidade, referências |
 
 O núcleo não tem dependências externas: álgebra linear esparsa, gerador aleatório e formatos de
 arquivo foram implementados no próprio projeto.
+
+### Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | cada métrica em linguagem simples e formal, com exemplo à mão |
+| [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | cada parâmetro do gerador: `SOURCED`, `CALIBRATED` ou `ASSUMPTION`; tabela real × simulado |
+| [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | limitações conhecidas |
+| [`docs/CLAIMS.md`](docs/CLAIMS.md) | o que o estudo pode e não pode afirmar, com a evidência |
+| [`docs/NOVELTY.md`](docs/NOVELTY.md) | comparação ponto a ponto com os trabalhos de referência |
+| [`docs/REFERENCES.md`](docs/REFERENCES.md) | referências e situação de verificação de cada uma |
+| [`docs/PAPER_OUTLINE.md`](docs/PAPER_OUTLINE.md) | esqueleto do artigo, com figuras e tabelas |
+| [`DECISIONS.md`](DECISIONS.md) | decisões de desenho: alternativas, motivo e como reverter |
+| [`REVIEW.md`](REVIEW.md) | pontos abertos para a revisão antes do artigo |
+| [`results/SUMMARY.md`](results/SUMMARY.md) | todos os números, gerados por comando |
+| [`data/README.md`](data/README.md) | dados públicos e como baixá-los |
+
+Todos os documentos têm versão em inglês (link no topo de cada arquivo).
 
 ### Limitações
 
@@ -351,6 +396,11 @@ Os metadados também estão em [`CITATION.cff`](CITATION.cff) (o GitHub mostra o
 
 ## English
 
+<p align="center">
+  <img src="docs/img/en/ui-overview.png" alt="LoopSettle interface: network of participants with the circular component in green, micro-cycle controls and liquidity panels" width="100%">
+</p>
+<p align="center"><sub>The interface runs entirely in the browser (Rust → WebAssembly, in a Web Worker): 40 participants and 100,000 payments simulated in 0.5 s. A button in the corner switches to Portuguese.</sub></p>
+
 ### In one sentence
 
 Pix requires every bank to hold cash before every transfer. Part of that cash only goes around
@@ -376,6 +426,10 @@ experience?
 
 ### Key finding
 
+<p align="center">
+  <img src="results/potential-vs-realizable/fig_potential_vs_realizable.svg" alt="Liquidity saving as a function of the maximum wait" width="720">
+</p>
+
 In a synthetic scenario calibrated to public Pix aggregates (200 participants, 1 million
 payments per day, seed `20260930`):
 
@@ -390,39 +444,92 @@ payments per day, seed `20260930`):
 > **Nettable volume is not saved liquidity.** LoopSettle makes the gap between the two visible
 > and measurable.
 
-All numbers are in [`results/SUMMARY.md`](results/SUMMARY.md), with the seed, code version and
-command that produced them. What the study can and cannot claim is in
-[`docs/CLAIMS.md`](docs/CLAIMS.md).
+All numbers are in [`results/SUMMARY.en.md`](results/SUMMARY.en.md), with the seed, code version
+and command that produced them. What the study can and cannot claim is in
+[`docs/en/CLAIMS.md`](docs/en/CLAIMS.md).
 
 ### The interface
 
-The screenshots above show the browser app (labels in Portuguese). It runs fully client-side:
-the Rust simulator is compiled to WebAssembly and runs in a Web Worker, so the page never
-freezes.
+<table>
+  <tr>
+    <td width="58%"><img src="docs/img/en/ui-network.png" alt="The network of one day: participants on a circle, green edges are the maximum circular part (CDFD) and grey edges the directional part"></td>
+    <td width="42%"><img src="docs/img/en/ui-potential-vs-realizable.png" alt="Potential vs realizable panel: 82% potential, 78% CDFD, 75% cycles, 11% liquidity with one daily netting and about zero with micro-cycles"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>The network of one day.</b> Circle size = activity; dashed = net payer. Green is the largest possible circulation (CDFD); grey is flow that only goes one way.</sub></td>
+    <td align="center"><sub><b>Potential vs realizable.</b> The ladder of measures, from netting on paper down to liquidity actually saved.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/en/ui-day.png" alt="The day in 15-minute steps: value paid per interval and the sum of accumulated debit positions"></td>
+    <td><img src="docs/img/en/ui-liquidity.png" alt="Liquidity needed by design: gross, daily netting, every 15 minutes, micro-cycles and theoretical minimum"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>The day in 15-minute steps.</b> The sum of debit positions (dark line) builds up over hours: that is what requires liquidity, and second-scale micro-cycles cannot reach it.</sub></td>
+    <td align="center"><sub><b>Liquidity needed by design</b>, from real-time gross (Pix) to the theoretical minimum (LB).</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/en/ui-sweep.png" alt="Micro-cycle liquidity saving for each search window"></td>
+    <td><img src="docs/img/en/ui-constrained.png" alt="Constrained liquidity table: value rejected, p95 delay and share settled within 2.8 s"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Saving × window.</b> Micro-cycle saving for each cycle search window: always close to zero.</sub></td>
+    <td align="center"><sub><b>Constrained liquidity.</b> With less than the required opening balance: value rejected and the 2.8 s target.</sub></td>
+  </tr>
+</table>
 
-- **The network of one day:** participants on a circle (size = activity, dashed = net payer);
-  green edges are the maximum circulation (CDFD), grey edges the directional flow.
-- **Potential vs realizable:** the ladder from netting on paper down to liquidity actually
-  saved.
-- **Sliders** for the micro-cycle search window (0.5–10 s), the maximum tolerated delay
-  (2–10 s), the number of participants and payments, and the receiver imbalance (the model's
-  main assumption).
-- **Constrained liquidity:** with less than the required opening balance, how much value each
-  design rejects and how many payments meet the Pix target (50% within 2.8 s).
-- **Phones** get a reduced mode (up to 25 participants and 30,000 payments) with the same model.
+<table>
+  <tr>
+    <td width="34%"><img src="docs/img/en/ui-mobile.png" alt="Interface on a phone in reduced mode"></td>
+    <td>
 
-Browser scenarios are smaller than the experiments, so on-screen numbers are not the paper's
-numbers. In small scenarios the micro-cycle saving can even be slightly **negative** (−0.001%):
-the queue changes the settlement order and a participant's peak can rise slightly. This is a
-model result, consistent with the main finding (saving close to zero), not a bug.
+**What you can do on screen**
+
+- Move the **cycle search window** (0.5 to 10 s) and the **maximum tolerated delay** (2 to 10 s)
+  and watch the liquidity saving and delays recompute.
+- Change the number of participants and payments and the **receiver imbalance** (the model's
+  main assumption) to test how robust the result is.
+- Test **constrained liquidity**: with less than the required opening balance, how much value
+  each design rejects and how many payments meet the Pix target (50% within 2.8 s).
+- Change the **seed**: the same seed always gives the same result.
+- Switch the **language** (Portuguese/English) with the button in the corner, or open the page
+  with `?lang=en` or `?lang=pt`.
+
+**On phones** the interface switches to a reduced mode (up to 25 participants and 30,000
+payments) with the same model.
+
+Browser scenarios are smaller than the experiments (up to 50 participants and 100,000 payments),
+so on-screen numbers are not the paper's numbers. In small scenarios the micro-cycle saving can
+even be slightly **negative** (−0.001%): the queue changes the settlement order and a
+participant's peak can rise slightly. This is a model result, consistent with the main finding
+(saving close to zero), not a bug.
+
+</td>
+  </tr>
+</table>
 
 ```bash
 cd web && npm install && npm run wasm && npm run dev    # opens at http://localhost:5173
 ```
 
-Screenshots are regenerated with `node scripts/screenshots.cjs` while the UI is running.
+Screenshots in both languages are regenerated with `node scripts/screenshots.cjs` while the UI is
+running.
 
 ### How it works
+
+```mermaid
+flowchart LR
+  A["Pix open data<br/>(BCB Olinda API)"] --> B["Calibrated synthetic<br/>generator, streaming"]
+  B --> C["Settlement engines"]
+  C --> C1["Real-time gross<br/>(like Pix)"]
+  C --> C2["Deferred netting<br/>1× a day … every 10 s"]
+  C --> C3["Atomic micro-cycles<br/>(new mechanism)"]
+  B --> D["Flow topology"]
+  D --> D1["Hodge<br/>(diagnostic)"]
+  D --> D2["Maximum CDFD<br/>(static ceiling)"]
+  D --> D3["Cycle netting<br/>(executable)"]
+  C1 & C2 & C3 --> E["Liquidity, delays and<br/>potential vs realizable"]
+  D1 & D2 & D3 --> E
+```
 
 **Three lenses on circular flow**
 
@@ -438,7 +545,7 @@ Screenshots are regenerated with `node scripts/screenshots.cjs` while the UI is 
 |---|---|
 | `GrossRealTime` | settles each payment on arrival if funds suffice (the Pix model) |
 | `DeferredNet` | multilateral netting at fixed cycles, from once a day down to every 10 s (UPI style, as in the Finnish study) |
-| `AtomicMicroCycle` | waits a few seconds, finds cycles in the queue and settles each cycle at once, all or nothing; modes `QueueAll` and `QueueOnShortfall` (LSM style) |
+| `AtomicMicroCycle` | waits a few seconds, finds cycles in the queue and settles each cycle at once, all or nothing; modes `QueueAll` (everything goes through the queue) and `QueueOnShortfall` (only on shortfall, LSM style) |
 
 **How liquidity is measured**
 
@@ -447,6 +554,8 @@ Screenshots are regenerated with `node scripts/screenshots.cjs` while the UI is 
 - **LB (lower bound):** the end-of-day multilateral net position, which a single daily netting
   would require.
 - **Saving of a design** = 1 − design liquidity ÷ UB.
+
+Formal definitions, a worked example and proofs in [`docs/en/METHODOLOGY.md`](docs/en/METHODOLOGY.md).
 
 ### Results at a glance
 
@@ -461,6 +570,22 @@ Screenshots are regenerated with `node scripts/screenshots.cjs` while the UI is 
 | Instant vs 10 cycles per day | 1.03× to 1.11× |
 | Micro-cycles with 2 s wait: Pix target of 50% within 2.8 s | met (100%) |
 | Micro-cycles with 10 s wait: same target | missed (43%) |
+
+<table>
+  <tr>
+    <td width="50%"><img src="results/microcycle-sweep/fig_tradeoff.svg" alt="Micro-cycles: liquidity saving versus delay"></td>
+    <td width="50%"><img src="results/finland-replication/fig_finland.svg" alt="Instant liquidity versus cycles per day"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Micro-cycles: saving × delay</sub></td>
+    <td align="center"><sub>Instant × netting cycles per day</sub></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="results/baseline/fig_ladder.svg" alt="Circularity ladder: Hodge, maximum CDFD and cycle netting on the gross and net graphs" width="720">
+</p>
+<p align="center"><sub>The circularity ladder: the diagnostic (Hodge) assigns to cycles far more than the exact ceiling (CDFD) and than a netting algorithm can cancel.</sub></p>
 
 ### Dialogue with the literature
 
@@ -490,11 +615,12 @@ adds:** the lost liquidity sits almost entirely on hour-long horizons, so second
 does not bring it back, however much value micro-cycles settle inside cycles.
 
 > This is **not a replication** of the Finnish study: we apply the same logic to a different
-> scenario and compare orders of magnitude (see [`docs/CLAIMS.md`](docs/CLAIMS.md)).
+> scenario and compare orders of magnitude (see [`docs/en/CLAIMS.md`](docs/en/CLAIMS.md),
+> "cannot claim" item 5).
 
 [^bof-en]: The 8.6% figure comes from the discussant's summary at Economics of Payments X (Bank
     of Finland, 2021) and still has to be checked against the full text. Verification status of
-    every reference is in [`docs/REFERENCES.md`](docs/REFERENCES.md).
+    every reference is in [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md).
 
 #### Other works
 
@@ -504,7 +630,7 @@ does not bring it back, however much value micro-cycles settle inside cycles.
 | Homs-Dones, MacKay, Sansom & Zhou, **CDFD** (arXiv 2506.12546, 2025) | Decomposes network flow into circular and directional parts, respecting conservation and edge bounds | Implements the **maximum circularity** decomposition exactly (min-cost flow) as a static ceiling; the proportional (BFF) variant is future work |
 | Bech & Soramäki, **BoF DP 9/2001** | Cycle-based gridlock resolution in interbank systems | Cycle netting and the basis for atomic micro-cycles, now with a maximum delay and the Pix time target |
 
-Full point-by-point comparison in [`docs/NOVELTY.md`](docs/NOVELTY.md) (Portuguese).
+Full point-by-point comparison in [`docs/en/NOVELTY.md`](docs/en/NOVELTY.md).
 
 ### Quick start
 
@@ -520,15 +646,22 @@ each experiment uses under 20 MiB and finishes in seconds.
 
 ### Reproducibility
 
-Every published number comes from a command with a fixed seed and reproduces **byte for byte**;
-the seed and code version are recorded in each `summary.json`. The six experiments
-(`calibration`, `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`,
-`finland-replication`) write CSV, JSON and SVG to `results/<name>/`.
+Every published number comes from a command with a fixed seed. Re-running reproduces the results
+**byte for byte**; the seed and code version are recorded in each `summary.json`.
 
-**Eight invariants checked by property tests** (`proptest`): conservation of money; each
-participant's net position preserved; no negative balances; micro-cycle atomicity; netting never
-reverses a payment nor cancels more than the cycle's smallest payment; Hodge consistency; full
-determinism; and the fixed triangle case.
+| Experiment | Question | Output |
+|---|---|---|
+| `calibration` | does the generator reproduce the public Pix aggregates? | `results/calibration/` |
+| `baseline` | how much is circular, through the three lenses? | `results/baseline/` |
+| `potential-vs-realizable` | how much of the potential netting becomes liquidity? | `results/potential-vs-realizable/` |
+| `microcycle-sweep` | what is the trade-off between delay and liquidity? | `results/microcycle-sweep/` |
+| `stress` | what happens if a large participant goes down for 30 min? | `results/stress/` |
+| `finland-replication` | the Bank of Finland logic applied to the scenario | `results/finland-replication/` |
+
+**Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
+run): conservation of money; each participant's net position preserved; no negative balances;
+micro-cycle atomicity; netting never reverses a payment nor cancels more than the cycle's
+smallest payment; Hodge consistency; full determinism; and the fixed triangle case.
 
 ### Architecture
 
@@ -538,35 +671,75 @@ determinism; and the fixed triangle case.
 | [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (hand-written conjugate gradient), exact CDFD, cycle netting |
 | [`loopsettle-sim`](crates/loopsettle-sim) | calibrated streaming synthetic generator |
 | [`loopsettle-cli`](crates/loopsettle-cli) | reproducible experiments, CSV/JSON/SVG output |
-| [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | Vite + React + Canvas 2D UI, simulation in a Web Worker |
+| [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | Vite + React + Canvas 2D UI, simulation in a Web Worker, Portuguese and English |
 | [`data/`](data) | download of public Pix aggregates (BCB Olinda API) |
-| [`docs/`](docs) | methodology, parameters, limitations, claims, novelty, references (Portuguese) |
+| [`docs/en/`](docs/en) | methodology, parameters, limitations, claims, novelty, references |
 
 The core has no external dependencies: sparse linear algebra, the random generator and file
-formats are implemented in the project itself. Code is in English; detailed documentation is in
-Portuguese.
+formats are implemented in the project itself. Code and code comments are in English.
+
+### Documentation
+
+| Document | Contents |
+|---|---|
+| [`docs/en/METHODOLOGY.md`](docs/en/METHODOLOGY.md) | every metric in plain and formal language, with a worked example |
+| [`docs/en/PARAMETERS.md`](docs/en/PARAMETERS.md) | every generator parameter: `SOURCED`, `CALIBRATED` or `ASSUMPTION`; real vs simulated table |
+| [`docs/en/LIMITATIONS.md`](docs/en/LIMITATIONS.md) | known limitations |
+| [`docs/en/CLAIMS.md`](docs/en/CLAIMS.md) | what the study can and cannot claim, with the evidence |
+| [`docs/en/NOVELTY.md`](docs/en/NOVELTY.md) | point-by-point comparison with the reference works |
+| [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md) | references and the verification status of each |
+| [`docs/en/PAPER_OUTLINE.md`](docs/en/PAPER_OUTLINE.md) | paper outline, with figures and tables |
+| [`DECISIONS.en.md`](DECISIONS.en.md) | design decisions: alternatives, rationale and how to revert |
+| [`REVIEW.en.md`](REVIEW.en.md) | open points for review before the paper |
+| [`results/SUMMARY.en.md`](results/SUMMARY.en.md) | every number, generated by a command |
+| [`data/README.md`](data/README.md#english) | public data and how to download it |
 
 ### Limitations
 
-- **Synthetic data calibrated to public aggregates, not real interbank data.** Who pays whom is
-  not public and is the model's main assumption, hence the sensitivity analysis on receiver
-  imbalance (σ from 0 to 0.8).
+LoopSettle is explicit about what it does not know:
+
+- **Synthetic data calibrated to public aggregates, not real interbank data.** Only public
+  aggregates are used. Who pays whom is not public and is the model's main assumption, hence the
+  sensitivity analysis on receiver imbalance (σ from 0 to 0.8).
 - **Reduced scale:** 200 participants and 1 million payments per day, versus about 239 million
   in real Pix. Fractions are the result; absolute values do not scale linearly.
 - **Heuristic micro-cycles:** the cycle search is simple, not a full optimiser.
-- **One-day horizon**, hourly profile without bursts; the stress scenario is still weak.
+- **One-day horizon** and an hourly profile without bursts; the stress scenario is still weak.
 
-See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md), [`docs/PARAMETERS.md`](docs/PARAMETERS.md) and
-[`REVIEW.md`](REVIEW.md).
+Full list in [`docs/en/LIMITATIONS.md`](docs/en/LIMITATIONS.md); assumptions and the source of
+every parameter in [`docs/en/PARAMETERS.md`](docs/en/PARAMETERS.md); open review points in
+[`REVIEW.en.md`](REVIEW.en.md).
 
 ### References
 
-See the [Portuguese section](#referências) above; verification status in
-[`docs/REFERENCES.md`](docs/REFERENCES.md).
+- Hellqvist, M. & Korpinen, K. (2021). *Instant payments as a new normal: Case study of
+  liquidity impacts for the Finnish market*. Bank of Finland Economics Review 7/2021.
+- Hellqvist, M. & Korpinen, K. (2026). *Instant payments as the new normal: how much more money
+  do the banks need?* Journal of Financial Market Infrastructures, 13(2). **The methodological
+  basis this project extends.**
+- Gonzalez, R. B., Ma, Y. & Zeng, Y. (2025). *The Effect of Instant Payments on the Banking
+  System*. Banco Central do Brasil, Working Paper 619.
+- Homs-Dones, M., MacKay, R. S., Sansom, B. & Zhou, Y. (2025). *Circular Directional Flow
+  Decomposition of Networks*. arXiv:2506.12546.
+- Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of
+  Finland Discussion Papers 9/2001.
 
-### Cite
+Verification status of every reference in [`docs/en/REFERENCES.md`](docs/en/REFERENCES.md).
 
-See [`CITATION.cff`](CITATION.cff) or the BibTeX entry above.
+### How to cite
+
+```bibtex
+@software{dorneles_loopsettle,
+  author  = {Dorneles, Fabio D.},
+  title   = {LoopSettle: an open simulator of circular liquidity in instant payment systems},
+  version = {0.1.0},
+  url     = {https://github.com/fabiodrneles/loopsettle},
+  license = {Apache-2.0}
+}
+```
+
+The metadata are also in [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository"
+button).
 
 ### License
 
