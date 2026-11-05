@@ -11,7 +11,7 @@
 ## Estado atual
 
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
-- **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (68 pontos; 62–68 são da
+- **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de
   trabalho adicional estão nos pontos 13, 14, 36, 39 e 41 do `REVIEW.pt-BR.md`. Reservar o nome
   (GitHub/crates.io) só quando o usuário pedir ("vamos reservar o nome").

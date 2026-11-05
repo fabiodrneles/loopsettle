@@ -30,3 +30,4 @@ Evidência = arquivo em `results/` gerado por comando (ver `results/SUMMARY.pt-B
 | 6 | "A correlação potencial × posição líquida valida o modelo." | Em grafo denso é quase mecânica. |
 | 7 | "Um participante grande fora do ar não afeta a liquidez." | Cenário de estresse fraco (re-envio total, pico no fim do dia). |
 | 8 | Qualquer afirmação sobre a variante proporcional da CDFD ou sobre dados on-chain. | Não implementado / não rodado. |
+| 9 | "O FedNow / TIPS / UPI economizaria X% de liquidez." | O cenário é calibrado só com o Pix; outros sistemas precisam dos próprios agregados públicos. Os motores e o mecanismo qualitativo se aplicam ([`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)); os números não se transferem. |

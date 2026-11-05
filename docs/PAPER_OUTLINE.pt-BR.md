@@ -9,6 +9,7 @@ Só títulos e a lista de figuras/tabelas de cada seção. O texto será escrito
 
 ## 2. Trabalhos relacionados
 - Tabela 2 — Comparação ponto a ponto (`docs/NOVELTY.pt-BR.md`).
+- Tabela 2b — Sistemas de pagamentos instantâneos por modelo de liquidação entre bancos ([`INSTANT_PAYMENTS.pt-BR.md`](INSTANT_PAYMENTS.pt-BR.md)).
 
 ## 3. Modelo
 ### 3.1 Participantes, pagamentos e ledger

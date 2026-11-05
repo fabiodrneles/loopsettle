@@ -11,7 +11,7 @@
 ## Current state
 
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
-- **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (68 points; 62–68 come from
+- **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39
   and 41 of `REVIEW.md`. Reserve the name (GitHub/crates.io) only when the owner asks ("vamos
   reservar o nome").

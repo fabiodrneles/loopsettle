@@ -10,6 +10,7 @@ with the reviewer.
 
 ## 2. Related work
 - Table 2 — Point-by-point comparison ([`NOVELTY.md`](NOVELTY.md)).
+- Table 2b — Instant payment systems by interbank settlement model ([`INSTANT_PAYMENTS.md`](INSTANT_PAYMENTS.md)).
 
 ## 3. Model
 ### 3.1 Participants, payments and ledger

@@ -32,3 +32,7 @@
 12. **Web interface checked visually only in an emulated browser.** On 5 Nov 2026 it was opened
     in desktop Chromium (1440 px) and an emulated iPhone 13, in Portuguese and English
     (screenshots in `docs/img/`). It has not yet been opened on the reference laptop (i3, 4 GB).
+13. **Calibrated to one system.** Only Pix aggregates are used. Engines exist for the settlement
+    models of other systems (FedNow, TIPS, NPP, UPI, Faster Payments — see
+    [`INSTANT_PAYMENTS.md`](INSTANT_PAYMENTS.md)), but no other system has been calibrated; their
+    payment sizes, intraday profiles and concentration differ.
