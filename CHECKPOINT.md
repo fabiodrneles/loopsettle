@@ -7,9 +7,9 @@
 
 ## Estado atual
 
-- **Fase atual:** 1 — Núcleo de liquidação (`loopsettle-core`)
-- **Próximo passo exato:** implementar tipos (`Payment`, `Ledger`), trait `SettlementEngine`,
-  motor `GrossRealTime`, cálculo de UB/LB, testes de propriedade das invariantes 1, 3 e 7.
+- **Fase atual:** 2 — Topologia (`loopsettle-topology`)
+- **Próximo passo exato:** grafo agregado, B1/B2 esparsas (CSR), CG, Hodge, netting por
+  ciclos, CDFD (min-cost flow), oráculo `minilp`; testes das invariantes 2, 5, 6, 8.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -38,7 +38,13 @@ Notas de ambiente:
 ## Histórico de fases
 
 - [x] Fase 0 — Ambiente
-- [ ] Fase 1 — Núcleo de liquidação
+- [x] Fase 1 — Núcleo de liquidação
+  - Pronto: `types`, `ledger` (centavos, sem saldo negativo, lote atômico), trait
+    `SettlementEngine` + `GrossRealTime`, `drive()` (streaming, vários motores numa passada),
+    `FlowStats` (UB, LB, capacidade potencial, matriz de pares), `RunMetrics` + histograma
+    log-linear de atrasos, PRNG próprio + alias table, escritor JSON.
+  - Testar: `cargo test -p loopsettle-core` (11 testes; invariantes 1, 3, 7 por proptest;
+    exemplo à mão em `docs/METHODOLOGY.md`).
 - [ ] Fase 2 — Topologia
 - [ ] Fase 3 — Gerador sintético e streaming
 - [ ] Fase 4 — Calibração com dados públicos
