@@ -84,6 +84,9 @@ dependencies = [
 [[package]]
 name = "loopsettle-sim"
 version = "0.1.0"
+dependencies = [
+ "loopsettle-core",
+]
 
 [[package]]
 name = "loopsettle-topology"

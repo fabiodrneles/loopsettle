@@ -7,10 +7,10 @@
 
 ## Estado atual
 
-- **Fase atual:** 3 — Gerador sintético e simulação em streaming (`loopsettle-sim`)
-- **Próximo passo exato:** participantes heterogêneos, Poisson não homogêneo (thinning),
-  matriz de preferência (alias tables), valores de cauda pesada, iterador em streaming;
-  benchmark 1M pagamentos (<60 s, <1 GB) e teste de determinismo.
+- **Fase atual:** 4 — Calibração com dados públicos
+- **Próximo passo exato:** `data/fetch_pix.py` (API Olinda do BCB, só stdlib) → salvar
+  brutos em `data/raw/` (não versionado) e agregados em `data/calibration/pix.toml`;
+  comando `calibrate` no CLI com tabela "real vs simulado" e erro relativo.
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -35,6 +35,7 @@ Notas de ambiente:
 | Fase | Comando | Tempo | RAM de pico | Aceite |
 |---|---|---|---|---|
 | 0 | `cargo test --workspace` (frio, com proptest) | 61 s | 502 MB | < 120 s e < 2,5 GB ✅ |
+| 3 | `bench_stream` (1.000.984 pagamentos, GRT + matriz de pares, 2×) | 0,23 s/execução | 4,1 MB | < 60 s e < 1 GB ✅ |
 | 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
@@ -55,7 +56,12 @@ Notas de ambiente:
     em 1.000 grafos; parte direcional acíclica).
   - Benchmark: `cargo run --release -p loopsettle-topology --example bench_topology`.
   - Pendente (D6): variante proporcional/local da CDFD.
-- [ ] Fase 3 — Gerador sintético e streaming
+- [x] Fase 3 — Gerador sintético e streaming
+  - Pronto: `ScenarioConfig`/`Population` (classes por ranking, viés recebedor),
+    `PaymentStream` (Poisson por hora, alias tables, lognormal + Pareto truncada),
+    `Outage` (indisponibilidade com re-envio em rajada), `toml_lite`.
+  - Testar: `cargo test -p loopsettle-sim`; benchmark
+    `cargo run --release -p loopsettle-sim --example bench_stream`.
 - [ ] Fase 4 — Calibração com dados públicos
 - [ ] Fase 5 — Motores alternativos
 - [ ] Fase 6 — Experimentos reprodutíveis

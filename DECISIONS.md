@@ -76,3 +76,19 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   e é o algoritmo "realizável" mais simples; a CDFD dá o teto. A diferença entre os dois é
   reportada.
 - **Reverter / alternativa:** mudar a ordem de `adj` em `netting.rs`.
+
+## D8 — Processo de chegada: Poisson com taxa constante por hora
+- **Decisão:** intensidade por partes (24 pesos horários), simulação exata por exponenciais.
+- **Alternativas:** taxa contínua (ex.: soma de senoides) com *thinning*; processos com
+  autoexcitação (Hawkes) para rajadas.
+- **Por quê:** simples, exato, rápido e calibrável com dados horários se surgirem.
+  Não modela rajadas (ex.: dia de pagamento de salário) — listado como limitação.
+- **Reverter:** trocar `PaymentStream::next`.
+
+## D9 — Recebedor por modelo gravitacional com viés recebedor
+- **Decisão:** `P(j | i) ∝ atividade_j^β · viés_j · (1 + h·[mesma classe])`, `P(i→i) = 0`.
+- **Por quê:** gera rede densa e majoritariamente recíproca (como o P2P do Pix) mais um
+  componente direcional controlado (viés recebedor), sem precisar de dados bilaterais que
+  não são públicos. Os parâmetros do viés controlam diretamente a fração circular e estão
+  marcados `ASSUMPTION`; a análise de sensibilidade fica no experimento `baseline`.
+- **Reverter:** pesos em `PaymentStream::with_population`.
