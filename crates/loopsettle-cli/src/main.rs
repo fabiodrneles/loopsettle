@@ -8,6 +8,7 @@
 
 mod experiments;
 mod experiments2;
+mod experiments3;
 mod out;
 mod svg;
 

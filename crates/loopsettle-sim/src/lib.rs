@@ -2,6 +2,7 @@
 //!
 //! Synthetic, calibrated payment generator and streaming simulation driver.
 
+pub mod bound;
 pub mod calibrate;
 pub mod runner;
 pub mod scenario;
