@@ -20,12 +20,14 @@
 <p align="center">
   <b><a href="#português">Português</a></b> ·
   <a href="results/SUMMARY.pt-BR.md">Resultados</a> ·
+  <a href="#instalação-do-zero">Instalação</a> ·
   <a href="docs/METHODOLOGY.pt-BR.md">Metodologia</a> ·
   <a href="docs/LIMITATIONS.pt-BR.md">Limitações</a> ·
   <a href="docs/REFERENCES.pt-BR.md">Referências</a>
   <br>
   <b><a href="#english">English</a></b> ·
   <a href="results/SUMMARY.md">Results</a> ·
+  <a href="#installation-from-scratch">Installation</a> ·
   <a href="docs/METHODOLOGY.md">Methodology</a> ·
   <a href="docs/LIMITATIONS.md">Limitations</a> ·
   <a href="docs/REFERENCES.md">References</a>
@@ -344,9 +346,305 @@ cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable  # c
 cd web && npm install && npm run wasm && npm run dev                         # interface
 ```
 
-Requisitos: Rust estável com o target `wasm32-unknown-unknown`, `wasm-pack` e Node LTS.
-Tudo de uma vez, do zero: `make rebuild`. Roda num Intel i3 de 4ª geração com 4 GB de RAM:
-cada experimento usa menos de 20 MiB e termina em segundos.
+Primeira vez? Instale as ferramentas pelo guia [Instalação do zero](#instalação-do-zero), logo
+abaixo. Tudo de uma vez: `make rebuild`. Roda num Intel i3 de 4ª geração com 4 GB de RAM: cada
+experimento usa menos de 20 MiB e termina em segundos.
+
+### Instalação do zero
+
+Este guia parte de um computador sem nada instalado e chega ao simulador, aos experimentos e à
+interface rodando. Na primeira vez leva de 20 a 40 minutos, quase tudo download e a primeira
+compilação. Precisa de internet e de cerca de 3 GB livres em disco. Foi pensado para a máquina de
+referência do projeto (Intel i3 de 4ª geração, 4 GB de RAM).
+
+**O que será instalado**
+
+| Ferramenta | Para quê | Obrigatória? | Versões testadas |
+|---|---|---|---|
+| Git | baixar o código | sim | qualquer recente |
+| Rust (rustup + cargo) | simulador, testes e experimentos | sim | estável 1.97–1.99 |
+| Compilador C/linker do sistema | o Rust usa para gerar o executável | sim | MSVC Build Tools (Windows), `build-essential` (Linux), Xcode CLT (macOS) |
+| Target `wasm32-unknown-unknown` | compilar o simulador para o navegador | só para a interface | — |
+| `wasm-pack` | empacotar o WebAssembly | só para a interface | 0.13.1 e 0.15.1 |
+| Node.js LTS (com npm) | interface web | só para a interface | 22 e 24 |
+| Python 3 | gerar `results/SUMMARY*.md` e baixar os dados públicos do Pix | opcional | 3.10 ou mais nova (só biblioteca padrão) |
+| GNU Make | reconstruir tudo com um comando | opcional | 4.x |
+
+Quer só rodar o simulador e os experimentos? Bastam Git, Rust e o compilador do sistema (passos 1
+e 2 do seu sistema e o passo 3 comum). A interface precisa também do target wasm, do `wasm-pack` e
+do Node.
+
+#### Passo 1 — ferramentas do sistema
+
+<details open>
+<summary><b>Windows 10/11</b> (use o toolchain nativo; <b>não</b> use WSL2 com 4 GB de RAM)</summary>
+
+Abra o **PowerShell** (menu Iniciar → "PowerShell") e rode um comando por vez. O `winget` já vem
+no Windows 10/11 atualizado.
+
+```powershell
+winget install --id Git.Git -e
+```
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+```
+
+```powershell
+winget install --id Rustlang.Rustup -e
+```
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+```
+
+Opcionais (resumo dos resultados e `make`):
+
+```powershell
+winget install --id Python.Python.3.12 -e
+```
+
+```powershell
+winget install --id ezwinports.make -e
+```
+
+**Feche e abra o terminal** depois das instalações, para o `PATH` ser atualizado. Sem `winget`:
+baixe o Git em [git-scm.com](https://git-scm.com/download/win), o Rust em
+[rustup.rs](https://rustup.rs) (o instalador oferece instalar o Visual Studio Build Tools; aceite,
+com a carga "Desenvolvimento para desktop com C++"), o Node LTS em [nodejs.org](https://nodejs.org)
+e o Python em [python.org](https://www.python.org/downloads/) (marque "Add python.exe to PATH").
+
+Os comandos dos passos seguintes funcionam no PowerShell e no **Git Bash** (instalado junto com o
+Git). Onde forem diferentes, os dois aparecem.
+</details>
+
+<details>
+<summary><b>Linux</b> (Ubuntu/Debian; Fedora no fim)</summary>
+
+```bash
+sudo apt update && sudo apt install -y build-essential git curl python3 make
+```
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
+```bash
+source "$HOME/.cargo/env"
+```
+
+Node LTS pelo `nvm` (não precisa de `sudo` e não mexe no Node do sistema):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+```
+
+```bash
+source "$HOME/.nvm/nvm.sh" && nvm install --lts
+```
+
+Com 4 GB de RAM, ative 2 GB de swap antes de compilar (evita travar o computador):
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+```
+
+Fedora: troque a primeira linha por `sudo dnf install -y gcc git make python3 curl`.
+</details>
+
+<details>
+<summary><b>macOS</b></summary>
+
+```bash
+xcode-select --install
+```
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
+```bash
+source "$HOME/.cargo/env"
+```
+
+Node LTS: instale pelo [nodejs.org](https://nodejs.org) ou, com Homebrew, `brew install node@22`.
+Git, `make` e Python 3 já vêm com as Xcode Command Line Tools.
+</details>
+
+#### Passo 2 — Rust pronto para a interface (todos os sistemas)
+
+```bash
+rustup default stable
+```
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+```bash
+npm install -g wasm-pack
+```
+
+O `npm` baixa o `wasm-pack` já compilado. Se ele falhar (rede corporativa, por exemplo), compile
+pelo Cargo — leva de 5 a 15 minutos num i3:
+
+```bash
+cargo install wasm-pack --locked
+```
+
+#### Passo 3 — baixar o código e conferir
+
+```bash
+git clone https://github.com/fabiodrneles/loopsettle.git
+```
+
+```bash
+cd loopsettle
+```
+
+Confira as versões (cada comando deve imprimir um número, não um erro):
+
+```bash
+git --version && cargo --version && rustup target list --installed && wasm-pack --version && node --version && npm --version
+```
+
+Todos os comandos daqui em diante são rodados **na raiz do repositório** (a pasta `loopsettle`).
+
+#### Passo 4 — primeiro uso
+
+1. **Testes** (na primeira vez baixa as dependências e compila; cerca de 1 a 2 minutos no i3):
+
+   ```bash
+   cargo test --workspace
+   ```
+
+   Esperado: várias linhas `test result: ok.` e nenhuma `FAILED`.
+
+2. **Lista de experimentos:**
+
+   ```bash
+   cargo run --release -p loopsettle-cli -- list
+   ```
+
+3. **A comparação central** (gera CSV, JSON e SVG em `results/potential-vs-realizable/`):
+
+   ```bash
+   cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable
+   ```
+
+4. **A interface** (num segundo terminal, também na raiz do repositório):
+
+   ```bash
+   cd web
+   ```
+
+   ```bash
+   npm install
+   ```
+
+   ```bash
+   npm run wasm
+   ```
+
+   ```bash
+   npm run dev
+   ```
+
+   Abra o endereço que aparece no terminal (normalmente <http://localhost:5173>). Para parar:
+   `Ctrl+C`. Versão otimizada: `npm run build` e depois `npm run preview` (normalmente
+   <http://localhost:4173>). Sempre que mudar o código Rust, rode `npm run wasm` de novo.
+
+5. **Tudo do zero** (testes, todos os experimentos, os resumos e a interface; cerca de 2 minutos
+   no i3 depois da primeira compilação):
+
+   ```bash
+   make rebuild PYTHON=python3
+   ```
+
+   No Windows, use `make rebuild` (lá o Python se chama `python`). Sem `make`, o equivalente no
+   Git Bash, Linux ou macOS é:
+
+   ```bash
+   cargo test --workspace && for e in $(cargo run --release -q -p loopsettle-cli -- list | cut -d' ' -f1); do cargo run --release -q -p loopsettle-cli -- experiment $e || break; done && cargo run --release -q -p loopsettle-cli -- topology data/samples/triangle.csv && python3 -I scripts/summarize.py
+   ```
+
+   E no PowerShell:
+
+   ```powershell
+   cargo test --workspace; cargo run --release -q -p loopsettle-cli -- list | ForEach-Object { cargo run --release -q -p loopsettle-cli -- experiment ($_ -split ' ')[0] }; cargo run --release -q -p loopsettle-cli -- topology data/samples/triangle.csv; python -I scripts/summarize.py
+   ```
+
+Depois de `cargo build --release -p loopsettle-cli`, o executável pode ser chamado direto, sem o
+`cargo run`: `./target/release/loopsettle list` (Windows: `.\target\release\loopsettle.exe list`).
+Nos exemplos abaixo, `loopsettle` significa um desses dois jeitos.
+
+#### Referência de comandos
+
+| Comando | O que faz | Saída |
+|---|---|---|
+| `cargo test --workspace` | todos os testes, incluindo as 8 invariantes por propriedades | terminal |
+| `cargo test -p loopsettle-core` | testes de um crate só (`-core`, `-topology`, `-sim`, `-cli`) | terminal |
+| `loopsettle list` | lista os experimentos e o que cada um responde | terminal |
+| `loopsettle experiment <nome>` | roda um experimento com a semente fixa do seu TOML | `results/<nome>/` (CSV, `summary.json`, `run.json`, SVG) |
+| `loopsettle experiment <nome> --quick` | o mesmo com 10× menos pagamentos, para conferir rápido; **não** use para números publicados | `results/<nome>/` |
+| `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
+| `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
+| `loopsettle export <experimento> <saida.csv> [--payments N] [--participants N]` | grava os pagamentos sintéticos de um cenário num CSV no formato que `bound`/`settle` leem | o CSV |
+| `loopsettle topology <transferencias.csv>` | escada de circularidade (Hodge, CDFD, ciclos) de qualquer lista `from,to,amount` | `results/topology-<arquivo>/` |
+| `python3 -I scripts/summarize.py` | gera os resumos a partir de `results/` | `results/SUMMARY.md` e `SUMMARY.pt-BR.md` |
+| `python3 -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30` | baixa de novo os agregados públicos do Pix (API Olinda do BCB) e recalcula a calibração | `data/raw/`, `data/calibration/pix.toml` |
+| `node scripts/wasm-smoke.mjs` | confere o WebAssembly no Node (depois de `npm run wasm`) | terminal |
+| `make all` / `make rebuild` | tudo / tudo apagando `results/` antes | `results/`, `web/dist/` |
+| `make test`, `make experiments`, `make summary`, `make web`, `make wasm`, `make data` | partes do `make all` | — |
+
+**Desenhos de liquidação** (`--engines`, separados por vírgula): `gross` (bruto em tempo real, como
+o Pix); `deferred:N` (compensação multilateral N vezes por dia); `micro:all:J:D` ou
+`micro:shortfall:J:D` (micro-ciclos atômicos com janela de J ms e atraso máximo de D ms; `all` põe
+todo pagamento na fila, `shortfall` só quando falta saldo); um quinto número opcional limita o
+comprimento do ciclo (padrão 6), por exemplo `micro:all:1000:10000:4`.
+
+**Formato do arquivo de pagamentos** (`bound`, `settle`): CSV com cabeçalho e as colunas `time`
+(segundos, `HH:MM:SS[.fff]`) ou `t_ms` (milissegundos), `from`, `to` e `amount` (em unidades da
+moeda, convertidas para centavos sem ponto flutuante), ordenado pelo horário. Exemplo pronto:
+[`data/samples/payments_example.csv`](data/samples/payments_example.csv).
+
+#### Configuração
+
+- **Cenários e experimentos** ficam em [`experiments/*.toml`](experiments): semente, número de
+  participantes, pagamentos por dia, motores, varreduras. Edite o arquivo e rode o experimento de
+  novo; o resultado vai para `results/<nome>/`. Para voltar ao original:
+  `git checkout experiments/<nome>.toml`. Os números publicados usam os arquivos como estão no
+  repositório.
+- **Calibração** com dados públicos: [`data/calibration/pix.toml`](data/calibration/pix.toml)
+  (gerado por `data/fetch_pix.py`; a origem de cada parâmetro está em
+  [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md)).
+- **Compilação leve:** [`.cargo/config.toml`](.cargo/config.toml) limita a 2 tarefas paralelas
+  (máquina de referência com 2 núcleos e 4 GB). Com mais núcleos e memória, pode aumentar `jobs`.
+- **Editor:** com o rust-analyzer no VS Code e 4 GB de RAM, desligue a checagem ao salvar:
+  `"rust-analyzer.checkOnSave": false` nas configurações.
+- **`make`:** as variáveis `CARGO` e `PYTHON` trocam os programas usados, por exemplo
+  `make all PYTHON=python3`.
+
+#### Problemas comuns
+
+| Sintoma | Causa provável | Solução |
+|---|---|---|
+| `cargo: command not found` / `'cargo' não é reconhecido` | o terminal foi aberto antes de instalar o Rust | feche e abra o terminal; no Linux/macOS, `source "$HOME/.cargo/env"`; no Git Bash, `export PATH="$HOME/.cargo/bin:$PATH"` |
+| Windows: `linker 'link.exe' not found` | falta o Visual Studio Build Tools com C++ | rode de novo o comando do Build Tools do passo 1 (ou o instalador, carga "Desenvolvimento para desktop com C++") |
+| Linux: `linker 'cc' not found` | falta o compilador C | `sudo apt install -y build-essential` |
+| `can't find crate for 'core'` ao rodar `npm run wasm` | falta o target wasm | `rustup target add wasm32-unknown-unknown` |
+| `wasm-pack: command not found` | `wasm-pack` não instalado ou terminal antigo | passo 2; feche e abra o terminal |
+| `npm install -g` pede permissão (Linux/macOS) | Node do sistema instalado como root | use o Node do `nvm` (passo 1) ou `cargo install wasm-pack --locked` |
+| `cannot read experiments/<nome>.toml` | o comando foi rodado fora da raiz | `cd` para a pasta `loopsettle` |
+| `make: python: No such file or directory` | no Linux/macOS o Python se chama `python3` | `make all PYTHON=python3` |
+| A página da interface fica em branco ou acusa falha ao carregar o `.wasm` | o WebAssembly ainda não foi gerado | em `web/`, rode `npm run wasm` antes de `npm run dev` |
+| `Port 5173 is in use` | outro programa usa a porta | o Vite escolhe outra porta; use o endereço que aparece no terminal |
+| O computador trava ou a compilação morre sem mensagem | falta de memória (4 GB) | feche o navegador e o editor; compile com uma tarefa só: `cargo build --release -j 1`; no Linux, ative o swap do passo 1 |
+| `requires rustc 1.xx or newer` | Rust antigo | `rustup update stable` |
+| A primeira compilação demora muitos minutos | normal: dependências e otimização | as próximas são incrementais e levam segundos |
+| O `code_version` dos resultados termina em `-dirty` | há mudanças não commitadas fora de `results/` | é só um aviso; para números publicáveis, faça commit e rode de novo |
+| Windows: compilação muito lenta | antivírus examinando cada arquivo gerado | opcional: adicione a pasta do projeto às exclusões do Windows Defender |
+
 
 ### Rode nos seus dados
 
@@ -375,7 +673,7 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `baseline` | quanto é circular, pelas três lentes? | `results/baseline/` |
 | `potential-vs-realizable` | quanto da compensação potencial vira liquidez? | `results/potential-vs-realizable/` |
 | `microcycle-sweep` | qual a troca entre atraso e liquidez? | `results/microcycle-sweep/` |
-| `stress` | o que acontece se um participante grande cair por 30 min? | `results/stress/` |
+| `stress` | e se um participante cair por 30 min — importa quem e quando? | `results/stress/` |
 | `finland-replication` | a lógica do Banco da Finlândia aplicada ao cenário | `results/finland-replication/` |
 | `robustness` | o resultado sobrevive a sementes, escala, viés e algoritmo? | `results/robustness/` |
 | `bias-calibration` | qual viés recebedor reproduz os dados reais do WP 619? | `results/bias-calibration/` |
@@ -417,6 +715,7 @@ arquivo foram implementados no próprio projeto.
 | [`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md) | o que o estudo pode e não pode afirmar, com a evidência |
 | [`docs/NOVELTY.pt-BR.md`](docs/NOVELTY.pt-BR.md) | comparação ponto a ponto com os trabalhos de referência |
 | [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md) | referências e situação de verificação de cada uma |
+| [`docs/references/`](docs/references/README.pt-BR.md) | biblioteca: os PDFs citados, com link original, e `references.bib` |
 | [`docs/PAPER_OUTLINE.pt-BR.md`](docs/PAPER_OUTLINE.pt-BR.md) | esqueleto do artigo, com figuras e tabelas |
 | [`DECISIONS.pt-BR.md`](DECISIONS.pt-BR.md) | decisões de desenho: alternativas, motivo e como reverter |
 | [`REVIEW.pt-BR.md`](REVIEW.pt-BR.md) | pontos abertos para a revisão antes do artigo |
@@ -435,7 +734,8 @@ O LoopSettle é explícito sobre o que não sabe:
 - **Escala reduzida:** 200 participantes e 1 milhão de pagamentos por dia, contra cerca de 239
   milhões no Pix real. As frações são o resultado; os valores absolutos não escalam linearmente.
 - **Micro-ciclos heurísticos:** a busca de ciclos é simples, não um otimizador completo.
-- **Horizonte de um dia** e perfil horário sem rajadas; o cenário de estresse ainda é fraco.
+- **Horizonte de um dia** e perfil horário sem rajadas. No estresse, quedas de 30 minutos com
+  reenvio total quase não mudam a liquidez necessária; abandono parcial não é modelado.
 
 Lista completa em [`docs/LIMITATIONS.pt-BR.md`](docs/LIMITATIONS.pt-BR.md); hipóteses e fonte de cada
 parâmetro em [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md); pontos abertos para revisão em
@@ -454,8 +754,12 @@ parâmetro em [`docs/PARAMETERS.pt-BR.md`](docs/PARAMETERS.pt-BR.md); pontos abe
   Decomposition of Networks*. arXiv:2506.12546.
 - Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of
   Finland Discussion Papers 9/2001.
+- McMahon, C. et al. (2024). *Improving the efficiency of payments systems using quantum
+  computing*. Management Science (arXiv:2209.15392). **O trabalho mais próximo**, em sistema de
+  alto valor.
 
-Situação de verificação de cada referência em [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md).
+Situação de verificação de cada referência em [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md);
+os PDFs estão em [`docs/references/`](docs/references/README.pt-BR.md).
 
 ### Como citar
 
@@ -785,9 +1089,306 @@ cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable  # c
 cd web && npm install && npm run wasm && npm run dev                         # interface
 ```
 
-Requirements: stable Rust with the `wasm32-unknown-unknown` target, `wasm-pack` and Node LTS.
-Everything from scratch: `make rebuild`. Runs on a 4th-generation Intel i3 with 4 GB of RAM:
-each experiment uses under 20 MiB and finishes in seconds.
+First time? Install the tools with the [Installation from scratch](#installation-from-scratch)
+guide just below. Everything at once: `make rebuild`. Runs on a 4th-generation Intel i3 with 4 GB
+of RAM: each experiment uses under 20 MiB and finishes in seconds.
+
+### Installation from scratch
+
+This guide starts from a computer with nothing installed and ends with the simulator, the
+experiments and the interface running. The first time takes 20 to 40 minutes, mostly downloads
+and the first compilation. You need an internet connection and about 3 GB of free disk space. It
+was written for the project's reference machine (4th-generation Intel i3, 4 GB of RAM).
+
+**What will be installed**
+
+| Tool | What for | Required? | Versions tested |
+|---|---|---|---|
+| Git | download the code | yes | any recent |
+| Rust (rustup + cargo) | simulator, tests and experiments | yes | stable 1.97–1.99 |
+| The system's C compiler/linker | Rust uses it to produce the executable | yes | MSVC Build Tools (Windows), `build-essential` (Linux), Xcode CLT (macOS) |
+| Target `wasm32-unknown-unknown` | compile the simulator for the browser | interface only | — |
+| `wasm-pack` | package the WebAssembly | interface only | 0.13.1 and 0.15.1 |
+| Node.js LTS (with npm) | web interface | interface only | 22 and 24 |
+| Python 3 | generate `results/SUMMARY*.md` and download the public Pix data | optional | 3.10 or newer (standard library only) |
+| GNU Make | rebuild everything with one command | optional | 4.x |
+
+Only want the simulator and the experiments? Git, Rust and the system compiler are enough (steps
+1 and 2 for your system and the common step 3). The interface also needs the wasm target,
+`wasm-pack` and Node.
+
+#### Step 1 — system tools
+
+<details open>
+<summary><b>Windows 10/11</b> (use the native toolchain; do <b>not</b> use WSL2 with 4 GB of RAM)</summary>
+
+Open **PowerShell** (Start menu → "PowerShell") and run one command at a time. `winget` ships with
+an up-to-date Windows 10/11.
+
+```powershell
+winget install --id Git.Git -e
+```
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.BuildTools -e --override "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+```
+
+```powershell
+winget install --id Rustlang.Rustup -e
+```
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+```
+
+Optional (results summary and `make`):
+
+```powershell
+winget install --id Python.Python.3.12 -e
+```
+
+```powershell
+winget install --id ezwinports.make -e
+```
+
+**Close and reopen the terminal** after installing, so that `PATH` is updated. Without `winget`:
+download Git from [git-scm.com](https://git-scm.com/download/win), Rust from
+[rustup.rs](https://rustup.rs) (the installer offers to install the Visual Studio Build Tools;
+accept, with the "Desktop development with C++" workload), Node LTS from
+[nodejs.org](https://nodejs.org) and Python from [python.org](https://www.python.org/downloads/)
+(tick "Add python.exe to PATH").
+
+The commands in the next steps work in PowerShell and in **Git Bash** (installed with Git). Where
+they differ, both are shown.
+</details>
+
+<details>
+<summary><b>Linux</b> (Ubuntu/Debian; Fedora at the end)</summary>
+
+```bash
+sudo apt update && sudo apt install -y build-essential git curl python3 make
+```
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
+```bash
+source "$HOME/.cargo/env"
+```
+
+Node LTS through `nvm` (no `sudo`, leaves the system Node alone):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+```
+
+```bash
+source "$HOME/.nvm/nvm.sh" && nvm install --lts
+```
+
+With 4 GB of RAM, enable 2 GB of swap before compiling (keeps the computer from freezing):
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+```
+
+Fedora: replace the first line with `sudo dnf install -y gcc git make python3 curl`.
+</details>
+
+<details>
+<summary><b>macOS</b></summary>
+
+```bash
+xcode-select --install
+```
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
+```bash
+source "$HOME/.cargo/env"
+```
+
+Node LTS: install from [nodejs.org](https://nodejs.org) or, with Homebrew, `brew install node@22`.
+Git, `make` and Python 3 come with the Xcode Command Line Tools.
+</details>
+
+#### Step 2 — Rust ready for the interface (all systems)
+
+```bash
+rustup default stable
+```
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+```bash
+npm install -g wasm-pack
+```
+
+`npm` downloads a prebuilt `wasm-pack`. If that fails (a corporate network, for instance), build it
+with Cargo — 5 to 15 minutes on an i3:
+
+```bash
+cargo install wasm-pack --locked
+```
+
+#### Step 3 — get the code and check
+
+```bash
+git clone https://github.com/fabiodrneles/loopsettle.git
+```
+
+```bash
+cd loopsettle
+```
+
+Check the versions (each command should print a number, not an error):
+
+```bash
+git --version && cargo --version && rustup target list --installed && wasm-pack --version && node --version && npm --version
+```
+
+Every command from here on runs **at the repository root** (the `loopsettle` folder).
+
+#### Step 4 — first run
+
+1. **Tests** (the first time downloads the dependencies and compiles; about 1 to 2 minutes on the
+   i3):
+
+   ```bash
+   cargo test --workspace
+   ```
+
+   Expected: several `test result: ok.` lines and no `FAILED`.
+
+2. **List of experiments:**
+
+   ```bash
+   cargo run --release -p loopsettle-cli -- list
+   ```
+
+3. **The central comparison** (writes CSV, JSON and SVG to `results/potential-vs-realizable/`):
+
+   ```bash
+   cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable
+   ```
+
+4. **The interface** (in a second terminal, also at the repository root):
+
+   ```bash
+   cd web
+   ```
+
+   ```bash
+   npm install
+   ```
+
+   ```bash
+   npm run wasm
+   ```
+
+   ```bash
+   npm run dev
+   ```
+
+   Open the address shown in the terminal (usually <http://localhost:5173>). To stop: `Ctrl+C`.
+   Optimised build: `npm run build`, then `npm run preview` (usually <http://localhost:4173>).
+   Whenever the Rust code changes, run `npm run wasm` again.
+
+5. **Everything from scratch** (tests, every experiment, the summaries and the interface; about 2
+   minutes on the i3 after the first compilation):
+
+   ```bash
+   make rebuild PYTHON=python3
+   ```
+
+   On Windows, use `make rebuild` (there Python is called `python`). Without `make`, the equivalent
+   in Git Bash, Linux or macOS is:
+
+   ```bash
+   cargo test --workspace && for e in $(cargo run --release -q -p loopsettle-cli -- list | cut -d' ' -f1); do cargo run --release -q -p loopsettle-cli -- experiment $e || break; done && cargo run --release -q -p loopsettle-cli -- topology data/samples/triangle.csv && python3 -I scripts/summarize.py
+   ```
+
+   And in PowerShell:
+
+   ```powershell
+   cargo test --workspace; cargo run --release -q -p loopsettle-cli -- list | ForEach-Object { cargo run --release -q -p loopsettle-cli -- experiment ($_ -split ' ')[0] }; cargo run --release -q -p loopsettle-cli -- topology data/samples/triangle.csv; python -I scripts/summarize.py
+   ```
+
+After `cargo build --release -p loopsettle-cli`, the executable can be called directly, without
+`cargo run`: `./target/release/loopsettle list` (Windows: `.\target\release\loopsettle.exe list`).
+In the examples below, `loopsettle` means either form.
+
+#### Command reference
+
+| Command | What it does | Output |
+|---|---|---|
+| `cargo test --workspace` | every test, including the 8 property-tested invariants | terminal |
+| `cargo test -p loopsettle-core` | the tests of one crate (`-core`, `-topology`, `-sim`, `-cli`) | terminal |
+| `loopsettle list` | lists the experiments and the question each answers | terminal |
+| `loopsettle experiment <name>` | runs an experiment with the fixed seed in its TOML | `results/<name>/` (CSV, `summary.json`, `run.json`, SVG) |
+| `loopsettle experiment <name> --quick` | the same with 10× fewer payments, for a quick check; **not** for published numbers | `results/<name>/` |
+| `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
+| `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
+| `loopsettle export <experiment> <out.csv> [--payments N] [--participants N]` | writes a scenario's synthetic payments to a CSV in the format `bound`/`settle` read | the CSV |
+| `loopsettle topology <transfers.csv>` | circularity ladder (Hodge, CDFD, cycles) of any `from,to,amount` list | `results/topology-<file>/` |
+| `python3 -I scripts/summarize.py` | builds the summaries from `results/` | `results/SUMMARY.md` and `SUMMARY.pt-BR.md` |
+| `python3 -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30` | re-downloads the public Pix aggregates (BCB Olinda API) and recomputes the calibration | `data/raw/`, `data/calibration/pix.toml` |
+| `node scripts/wasm-smoke.mjs` | checks the WebAssembly in Node (after `npm run wasm`) | terminal |
+| `make all` / `make rebuild` | everything / everything after deleting `results/` | `results/`, `web/dist/` |
+| `make test`, `make experiments`, `make summary`, `make web`, `make wasm`, `make data` | parts of `make all` | — |
+
+**Settlement designs** (`--engines`, comma-separated): `gross` (real-time gross, like Pix);
+`deferred:N` (multilateral netting N times a day); `micro:all:W:D` or `micro:shortfall:W:D` (atomic
+micro-cycles with a W ms window and a maximum delay of D ms; `all` queues every payment,
+`shortfall` only when the balance is short); an optional fifth number limits the cycle length
+(default 6), e.g. `micro:all:1000:10000:4`.
+
+**Payment file format** (`bound`, `settle`): CSV with a header and the columns `time` (seconds,
+`HH:MM:SS[.fff]`) or `t_ms` (milliseconds), `from`, `to` and `amount` (in currency units, converted
+to cents without floating point), sorted by time. Ready-made example:
+[`data/samples/payments_example.csv`](data/samples/payments_example.csv).
+
+#### Configuration
+
+- **Scenarios and experiments** live in [`experiments/*.toml`](experiments): seed, number of
+  participants, payments per day, engines, sweeps. Edit the file and run the experiment again; the
+  result goes to `results/<name>/`. To go back to the original:
+  `git checkout experiments/<name>.toml`. Published numbers use the files as committed.
+- **Calibration** to public data: [`data/calibration/pix.toml`](data/calibration/pix.toml)
+  (written by `data/fetch_pix.py`; the source of every parameter is in
+  [`docs/PARAMETERS.md`](docs/PARAMETERS.md)).
+- **Light compilation:** [`.cargo/config.toml`](.cargo/config.toml) limits the build to 2 parallel
+  jobs (reference machine with 2 cores and 4 GB). With more cores and memory, raise `jobs`.
+- **Editor:** with rust-analyzer in VS Code and 4 GB of RAM, turn off the check on save:
+  `"rust-analyzer.checkOnSave": false` in the settings.
+- **`make`:** the variables `CARGO` and `PYTHON` change the programs used, e.g.
+  `make all PYTHON=python3`.
+
+#### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `cargo: command not found` / `'cargo' is not recognized` | the terminal was opened before Rust was installed | close and reopen it; on Linux/macOS, `source "$HOME/.cargo/env"`; in Git Bash, `export PATH="$HOME/.cargo/bin:$PATH"` |
+| Windows: `linker 'link.exe' not found` | the Visual Studio Build Tools with C++ are missing | run the Build Tools command of step 1 again (or the installer, "Desktop development with C++" workload) |
+| Linux: `linker 'cc' not found` | no C compiler | `sudo apt install -y build-essential` |
+| `can't find crate for 'core'` when running `npm run wasm` | the wasm target is missing | `rustup target add wasm32-unknown-unknown` |
+| `wasm-pack: command not found` | `wasm-pack` not installed, or an old terminal | step 2; close and reopen the terminal |
+| `npm install -g` asks for permissions (Linux/macOS) | the system Node was installed as root | use Node from `nvm` (step 1) or `cargo install wasm-pack --locked` |
+| `cannot read experiments/<name>.toml` | the command ran outside the root | `cd` into the `loopsettle` folder |
+| `make: python: No such file or directory` | on Linux/macOS Python is called `python3` | `make all PYTHON=python3` |
+| The interface page is blank or fails to load the `.wasm` | the WebAssembly has not been built yet | in `web/`, run `npm run wasm` before `npm run dev` |
+| `Port 5173 is in use` | another program uses the port | Vite picks another port; use the address shown in the terminal |
+| The computer freezes or the build dies without a message | out of memory (4 GB) | close the browser and the editor; build with a single job: `cargo build --release -j 1`; on Linux, enable the swap of step 1 |
+| `requires rustc 1.xx or newer` | old Rust | `rustup update stable` |
+| The first build takes many minutes | normal: dependencies and optimisation | later builds are incremental and take seconds |
+| The results' `code_version` ends in `-dirty` | there are uncommitted changes outside `results/` | only a warning; for publishable numbers, commit and run again |
+| Windows: very slow builds | the antivirus scans every generated file | optional: add the project folder to the Windows Defender exclusions |
+
 
 ### Run it on your own data
 
@@ -816,7 +1417,7 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `baseline` | how much is circular, through the three lenses? | `results/baseline/` |
 | `potential-vs-realizable` | how much of the potential netting becomes liquidity? | `results/potential-vs-realizable/` |
 | `microcycle-sweep` | what is the trade-off between delay and liquidity? | `results/microcycle-sweep/` |
-| `stress` | what happens if a large participant goes down for 30 min? | `results/stress/` |
+| `stress` | what if a participant goes down for 30 min — does it matter who and when? | `results/stress/` |
 | `finland-replication` | the Bank of Finland logic applied to the scenario | `results/finland-replication/` |
 | `robustness` | does the result survive seeds, scale, bias and algorithm? | `results/robustness/` |
 | `bias-calibration` | which receiver bias reproduces the real WP 619 data? | `results/bias-calibration/` |
@@ -857,6 +1458,7 @@ formats are implemented in the project itself. Code and code comments are in Eng
 | [`docs/CLAIMS.md`](docs/CLAIMS.md) | what the study can and cannot claim, with the evidence |
 | [`docs/NOVELTY.md`](docs/NOVELTY.md) | point-by-point comparison with the reference works |
 | [`docs/REFERENCES.md`](docs/REFERENCES.md) | references and the verification status of each |
+| [`docs/references/`](docs/references/README.md) | library: the cited PDFs, with original links, and `references.bib` |
 | [`docs/PAPER_OUTLINE.md`](docs/PAPER_OUTLINE.md) | paper outline, with figures and tables |
 | [`DECISIONS.md`](DECISIONS.md) | design decisions: alternatives, rationale and how to revert |
 | [`REVIEW.md`](REVIEW.md) | open points for review before the paper |
@@ -873,7 +1475,8 @@ LoopSettle is explicit about what it does not know:
 - **Reduced scale:** 200 participants and 1 million payments per day, versus about 239 million
   in real Pix. Fractions are the result; absolute values do not scale linearly.
 - **Heuristic micro-cycles:** the cycle search is simple, not a full optimiser.
-- **One-day horizon** and an hourly profile without bursts; the stress scenario is still weak.
+- **One-day horizon** and an hourly profile without bursts. In the stress test, 30-minute outages
+  with full resubmission barely change the liquidity need; partial abandonment is not modelled.
 
 Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md); assumptions and the source of
 every parameter in [`docs/PARAMETERS.md`](docs/PARAMETERS.md); open review points in
@@ -892,8 +1495,12 @@ every parameter in [`docs/PARAMETERS.md`](docs/PARAMETERS.md); open review point
   Decomposition of Networks*. arXiv:2506.12546.
 - Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of
   Finland Discussion Papers 9/2001.
+- McMahon, C. et al. (2024). *Improving the efficiency of payments systems using quantum
+  computing*. Management Science (arXiv:2209.15392). **The closest work**, in a large-value
+  system.
 
-Verification status of every reference in [`docs/REFERENCES.md`](docs/REFERENCES.md).
+Verification status of every reference in [`docs/REFERENCES.md`](docs/REFERENCES.md); the PDFs are
+in [`docs/references/`](docs/references/README.md).
 
 ### How to cite
 

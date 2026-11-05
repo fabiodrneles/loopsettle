@@ -26,8 +26,14 @@
   muda o gêmeo no mesmo commit.
 - **05/11/2026, mais tarde:** CLI para dados reais (`bound`/`settle`/`export`), W2/W2b, W3
   (`funding-windows`) e W5 (`regimes`, curva do limite) feitas; K1–K3 não dispararam; a próxima fase é
-  escrever (preprint e JOSS, `docs/PAPER_OUTLINE.pt-BR.md`). Conferências restantes: artigo completo de
-  McMahon et al. (2024), refazer o estresse.
+  escrever (preprint e JOSS, `docs/PAPER_OUTLINE.pt-BR.md`).
+- **05/11/2026, fechamento da fase de construção:** artigo de McMahon et al. lido (arXiv v3; LVTS,
+  dados reais; REVIEW 76); estresse refeito com 3 alvos × 3 horários (`results/stress/cases.csv`,
+  REVIEW 77); biblioteca de referências com os PDFs em `docs/references/` (REVIEW 78); README com
+  guia de instalação do zero (Windows, Linux, macOS), referência de comandos e problemas comuns.
+  Pendências obrigatórias do código: nenhuma. Opcionais: CDFD proporcional/BFF (D6), FIFO estrito
+  (REVIEW 14), validação on-chain (Fase 8). Do seu lado: abrir a interface no notebook i3 e
+  submeter. **Próxima fase: só artigos.**
 - **Referências conferidas** por busca pública: ver `docs/REFERENCES.pt-BR.md` (PixSim não
   localizado; título da CDFD corrigido; número de 8,6% do estudo finlandês a conferir).
 

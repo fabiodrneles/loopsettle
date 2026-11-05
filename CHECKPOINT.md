@@ -27,7 +27,14 @@
   commit.
 - **5 Nov 2026, later:** real-data CLI (`bound`/`settle`/`export`), W2/W2b, W3 (`funding-windows`),
   W5 (`regimes`, bound curve) done; K1–K3 not fired; the next phase is writing (preprint and JOSS,
-  `docs/PAPER_OUTLINE.md`). Remaining checks: McMahon et al. (2024) full paper, stress redesign.
+  `docs/PAPER_OUTLINE.md`).
+- **5 Nov 2026, build phase closed:** McMahon et al. read (arXiv v3; LVTS, real data; REVIEW 76);
+  stress redesigned with 3 targets × 3 start times (`results/stress/cases.csv`, REVIEW 77);
+  reference library with the PDFs in `docs/references/` (REVIEW 78); README with an installation
+  guide from scratch (Windows, Linux, macOS), a command reference and troubleshooting. Required
+  code items left: none. Optional: proportional/BFF CDFD (D6), strict FIFO (REVIEW 14), on-chain
+  validation (Phase 8). Owner side: open the UI on the i3 laptop and submit. **Next phase: papers
+  only.**
 - **References checked** by public search: see [`docs/REFERENCES.md`](docs/REFERENCES.md)
   (PixSim not found; CDFD title corrected; the Finnish study's 8.6% figure to be checked).
 
