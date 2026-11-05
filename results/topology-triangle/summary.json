@@ -1,9 +1,9 @@
 {
   "experiment": "topology-triangle",
   "seed": 0,
-  "code_version": "0.1.0+git.3c3ba36-dirty",
+  "code_version": "0.1.0+git.0bb0473",
   "config_file": "data/samples/triangle.csv",
-  "command": "cargo run --release -p loopsettle-cli -- experiment topology-triangle",
+  "command": "cargo run --release -p loopsettle-cli -- topology data/samples/triangle.csv",
   "rows": 3,
   "rows_skipped": 0,
   "nodes": 3,
@@ -40,7 +40,5 @@
     "cg_gradient_rel_residual": 0,
     "cg_curl_iterations": 1,
     "cg_curl_rel_residual": 0
-  },
-  "seconds": 0.098553,
-  "peak_rss_mib": 4
+  }
 }
