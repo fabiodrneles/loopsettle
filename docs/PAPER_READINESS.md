@@ -11,9 +11,10 @@
 
 | ID | Workstream | Required | Owner | Status |
 |---|---|---|---|---|
-| W0 | Sources only the owner can download | yes | Owner | **waiting for files** |
+| W0 | Sources only the owner can download | yes | Owner | **4 of 15 received** (#1, #4, #5, #6 — read and recorded in `REFERENCES.md`) |
 | W1 | Reporting hygiene (multi-seed, bands over σ, no "630×") | yes | Claude | **done** in this change (robustness experiment, CLAIMS, README) |
 | W2 | Intraday heterogeneity model (kill criterion K1) | yes | Claude (+ owner for data) | to do |
+| W2b | Calibrate receiver bias to the WP 619 per-bank distribution (p25 18–45%, median 57–80%) | yes | Claude | to do |
 | W3 | Liquidity need as the BCB rules define it (K3) | yes | Claude, after W0 | to do |
 | W4 | Literature check for novelty (K2) | yes | Claude + owner | to do |
 | W5 | Delay bound: theorem, curve over d, tightness | yes | Claude | theorem and test **done**; curve to do |

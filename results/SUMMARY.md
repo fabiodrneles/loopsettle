@@ -40,6 +40,8 @@ Ladder (fractions of the graph's total flow; Hodge L1 can exceed 1):
 | gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7955 | 113417 |
 | net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1443 | 113417 |
 
+Per-bank nettable ratio, BCB WP 619 definition (eq. 3.2, 2·min(out, in)/(out + in)): p25 63.2%, median 78.3%, p75 90.8%. On real Pix data WP 619 reports a median of 57% to 80%, p25 of 18% to 45% and p75 of 73% to 90% (from Nov 2020).
+
 Hodge potential × net position correlation: 0.9971.
 
 Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):

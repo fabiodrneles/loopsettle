@@ -29,7 +29,8 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Alternativas:** busca binária do menor saldo inicial que não gera rejeições/atrasos
   acima de um limite (mais cara: várias execuções por participante).
 - **Por quê:** corresponde à medida atribuída a Hellqvist & Korpinen (liquidez como máximo
-  da posição devedora acumulada — **a conferir no texto integral**, ver `docs/REFERENCES.pt-BR.md`), roda em uma única passada e mantém a invariante 3 (saldo nunca
+  da posição devedora acumulada — **confirmada no texto integral**, BoFER 7/2021 p. 3–4: o
+  "limite superior" no instantâneo e a mínima das posições de fim de ciclo com ciclos), roda em uma única passada e mantém a invariante 3 (saldo nunca
   negativo) válida mesmo no modo de medição.
 - **Reverter / alternativa:** os motores também aceitam saldos finitos (modo restrito),
   usado no experimento com `QueueOnShortfall` (ver D-futuras).

@@ -176,3 +176,7 @@ the real laptop (i3, 4 GB).
     [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) with kill criteria K1–K4.
 71. **Delay bound.** New module `crates/loopsettle-sim/src/bound.rs` and METHODOLOGY §9; the
     reviewer should check the proof and the test `engines_never_beat_the_delay_bound`.
+72. **Full texts read (5 Nov 2026).** BoFER 7/2021, BCB WP 619, Johnson et al. (2004) and the
+    CDFD paper: items 4, 6 and 64 are resolved (definitions and figures confirmed, see
+    `docs/REFERENCES.md` and the update section of `docs/ASSESSMENT.md`). New: WP 619's per-bank
+    quartiles are a real-data target for σ (model p25 63% vs 18–45% in Pix) — workstream W2b.

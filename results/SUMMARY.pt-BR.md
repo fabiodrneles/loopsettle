@@ -40,6 +40,8 @@ Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):
 | gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7955 | 113417 |
 | net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1443 | 113417 |
 
+Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 63.2%, mediana 78.3%, p75 90.8%. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).
+
 Correlação potencial de Hodge × posição líquida: 0.9971.
 
 Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):

@@ -181,3 +181,8 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     critérios de morte K1–K4.
 71. **Limite de atraso.** Novo módulo `crates/loopsettle-sim/src/bound.rs` e METHODOLOGY §9; o
     revisor deve conferir a demonstração e o teste `engines_never_beat_the_delay_bound`.
+72. **Textos integrais lidos (05/11/2026).** BoFER 7/2021, BCB WP 619, Johnson et al. (2004) e o
+    artigo da CDFD: os itens 4, 6 e 64 estão resolvidos (definições e números confirmados, ver
+    `docs/REFERENCES.pt-BR.md` e a seção de atualização de `docs/ASSESSMENT.pt-BR.md`). Novo: os
+    quartis por banco do WP 619 são um alvo com dado real para σ (p25 do modelo 63% contra 18–45%
+    no Pix) — frente W2b.

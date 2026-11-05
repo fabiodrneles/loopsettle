@@ -260,7 +260,7 @@ Tabela completa, com operador, data de início, modelo de liquidação e fonte d
 | Escada de circularidade (grafo bruto): Hodge L1 → CDFD → ciclos | 1,18 → 0,83 → 0,80 |
 | Escada de circularidade (grafo líquido): Hodge L2 → CDFD → ciclos | 0,98 → 0,17 → 0,14 |
 | Instantâneo vs 1 ciclo por dia (lógica do estudo finlandês) | 1,10× (σ = 0,4) a 1,50× (σ = 0) a liquidez |
-| Instantâneo vs 10 ciclos por dia | 1,03× a 1,11× |
+| Instantâneo vs 6 ciclos por dia (a base do STEP2) | 1,04× a 1,14× |
 | Micro-ciclos com espera de 2 s: meta do Pix de 50% em até 2,8 s | cumprida (100%) |
 | Micro-ciclos com espera de 10 s: mesma meta | não cumprida (43%) |
 | Economia dos micro-ciclos de até 10 s † | 0,0116% do UB, IC 95% [0,008; 0,015]% |
@@ -301,7 +301,8 @@ LoopSettle parte exatamente dessa lógica e a estende.
 | **Sistema** | STEP2, varejo, Finlândia | Pagamentos instantâneos com liquidação bruta; caso calibrado: Pix, Brasil (24×7, banco central) |
 | **Dados** | Sintéticos, imitando os fluxos do STEP2 | Sintéticos, calibrados com agregados públicos do Pix (erro ≤ 1,5%); cada parâmetro com fonte ou marcado `ASSUMPTION` |
 | **Desenhos comparados** | Ciclos fixos × instantâneo | Ciclos fixos (1 a 8.640 por dia) × instantâneo × **micro-ciclos atômicos** (novo) |
-| **Resultado agregado** | Aumento pequeno, no máximo 8,6% ao dia, segundo o resumo do debatedor[^bof] | Instantâneo exige +9,5% em relação a 1 ciclo diário e +2,6% em relação a 10 ciclos por dia (σ = 0,4): **mesma ordem de grandeza** |
+| **Definição de liquidez** | Menor saldo sem rejeição: posição mínima do dia (instantâneo) e mínima das posições de fim de ciclo (ciclos) | A mesma (UB e LB), confirmada no texto deles |
+| **Resultado agregado** | Contra os 6 ciclos diários do STEP2: +2,7% em média e menos de 8,6% em 95% dos dias. Contra 1 ciclo diário: 1,45× a liquidez[^bof] | Contra 6 ciclos: +3,9% (σ = 0,4) a +13,7% (σ = 0). Contra 1 ciclo: 1,10× a 1,50×: **mesma ordem de grandeza** |
 | **Heterogeneidade** | Diferenças grandes entre bancos e entre dias; recomenda reservas de liquidez | Medida por participante (`results/baseline/participants.csv`); a sensibilidade ao desequilíbrio entre recebedores muda a razão de 1,10× para 1,50× |
 | **Circularidade** | Não mede | Três lentes (Hodge, CDFD, ciclos) e a escada entre elas |
 | **Potencial × realizável** | Não separa | Separa: é o resultado central |
@@ -316,9 +317,9 @@ liquidar dentro de ciclos.
 > Isto **não é uma replicação** do estudo finlandês: aplicamos a mesma lógica a outro cenário e
 > comparamos ordens de grandeza (ver [`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md), item "não pode" 5).
 
-[^bof]: O valor de 8,6% vem do resumo da discussão do trabalho no Economics of Payments X
-    (Banco da Finlândia, 2021) e precisa ser conferido no texto integral. Situação de cada
-    referência em [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md).
+[^bof]: Hellqvist & Korpinen (2021), p. 2 e 9–11: 1.000 dias sintéticos para o aumento médio e o
+    percentil 95; 30 dias para a comparação com 1 ciclo (€ 231 mi contra € 335 mi). Ver
+    [`docs/REFERENCES.pt-BR.md`](docs/REFERENCES.pt-BR.md).
 
 #### Os outros trabalhos
 
@@ -675,7 +676,7 @@ Full table, with operator, start date, settlement model and source for each syst
 | Circularity ladder (gross graph): Hodge L1 → CDFD → cycles | 1.18 → 0.83 → 0.80 |
 | Circularity ladder (net graph): Hodge L2 → CDFD → cycles | 0.98 → 0.17 → 0.14 |
 | Instant vs 1 cycle per day (Finnish study logic) | 1.10× (σ = 0.4) to 1.50× (σ = 0) the liquidity |
-| Instant vs 10 cycles per day | 1.03× to 1.11× |
+| Instant vs 6 cycles per day (the STEP2 baseline) | 1.04× to 1.14× |
 | Micro-cycles with 2 s wait: Pix target of 50% within 2.8 s | met (100%) |
 | Micro-cycles with 10 s wait: same target | missed (43%) |
 | Saving of micro-cycles up to 10 s † | 0.0116% of UB, 95% CI [0.008; 0.015]% |
@@ -716,7 +717,8 @@ extends it.
 | **System** | STEP2, retail, Finland | Instant payments with gross settlement; calibrated case: Pix, Brazil (24/7, central bank) |
 | **Data** | Synthetic, mimicking STEP2 flows | Synthetic, calibrated to public Pix aggregates (error ≤ 1.5%); every parameter sourced or flagged `ASSUMPTION` |
 | **Designs compared** | Fixed cycles × instant | Fixed cycles (1 to 8,640 per day) × instant × **atomic micro-cycles** (new) |
-| **Aggregate result** | Small increase, at most 8.6% per day according to the discussant's summary[^bof-en] | Instant needs +9.5% over 1 daily cycle and +2.6% over 10 cycles per day (σ = 0.4): **same order of magnitude** |
+| **Liquidity definition** | Smallest balance with no rejection: minimum position over the day (instant) and minimum of end-of-cycle positions (cycles) | The same (UB and LB), confirmed in their text |
+| **Aggregate result** | Against STEP2's 6 daily cycles: +2.7% on average and less than 8.6% on 95% of days. Against 1 daily cycle: 1.45× the liquidity[^bof-en] | Against 6 cycles: +3.9% (σ = 0.4) to +13.7% (σ = 0). Against 1 cycle: 1.10× to 1.50×: **same order of magnitude** |
 | **Heterogeneity** | Large differences across banks and days; recommends liquidity buffers | Measured per participant (`results/baseline/participants.csv`); receiver imbalance moves the ratio from 1.10× to 1.50× |
 | **Circularity** | Not measured | Three lenses (Hodge, CDFD, cycles) and the ladder between them |
 | **Potential vs realizable** | Not separated | Separated: it is the central result |
@@ -731,9 +733,9 @@ does not bring it back, however much value micro-cycles settle inside cycles.
 > scenario and compare orders of magnitude (see [`docs/CLAIMS.md`](docs/CLAIMS.md),
 > "cannot claim" item 5).
 
-[^bof-en]: The 8.6% figure comes from the discussant's summary at Economics of Payments X (Bank
-    of Finland, 2021) and still has to be checked against the full text. Verification status of
-    every reference is in [`docs/REFERENCES.md`](docs/REFERENCES.md).
+[^bof-en]: Hellqvist & Korpinen (2021), pp. 2 and 9–11: 1,000 synthetic days for the average
+    increase and the 95th percentile; 30 days for the comparison with 1 cycle (€231M vs €335M).
+    See [`docs/REFERENCES.md`](docs/REFERENCES.md).
 
 #### Other works
 

@@ -11,9 +11,10 @@
 
 | ID | Frente | Obrigatório | Responsável | Situação |
 |---|---|---|---|---|
-| W0 | Fontes que só você consegue baixar | sim | Você | **aguardando arquivos** |
+| W0 | Fontes que só você consegue baixar | sim | Você | **4 de 15 recebidas** (nº 1, 4, 5 e 6 — lidas e registradas no `REFERENCES.pt-BR.md`) |
 | W1 | Higiene dos resultados (várias sementes, faixas sobre σ, sem "630×") | sim | Claude | **feito** nesta mudança (experimento de robustez, CLAIMS, README) |
 | W2 | Modelo de heterogeneidade intradiária (critério K1) | sim | Claude (+ você para dados) | a fazer |
+| W2b | Calibrar o viés recebedor na distribuição por banco do WP 619 (p25 18–45%, mediana 57–80%) | sim | Claude | a fazer |
 | W3 | Liquidez necessária como as regras do BCB definem (K3) | sim | Claude, depois de W0 | a fazer |
 | W4 | Revisão de literatura sobre a novidade (K2) | sim | Claude + você | a fazer |
 | W5 | Limite de atraso: teorema, curva em d, folga | sim | Claude | teorema e teste **feitos**; curva a fazer |
