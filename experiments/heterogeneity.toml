@@ -1,0 +1,20 @@
+# W2: class-specific intraday profiles (strength lambda) x scale. Kill criterion K1: stop if
+# the 10 s delay bound exceeds 2% of UB at 30M payments/day.
+#
+[experiment]
+name = "heterogeneity"
+description = "Class-specific intraday profiles x scale (kill criterion K1)"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+
+[heterogeneity]
+# 0.4 = previous default; 1.0 = calibrated to BCB WP 619 (experiment bias-calibration)
+receiver_bias_sigma = [0.4, 1.0]
+profile_strength = [0.0, 0.5, 1.0]
+payments_per_day = [1_000_000, 10_000_000, 30_000_000]

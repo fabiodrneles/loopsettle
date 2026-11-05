@@ -4,7 +4,7 @@
 #   make data       re-download the public Pix aggregates (network access)
 CARGO ?= cargo
 PYTHON ?= python
-EXPERIMENTS = calibration baseline potential-vs-realizable microcycle-sweep stress finland-replication robustness
+EXPERIMENTS = calibration baseline potential-vs-realizable microcycle-sweep stress finland-replication robustness bias-calibration heterogeneity
 
 .PHONY: all rebuild test experiments summary web wasm data clean-results
 
@@ -33,4 +33,4 @@ data:
 	$(PYTHON) -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30
 
 clean-results:
-	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/SUMMARY.md results/SUMMARY.pt-BR.md
+	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/bias-calibration results/heterogeneity results/SUMMARY.md results/SUMMARY.pt-BR.md

@@ -64,8 +64,8 @@ mod tests {
     /// The bound holds participant by participant for every delay-bounded engine.
     #[test]
     fn engines_never_beat_the_delay_bound() {
-        for seed in [1u64, 2, 3] {
-            let cfg = ScenarioConfig { seed, participants: 25, payments_per_day: 40_000.0, n_big: 3, n_mid: 5, ..Default::default() };
+        for (seed, profile_strength) in [(1u64, 0.0), (2, 0.0), (3, 0.0), (4, 1.0), (5, 0.5)] {
+            let cfg = ScenarioConfig { seed, participants: 25, payments_per_day: 40_000.0, n_big: 3, n_mid: 5, profile_strength, ..Default::default() };
             // (engine, its maximum settlement delay in ms)
             let cases = [
                 ("micro:all:500:2000", 2_000u64),

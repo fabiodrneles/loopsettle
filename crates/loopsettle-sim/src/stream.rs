@@ -7,11 +7,25 @@ use loopsettle_core::{Payment, TimeMs};
 
 const HOUR_MS: f64 = 3_600_000.0;
 
+/// Class-specific intraday profiles (W2). Payee drawn in two exact stages: first the payee's
+/// class with weight `W[payer][class] * in_mult[class][hour]`, then the participant inside that
+/// class with the time-independent weights. Memory stays O(n^2), as without profiles.
+struct Profiles {
+    payer_by_hour: Vec<AliasTable>,
+    in_mult: [[f64; 24]; 4],
+    members: [Vec<usize>; 4],
+    /// per payer: total base weight towards each class
+    class_weight: Vec<[f64; 4]>,
+    /// per payer, per class: alias table over `members[class]` (None if all weights are zero)
+    within: Vec<[Option<AliasTable>; 4]>,
+}
+
 pub struct PaymentStream {
     cfg: ScenarioConfig,
     rng: Rng,
     payer: AliasTable,
     payee: Vec<AliasTable>,
+    profiles: Option<Profiles>,
     /// arrival rate per ms for each hour of the day
     rate: Vec<f64>,
     t: f64,
@@ -28,20 +42,44 @@ impl PaymentStream {
     pub fn with_population(cfg: &ScenarioConfig, pop: &Population) -> Self {
         let n = pop.len();
         let payer = AliasTable::new(&pop.activity);
-        let payee = (0..n)
-            .map(|i| {
-                let w: Vec<f64> = (0..n)
-                    .map(|j| {
-                        if i == j {
-                            return 0.0;
-                        }
-                        let same = if pop.class[i] == pop.class[j] { 1.0 + cfg.homophily } else { 1.0 };
-                        pop.activity[j].powf(cfg.payee_size_exp) * pop.receiver_bias[j] * same
-                    })
-                    .collect();
-                AliasTable::new(&w)
-            })
-            .collect();
+        let base = |i: usize, j: usize| -> f64 {
+            if i == j {
+                return 0.0;
+            }
+            let same = if pop.class[i] == pop.class[j] { 1.0 + cfg.homophily } else { 1.0 };
+            pop.activity[j].powf(cfg.payee_size_exp) * pop.receiver_bias[j] * same
+        };
+        let (payee, profiles) = if cfg.profile_strength > 0.0 {
+            let out_mult = cfg.class_multipliers(true);
+            let in_mult = cfg.class_multipliers(false);
+            let ci: Vec<usize> = pop.class.iter().map(|c| c.index()).collect();
+            let payer_by_hour = (0..24)
+                .map(|h| AliasTable::new(&(0..n).map(|i| pop.activity[i] * out_mult[ci[i]][h]).collect::<Vec<_>>()))
+                .collect();
+            let mut members: [Vec<usize>; 4] = Default::default();
+            for (j, &c) in ci.iter().enumerate() {
+                members[c].push(j);
+            }
+            let mut class_weight = Vec::with_capacity(n);
+            let mut within = Vec::with_capacity(n);
+            for i in 0..n {
+                let mut cw = [0.0; 4];
+                let mut wt: [Option<AliasTable>; 4] = Default::default();
+                for c in 0..4 {
+                    let w: Vec<f64> = members[c].iter().map(|&j| base(i, j)).collect();
+                    cw[c] = w.iter().sum();
+                    if cw[c] > 0.0 {
+                        wt[c] = Some(AliasTable::new(&w));
+                    }
+                }
+                class_weight.push(cw);
+                within.push(wt);
+            }
+            (Vec::new(), Some(Profiles { payer_by_hour, in_mult, members, class_weight, within }))
+        } else {
+            let payee = (0..n).map(|i| AliasTable::new(&(0..n).map(|j| base(i, j)).collect::<Vec<_>>())).collect();
+            (payee, None)
+        };
         assert_eq!(cfg.hourly.len(), 24, "hourly profile needs 24 weights");
         let hsum: f64 = cfg.hourly.iter().sum();
         let rate = cfg.hourly.iter().map(|w| cfg.payments_per_day * w / hsum / HOUR_MS).collect();
@@ -50,6 +88,7 @@ impl PaymentStream {
             rng: Rng::derive(cfg.seed, 0x57AE),
             payer,
             payee,
+            profiles,
             rate,
             t: 0.0,
             horizon: cfg.horizon_ms() as f64,
@@ -85,8 +124,28 @@ impl Iterator for PaymentStream {
             if self.t >= self.horizon {
                 return None;
             }
-            let a = self.payer.sample(&mut self.rng);
-            let b = self.payee[a].sample(&mut self.rng);
+            let (a, b) = match &self.profiles {
+                None => {
+                    let a = self.payer.sample(&mut self.rng);
+                    (a, self.payee[a].sample(&mut self.rng))
+                }
+                Some(p) => {
+                    let a = p.payer_by_hour[hour].sample(&mut self.rng);
+                    let q: [f64; 4] = std::array::from_fn(|c| p.class_weight[a][c] * p.in_mult[c][hour]);
+                    let mut u = self.rng.f64() * q.iter().sum::<f64>();
+                    let mut c = 0;
+                    while c < 3 && (u >= q[c] || q[c] == 0.0) {
+                        u -= q[c];
+                        c += 1;
+                    }
+                    // floating-point guard: fall back to the last class with weight
+                    while p.within[a][c].is_none() {
+                        c = (c + 3) % 4;
+                    }
+                    let k = p.within[a][c].as_ref().unwrap().sample(&mut self.rng);
+                    (a, p.members[c][k])
+                }
+            };
             let amount = self.cfg.amounts.sample_cents(&mut self.rng);
             let id = self.next_id;
             self.next_id += 1;

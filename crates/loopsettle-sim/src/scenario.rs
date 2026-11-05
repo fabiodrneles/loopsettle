@@ -16,6 +16,16 @@ pub enum Class {
 }
 
 impl Class {
+    /// Index used by the class profile tables.
+    pub fn index(self) -> usize {
+        match self {
+            Class::BigBank => 0,
+            Class::MidBank => 1,
+            Class::Fintech => 2,
+            Class::PaymentInstitution => 3,
+        }
+    }
+
     pub fn name(self) -> &'static str {
         match self {
             Class::BigBank => "big_bank",
@@ -84,6 +94,26 @@ pub const DEFAULT_HOURLY: [f64; 24] = [
     0.9, 0.5, 0.3, 0.25, 0.25, 0.4, 0.9, 1.8, 3.0, 4.0, 4.6, 5.0, 5.2, 4.8, 4.7, 4.8, 5.0, 5.3, 5.5, 5.2, 4.6, 3.8, 2.8, 1.8,
 ];
 
+/// Class-specific intraday multipliers (W2, `docs/PAPER_READINESS.md`), indexed
+/// `[class][hour]` with classes in the order BigBank, MidBank, Fintech, PaymentInstitution.
+/// ASSUMPTION (shapes, not levels): big banks send payroll and corporate payouts in the
+/// morning; fintechs' customers pay in the evening; payment institutions (acquirers) receive
+/// merchant payments during trading hours and pay merchants out in an early-morning batch.
+/// The multipliers are mixed with a flat profile by `profile_strength` (0 = off, 1 = full) and
+/// rescaled so each class keeps its daily volume (`ScenarioConfig::class_multipliers`).
+pub const CLASS_OUT_PROFILE: [[f64; 24]; 4] = [
+    [0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 1.0, 2.0, 3.0, 3.0, 2.5, 1.5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.6, 0.6, 0.6, 0.6],
+    [1.0; 24],
+    [0.8, 0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.3, 1.6, 1.8, 1.8, 1.6, 1.3, 1.0],
+    [1.0, 3.0, 5.0, 5.0, 4.0, 3.0, 1.5, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.6],
+];
+pub const CLASS_IN_PROFILE: [[f64; 24]; 4] = [
+    [0.8, 0.8, 0.8, 0.8, 0.8, 0.9, 1.0, 1.1, 1.2, 1.2, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.9, 0.8],
+    [1.0; 24],
+    [0.8, 0.7, 0.6, 0.6, 0.6, 0.7, 0.8, 1.0, 1.2, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.2, 1.2, 1.1, 1.0, 0.9],
+    [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.6, 1.0, 1.4, 1.6, 1.8, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.6, 1.5, 1.3, 1.0, 0.6, 0.3],
+];
+
 #[derive(Clone, Debug)]
 pub struct ScenarioConfig {
     pub name: String,
@@ -109,6 +139,8 @@ pub struct ScenarioConfig {
     /// receiver-bias multiplier of payment institutions (acquirers, P2B receivers)
     pub pi_receiver_mult: f64,
     pub hourly: Vec<f64>,
+    /// strength of the class-specific intraday profiles (0 = everyone follows `hourly`)
+    pub profile_strength: f64,
     pub amounts: AmountModel,
     /// how many real payments one simulated payment stands for (documentation only)
     pub scale_factor: f64,
@@ -132,6 +164,7 @@ impl Default for ScenarioConfig {
             receiver_bias_sigma: 0.4,
             pi_receiver_mult: 1.3,
             hourly: DEFAULT_HOURLY.to_vec(),
+            profile_strength: 0.0,
             amounts: AmountModel::default(),
             scale_factor: 1.0,
         }
@@ -141,6 +174,23 @@ impl Default for ScenarioConfig {
 impl ScenarioConfig {
     pub fn horizon_ms(&self) -> TimeMs {
         self.days as TimeMs * MS_PER_DAY
+    }
+
+    /// `[class][hour]` multipliers for sending (`out = true`) or receiving, after mixing the
+    /// class profile with a flat one by `profile_strength` and rescaling so that the
+    /// volume-weighted daily mean of every class is 1 (each class keeps its daily volume).
+    pub fn class_multipliers(&self, out: bool) -> [[f64; 24]; 4] {
+        let base = if out { &CLASS_OUT_PROFILE } else { &CLASS_IN_PROFILE };
+        let lam = self.profile_strength.clamp(0.0, 1.0);
+        let hsum: f64 = self.hourly.iter().sum();
+        let mut m = [[1.0; 24]; 4];
+        for c in 0..4 {
+            let mean: f64 = (0..24).map(|h| self.hourly[h] * base[c][h]).sum::<f64>() / hsum;
+            for h in 0..24 {
+                m[c][h] = (1.0 - lam) + lam * base[c][h] / mean;
+            }
+        }
+        m
     }
 }
 
@@ -239,6 +289,7 @@ impl ScenarioConfig {
         num!(c.homophily, "homophily", as_f64, f64);
         num!(c.receiver_bias_sigma, "receiver_bias_sigma", as_f64, f64);
         num!(c.pi_receiver_mult, "pi_receiver_mult", as_f64, f64);
+        num!(c.profile_strength, "profile_strength", as_f64, f64);
         num!(c.amounts.body_sigma, "body_sigma", as_f64, f64);
         num!(c.amounts.tail_alpha, "tail_alpha", as_f64, f64);
         num!(c.amounts.max_amount, "max_amount_brl", as_f64, f64);

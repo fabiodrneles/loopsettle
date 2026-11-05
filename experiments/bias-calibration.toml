@@ -1,0 +1,14 @@
+# W2b: fit the receiver bias (sigma) and the payment-institution receiver multiplier to the
+# per-bank nettable ratio quartiles of BCB WP 619 eq. (3.2) (p25 18-45%, median 57-80%,
+# p75 73-90%; real Pix data).
+[experiment]
+name = "bias-calibration"
+description = "Fit receiver bias to BCB WP 619 per-bank nettable ratio quartiles"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
