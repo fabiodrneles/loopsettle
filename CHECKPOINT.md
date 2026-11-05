@@ -7,10 +7,11 @@
 
 ## Estado atual
 
-- **Fase atual:** 7 — Interface web (`loopsettle-wasm` + `web/`)
-- **Próximo passo exato:** bindings wasm-bindgen (`simulate(json) -> json`), `wasm-pack build
-  --target web`, app Vite+React+TS com Web Worker e Canvas 2D (rede, sliders, gráficos,
-  painel potencial vs realizável), modo reduzido para celular.
+- **Fase atual:** 8 — Validação externa (opcional) → depois 9 e 10
+- **Próximo passo exato:** Fase 8 qualitativa (correlação potencial de Hodge × posição
+  líquida, já calculada em `results/baseline`); on-chain fica documentado como pendente
+  (exige baixar dados externos). Depois README, METHODOLOGY final, Zenodo, `make all`,
+  pacote de revisão (REVIEW, SUMMARY, CLAIMS, NOVELTY, PAPER_OUTLINE).
 
 ## Ambiente (Fase 0) — CONCLUÍDA
 
@@ -38,6 +39,8 @@ Notas de ambiente:
 | 3 | `bench_stream` (1.000.984 pagamentos, GRT + matriz de pares, 2×) | 0,23 s/execução | 4,1 MB | < 60 s e < 1 GB ✅ |
 | 5 | `experiment microcycle-sweep` (16 motores + 3×3 restritos, 1M pagamentos) | 11,6 s | 6 MiB | — |
 | 6 | `experiment baseline` (inclui topologia de 10.492 arestas e 4 sensibilidades) | 5,9 s | 16 MiB | < 1 GB ✅ |
+| 7 | `wasm-pack build --release` (primeiro build, baixa wasm-bindgen-cli) | 432 s | 1,16 GB | < 2,5 GB ✅ |
+| 7 | wasm `simulate` 50 part./100 mil pagamentos (Node) | 0,6 s | — | fluido ✅ |
 | 2 | `bench_topology` (200 nós, 5.000 arestas, 31.062 triângulos) | 0,22 s | 6,9 MB | < 5 s e < 300 MB ✅ |
 
 ## Histórico de fases
@@ -93,7 +96,17 @@ Notas de ambiente:
       do valor em ciclos; DeferredNet a cada 10 s: 0,028%; a cada 15 min: 0,32%.
     - Finlândia: instantâneo/1 ciclo por dia = 1,10× (σ=0,4) a 1,50× (σ=0).
     - Stress (maior participante fora 30 min): efeito desprezível no UB total.
-- [ ] Fase 7 — Interface web
+- [x] Fase 7 — Interface web
+  - Pronto: `loopsettle-wasm` (`simulate(...) -> JSON`, calibração embutida), `web/`
+    (Vite 5 + React 18 + TS, Web Worker, Canvas 2D: rede com componente circular CDFD,
+    sliders de janela/atraso/liquidez/cenário, barras de liquidez, curva por janela, dia em
+    15 min, tabela com liquidez restrita; modo reduzido em telas ≤ 640 px ou ≤ 2 núcleos).
+  - Rodar: `cd web && npm install && npm run wasm && npm run dev` (ou `npm run build &&
+    npm run preview`). Teste de fumaça: `node scripts/wasm-smoke.mjs`.
+  - Verificado: build ok; wasm em Node 0,2 s (20 part./20 mil) e 0,6 s (50/100 mil);
+    preview serve página, `.wasm` (application/wasm) e worker.
+  - **NÃO verificado:** renderização visual num navegador real e no celular (sem
+    ferramenta de navegador na sessão) — o usuário deve abrir e conferir.
 - [ ] Fase 8 — Validação externa (opcional)
 - [ ] Fase 9 — Documentação
 - [ ] Fase 10 — Pacote de revisão

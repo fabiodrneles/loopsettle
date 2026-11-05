@@ -9,3 +9,15 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+loopsettle-core = { path = "../loopsettle-core" }
+loopsettle-sim = { path = "../loopsettle-sim" }
+loopsettle-topology = { path = "../loopsettle-topology" }
+# JS <-> wasm bindings (DECISIONS.md D2). Only this crate depends on it.
+wasm-bindgen = "0.2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[package.metadata.wasm-pack.profile.release]
+# wasm-opt is downloaded on demand by wasm-pack; skip it to keep the build offline-friendly.
+wasm-opt = false

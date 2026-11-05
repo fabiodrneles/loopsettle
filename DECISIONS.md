@@ -145,3 +145,11 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   o motor guarda só os deltas por participante (memória O(n)).
 - **Por quê:** é como se mede a liquidez de sistemas de compensação diferida (ex.: UPI,
   estudo finlandês): a necessidade é a posição devedora nos horários de liquidação.
+
+## D16 — Interface: uma função wasm que devolve JSON; React só desenha
+- **Decisão:** o wasm expõe `simulate(seed, participantes, pagamentos, janela, atraso,
+  viés, fração de liquidez) -> string JSON`; o Web Worker chama e o React desenha em Canvas
+  2D. Calibração pública embutida com `include_str!`. Limites: 50 participantes, 100 mil
+  pagamentos. `wasm-opt` desligado (evita download extra; o .wasm tem 332 KB).
+- **Alternativas:** expor objetos Rust ao JS (mais bindings, mais código de cola).
+- **Por quê:** fronteira mínima e testável nativamente (`cargo test -p loopsettle-wasm`).
