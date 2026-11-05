@@ -93,9 +93,9 @@ const pt = {
   fitIntro: "Para o cliente, todos são instantâneos. O que muda a liquidez é como os bancos acertam as contas entre si:",
   fitRows: [
     { model: "Liquidação bruta em tempo real", engine: "motor “Bruto em tempo real”", systems: "Pix (Brasil), FedNow (EUA), TIPS (zona do euro), NPP (Austrália)" },
-    { model: "Bruta, com conta pré-financiada", engine: "motor “Bruto” com saldo limitado", systems: "RTP (EUA)" },
-    { model: "Compensação diferida em ciclos", engine: "motor “Compensação N× ao dia”", systems: "UPI (Índia, 10 ciclos por dia), Faster Payments (Reino Unido, 3 ciclos por dia, pré-financiado)" },
-    { model: "Compensação a cada poucos segundos", engine: "motor “Micro-ciclos”", systems: "SPEI (México), segundo o Banxico" },
+    { model: "Bruta, com conta pré-financiada", engine: "motor “Bruto” com saldo limitado", systems: "RTP (EUA), Real-Time Rail (Canadá, em lançamento)" },
+    { model: "Compensação diferida em ciclos", engine: "motor “Compensação N× ao dia”", systems: "UPI (Índia, 10 ciclos por dia), Faster Payments (Reino Unido, 3 por dia), Interac e-Transfer (Canadá, 1 por dia)" },
+    { model: "Compensação a cada poucos segundos", engine: "motor “Micro-ciclos”", systems: "SPEI (México), em média a cada 1,9 s" },
   ],
   fitCaption: "Detalhes e fontes de cada país no documento INSTANT_PAYMENTS do repositório. Os números desta tela vêm de um cenário calibrado com o Pix.",
 };
@@ -166,9 +166,9 @@ const en: Strings = {
   fitIntro: "To customers they are all instant. What changes liquidity is how banks settle with each other:",
   fitRows: [
     { model: "Real-time gross settlement", engine: "“Real-time gross” engine", systems: "Pix (Brazil), FedNow (US), TIPS (euro area), NPP (Australia)" },
-    { model: "Gross, against a prefunded account", engine: "“Gross” engine with limited balance", systems: "RTP (US)" },
-    { model: "Deferred netting in cycles", engine: "“Netting N× a day” engine", systems: "UPI (India, 10 cycles a day), Faster Payments (UK, 3 cycles a day, prefunded)" },
-    { model: "Netting every few seconds", engine: "“Micro-cycles” engine", systems: "SPEI (Mexico), per Banxico" },
+    { model: "Gross, against a prefunded account", engine: "“Gross” engine with limited balance", systems: "RTP (US), Real-Time Rail (Canada, launching)" },
+    { model: "Deferred netting in cycles", engine: "“Netting N× a day” engine", systems: "UPI (India, 10 cycles a day), Faster Payments (UK, 3 a day), Interac e-Transfer (Canada, 1 a day)" },
+    { model: "Netting every few seconds", engine: "“Micro-cycles” engine", systems: "SPEI (Mexico), every 1.9 s on average" },
   ],
   fitCaption: "Details and sources for each country in the repository's INSTANT_PAYMENTS document. The numbers on this screen come from a scenario calibrated to Pix.",
 };
