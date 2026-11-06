@@ -90,7 +90,8 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
   o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
 - **Há um teto demonstrável:** nenhum mecanismo que segure cada pagamento por no máximo *d*
   consegue economizar mais do que o valor pago nos *d* segundos antes do pico de cada
-  participante. Para 10 s, esse teto fica abaixo de 1% em todas as configurações testadas.
+  participante. Para 10 s, esse teto vai de 0,06% a 3,3% da liquidez nas configurações testadas
+  (até 1,5% com a estrutura calibrada ao WP 619), e a economia obtida nunca passa de 0,02%.
 - Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
   com 1 milhão de pagamentos), **mas esse "potencial" encolhe com o volume**. Com a estrutura
   bilateral calibrada em dados reais do Pix (BCB WP 619) e 30 milhões de pagamentos por dia, uma
@@ -838,7 +839,8 @@ million payments per day):
   and the saving goes to zero as volume grows.
 - **There is a provable ceiling:** no mechanism that holds each payment for at most *d* can save
   more than the value paid in the *d* seconds before each participant's peak. For 10 s that
-  ceiling is below 1% in every configuration tested.
+  ceiling ranges from 0.06% to 3.3% of the liquidity across the configurations tested (at most
+  1.5% with the structure calibrated to WP 619), and the realised saving never exceeds 0.02%.
 - Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
   payments), **but that "potential" shrinks with volume**. With the bilateral structure calibrated
   to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between

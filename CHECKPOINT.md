@@ -35,6 +35,11 @@
   code items left: none. Optional: proportional/BFF CDFD (D6), strict FIFO (REVIEW 14), on-chain
   validation (Phase 8). Owner side: open the UI on the i3 laptop and submit. **Next phase: papers
   only.**
+- **JOSS (5 Nov 2026):** Portuguese draft in `paper/paper.pt-BR.md` for the owner to read, with
+  `paper/paper.bib` and the readiness checklist `paper/README.md`. JOSS screening requires more than
+  six months of public, iterative history and demonstrated research impact, so the order is
+  **preprint first, JOSS from May 2027**. CONTRIBUTING and CHANGELOG added; the v0.1.0 tag is
+  still to be created.
 - **References checked** by public search: see [`docs/REFERENCES.md`](docs/REFERENCES.md)
   (PixSim not found; CDFD title corrected; the Finnish study's 8.6% figure to be checked).
 

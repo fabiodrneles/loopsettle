@@ -1,7 +1,7 @@
 {
   "experiment": "regimes",
   "seed": 20260930,
-  "code_version": "0.1.0+git.da5dcd9",
+  "code_version": "0.1.0+git.ebc6eb6",
   "config_file": "experiments/regimes.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment regimes",
   "scenario": {
@@ -28,19 +28,19 @@
       "micro_5s_saving_pct": 0.003621
     },
     {
-      "case": "large-value, 2000/day",
+      "case": "large-value 2000/day",
       "avg_payment_over_avg_ub": 0.029876,
       "bound_5s_pct": 9.11626,
       "micro_5s_saving_pct": 0
     },
     {
-      "case": "large-value, 20000/day",
+      "case": "large-value 20000/day",
       "avg_payment_over_avg_ub": 0.003933,
       "bound_5s_pct": 0.863645,
       "micro_5s_saving_pct": 0
     },
     {
-      "case": "large-value, 200000/day",
+      "case": "large-value 200000/day",
       "avg_payment_over_avg_ub": 0.00057,
       "bound_5s_pct": 0.249322,
       "micro_5s_saving_pct": 0.006153

@@ -449,7 +449,7 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
-_seed `20260930`, code `0.1.0+git.da5dcd9`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, code `0.1.0+git.ebc6eb6`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 The delay bound depends on payment size relative to liquidity needs. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
 
@@ -458,15 +458,15 @@ The delay bound depends on payment size relative to liquidity needs. Stylised la
 | retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% |
 | retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% |
 | retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% |
-| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 2000.0000% | 0.000% |
-| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 5000.0000% | 0.000% |
-| large-value |  2000/day | 20 | 2021.0000 | 0.029876 | 10000.0000% | 0.000% |
-| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 2000.0000% | 0.000% |
-| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 5000.0000% | 0.000% |
-| large-value |  20000/day | 20 | 20116.0000 | 0.003933 | 10000.0000% | -0.018% |
-| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 2000.0000% | 0.005% |
-| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 5000.0000% | 0.006% |
-| large-value |  200000/day | 20 | 199616.0000 | 0.00057 | 10000.0000% | 0.006% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 2000 | 0.0000% | 0.863% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 5000 | 0.0000% | 0.864% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 10000 | -0.0181% | 0.950% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 2000 | 0.0055% | 0.248% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% |
 
 Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):
 

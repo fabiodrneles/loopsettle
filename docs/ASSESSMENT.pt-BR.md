@@ -18,9 +18,9 @@ de 9,27% contra realizável de 0,0147%, cerca de 630× menor") **não sobrevive 
 
 > **Nova afirmação central.** Num sistema de pagamentos instantâneos, qualquer mecanismo de
 > liquidação que atrase cada pagamento em no máximo *d* consegue economizar, no máximo, o valor
-> que cada participante paga nos *d* segundos antes do seu pico de liquidez. Com prazos de
-> segundos, esse teto ficou abaixo de 1% da liquidez necessária em todas as configurações
-> testadas, e a economia obtida é de cerca de 0,01% — independentemente do algoritmo de busca de
+> que cada participante paga nos *d* segundos antes do seu pico de liquidez. Com prazo de
+> 10 s, esse teto vai de 0,06% a 3,3% da liquidez necessária nas configurações testadas
+> (corrigido em 05/11/2026; a versão anterior dizia "abaixo de 1%"), e a economia obtida é de cerca de 0,01% — independentemente do algoritmo de busca de
 > ciclos, da semente e da escala. As medidas de "compensação potencial" (85% do volume, 9% da
 > liquidez) quase não dizem nada sobre o que um mecanismo com prazo consegue recuperar; se
 > horizontes mais longos recuperam mais depende de desequilíbrios intradiários *sistemáticos*,

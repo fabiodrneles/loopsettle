@@ -34,6 +34,11 @@
   Pendências obrigatórias do código: nenhuma. Opcionais: CDFD proporcional/BFF (D6), FIFO estrito
   (REVIEW 14), validação on-chain (Fase 8). Do seu lado: abrir a interface no notebook i3 e
   submeter. **Próxima fase: só artigos.**
+- **JOSS (05/11/2026):** rascunho em português em `paper/paper.pt-BR.md` para você ler, com
+  `paper/paper.bib` e a lista de prontidão `paper/README.pt-BR.md`. A triagem do JOSS exige mais de
+  seis meses de histórico público e iterativo e impacto em pesquisa demonstrado, então a ordem é
+  **preprint primeiro, JOSS a partir de maio de 2027**. CONTRIBUTING e CHANGELOG criados; falta
+  criar a tag v0.1.0.
 - **Referências conferidas** por busca pública: ver `docs/REFERENCES.pt-BR.md` (PixSim não
   localizado; título da CDFD corrigido; número de 8,6% do estudo finlandês a conferir).
 
