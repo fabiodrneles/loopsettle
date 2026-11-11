@@ -49,3 +49,8 @@
     rediscount line; open windows assume unlimited top-ups.
 16. **Large-value regime is stylised.** `regimes` uses an assumed large-value system to show how
     the bound depends on payment lumpiness; it is not calibrated to T2, Lynx or the STR.
+17. **Constrained-liquidity runs.** `liquidity-frontier` assumes that a rejected payment is not
+    retried by the payer, that balances are fixed for the day (no top-ups, no intraday credit), and,
+    for rule `ub`, that each participant's balance is proportional to its own peak of that same
+    day. Participants would adjust their balances to the design in use; the experiment measures
+    the short-run response with given balances. It uses 300,000 payments a day.

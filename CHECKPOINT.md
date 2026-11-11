@@ -25,6 +25,10 @@
   generator run `make verify`; to accept a change of results run `make golden` and commit it.
   Measured (Linux, 4 cores, 2 worker threads): `robustness` 75 s, `heterogeneity` 127 s,
   `funding-windows` 36 s, all others under 8 s; peak RSS at most 16 MiB; golden check 50 s.
+- **11 Nov 2026, later still — specs 02 (FR1–FR6) and 06 executed; spec 05 M1.** New experiment
+  `liquidity-frontier` (4 min 46 s, 20 MiB). **Exact next step:** spec 03 (offline optimum on
+  small instances), then spec 05 M2 (`HoldToDeadline`, which proves the floor is attained) and M3;
+  spec 02 FR7 and spec 10 for the web interface. Open from REVIEW 84: a finer α grid near 1.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

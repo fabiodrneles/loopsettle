@@ -232,3 +232,18 @@ Each entry: what was decided, alternatives, why, and how to revert.
   a single participant, so it is the stronger and more honest statement; it also showed that
   claim 1f (window bound explains retail vs large-value) was an artefact of the window form.
 - **Revert:** ignore the `tight_*` and `liquidity_floor` columns.
+
+## D24 — Constrained liquidity: fixed balances, two rules, no retries, equal-service comparison
+- **Decision:** `liquidity-frontier` fixes opening balances by two rules (`ub`: `α × UB_i`;
+  `outflow`: `α × ΣUB × out_i / Σout`), never retries a rejected payment, and compares designs by
+  *equivalent liquidity*: the smallest `α` at which the rejected value is at most a target (0.01%,
+  0.1%, 1%), interpolated linearly on the grid, per seed. Designs are run with a 10 s deadline and
+  with a one-hour deadline. The plain queue (`queue:fifo|bypass`) is the micro-cycle engine in
+  shortfall mode with the cycle search off, retried every 100 ms (1 s for the one-hour runs).
+- **Alternatives:** balances from a behavioural model; retries with some probability; unbounded
+  queues settled at the end of the day (the large-value convention); event-driven release instead
+  of a retry tick.
+- **Why:** it is the smallest design that makes LoopSettle comparable with the liquidity-saving
+  literature (queue under constrained liquidity) while keeping an instant-payment deadline as the
+  main case; every choice is a parameter of `experiments/liquidity-frontier.toml`.
+- **Revert:** the experiment is additive; no earlier result depends on it.

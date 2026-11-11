@@ -106,6 +106,12 @@ PT = {
     "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s (janela)", "limite 15 min (janela)", "limite apertado 10 s", "limite apertado 15 min"],
     "closed": "fechada", "open": "aberta",
     "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
+    "h12": "## 12. Liquidez restrita: rejeição, atraso e liquidez equivalente",
+    "lf_intro": "Saldos de abertura fixos (regra `ub`: α × UB de cada participante; regra `outflow`: α × UB total, repartido pelo volume de saída) e o que acontece em cada desenho. Dois horizontes: espera de até 10 s (prazo de pagamento instantâneo) e de até 1 hora (regime dos mecanismos de economia de liquidez de alto valor). Pagamento rejeitado não é tentado de novo (ASSUMPTION). Médias de 10 sementes, 300 mil pagamentos por dia.",
+    "c_lf": ["cenário", "regra", "α", "motor", "valor rejeitado [IC 95%]", "atraso p95 (s)", "até 2,8 s"],
+    "lf_eq": "Liquidez equivalente: o menor α em que cada desenho rejeita no máximo o alvo, e a economia em relação ao bruto (diferença pareada por semente, interpolação linear na grade de α):",
+    "c_eq": ["cenário", "regra", "alvo (valor rejeitado)", "motor", "sementes que atingem", "α equivalente", "economia vs bruto [IC 95%]"],
+    "lf_mono": "Coerência: a rejeição do bruto subiu quando a liquidez subiu em {} passos da grade (esperado: 0).",
     "rg_intro": "O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
     "c_rg": ["caso", "participantes", "pagamentos", "pagamento médio / UB médio", "atraso máx. (ms)", "economia micro-ciclos", "limite (janela)", "limite apertado"],
     "curve": "Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):",
@@ -174,6 +180,12 @@ EN = {
     "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "window bound 10 s", "window bound 15 min", "tight bound 10 s", "tight bound 15 min"],
     "closed": "closed", "open": "open",
     "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
+    "h12": "## 12. Constrained liquidity: rejection, delay and equivalent liquidity",
+    "lf_intro": "Fixed opening balances (rule `ub`: α × each participant's UB; rule `outflow`: α × total UB, shared by outflow volume) and what happens under each design. Two horizons: holding a payment for at most 10 s (an instant-payment deadline) and for at most 1 hour (the regime of large-value liquidity-saving mechanisms). A rejected payment is not retried (ASSUMPTION). Means over 10 seeds, 300,000 payments a day.",
+    "c_lf": ["scenario", "rule", "α", "engine", "rejected value [95% CI]", "p95 delay (s)", "within 2.8 s"],
+    "lf_eq": "Equivalent liquidity: the smallest α at which each design rejects at most the target, and the saving relative to gross (paired difference by seed, linear interpolation on the α grid):",
+    "c_eq": ["scenario", "rule", "target (rejected value)", "engine", "seeds reaching it", "equivalent α", "saving vs gross [95% CI]"],
+    "lf_mono": "Coherence: gross rejection rose when liquidity rose in {} grid steps (expected: 0).",
     "rg_intro": "The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
     "c_rg": ["case", "participants", "payments", "avg payment / avg UB", "max delay (ms)", "micro-cycle saving", "window bound", "tight bound"],
     "curve": "Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):",
@@ -332,6 +344,19 @@ def build(T):
     md.append(table(T["c_fbp"], [[r["max_delay_s"], r["participants_with_ub"], f"{float(r['tight_bound_pct_of_own_ub_p10']):.3f}%", f"{float(r['p50']):.3f}%", f"{float(r['p90']):.3f}%",
                                    f"{float(r['max']):.2f}%", pct(r["share_of_total_bound_in_top5_participants"], 1)] for r in rows("regimes", "floor_by_participant.csv")]))
     md.append("")
+    # --- liquidity frontier (specs/06)
+    s = load("liquidity-frontier")
+    md += [T["h12"], meta(s, T), "", T["lf_intro"], ""]
+    show = {"0.8", "0.95", "1"}
+    md.append(table(T["c_lf"], [[r["scenario"], r["rule"], r["alpha"], r["engine"],
+                                  f"{float(r['rejected_value_pct_mean']):.2f}% [{float(r['rejected_value_pct_ci95_low']):.2f}; {float(r['rejected_value_pct_ci95_high']):.2f}]",
+                                  f"{float(r['delay_p95_ms_mean']) / 1000:.0f}", pct(r["share_within_2800ms_mean"], 1)]
+                                 for r in rows("liquidity-frontier", "frontier.csv") if r["alpha"] in show and r["rule"] == "ub"]))
+    md += ["", T["lf_eq"], ""]
+    md.append(table(T["c_eq"], [[r["scenario"], r["rule"], r["target_rejected_value_pct"] + "%", r["engine"], r["seeds_reaching_target"], num(r["equivalent_alpha_mean"], 4),
+                                  f"{float(r['liquidity_saving_vs_gross_pct_mean']):.2f}% [{float(r['liquidity_saving_vs_gross_pct_ci95_low']):.2f}; {float(r['liquidity_saving_vs_gross_pct_ci95_high']):.2f}]"]
+                                 for r in rows("liquidity-frontier", "equivalent_liquidity.csv") if r["rule"] == "ub" and r["engine"] != "gross_real_time"]))
+    md += ["", T["lf_mono"].format(s["gross_rejection_rose_with_liquidity_grid_steps"]), "", T["fig"] + " [`liquidity-frontier/fig_frontier.svg`](liquidity-frontier/fig_frontier.svg)", ""]
     return "\n".join(md) + "\n"
 
 

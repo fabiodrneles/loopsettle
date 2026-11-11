@@ -234,3 +234,19 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   participante sozinho, então é a afirmação mais forte e mais honesta; ele também mostrou que a
   afirmação 1f (o limite de janela explica varejo × alto valor) era artefato da forma de janela.
 - **Reverter:** ignorar as colunas `tight_*` e `liquidity_floor`.
+
+## D24 — Liquidez restrita: saldos fixos, duas regras, sem novas tentativas, comparação com serviço igual
+- **Decisão:** o `liquidity-frontier` fixa os saldos de abertura por duas regras (`ub`:
+  `α × UB_i`; `outflow`: `α × ΣUB × saída_i / Σsaída`), nunca tenta de novo um pagamento rejeitado
+  e compara os desenhos pela *liquidez equivalente*: o menor `α` em que o valor rejeitado fica no
+  máximo num alvo (0,01%, 0,1%, 1%), com interpolação linear na grade, por semente. Os desenhos
+  rodam com prazo de 10 s e com prazo de uma hora. A fila simples (`queue:fifo|bypass`) é o motor
+  de micro-ciclos no modo de falta de saldo com a busca de ciclos desligada, com nova tentativa a
+  cada 100 ms (1 s nas rodadas de uma hora).
+- **Alternativas:** saldos vindos de um modelo de comportamento; novas tentativas com alguma
+  probabilidade; filas sem prazo liquidadas no fim do dia (a convenção do alto valor); liberação
+  por evento em vez de um relógio de novas tentativas.
+- **Por quê:** é o menor desenho que torna o LoopSettle comparável com a literatura de economia
+  de liquidez (fila com liquidez restrita) mantendo o prazo de pagamento instantâneo como caso
+  principal; toda escolha é um parâmetro de `experiments/liquidity-frontier.toml`.
+- **Reverter:** o experimento é aditivo; nenhum resultado anterior depende dele.

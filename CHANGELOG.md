@@ -15,6 +15,11 @@ whose results changed.
 - Parallel seeds (`LOOPSETTLE_THREADS`, 2 by default) with thread-independent output.
 - Metamorphic tests; `summary.json` records schema, platform, rustc and a `Cargo.lock` hash.
 
+- `liquidity-frontier` experiment: rejection, delay and equivalent liquidity under fixed balances.
+- Plain queue engine (`queue:fifo|bypass:<delay>`); event-driven gross retry, tested identical to
+  the literal one.
+- Liquidity floor inside funding windows (`window_floors`); per-participant distribution of the bound.
+
 ### Fixed
 - `QueueOnShortfall` gross retry runs to a fixed point (it released one payment per edge per window).
 - `DeferredNet`: the last cycle of a day falls exactly at its end for any cycle count.

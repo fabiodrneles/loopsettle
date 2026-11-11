@@ -27,6 +27,11 @@
   resultados, rode `make golden` e faça o commit. Medido (Linux, 4 núcleos, 2 threads):
   `robustness` 75 s, `heterogeneity` 127 s, `funding-windows` 36 s, os demais abaixo de 8 s; pico
   de RAM de no máximo 16 MiB; checagem-ouro 50 s.
+- **11/11/2026, mais tarde ainda — specs 02 (FR1–FR6) e 06 executadas; spec 05 M1.** Experimento
+  novo `liquidity-frontier` (4 min 46 s, 20 MiB). **Próximo passo exato:** spec 03 (ótimo offline
+  em instâncias pequenas), depois spec 05 M2 (`HoldToDeadline`, que prova que o piso é atingido) e
+  M3; spec 02 FR7 e spec 10 para a interface web. Em aberto do REVIEW 84: grade de α mais fina
+  perto de 1.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

@@ -1,0 +1,145 @@
+scenario,rule,target_rejected_value_pct,engine,seeds_reaching_target,equivalent_alpha_mean,equivalent_alpha_ci95_low,equivalent_alpha_ci95_high,liquidity_saving_vs_gross_pct_mean,liquidity_saving_vs_gross_pct_ci95_low,liquidity_saving_vs_gross_pct_ci95_high
+retail sigma 0.4,ub,0.01,gross_real_time,3/3,0.999894,0.999826,0.999961,0,0,0
+retail sigma 0.4,ub,0.1,gross_real_time,3/3,0.998936,0.998258,0.999615,0,0,0
+retail sigma 0.4,ub,1,gross_real_time,3/3,0.989364,0.982582,0.996146,0,0,0
+retail sigma 0.4,ub,0.01,queue_bypass_d10000,3/3,0.999894,0.999825,0.999962,0.00001,-0.000038,0.000059
+retail sigma 0.4,ub,0.1,queue_bypass_d10000,3/3,0.998935,0.998255,0.999616,0.000103,-0.000384,0.000589
+retail sigma 0.4,ub,1,queue_bypass_d10000,3/3,0.989353,0.982546,0.99616,0.001038,-0.003882,0.005958
+retail sigma 0.4,ub,0.01,micro_cycle_shortfall_w500_d10000,3/3,0.999894,0.999825,0.999962,0.00001,-0.000038,0.000059
+retail sigma 0.4,ub,0.1,micro_cycle_shortfall_w500_d10000,3/3,0.998935,0.998255,0.999616,0.000103,-0.000384,0.000589
+retail sigma 0.4,ub,1,micro_cycle_shortfall_w500_d10000,3/3,0.989353,0.982546,0.99616,0.001038,-0.003882,0.005958
+retail sigma 0.4,ub,0.01,micro_cycle_all_w500_d10000,3/3,0.999894,0.999826,0.999961,-0.000004,-0.00002,0.000012
+retail sigma 0.4,ub,0.1,micro_cycle_all_w500_d10000,3/3,0.998937,0.99826,0.999614,-0.00004,-0.000198,0.000119
+retail sigma 0.4,ub,1,micro_cycle_all_w500_d10000,3/3,0.989368,0.982598,0.996137,-0.000401,-0.002004,0.001203
+retail sigma 0.4,ub,0.01,queue_bypass_d3600000,3/3,0.999789,0.999324,1.000253,0.010506,-0.030426,0.051438
+retail sigma 0.4,ub,0.1,queue_bypass_d3600000,3/3,0.997886,0.99324,1.002532,0.105182,-0.30462,0.514984
+retail sigma 0.4,ub,1,queue_bypass_d3600000,3/3,0.978859,0.932398,1.02532,1.06418,-3.083155,5.211514
+retail sigma 0.4,ub,0.01,queue_fifo_d3600000,3/3,0.999765,0.999388,1.000141,0.012888,-0.01813,0.043906
+retail sigma 0.4,ub,0.1,queue_fifo_d3600000,3/3,0.997648,0.993882,1.001414,0.129027,-0.181526,0.439579
+retail sigma 0.4,ub,1,queue_fifo_d3600000,3/3,0.976477,0.938817,1.014136,1.304796,-1.838512,4.448103
+retail sigma 0.4,ub,0.01,micro_cycle_shortfall_w1000_d3600000,3/3,0.999787,0.999317,1.000257,0.010639,-0.030818,0.052097
+retail sigma 0.4,ub,0.1,micro_cycle_shortfall_w1000_d3600000,3/3,0.997873,0.993174,1.002571,0.106518,-0.30855,0.521585
+retail sigma 0.4,ub,1,micro_cycle_shortfall_w1000_d3600000,3/3,0.978726,0.931744,1.025707,1.077691,-3.122938,5.27832
+retail sigma 0.4,ub,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.999746,0.999301,1.000192,0.014745,-0.023312,0.052802
+retail sigma 0.4,ub,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.997462,0.993006,1.001918,0.147614,-0.233416,0.528644
+retail sigma 0.4,ub,1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.974621,0.930063,1.019178,1.492876,-2.363895,5.349646
+retail sigma 0.4,outflow,0.01,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+retail sigma 0.4,outflow,1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+retail sigma 1,ub,0.01,gross_real_time,3/3,0.999904,0.999856,0.999952,0,0,0
+retail sigma 1,ub,0.1,gross_real_time,3/3,0.99904,0.998558,0.999522,0,0,0
+retail sigma 1,ub,1,gross_real_time,3/3,0.990396,0.985575,0.995217,0,0,0
+retail sigma 1,ub,0.01,queue_bypass_d10000,3/3,0.999904,0.999856,0.999952,0.000003,-0.000005,0.000011
+retail sigma 1,ub,0.1,queue_bypass_d10000,3/3,0.999039,0.998557,0.999522,0.00003,-0.000045,0.000105
+retail sigma 1,ub,1,queue_bypass_d10000,3/3,0.990393,0.98557,0.995217,0.000302,-0.000459,0.001062
+retail sigma 1,ub,0.01,micro_cycle_shortfall_w500_d10000,3/3,0.999904,0.999856,0.999952,0.000003,-0.000005,0.000011
+retail sigma 1,ub,0.1,micro_cycle_shortfall_w500_d10000,3/3,0.999039,0.998557,0.999522,0.00003,-0.000045,0.000105
+retail sigma 1,ub,1,micro_cycle_shortfall_w500_d10000,3/3,0.990393,0.98557,0.995217,0.000302,-0.000459,0.001062
+retail sigma 1,ub,0.01,micro_cycle_all_w500_d10000,3/3,0.999904,0.999856,0.999952,0.000002,-0.000006,0.00001
+retail sigma 1,ub,0.1,micro_cycle_all_w500_d10000,3/3,0.999039,0.998557,0.999521,0.00002,-0.000065,0.000104
+retail sigma 1,ub,1,micro_cycle_all_w500_d10000,3/3,0.990394,0.985574,0.995214,0.000198,-0.000654,0.001049
+retail sigma 1,ub,0.01,queue_bypass_d3600000,3/3,0.999853,0.999609,1.000097,0.005091,-0.014749,0.024932
+retail sigma 1,ub,0.1,queue_bypass_d3600000,3/3,0.998531,0.99609,1.000971,0.050965,-0.14765,0.24958
+retail sigma 1,ub,1,queue_bypass_d3600000,3/3,0.985306,0.960903,1.009708,0.514984,-1.492504,2.522472
+retail sigma 1,ub,0.01,queue_fifo_d3600000,3/3,0.999815,0.999614,1.000016,0.008902,-0.009368,0.027172
+retail sigma 1,ub,0.1,queue_fifo_d3600000,3/3,0.998149,0.996136,1.000163,0.089103,-0.093767,0.271973
+retail sigma 1,ub,1,queue_fifo_d3600000,3/3,0.981495,0.961357,1.001633,0.899054,-0.94691,2.745018
+retail sigma 1,ub,0.01,micro_cycle_shortfall_w1000_d3600000,3/3,0.999852,0.999606,1.000099,0.005178,-0.014916,0.025273
+retail sigma 1,ub,0.1,micro_cycle_shortfall_w1000_d3600000,3/3,0.998522,0.996056,1.000987,0.051836,-0.149322,0.252994
+retail sigma 1,ub,1,micro_cycle_shortfall_w1000_d3600000,3/3,0.985219,0.960562,1.009875,0.523784,-1.509412,2.556981
+retail sigma 1,ub,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.999812,0.99961,1.000015,0.009154,-0.009306,0.027613
+retail sigma 1,ub,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.998124,0.996096,1.000153,0.091617,-0.09315,0.276384
+retail sigma 1,ub,1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.981244,0.960957,1.001531,0.924405,-0.940662,2.789472
+retail sigma 1,outflow,0.01,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,gross_real_time,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+retail sigma 1,outflow,1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+large-value 2000/day,ub,0.01,gross_real_time,3/3,0.999929,0.999872,0.999986,0,0,0
+large-value 2000/day,ub,0.1,gross_real_time,3/3,0.999289,0.998718,0.99986,0,0,0
+large-value 2000/day,ub,1,gross_real_time,3/3,0.992889,0.987178,0.9986,0,0,0
+large-value 2000/day,ub,0.01,queue_bypass_d10000,3/3,0.999929,0.999872,0.999986,0,0,0
+large-value 2000/day,ub,0.1,queue_bypass_d10000,3/3,0.999289,0.998718,0.99986,0,0,0
+large-value 2000/day,ub,1,queue_bypass_d10000,3/3,0.992889,0.987178,0.9986,0,0,0
+large-value 2000/day,ub,0.01,micro_cycle_shortfall_w500_d10000,3/3,0.999929,0.999872,0.999986,0,0,0
+large-value 2000/day,ub,0.1,micro_cycle_shortfall_w500_d10000,3/3,0.999289,0.998718,0.99986,0,0,0
+large-value 2000/day,ub,1,micro_cycle_shortfall_w500_d10000,3/3,0.992889,0.987178,0.9986,0,0,0
+large-value 2000/day,ub,0.01,micro_cycle_all_w500_d10000,3/3,0.999929,0.999872,0.999986,0,0,0
+large-value 2000/day,ub,0.1,micro_cycle_all_w500_d10000,3/3,0.999289,0.998718,0.99986,0,0,0
+large-value 2000/day,ub,1,micro_cycle_all_w500_d10000,3/3,0.992889,0.987178,0.9986,0,0,0
+large-value 2000/day,ub,0.01,queue_bypass_d3600000,3/3,0.999862,0.999642,1.000082,0.006689,-0.010783,0.024162
+large-value 2000/day,ub,0.1,queue_bypass_d3600000,3/3,0.99862,0.996424,1.000816,0.066942,-0.107917,0.241802
+large-value 2000/day,ub,1,queue_bypass_d3600000,3/3,0.9862,0.964237,1.008163,0.674452,-1.087509,2.436414
+large-value 2000/day,ub,0.01,queue_fifo_d3600000,3/3,0.999864,0.999653,1.000076,0.00644,-0.010095,0.022975
+large-value 2000/day,ub,0.1,queue_fifo_d3600000,3/3,0.998645,0.996534,1.000756,0.064448,-0.10103,0.229925
+large-value 2000/day,ub,1,queue_fifo_d3600000,3/3,0.986449,0.96534,1.007559,0.64932,-1.018108,2.316748
+large-value 2000/day,ub,0.01,micro_cycle_shortfall_w1000_d3600000,3/3,0.999862,0.999642,1.000082,0.006689,-0.010783,0.024162
+large-value 2000/day,ub,0.1,micro_cycle_shortfall_w1000_d3600000,3/3,0.99862,0.996424,1.000816,0.066942,-0.107917,0.241802
+large-value 2000/day,ub,1,micro_cycle_shortfall_w1000_d3600000,3/3,0.9862,0.964237,1.008163,0.674452,-1.087509,2.436414
+large-value 2000/day,ub,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.999864,0.999654,1.000075,0.00645,-0.010054,0.022953
+large-value 2000/day,ub,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.998644,0.996537,1.000751,0.064543,-0.100616,0.229702
+large-value 2000/day,ub,1,micro_cycle_shortfall_w1000_d3600000_fifo,3/3,0.98644,0.965366,1.007513,0.650281,-1.01395,2.314512
+large-value 2000/day,outflow,0.01,gross_real_time,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,gross_real_time,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,gross_real_time,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,queue_bypass_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,queue_bypass_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,micro_cycle_shortfall_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,micro_cycle_all_w500_d10000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,queue_bypass_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,queue_fifo_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,micro_cycle_shortfall_w1000_d3600000,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.01,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,0.1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null
+large-value 2000/day,outflow,1,micro_cycle_shortfall_w1000_d3600000_fifo,0/3,null,null,null,null,null,null

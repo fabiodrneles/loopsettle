@@ -684,6 +684,7 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `heterogeneity` | e se cada tipo de banco tiver seu próprio perfil ao longo do dia? | `results/heterogeneity/` |
 | `funding-windows` | quanto é preciso pré-financiar para as noites e o fim de semana, com o STR fechado? | `results/funding-windows/` |
 | `regimes` | o teto muda entre varejo e sistemas de alto valor? | `results/regimes/` |
+| `liquidity-frontier` | com a liquidez que os participantes têm, quanto é rejeitado ou atrasa em cada desenho? | `results/liquidity-frontier/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
 execução): conservação do dinheiro; preservação da posição líquida de cada participante;
@@ -1432,6 +1433,7 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `heterogeneity` | what if each type of bank has its own intraday profile? | `results/heterogeneity/` |
 | `funding-windows` | how much must be prefunded for nights and the weekend, with the STR closed? | `results/funding-windows/` |
 | `regimes` | does the ceiling differ between retail and large-value systems? | `results/regimes/` |
+| `liquidity-frontier` | with the liquidity participants hold, how much is rejected or delayed under each design? | `results/liquidity-frontier/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
 run): conservation of money; each participant's net position preserved; no negative balances;

@@ -259,3 +259,21 @@ the real laptop (i3, 4 GB).
     `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows` and `regimes` (the helper
     exists, each experiment's tables still need their CI columns); the naive reference simulator
     for differential tests; `results/MANIFEST.sha256`.
+84. **Constrained liquidity (spec 06) and the queue engine (spec 05, M1), 11 Nov 2026.**
+    `experiments6.rs`, `results/liquidity-frontier/`, CLAIMS 1h, D24, METHODOLOGY §11. Result at
+    equal service (1% of value rejected, rule `ub`, 10 seeds): 10 s designs save 0.01% of
+    liquidity (CIs include zero) in every scenario; one-hour designs save 0.4–0.6% (retail,
+    σ = 1.0), 1.1–2.3% (retail, σ = 0.4) and 2.8–4.8% (stylised large-value). **Risks:** (a) the
+    equivalent `α` near 1 is interpolated between 0.95 and 1.0, where gross rejection falls from
+    about 4% to exactly 0: a finer grid there would make the 1% target more precise; (b) rule
+    `ub` gives every participant exactly its own peak, so α = 1 is a knife edge; rule `outflow`
+    is reported in `frontier.csv` but not in the summary's equivalent-liquidity table (few seeds
+    reach low targets within α ≤ 2); (c) no retries; (d) the large-value system is not
+    calibrated, so the 2.8–4.8% is a direction, not an estimate, and is far from the 14–30% of
+    McMahon et al.; (e) a wrong assumption of mine was caught by a test: a 10 s queue does *not*
+    reject less than gross (it rejects 0.08% more value in the small test scenario), which is the
+    same mechanism as the main result. **Performance:** the gross retry was rewritten to visit
+    only credited participants (it took more than 10 minutes with one-hour deadlines; now the
+    whole experiment takes 4 min 46 s); the literal version stays as `reference_retry` and the two
+    give identical settlements in 30,000 random cases. This replaces item C5 of spec 04 for the
+    retry; the cycle search itself is unchanged.

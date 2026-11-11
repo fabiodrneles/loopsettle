@@ -50,3 +50,8 @@
     considerados ilimitados.
 16. **Regime de alto valor estilizado.** O `regimes` usa um sistema de alto valor suposto para mostrar
     como o limite depende do tamanho dos pagamentos; não está calibrado no T2, no Lynx nem no STR.
+17. **Rodadas com liquidez restrita.** O `liquidity-frontier` supõe que um pagamento rejeitado não é
+    tentado de novo pelo pagador, que os saldos ficam fixos no dia (sem aportes, sem crédito
+    intradiário) e, na regra `ub`, que o saldo de cada participante é proporcional ao seu próprio
+    pico daquele dia. Os participantes ajustariam os saldos ao desenho em uso; o experimento mede a
+    resposta de curto prazo com saldos dados. Usa 300 mil pagamentos por dia.

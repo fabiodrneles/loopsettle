@@ -269,3 +269,22 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`,
     `funding-windows` e `regimes` (a função de apoio existe, falta dar a cada tabela as colunas
     de IC); o simulador ingênuo de referência para testes diferenciais; `results/MANIFEST.sha256`.
+84. **Liquidez restrita (spec 06) e o motor de fila (spec 05, M1), 11/11/2026.**
+    `experiments6.rs`, `results/liquidity-frontier/`, CLAIMS 1h, D24, METHODOLOGY §11. Resultado
+    com serviço igual (1% do valor rejeitado, regra `ub`, 10 sementes): os desenhos de 10 s
+    economizam 0,01% de liquidez (IC incluem zero) em todos os cenários; os de uma hora economizam
+    0,4–0,6% (varejo, σ = 1,0), 1,1–2,3% (varejo, σ = 0,4) e 2,8–4,8% (alto valor estilizado).
+    **Riscos:** (a) o `α` equivalente perto de 1 é interpolado entre 0,95 e 1,0, onde a rejeição
+    do bruto cai de cerca de 4% para exatamente 0: uma grade mais fina ali deixaria o alvo de 1%
+    mais preciso; (b) a regra `ub` dá a cada participante exatamente o próprio pico, então α = 1 é
+    um fio de navalha; a regra `outflow` está no `frontier.csv`, mas não na tabela de liquidez
+    equivalente do resumo (poucas sementes atingem alvos baixos com α ≤ 2); (c) sem novas
+    tentativas; (d) o sistema de alto valor não é calibrado, então os 2,8–4,8% são uma direção, não
+    uma estimativa, e ficam longe dos 14–30% de McMahon et al.; (e) uma hipótese minha errada foi
+    pega por um teste: uma fila de 10 s *não* rejeita menos que o bruto (rejeita 0,08% a mais em
+    valor no cenário pequeno de teste), que é o mesmo mecanismo do resultado principal.
+    **Desempenho:** a nova tentativa bruta foi reescrita para visitar só os participantes que
+    receberam crédito (levava mais de 10 minutos com prazos de uma hora; agora o experimento
+    inteiro leva 4 min 46 s); a versão literal fica como `reference_retry` e as duas dão
+    liquidações idênticas em 30.000 casos aleatórios. Isso substitui o item C5 da spec 04 para a
+    nova tentativa; a busca de ciclos em si não mudou.

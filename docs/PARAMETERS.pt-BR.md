@@ -37,6 +37,8 @@ Os valores **CALIBRATED/SOURCED** são preenchidos na Fase 4 a partir de
 | `day_weights` | (opção) | SOURCED | Volumes por tipo de dia em 2024 (seg 157,61 mi … sex 179,60 mi, sáb 157,72 mi, dom 113,54 mi), mesmo relatório, Gráfico 11, p. 12 (`SPI_2024_WEEKDAY`); usado no `funding-windows`. |
 | Janela do STR | 6h30–19h nos dias úteis | SOURCED | 6h30–18h30 mais a janela de 30 minutos para aportes (mesmo relatório, p. 15); `funding-windows`. |
 | Regime de alto valor | 20 participantes, mediana R$ 1 mi, cauda α 1,3 | ASSUMPTION | Sistema estilizado só para o `regimes`. |
+| Liquidez restrita: novas tentativas | pagamentos rejeitados nunca são tentados de novo | ASSUMPTION | Só no `liquidity-frontier`. |
+| Liquidez restrita: saldos | `α × UB_i` ou `α × ΣUB × saída_i / Σsaída`, α de 0,5 a 2 | ASSUMPTION | Só no `liquidity-frontier`; a regra `ub` olha para trás. |
 
 ## Processo de chegada
 

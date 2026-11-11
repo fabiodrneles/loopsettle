@@ -206,7 +206,29 @@ floored at zero; with `d = 0` it is the gross need above. Computed by
 `loopsettle_sim::bound::window_floors` and tested against the engines by rebuilding each engine's
 position from its settlement events (`engines_never_need_less_than_the_window_floor`).
 
-## 11. Running on real data
+## 11. Constrained liquidity
+
+Sections 2 to 10 ask how much liquidity a design *needs* when balances are unlimited. An operator
+asks the reverse: with the liquidity participants hold, how much is rejected or delayed? The
+`liquidity-frontier` experiment fixes the opening balances and runs every design on the same
+payments.
+
+- **Balances.** Rule `ub`: `α × UB_i` (it uses each participant's own peak of the day, so it has
+  hindsight). Rule `outflow`: `α × ΣUB × out_i / Σout` (no knowledge of when the peak falls).
+- **Designs.** Gross (reject on arrival); a plain queue (`queue:fifo|bypass:<deadline>`: wait for
+  incoming funds, reject at the deadline); micro-cycles. Each with a 10 s deadline and with a
+  one-hour deadline. A rejected payment is not retried (`ASSUMPTION`).
+- **Equivalent liquidity.** For a target share of rejected value (0.01%, 0.1%, 1%), the smallest
+  `α` at which a design meets it, interpolated linearly on the `α` grid for each seed. The saving
+  of a design is the paired difference with gross, `(α_gross − α_design) / α_gross`, averaged over
+  seeds. This is liquidity saved *at equal service*, the comparison the liquidity-saving-mechanism
+  literature makes; the saving of sections 5 and 9 is the special case of a target of exactly zero.
+
+The gross retry inside the queue is defined as repeated passes over the queue in arrival order
+until a pass settles nothing; the implementation visits only participants that were credited
+since their last retry and is tested to give identical settlements (`event_driven_retry_equals_the_reference`).
+
+## 12. Running on real data
 
 `loopsettle bound <file.csv>` computes UB, LB and the delay bound for several `d`;
 `loopsettle settle <file.csv>` also runs the settlement engines. The file is streamed twice (the

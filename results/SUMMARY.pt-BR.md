@@ -490,3 +490,155 @@ O limite apertado por participante (uma semente): quanto cada um poderia economi
 | 900 | 182 | 0.000% | 3.508% | 58.166% | 100.00% | 80.1% |
 | 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 
+## 12. Liquidez restrita: rejeição, atraso e liquidez equivalente
+_seed `20260930`, código `0.1.0+git.b6548e3-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
+
+Saldos de abertura fixos (regra `ub`: α × UB de cada participante; regra `outflow`: α × UB total, repartido pelo volume de saída) e o que acontece em cada desenho. Dois horizontes: espera de até 10 s (prazo de pagamento instantâneo) e de até 1 hora (regime dos mecanismos de economia de liquidez de alto valor). Pagamento rejeitado não é tentado de novo (ASSUMPTION). Médias de 10 sementes, 300 mil pagamentos por dia.
+
+| cenário | regra | α | motor | valor rejeitado [IC 95%] | atraso p95 (s) | até 2,8 s |
+|---|---|---|---|---|---|---|
+| retail sigma 0.4 | ub | 0.8 | gross_real_time | 8.93% [7.06; 10.79] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.95 | gross_real_time | 4.24% [2.07; 6.42] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 1 | gross_real_time | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | queue_bypass_d10000 | 8.81% [6.89; 10.73] | 0 | 99.6% |
+| retail sigma 0.4 | ub | 0.95 | queue_bypass_d10000 | 4.21% [2.04; 6.38] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 1 | queue_bypass_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 8.81% [6.89; 10.73] | 0 | 99.6% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 4.22% [2.04; 6.39] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w500_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_all_w500_d10000 | 8.76% [6.84; 10.67] | 10 | 29.0% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_all_w500_d10000 | 4.33% [2.17; 6.50] | 10 | 29.0% |
+| retail sigma 0.4 | ub | 1 | micro_cycle_all_w500_d10000 | 0.00% [-0.00; 0.00] | 10 | 29.0% |
+| retail sigma 0.4 | ub | 0.8 | queue_bypass_d3600000 | 7.73% [5.96; 9.50] | 3 | 95.7% |
+| retail sigma 0.4 | ub | 0.95 | queue_bypass_d3600000 | 2.57% [1.28; 3.85] | 0 | 98.8% |
+| retail sigma 0.4 | ub | 1 | queue_bypass_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | queue_fifo_d3600000 | 7.12% [5.36; 8.88] | 2980 | 84.8% |
+| retail sigma 0.4 | ub | 0.95 | queue_fifo_d3600000 | 1.84% [0.97; 2.72] | 314 | 94.4% |
+| retail sigma 0.4 | ub | 1 | queue_fifo_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 7.38% [5.65; 9.11] | 3 | 95.7% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 2.51% [1.22; 3.80] | 0 | 98.8% |
+| retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w1000_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 6.47% [4.83; 8.11] | 2535 | 85.3% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 1.71% [0.82; 2.59] | 310 | 94.5% |
+| retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | gross_real_time | 12.23% [10.07; 14.40] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.95 | gross_real_time | 4.90% [2.73; 7.07] | 0 | 100.0% |
+| retail sigma 1 | ub | 1 | gross_real_time | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | queue_bypass_d10000 | 12.23% [10.06; 14.40] | 0 | 99.0% |
+| retail sigma 1 | ub | 0.95 | queue_bypass_d10000 | 4.88% [2.71; 7.05] | 0 | 99.8% |
+| retail sigma 1 | ub | 1 | queue_bypass_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 12.21% [10.04; 14.38] | 0 | 99.0% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 4.88% [2.71; 7.05] | 0 | 99.8% |
+| retail sigma 1 | ub | 1 | micro_cycle_shortfall_w500_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_all_w500_d10000 | 12.19% [10.02; 14.35] | 10 | 21.2% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_all_w500_d10000 | 4.88% [2.71; 7.04] | 10 | 20.9% |
+| retail sigma 1 | ub | 1 | micro_cycle_all_w500_d10000 | 0.00% [-0.00; 0.00] | 10 | 20.8% |
+| retail sigma 1 | ub | 0.8 | queue_bypass_d3600000 | 10.57% [9.19; 11.95] | 104 | 95.1% |
+| retail sigma 1 | ub | 0.95 | queue_bypass_d3600000 | 3.40% [2.33; 4.48] | 0 | 98.8% |
+| retail sigma 1 | ub | 1 | queue_bypass_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | queue_fifo_d3600000 | 10.50% [9.07; 11.94] | 2943 | 88.8% |
+| retail sigma 1 | ub | 0.95 | queue_fifo_d3600000 | 3.12% [2.29; 3.95] | 223 | 96.1% |
+| retail sigma 1 | ub | 1 | queue_fifo_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 10.15% [8.86; 11.44] | 171 | 94.9% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 3.30% [2.26; 4.35] | 0 | 98.8% |
+| retail sigma 1 | ub | 1 | micro_cycle_shortfall_w1000_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 9.87% [8.58; 11.15] | 2718 | 88.7% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 2.98% [2.18; 3.79] | 220 | 96.1% |
+| retail sigma 1 | ub | 1 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | gross_real_time | 10.31% [8.45; 12.18] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.95 | gross_real_time | 4.27% [3.27; 5.27] | 0 | 100.0% |
+| large-value 20000/day | ub | 1 | gross_real_time | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | queue_bypass_d10000 | 10.34% [8.50; 12.19] | 0 | 99.9% |
+| large-value 20000/day | ub | 0.95 | queue_bypass_d10000 | 4.16% [3.08; 5.24] | 0 | 100.0% |
+| large-value 20000/day | ub | 1 | queue_bypass_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 10.34% [8.49; 12.19] | 0 | 99.9% |
+| large-value 20000/day | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 4.16% [3.08; 5.24] | 0 | 100.0% |
+| large-value 20000/day | ub | 1 | micro_cycle_shortfall_w500_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | micro_cycle_all_w500_d10000 | 10.31% [8.44; 12.18] | 10 | 6.2% |
+| large-value 20000/day | ub | 0.95 | micro_cycle_all_w500_d10000 | 4.27% [3.26; 5.27] | 10 | 6.2% |
+| large-value 20000/day | ub | 1 | micro_cycle_all_w500_d10000 | 0.02% [-0.02; 0.05] | 10 | 6.2% |
+| large-value 20000/day | ub | 0.8 | queue_bypass_d3600000 | 7.66% [5.91; 9.42] | 7 | 96.9% |
+| large-value 20000/day | ub | 0.95 | queue_bypass_d3600000 | 1.46% [0.85; 2.08] | 0 | 99.3% |
+| large-value 20000/day | ub | 1 | queue_bypass_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | queue_fifo_d3600000 | 6.97% [5.64; 8.29] | 2864 | 85.1% |
+| large-value 20000/day | ub | 0.95 | queue_fifo_d3600000 | 0.86% [0.58; 1.13] | 7 | 96.3% |
+| large-value 20000/day | ub | 1 | queue_fifo_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 7.43% [5.66; 9.20] | 16 | 96.9% |
+| large-value 20000/day | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 1.46% [0.84; 2.07] | 0 | 99.3% |
+| large-value 20000/day | ub | 1 | micro_cycle_shortfall_w1000_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
+| large-value 20000/day | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 6.58% [5.25; 7.90] | 2546 | 85.8% |
+| large-value 20000/day | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.80% [0.54; 1.05] | 4 | 96.5% |
+| large-value 20000/day | ub | 1 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.00% [0.00; 0.00] | 0 | 100.0% |
+
+Liquidez equivalente: o menor α em que cada desenho rejeita no máximo o alvo, e a economia em relação ao bruto (diferença pareada por semente, interpolação linear na grade de α):
+
+| cenário | regra | alvo (valor rejeitado) | motor | sementes que atingem | α equivalente | economia vs bruto [IC 95%] |
+|---|---|---|---|---|---|---|
+| retail sigma 0.4 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9998 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9985 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9847 | 0.01% [-0.00; 0.02] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9998 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9985 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9847 | 0.01% [-0.00; 0.02] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 0.9999 | -0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9985 | -0.00% [-0.01; 0.01] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9851 | -0.03% [-0.12; 0.06] |
+| retail sigma 0.4 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9997 | 0.01% [0.00; 0.02] |
+| retail sigma 0.4 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9973 | 0.11% [0.05; 0.18] |
+| retail sigma 0.4 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9736 | 1.14% [0.49; 1.79] |
+| retail sigma 0.4 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9997 | 0.02% [0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9966 | 0.19% [0.11; 0.26] |
+| retail sigma 0.4 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9662 | 1.90% [1.17; 2.62] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9997 | 0.01% [0.01; 0.02] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9973 | 0.12% [0.05; 0.19] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9728 | 1.23% [0.56; 1.89] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9996 | 0.02% [0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9962 | 0.23% [0.14; 0.31] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9623 | 2.29% [1.47; 3.12] |
+| retail sigma 1 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9987 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9866 | 0.01% [-0.01; 0.03] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9987 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9866 | 0.01% [-0.01; 0.03] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 0.9999 | -0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9987 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9866 | 0.01% [-0.01; 0.03] |
+| retail sigma 1 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9998 | 0.00% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9983 | 0.04% [0.02; 0.06] |
+| retail sigma 1 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9827 | 0.41% [0.21; 0.60] |
+| retail sigma 1 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9998 | 0.00% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9982 | 0.05% [0.03; 0.07] |
+| retail sigma 1 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9819 | 0.49% [0.26; 0.72] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9998 | 0.00% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9982 | 0.04% [0.03; 0.06] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9822 | 0.45% [0.26; 0.65] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9998 | 0.01% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9981 | 0.06% [0.03; 0.08] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9811 | 0.57% [0.34; 0.80] |
+| large-value 20000/day | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
+| large-value 20000/day | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9986 | 0.01% [-0.01; 0.02] |
+| large-value 20000/day | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9864 | 0.07% [-0.08; 0.22] |
+| large-value 20000/day | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
+| large-value 20000/day | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9986 | 0.01% [-0.01; 0.02] |
+| large-value 20000/day | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9864 | 0.07% [-0.08; 0.22] |
+| large-value 20000/day | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 1.0468 | -4.69% [-15.31; 5.92] |
+| large-value 20000/day | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 1.0180 | -1.94% [-6.31; 2.44] |
+| large-value 20000/day | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9872 | -0.01% [-0.04; 0.02] |
+| large-value 20000/day | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9995 | 0.03% [0.01; 0.05] |
+| large-value 20000/day | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9954 | 0.33% [0.13; 0.53] |
+| large-value 20000/day | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9594 | 2.80% [1.45; 4.15] |
+| large-value 20000/day | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9993 | 0.06% [0.03; 0.09] |
+| large-value 20000/day | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9928 | 0.59% [0.31; 0.88] |
+| large-value 20000/day | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9409 | 4.67% [2.92; 6.42] |
+| large-value 20000/day | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9995 | 0.03% [0.01; 0.05] |
+| large-value 20000/day | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9954 | 0.33% [0.13; 0.53] |
+| large-value 20000/day | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9592 | 2.82% [1.47; 4.17] |
+| large-value 20000/day | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9992 | 0.06% [0.04; 0.09] |
+| large-value 20000/day | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9924 | 0.63% [0.35; 0.90] |
+| large-value 20000/day | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9396 | 4.81% [3.11; 6.51] |
+
+Coerência: a rejeição do bruto subiu quando a liquidez subiu em 0 passos da grade (esperado: 0).
+
+Figura: [`liquidity-frontier/fig_frontier.svg`](liquidity-frontier/fig_frontier.svg)
+

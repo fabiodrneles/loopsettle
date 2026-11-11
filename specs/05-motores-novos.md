@@ -7,7 +7,13 @@ referência ele precisa cobrir os mecanismos que a literatura e os sistemas reai
 atrás da mesma trait `SettlementEngine` e sob as mesmas invariantes. A ordem abaixo é de valor
 científico por esforço.
 
-## M1 — `QueuedGross` (FIFO com fila): o baseline da literatura de LSM
+## M1 — `QueuedGross` (FIFO com fila): o baseline da literatura de LSM — **FEITO em 11/11/2026**
+
+> Implementado como `queue:fifo|bypass:<prazo>[:<nova_tentativa_ms>]`: o motor de micro-ciclos em
+> `QueueOnShortfall` com `search_cycles = false`. A liberação é por janela de nova tentativa
+> (100 ms por padrão), não por evento; trocar por evento continua em aberto. Testes:
+> `queue_equals_gross_when_liquidity_suffices`, `queue_under_constrained_liquidity_is_consistent`,
+> e as invariantes por propriedades com `search_cycles` sorteado.
 
 Bruto com fila quando falta saldo; libera quando chega recebimento. É o "FIFO" contra o qual
 McMahon et al. (2024), Denbee & McLafferty (2012) e os estudos com o BoF-PSS medem economia.

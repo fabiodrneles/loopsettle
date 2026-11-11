@@ -210,7 +210,31 @@ com piso em zero; com `d = 0` é a necessidade bruta acima. Calculado por
 `loopsettle_sim::bound::window_floors` e testado contra os motores reconstruindo a posição de cada
 motor a partir dos eventos de liquidação (`engines_never_need_less_than_the_window_floor`).
 
-## 11. Rodar em dados reais
+## 11. Liquidez restrita
+
+As seções 2 a 10 perguntam quanta liquidez um desenho *precisa* com saldos ilimitados. Um operador
+pergunta o inverso: com a liquidez que os participantes têm, quanto é rejeitado ou atrasa? O
+experimento `liquidity-frontier` fixa os saldos de abertura e roda todos os desenhos nos mesmos
+pagamentos.
+
+- **Saldos.** Regra `ub`: `α × UB_i` (usa o pico do próprio dia de cada participante, então olha
+  para trás). Regra `outflow`: `α × ΣUB × saída_i / Σsaída` (sem saber quando o pico acontece).
+- **Desenhos.** Bruto (rejeita na chegada); fila simples (`queue:fifo|bypass:<prazo>`: espera
+  recebimentos, rejeita no prazo); micro-ciclos. Cada um com prazo de 10 s e com prazo de uma
+  hora. Pagamento rejeitado não é tentado de novo (`ASSUMPTION`).
+- **Liquidez equivalente.** Para um alvo de valor rejeitado (0,01%, 0,1%, 1%), o menor `α` em
+  que o desenho atinge o alvo, com interpolação linear na grade de `α`, por semente. A economia
+  de um desenho é a diferença pareada com o bruto, `(α_bruto − α_desenho) / α_bruto`, na média das
+  sementes. É a liquidez economizada *com serviço igual*, a comparação que a literatura de
+  mecanismos de economia de liquidez faz; a economia das seções 5 e 9 é o caso particular de alvo
+  exatamente zero.
+
+A nova tentativa bruta dentro da fila é definida como passadas repetidas pela fila, em ordem de
+chegada, até uma passada não liquidar nada; a implementação visita só os participantes que
+receberam crédito desde a última tentativa e é testada para dar liquidações idênticas
+(`event_driven_retry_equals_the_reference`).
+
+## 12. Rodar em dados reais
 
 `loopsettle bound <arquivo.csv>` calcula UB, LB e o limite de atraso para vários `d`;
 `loopsettle settle <arquivo.csv>` também roda os motores de liquidação. O arquivo é lido em

@@ -1,5 +1,13 @@
 # 06 — Fronteira com liquidez restrita: liquidez × rejeição × atraso (P1)
 
+> **Estado em 11/11/2026: feito** (`experiments6.rs`, `results/liquidity-frontier/`, CLAIMS 1h,
+> D24, REVIEW 84). Diferenças em relação ao texto abaixo: os desenhos rodam em dois horizontes
+> (10 s e 1 hora), porque com 10 s nada muda e a comparação com a literatura só aparece com espera
+> longa; a grade de α vai até 2; o Bech-Soramäki (M3) não entrou. Resposta à hipótese do FR4: sim
+> na direção (esperas de 1 h economizam 2,8–4,8% no alto valor estilizado contra 0,4–0,6% no varejo
+> calibrado), mas só com espera longa. Melhorias pendentes: grade mais fina entre 0,95 e 1; regra
+> `outflow` na tabela de liquidez equivalente; política de nova tentativa; M3.
+
 ## Contexto
 
 Achado A8. Todos os resultados centrais medem "quanta liquidez cada desenho precisa para nunca
