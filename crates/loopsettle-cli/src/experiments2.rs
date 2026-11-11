@@ -178,6 +178,7 @@ pub fn potential_vs_realizable(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> R
             EngineSpec::Gross => 0.0,
             EngineSpec::Deferred { cycles_per_day } => 86_400.0 / cycles_per_day as f64,
             EngineSpec::Micro(m) => m.max_delay_ms as f64 / 1000.0,
+            EngineSpec::Hold { delay_ms, .. } => delay_ms as f64 / 1000.0,
         };
         let mut row = vec![f(wait)];
         row.extend(engine_row(r, ub, lb));
