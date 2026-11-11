@@ -1,2 +1,7 @@
 * text=auto eol=lf
 *.ps1 text eol=crlf
+# Golden results are compared byte for byte on every platform: no line-ending conversion.
+results-golden/** -text
+# Inputs the experiments read: the same bytes everywhere.
+*.toml text eol=lf
+*.csv text eol=lf
