@@ -226,3 +226,18 @@ the real laptop (i3, 4 GB).
     `fraction_at_most(2800)` counts delays up to 2,815 ms, `DeferredNet` truncates the interval
     for cycle counts that do not divide the day (no published result affected). Cross-platform
     bit-for-bit reproducibility is unverified (spec 09 E3).
+82. **Engine and metric fixes (spec 04), 11 Nov 2026.** Tests in
+    `crates/loopsettle-core/tests/spec04.rs`, each failing before its fix. (a) `retry_gross`
+    released one payment per edge per window and did not revisit payers funded later in the same
+    pass; now it runs to a fixed point. (b) `DeferredNet` cycle `k` is at `floor(k·day/c)`, so the
+    last cycle of a day is exactly at its end. (c) The share settled within 2.8 s is counted
+    exactly (the histogram counted delays up to 2,815 ms). (d) Strict per-payer FIFO as an
+    option. (e) Checked sums in the ledger. **Effect on results:** with unlimited liquidity every
+    CSV is identical except the column `share_within_2800ms` (changes below 0.001, e.g. 0.4252 →
+    0.4245; claim 7 is unaffected); `microcycle-sweep/shortfall.csv` changed in the
+    `micro_cycle_shortfall` rows (rejected value at 25% of UB 23.2275% → 23.2270%; p95 delay
+    920 → 1,216 ms). The defect was real but its effect on the published numbers is negligible.
+    **Not done:** the incremental cycle search (C5). Measured cost of the micro-cycle engine:
+    about 0.6 s per million payments (10 million payments: 26.1 s against 19.8 s for gross, CSV
+    parsing included), so it is not the bottleneck; the rewrite must keep the exact cycle order
+    and is left for when scale runs need it.

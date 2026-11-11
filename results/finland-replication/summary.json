@@ -1,7 +1,7 @@
 {
   "experiment": "finland-replication",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/finland-replication.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment finland-replication",
   "scenario": {

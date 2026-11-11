@@ -30,7 +30,7 @@ frentes decidem se o trabalho vira referência:
 | 01 | [Piso de liquidez (limite apertado)](01-piso-de-liquidez.md) | ciência | **implementado** | — |
 | 02 | [Propagar o limite apertado](02-propagar-limite-apertado.md) | ciência + docs | FR1 feito; FR2–FR7 a fazer | P0 |
 | 03 | [Ótimo offline e o sanduíche](03-otimo-offline.md) | ciência | a fazer | P1 |
-| 04 | [Correções nos motores e nas métricas](04-correcoes-motores.md) | correção | a fazer | P0 |
+| 04 | [Correções nos motores e nas métricas](04-correcoes-motores.md) | correção | **feito** (C1–C4, C6); C5 medido e adiado | P0 |
 | 05 | [Motores novos](05-motores-novos.md) | funcionalidade | a fazer | P1 |
 | 06 | [Fronteira com liquidez restrita](06-liquidez-restrita.md) | ciência | a fazer | P1 |
 | 07 | [Gerador: rajadas, vários dias, modelos nulos](07-gerador.md) | modelo | a fazer | P2 |

@@ -1,7 +1,7 @@
 {
   "experiment": "potential-vs-realizable",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/potential-vs-realizable.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable",
   "scenario": {
@@ -195,7 +195,7 @@
       "delay_max_ms": 43199947,
       "delay_mean_ms": 20040403.76417,
       "delay_value_weighted_mean_ms": 19866424.77544,
-      "share_settled_within_2800ms": 0.000068
+      "share_settled_within_2800ms": 0.000067
     },
     {
       "name": "deferred_net_4x",
@@ -221,7 +221,7 @@
       "delay_max_ms": 21599963,
       "delay_mean_ms": 10775366.222053,
       "delay_value_weighted_mean_ms": 10716082.725065,
-      "share_settled_within_2800ms": 0.000125
+      "share_settled_within_2800ms": 0.000124
     },
     {
       "name": "deferred_net_10x",
@@ -247,7 +247,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4317013.516122,
       "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     },
     {
       "name": "deferred_net_24x",
@@ -273,7 +273,7 @@
       "delay_max_ms": 3599996,
       "delay_mean_ms": 1799697.112566,
       "delay_value_weighted_mean_ms": 1797656.14978,
-      "share_settled_within_2800ms": 0.000786
+      "share_settled_within_2800ms": 0.000782
     },
     {
       "name": "deferred_net_96x",
@@ -299,7 +299,7 @@
       "delay_max_ms": 900000,
       "delay_mean_ms": 450032.742084,
       "delay_value_weighted_mean_ms": 450233.202163,
-      "share_settled_within_2800ms": 0.003227
+      "share_settled_within_2800ms": 0.003215
     },
     {
       "name": "deferred_net_288x",
@@ -325,7 +325,7 @@
       "delay_max_ms": 300000,
       "delay_mean_ms": 150002.148509,
       "delay_value_weighted_mean_ms": 150592.034671,
-      "share_settled_within_2800ms": 0.009596
+      "share_settled_within_2800ms": 0.00955
     },
     {
       "name": "deferred_net_1440x",
@@ -351,7 +351,7 @@
       "delay_max_ms": 60000,
       "delay_mean_ms": 30015.765649,
       "delay_value_weighted_mean_ms": 30232.027518,
-      "share_settled_within_2800ms": 0.046993
+      "share_settled_within_2800ms": 0.046753
     },
     {
       "name": "deferred_net_8640x",
@@ -377,7 +377,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5004.42803,
       "delay_value_weighted_mean_ms": 4969.673645,
-      "share_settled_within_2800ms": 0.28105
+      "share_settled_within_2800ms": 0.279558
     },
     {
       "name": "micro_cycle_all_w500_d10000",
@@ -386,7 +386,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71260662.37,
       "liquidity_saving_vs_ub_brl": 10465.17,
@@ -406,7 +407,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5176.013004,
       "delay_value_weighted_mean_ms": 5150.695768,
-      "share_settled_within_2800ms": 0.430589,
+      "share_settled_within_2800ms": 0.429913,
       "cycles_settled": 233794,
       "cycles_failed": 0
     },
@@ -417,7 +418,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71262596.16,
       "liquidity_saving_vs_ub_brl": 8531.38,
@@ -437,7 +439,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5314.523575,
       "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.421159,
+      "share_settled_within_2800ms": 0.420409,
       "cycles_settled": 230099,
       "cycles_failed": 0
     },
@@ -448,7 +450,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71268146.99,
       "liquidity_saving_vs_ub_brl": 2980.55,
@@ -468,7 +471,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 3184.209599,
       "delay_value_weighted_mean_ms": 3177.201896,
-      "share_settled_within_2800ms": 0.416195,
+      "share_settled_within_2800ms": 0.415257,
       "cycles_settled": 195095,
       "cycles_failed": 0
     },
@@ -479,7 +482,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71269961.4,
       "liquidity_saving_vs_ub_brl": 1166.14,

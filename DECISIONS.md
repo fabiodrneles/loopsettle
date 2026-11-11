@@ -134,6 +134,11 @@ Each entry: what was decided, alternatives, why, and how to revert.
 - **Why:** it is the behaviour most favourable to Pix's immediate settlement. Observed effect:
   with constrained liquidity, the bypass can slightly **increase** rejection by value (new
   payments consume the balance that would release the old ones). Documented in the results.
+- **Update, 11 Nov 2026:** strict per-payer FIFO is now an option
+  (`QueueDiscipline::StrictFifoPerPayer`, engine spec `micro:shortfall:<window>:<delay>:<len>:fifo`);
+  bypass stays the default. The gross retry now runs to a fixed point in each window: before, it
+  released at most one payment per edge per window (REVIEW 82).
+- **Revert:** omit the sixth field of the engine spec (or pass `bypass`).
 
 ## D14 — Expired payments go gross; if funds are short, they are rejected
 - **Decision:** at the deadline `arrival + max_delay_ms` (exact, not rounded to the window), the

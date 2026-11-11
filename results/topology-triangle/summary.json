@@ -1,7 +1,7 @@
 {
   "experiment": "topology-triangle",
   "seed": 0,
-  "code_version": "0.1.0+git.0bb0473",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "data/samples/triangle.csv",
   "command": "cargo run --release -p loopsettle-cli -- topology data/samples/triangle.csv",
   "rows": 3,

@@ -235,3 +235,19 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     restrita), `fraction_at_most(2800)` conta atrasos até 2.815 ms, `DeferredNet` trunca o
     intervalo quando o número de ciclos não divide o dia (nenhum resultado publicado afetado). A
     reprodutibilidade bit a bit entre plataformas não foi verificada (spec 09 E3).
+82. **Correções nos motores e nas métricas (spec 04), 11/11/2026.** Testes em
+    `crates/loopsettle-core/tests/spec04.rs`, cada um falhava antes da correção. (a) `retry_gross`
+    liberava um pagamento por aresta por janela e não revisitava pagadores que recebiam saldo
+    depois, na mesma passada; agora vai até o ponto fixo. (b) O ciclo `k` do `DeferredNet` fica em
+    `floor(k·dia/c)`, então o último ciclo do dia cai exatamente no fim dele. (c) A parcela
+    liquidada em até 2,8 s é contada de forma exata (o histograma contava atrasos até 2.815 ms).
+    (d) FIFO estrito por pagador como opção. (e) Somas com checagem no ledger. **Efeito nos
+    resultados:** com liquidez ilimitada, todos os CSVs ficam idênticos, exceto a coluna
+    `share_within_2800ms` (mudanças abaixo de 0,001, por exemplo 0,4252 → 0,4245; a afirmação 7
+    não é afetada); o `microcycle-sweep/shortfall.csv` mudou nas linhas `micro_cycle_shortfall`
+    (valor rejeitado com 25% do UB de 23,2275% para 23,2270%; atraso p95 de 920 para 1.216 ms). O
+    defeito era real, mas o efeito nos números publicados é desprezível. **Não feito:** a busca
+    incremental de ciclos (C5). Custo medido do motor de micro-ciclos: cerca de 0,6 s por milhão
+    de pagamentos (10 milhões: 26,1 s contra 19,8 s do bruto, com a leitura do CSV incluída), então
+    não é o gargalo; a reescrita precisa manter exatamente a ordem dos ciclos e fica para quando
+    as rodadas em escala precisarem.

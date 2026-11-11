@@ -1,8 +1,8 @@
 {
-  "scale_1000000_seconds": 1.449787,
-  "scale_3000000_seconds": 4.063593,
-  "scale_10000000_seconds": 13.245672,
-  "scale_30000000_seconds": 38.510949,
-  "total_seconds": 118.409974,
+  "scale_1000000_seconds": 1.435896,
+  "scale_3000000_seconds": 4.129078,
+  "scale_10000000_seconds": 13.135973,
+  "scale_30000000_seconds": 38.728219,
+  "total_seconds": 118.790894,
   "peak_rss_mib": 6
 }

@@ -1,7 +1,7 @@
 {
   "experiment": "calibration",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/calibration.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment calibration",
   "reference_month": 202609,

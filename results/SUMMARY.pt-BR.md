@@ -6,7 +6,7 @@ Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à
 Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 pagamentos reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
 ## 1. Calibração (real vs simulado)
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
 
 | agregado | real | simulado | erro relativo |
 |---|---|---|---|
@@ -21,7 +21,7 @@ _seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -58,7 +58,7 @@ Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
@@ -83,18 +83,18 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 | 8640 | deferred_net_10x | 69 592 930 | 2.3547% | 0.2541 | 4259840 | 8192000 | 0.03% | 0.00% |
 | 3600 | deferred_net_24x | 70 519 539 | 1.0545% | 0.1138 | 1785856 | 3407872 | 0.08% | 0.00% |
 | 900 | deferred_net_96x | 71 039 610 | 0.3248% | 0.0351 | 446464 | 851968 | 0.32% | 0.00% |
-| 300 | deferred_net_288x | 71 163 915 | 0.1504% | 0.0162 | 149504 | 282624 | 0.96% | 0.00% |
-| 60 | deferred_net_1440x | 71 220 418 | 0.0712% | 0.0077 | 29952 | 56832 | 4.70% | 0.00% |
-| 10 | deferred_net_8640x | 71 251 432 | 0.0276% | 0.0030 | 4992 | 9472 | 28.11% | 0.00% |
-| 10 | micro_cycle_all_w500_d10000 | 71 260 662 | 0.0147% | 0.0016 | 4672 | 9984 | 43.06% | 63.42% |
-| 10 | micro_cycle_all_w1000_d10000 | 71 262 596 | 0.0120% | 0.0013 | 4864 | 9984 | 42.12% | 62.66% |
-| 5 | micro_cycle_all_w1000_d5000 | 71 268 147 | 0.0042% | 0.0005 | 4352 | 4992 | 41.62% | 53.51% |
+| 300 | deferred_net_288x | 71 163 915 | 0.1504% | 0.0162 | 149504 | 282624 | 0.95% | 0.00% |
+| 60 | deferred_net_1440x | 71 220 418 | 0.0712% | 0.0077 | 29952 | 56832 | 4.68% | 0.00% |
+| 10 | deferred_net_8640x | 71 251 432 | 0.0276% | 0.0030 | 4992 | 9472 | 27.96% | 0.00% |
+| 10 | micro_cycle_all_w500_d10000 | 71 260 662 | 0.0147% | 0.0016 | 4672 | 9984 | 42.99% | 63.42% |
+| 10 | micro_cycle_all_w1000_d10000 | 71 262 596 | 0.0120% | 0.0013 | 4864 | 9984 | 42.04% | 62.66% |
+| 5 | micro_cycle_all_w1000_d5000 | 71 268 147 | 0.0042% | 0.0005 | 4352 | 4992 | 41.53% | 53.51% |
 | 2 | micro_cycle_all_w500_d2000 | 71 269 961 | 0.0016% | 0.0002 | 2000 | 2000 | 100.00% | 36.23% |
 
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -103,35 +103,35 @@ _seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p l
 | 2000 | 2000 | 0.0005% | 2000 | 2000 | 2000 | 100.00% | 25.36% |
 | 5000 | 2000 | 0.0001% | 2000 | 2000 | 2000 | 100.00% | 10.04% |
 | 10000 | 2000 | 0.0000% | 2000 | 2000 | 2000 | 100.00% | 4.98% |
-| 500 | 5000 | 0.0036% | 4096 | 4992 | 4992 | 43.16% | 54.96% |
-| 1000 | 5000 | 0.0042% | 4352 | 4992 | 4992 | 41.62% | 53.51% |
-| 2000 | 5000 | 0.0044% | 4992 | 4992 | 4992 | 38.13% | 50.61% |
-| 5000 | 5000 | 0.0047% | 4992 | 4992 | 4992 | 22.09% | 41.06% |
-| 10000 | 5000 | 0.0002% | 4992 | 4992 | 4992 | 11.05% | 21.45% |
-| 500 | 10000 | 0.0147% | 4672 | 9984 | 9984 | 43.06% | 63.42% |
-| 1000 | 10000 | 0.0120% | 4864 | 9984 | 9984 | 42.12% | 62.66% |
-| 2000 | 10000 | 0.0141% | 5376 | 9984 | 9984 | 39.92% | 61.81% |
-| 5000 | 10000 | 0.0053% | 6912 | 9984 | 9984 | 24.03% | 58.44% |
-| 10000 | 10000 | 0.0078% | 9600 | 9984 | 9984 | 13.43% | 51.89% |
+| 500 | 5000 | 0.0036% | 4096 | 4992 | 4992 | 43.07% | 54.96% |
+| 1000 | 5000 | 0.0042% | 4352 | 4992 | 4992 | 41.53% | 53.51% |
+| 2000 | 5000 | 0.0044% | 4992 | 4992 | 4992 | 38.04% | 50.61% |
+| 5000 | 5000 | 0.0047% | 4992 | 4992 | 4992 | 21.96% | 41.06% |
+| 10000 | 5000 | 0.0002% | 4992 | 4992 | 4992 | 10.98% | 21.45% |
+| 500 | 10000 | 0.0147% | 4672 | 9984 | 9984 | 42.99% | 63.42% |
+| 1000 | 10000 | 0.0120% | 4864 | 9984 | 9984 | 42.04% | 62.66% |
+| 2000 | 10000 | 0.0141% | 5376 | 9984 | 9984 | 39.85% | 61.81% |
+| 5000 | 10000 | 0.0053% | 6912 | 9984 | 9984 | 23.90% | 58.44% |
+| 10000 | 10000 | 0.0078% | 9600 | 9984 | 9984 | 13.36% | 51.89% |
 
 Liquidez restrita (saldo inicial = fração do UB de cada participante):
 
 | fração do UB | motor | valor rejeitado | p95 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|
 | 0.25 | gross_real_time | 22.95% | 0 | 100.00% | 0.00% |
-| 0.25 | micro_cycle_shortfall_w1000_d10000 | 23.23% | 920 | 96.20% | 0.29% |
-| 0.25 | micro_cycle_all_w1000_d10000 | 22.43% | 9984 | 42.50% | 51.43% |
+| 0.25 | micro_cycle_shortfall_w1000_d10000 | 23.23% | 1216 | 96.08% | 0.29% |
+| 0.25 | micro_cycle_all_w1000_d10000 | 22.43% | 9984 | 42.43% | 51.43% |
 | 0.5 | gross_real_time | 12.70% | 0 | 100.00% | 0.00% |
-| 0.5 | micro_cycle_shortfall_w1000_d10000 | 12.66% | 0 | 97.95% | 0.10% |
-| 0.5 | micro_cycle_all_w1000_d10000 | 12.46% | 9984 | 42.52% | 56.72% |
+| 0.5 | micro_cycle_shortfall_w1000_d10000 | 12.63% | 0 | 97.90% | 0.09% |
+| 0.5 | micro_cycle_all_w1000_d10000 | 12.46% | 9984 | 42.45% | 56.72% |
 | 0.75 | gross_real_time | 5.82% | 0 | 100.00% | 0.00% |
 | 0.75 | micro_cycle_shortfall_w1000_d10000 | 5.81% | 0 | 99.22% | 0.00% |
-| 0.75 | micro_cycle_all_w1000_d10000 | 5.82% | 9984 | 42.35% | 59.81% |
+| 0.75 | micro_cycle_all_w1000_d10000 | 5.82% | 9984 | 42.28% | 59.81% |
 
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.66c1d3f`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -183,7 +183,7 @@ Estresse redesenhado (REVIEW 39): quem cai e quando. Para cada caso, o efeito so
 | top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_all_w1000_d10000 | 0.0822% |
 
 ## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo
-_seed `20260930`, código `0.1.0+git.7329107`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
 
 Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre sementes):
 
@@ -214,7 +214,7 @@ Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre semen
 Figura: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
 ## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso
-_seed `20260930`, código `0.1.0+git.f1ca9a5`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
 
 R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):
 
@@ -285,7 +285,7 @@ R5 — razão por participante: liquidez instantânea / liquidez com N ciclos po
 Figura: [`robustness/fig_scale.svg`](robustness/fig_scale.svg)
 
 ## 8. Calibração do viés recebedor no BCB WP 619 (W2b)
-_seed `20260930`, código `0.1.0+git.6eeca1c`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
 
 Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para cada σ e multiplicador das IPs, média de 3 sementes. Alvo, com dados reais do Pix: p25 18–45%, mediana 57–80%, p75 73–90%.
 
@@ -319,7 +319,7 @@ Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para c
 Melhor ajuste: σ = 1, multiplicador das IPs = 1.3 (p25 36.2%, mediana 61.1%, p75 83.3%).
 
 ## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)
-_seed `20260930`, código `0.1.0+git.6eeca1c`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
 Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:
 
@@ -401,7 +401,7 @@ Perfis intradiários por classe de instituição com intensidade λ (0 = um perf
 Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46%; disparou: não.
 
 ## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
-_seed `20260930`, código `0.1.0+git.da5dcd9`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
 
@@ -449,7 +449,7 @@ A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos di
 | 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.0eea21f`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.1.0+git.d5afc05`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 

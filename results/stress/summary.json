@@ -1,7 +1,7 @@
 {
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.1.0+git.66c1d3f",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
   "scenario": {
@@ -79,7 +79,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71262596.16,
       "liquidity_saving_vs_ub_brl": 8531.38,
@@ -99,7 +100,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5314.523575,
       "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.421159,
+      "share_settled_within_2800ms": 0.420409,
       "cycles_settled": 230099,
       "cycles_failed": 0
     },
@@ -110,7 +111,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71271127.54,
       "liquidity_saving_vs_ub_brl": 0,
@@ -158,7 +160,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4317013.516122,
       "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "outage_unlimited": [
@@ -194,7 +196,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71265014.54,
       "liquidity_saving_vs_ub_brl": 9766.33,
@@ -214,7 +217,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5302.091393,
       "delay_value_weighted_mean_ms": 5279.755117,
-      "share_settled_within_2800ms": 0.423721,
+      "share_settled_within_2800ms": 0.422982,
       "cycles_settled": 231404,
       "cycles_failed": 0
     },
@@ -225,7 +228,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71274780.87,
       "liquidity_saving_vs_ub_brl": 0,
@@ -273,7 +277,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4306453.294323,
       "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "outage_constrained": [
@@ -309,7 +313,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71258820.63,
       "liquidity_saving_vs_ub_brl": 12306.91,
@@ -329,7 +334,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5302.088502,
       "delay_value_weighted_mean_ms": 5279.821607,
-      "share_settled_within_2800ms": 0.423719,
+      "share_settled_within_2800ms": 0.422981,
       "cycles_settled": 231403,
       "cycles_failed": 10
     },
@@ -340,7 +345,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71263981.05,
       "liquidity_saving_vs_ub_brl": 7146.49,
@@ -388,7 +394,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4306453.294323,
       "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "cases": [

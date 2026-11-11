@@ -1,7 +1,7 @@
 {
   "experiment": "baseline",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/baseline.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
   "scenario": {
@@ -139,7 +139,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4317013.516122,
       "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "sensitivity": [
@@ -195,7 +195,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 29674918.58,
         "liquidity_saving_vs_ub_brl": 14255.75,
@@ -215,7 +216,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 4483.638016,
         "delay_value_weighted_mean_ms": 4462.011113,
-        "share_settled_within_2800ms": 0.506148,
+        "share_settled_within_2800ms": 0.505295,
         "cycles_settled": 251570,
         "cycles_failed": 0
       }
@@ -272,7 +273,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 49238977.39,
         "liquidity_saving_vs_ub_brl": 2509.18,
@@ -292,7 +294,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 4830.792467,
         "delay_value_weighted_mean_ms": 4823.818081,
-        "share_settled_within_2800ms": 0.468275,
+        "share_settled_within_2800ms": 0.467459,
         "cycles_settled": 244461,
         "cycles_failed": 0
       }
@@ -349,7 +351,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 71262596.16,
         "liquidity_saving_vs_ub_brl": 8531.38,
@@ -369,7 +372,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 5314.523575,
         "delay_value_weighted_mean_ms": 5298.312121,
-        "share_settled_within_2800ms": 0.421159,
+        "share_settled_within_2800ms": 0.420409,
         "cycles_settled": 230099,
         "cycles_failed": 0
       }
@@ -426,7 +429,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 110272942.88,
         "liquidity_saving_vs_ub_brl": 3758.91,
@@ -446,7 +450,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 6042.214637,
         "delay_value_weighted_mean_ms": 6113.642081,
-        "share_settled_within_2800ms": 0.356472,
+        "share_settled_within_2800ms": 0.355893,
         "cycles_settled": 198492,
         "cycles_failed": 0
       }

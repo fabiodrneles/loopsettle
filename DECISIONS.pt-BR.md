@@ -136,6 +136,11 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Por quê:** é o comportamento mais favorável à liquidação imediata do Pix. Efeito
   observado: com liquidez restrita, o bypass pode **aumentar** levemente a rejeição em valor
   (pagamentos novos consomem o saldo que liberaria os antigos). Documentado nos resultados.
+- **Atualização, 11/11/2026:** o FIFO estrito por pagador agora é opção
+  (`QueueDiscipline::StrictFifoPerPayer`, motor `micro:shortfall:<janela>:<atraso>:<len>:fifo`);
+  o bypass continua padrão. A nova tentativa bruta agora vai até o ponto fixo em cada janela:
+  antes, liberava no máximo um pagamento por aresta por janela (REVIEW 82).
+- **Reverter:** omitir o sexto campo do motor (ou passar `bypass`).
 
 ## D14 — Pagamentos vencidos vão para bruto; se faltar saldo, rejeitados
 - **Decisão:** no prazo `chegada + max_delay_ms` (exato, não arredondado à janela), o

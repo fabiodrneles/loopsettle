@@ -1,5 +1,11 @@
 # 04 — Correções nos motores e nas métricas (P0)
 
+> **Estado em 11/11/2026: C1, C2, C3, C4 e C6 feitos** (testes em
+> `crates/loopsettle-core/tests/spec04.rs`; efeito nos resultados no REVIEW 82). **C5 medido e
+> adiado:** o motor de micro-ciclos custa ≈ 0,6 s por milhão de pagamentos (10 milhões: 26,1 s
+> contra 19,8 s do bruto, leitura do CSV incluída). Não é gargalo; fazer só quando as rodadas em
+> escala pedirem. No C6, o `csvfile` já filtrava e contava as linhas inválidas (conferido, com teste existente).
+
 Achados A3, A4, A5, A6, A7 de `00-auditoria.md`. Todos `LIDO`: o primeiro passo de cada um é
 escrever o teste que demonstra o defeito.
 

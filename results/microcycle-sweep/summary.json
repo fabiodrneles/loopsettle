@@ -1,7 +1,7 @@
 {
   "experiment": "microcycle-sweep",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.1.0+git.d5afc05",
   "config_file": "experiments/microcycle-sweep.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment microcycle-sweep",
   "scenario": {
@@ -62,7 +62,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71269961.4,
       "liquidity_saving_vs_ub_brl": 1166.14,
@@ -93,7 +94,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71270331,
       "liquidity_saving_vs_ub_brl": 796.54,
@@ -124,7 +126,8 @@
         "mode": "all",
         "window_ms": 2000,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71270792,
       "liquidity_saving_vs_ub_brl": 335.54,
@@ -155,7 +158,8 @@
         "mode": "all",
         "window_ms": 5000,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71271030.55,
       "liquidity_saving_vs_ub_brl": 96.99,
@@ -186,7 +190,8 @@
         "mode": "all",
         "window_ms": 10000,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71271127.54,
       "liquidity_saving_vs_ub_brl": 0,
@@ -217,7 +222,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71268546.62,
       "liquidity_saving_vs_ub_brl": 2580.92,
@@ -237,7 +243,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 3061.878258,
       "delay_value_weighted_mean_ms": 3053.926984,
-      "share_settled_within_2800ms": 0.431607,
+      "share_settled_within_2800ms": 0.430708,
       "cycles_settled": 200037,
       "cycles_failed": 0
     },
@@ -248,7 +254,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71268146.99,
       "liquidity_saving_vs_ub_brl": 2980.55,
@@ -268,7 +275,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 3184.209599,
       "delay_value_weighted_mean_ms": 3177.201896,
-      "share_settled_within_2800ms": 0.416195,
+      "share_settled_within_2800ms": 0.415257,
       "cycles_settled": 195095,
       "cycles_failed": 0
     },
@@ -279,7 +286,8 @@
         "mode": "all",
         "window_ms": 2000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71268024.58,
       "liquidity_saving_vs_ub_brl": 3102.96,
@@ -299,7 +307,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 3415.531129,
       "delay_value_weighted_mean_ms": 3423.995371,
-      "share_settled_within_2800ms": 0.381327,
+      "share_settled_within_2800ms": 0.380409,
       "cycles_settled": 185432,
       "cycles_failed": 0
     },
@@ -310,7 +318,8 @@
         "mode": "all",
         "window_ms": 5000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71267789.43,
       "liquidity_saving_vs_ub_brl": 3338.11,
@@ -330,7 +339,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 4006.494676,
       "delay_value_weighted_mean_ms": 4024.232876,
-      "share_settled_within_2800ms": 0.220911,
+      "share_settled_within_2800ms": 0.219633,
       "cycles_settled": 156127,
       "cycles_failed": 0
     },
@@ -341,7 +350,8 @@
         "mode": "all",
         "window_ms": 10000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71271019.92,
       "liquidity_saving_vs_ub_brl": 107.62,
@@ -361,7 +371,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 4503.227261,
       "delay_value_weighted_mean_ms": 4493.159207,
-      "share_settled_within_2800ms": 0.110481,
+      "share_settled_within_2800ms": 0.109843,
       "cycles_settled": 77992,
       "cycles_failed": 0
     },
@@ -372,7 +382,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71260662.37,
       "liquidity_saving_vs_ub_brl": 10465.17,
@@ -392,7 +403,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5176.013004,
       "delay_value_weighted_mean_ms": 5150.695768,
-      "share_settled_within_2800ms": 0.430589,
+      "share_settled_within_2800ms": 0.429913,
       "cycles_settled": 233794,
       "cycles_failed": 0
     },
@@ -403,7 +414,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71262596.16,
       "liquidity_saving_vs_ub_brl": 8531.38,
@@ -423,7 +435,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5314.523575,
       "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.421159,
+      "share_settled_within_2800ms": 0.420409,
       "cycles_settled": 230099,
       "cycles_failed": 0
     },
@@ -434,7 +446,8 @@
         "mode": "all",
         "window_ms": 2000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71261090.63,
       "liquidity_saving_vs_ub_brl": 10036.91,
@@ -454,7 +467,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5579.775473,
       "delay_value_weighted_mean_ms": 5557.460838,
-      "share_settled_within_2800ms": 0.399161,
+      "share_settled_within_2800ms": 0.398461,
       "cycles_settled": 224962,
       "cycles_failed": 0
     },
@@ -465,7 +478,8 @@
         "mode": "all",
         "window_ms": 5000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71267341.5,
       "liquidity_saving_vs_ub_brl": 3786.04,
@@ -485,7 +499,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 6350.335736,
       "delay_value_weighted_mean_ms": 6327.749023,
-      "share_settled_within_2800ms": 0.240344,
+      "share_settled_within_2800ms": 0.239002,
       "cycles_settled": 213493,
       "cycles_failed": 0
     },
@@ -496,7 +510,8 @@
         "mode": "all",
         "window_ms": 10000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71265586.73,
       "liquidity_saving_vs_ub_brl": 5540.81,
@@ -516,7 +531,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 7505.740638,
       "delay_value_weighted_mean_ms": 7455.906535,
-      "share_settled_within_2800ms": 0.134308,
+      "share_settled_within_2800ms": 0.133578,
       "cycles_settled": 192258,
       "cycles_failed": 0
     }
@@ -559,29 +574,30 @@
           "mode": "shortfall",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
-        "liquidity_needed_brl": 17606487.09,
-        "liquidity_saving_vs_ub_brl": 53664640.45,
-        "liquidity_saving_vs_ub_pct": 75.296466,
-        "share_of_ub_minus_lb_recovered": 8.125275,
-        "settled_count": 965427,
-        "settled_value_brl": 340280502.16,
-        "settled_gross_value_brl": 339015038.71,
-        "settled_cycle_value_brl": 1265463.45,
+        "liquidity_needed_brl": 17611952.8,
+        "liquidity_saving_vs_ub_brl": 53659174.74,
+        "liquidity_saving_vs_ub_pct": 75.288797,
+        "share_of_ub_minus_lb_recovered": 8.124448,
+        "settled_count": 965524,
+        "settled_value_brl": 340282757.75,
+        "settled_gross_value_brl": 338985297.98,
+        "settled_cycle_value_brl": 1297459.77,
         "settled_deferred_value_brl": 0,
-        "settled_cycle_count": 1693,
-        "rejected_count": 34783,
-        "rejected_value_brl": 102951682.05,
+        "settled_cycle_count": 1774,
+        "rejected_count": 34686,
+        "rejected_value_brl": 102949426.46,
         "delay_p50_ms": 0,
-        "delay_p95_ms": 920,
-        "delay_p99_ms": 8576,
+        "delay_p95_ms": 1216,
+        "delay_p99_ms": 8448,
         "delay_max_ms": 10000,
-        "delay_mean_ms": 277.739401,
-        "delay_value_weighted_mean_ms": 273.068008,
-        "share_settled_within_2800ms": 0.961996,
-        "cycles_settled": 824,
-        "cycles_failed": 4630
+        "delay_mean_ms": 283.29208,
+        "delay_value_weighted_mean_ms": 275.510415,
+        "share_settled_within_2800ms": 0.960837,
+        "cycles_settled": 858,
+        "cycles_failed": 5032
       }
     },
     {
@@ -593,7 +609,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 17607071.6,
         "liquidity_saving_vs_ub_brl": 53664055.94,
@@ -613,7 +630,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 5232.628532,
         "delay_value_weighted_mean_ms": 5002.671315,
-        "share_settled_within_2800ms": 0.42504,
+        "share_settled_within_2800ms": 0.424251,
         "cycles_settled": 224626,
         "cycles_failed": 55160
       }
@@ -655,29 +672,30 @@
           "mode": "shortfall",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
-        "liquidity_needed_brl": 34957423.8,
-        "liquidity_saving_vs_ub_brl": 36313703.74,
-        "liquidity_saving_vs_ub_pct": 50.951493,
-        "share_of_ub_minus_lb_recovered": 5.498198,
-        "settled_count": 981446,
-        "settled_value_brl": 387131995.64,
-        "settled_gross_value_brl": 386707540.71,
-        "settled_cycle_value_brl": 424454.93,
+        "liquidity_needed_brl": 34953217.11,
+        "liquidity_saving_vs_ub_brl": 36317910.43,
+        "liquidity_saving_vs_ub_pct": 50.957396,
+        "share_of_ub_minus_lb_recovered": 5.498835,
+        "settled_count": 981669,
+        "settled_value_brl": 387239000.91,
+        "settled_gross_value_brl": 386832641.92,
+        "settled_cycle_value_brl": 406358.99,
         "settled_deferred_value_brl": 0,
-        "settled_cycle_count": 404,
-        "rejected_count": 18764,
-        "rejected_value_brl": 56100188.57,
+        "settled_cycle_count": 369,
+        "rejected_count": 18541,
+        "rejected_value_brl": 55993183.3,
         "delay_p50_ms": 0,
         "delay_p95_ms": 0,
-        "delay_p99_ms": 6912,
+        "delay_p99_ms": 6848,
         "delay_max_ms": 10000,
-        "delay_mean_ms": 151.12936,
-        "delay_value_weighted_mean_ms": 121.563177,
-        "share_settled_within_2800ms": 0.979451,
-        "cycles_settled": 198,
-        "cycles_failed": 1077
+        "delay_mean_ms": 152.171741,
+        "delay_value_weighted_mean_ms": 122.081169,
+        "share_settled_within_2800ms": 0.978952,
+        "cycles_settled": 183,
+        "cycles_failed": 1052
       }
     },
     {
@@ -689,7 +707,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 34973463.88,
         "liquidity_saving_vs_ub_brl": 36297663.66,
@@ -709,7 +728,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 5255.841528,
         "delay_value_weighted_mean_ms": 5127.778276,
-        "share_settled_within_2800ms": 0.425234,
+        "share_settled_within_2800ms": 0.424467,
         "cycles_settled": 227259,
         "cycles_failed": 26277
       }
@@ -751,29 +770,30 @@
           "mode": "shortfall",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
-        "liquidity_needed_brl": 52214930.99,
-        "liquidity_saving_vs_ub_brl": 19056196.55,
-        "liquidity_saving_vs_ub_pct": 26.737611,
-        "share_of_ub_minus_lb_recovered": 2.885267,
-        "settled_count": 992237,
-        "settled_value_brl": 417476470.65,
-        "settled_gross_value_brl": 417462952.63,
-        "settled_cycle_value_brl": 13518.02,
+        "liquidity_needed_brl": 52214950.89,
+        "liquidity_saving_vs_ub_brl": 19056176.65,
+        "liquidity_saving_vs_ub_pct": 26.737583,
+        "share_of_ub_minus_lb_recovered": 2.885264,
+        "settled_count": 992338,
+        "settled_value_brl": 417470098.72,
+        "settled_gross_value_brl": 417467305.53,
+        "settled_cycle_value_brl": 2793.19,
         "settled_deferred_value_brl": 0,
-        "settled_cycle_count": 22,
-        "rejected_count": 7973,
-        "rejected_value_brl": 25755713.56,
+        "settled_cycle_count": 14,
+        "rejected_count": 7872,
+        "rejected_value_brl": 25762085.49,
         "delay_p50_ms": 0,
         "delay_p95_ms": 0,
-        "delay_p99_ms": 616,
+        "delay_p99_ms": 848,
         "delay_max_ms": 10000,
-        "delay_mean_ms": 56.889013,
-        "delay_value_weighted_mean_ms": 38.417093,
-        "share_settled_within_2800ms": 0.99219,
-        "cycles_settled": 11,
-        "cycles_failed": 57
+        "delay_mean_ms": 56.525583,
+        "delay_value_weighted_mean_ms": 38.088805,
+        "share_settled_within_2800ms": 0.992158,
+        "cycles_settled": 7,
+        "cycles_failed": 43
       }
     },
     {
@@ -785,7 +805,8 @@
           "mode": "all",
           "window_ms": 1000,
           "max_delay_ms": 10000,
-          "max_cycle_len": 6
+          "max_cycle_len": 6,
+          "discipline": "bypass"
         },
         "liquidity_needed_brl": 52216222.45,
         "liquidity_saving_vs_ub_brl": 19054905.09,
@@ -805,7 +826,7 @@
         "delay_max_ms": 10000,
         "delay_mean_ms": 5284.089671,
         "delay_value_weighted_mean_ms": 5220.389567,
-        "share_settled_within_2800ms": 0.423532,
+        "share_settled_within_2800ms": 0.422772,
         "cycles_settled": 229169,
         "cycles_failed": 8704
       }

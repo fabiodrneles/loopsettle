@@ -11,7 +11,13 @@ whose results changed.
   `loopsettle bound` and in the `regimes` experiment, METHODOLOGY §9b, claim 1g.
 - `specs/`: audit findings and the post-v0.1.0 roadmap as specifications.
 
+### Fixed
+- `QueueOnShortfall` gross retry runs to a fixed point (it released one payment per edge per window).
+- `DeferredNet`: the last cycle of a day falls exactly at its end for any cycle count.
+- The share settled within 2.8 s is counted exactly.
+
 ### Changed
+- Strict per-payer FIFO as an option (`micro:shortfall:<w>:<d>:<len>:fifo`).
 - Claim 1f revised: the window bound does not explain retail vs large-value savings.
 
 ### Added (earlier)
