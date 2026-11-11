@@ -7,6 +7,14 @@ que sustentam a afirmação central (`robustness`, `heterogeneity`, `funding-win
 documentos de síntese ainda usam só a forma de janela. Os números do limite apertado são de uma
 semente com σ = 0,4, o que `CLAIMS` ("não pode afirmar" 11) proíbe publicar.
 
+## Estado em 11/11/2026
+
+**FR1 feito** (`experiments3.rs`, `results/robustness/`): 10 sementes × σ ∈ {0; 0,4; 0,8; 1,0}
+e escala de 1 a 30 milhões. Limite apertado de 10 s: 0,138% (σ = 0), 0,041% [0,025; 0,056]
+(σ = 0,4), 0,018% (σ = 0,8), 0,014% [0,007; 0,021] (σ = 1,0); com 30 milhões, 0,024%. Obtido /
+apertado: 0,38–0,46 (diferida a cada 10 s), 0,13–0,28 (micro-ciclos). `CLAIMS` 1g já usa esses
+números. **Faltam FR2 a FR7.** A escala (R2) continua com uma semente por ponto.
+
 ## Requisitos
 
 - **FR1.** `robustness` (`experiments3.rs`, struct `Measure`): acrescentar `tight_pct` por motor

@@ -29,7 +29,7 @@ Propriedades (todas testadas):
 | `crates/loopsettle-cli/src/experiments5.rs` | `regimes.csv` ganha `tight_bound_pct`; `bound_curve.csv` ganha `tight_bound_pct` e `realised_over_tight_bound`; a figura ganha a série |
 | `docs/METHODOLOGY*.md` §9b, `docs/CLAIMS*.md` 1f (revista) e 1g (nova), `scripts/summarize.py` | documentação |
 
-## Números (uma semente, σ = 0,4; ver spec 02 para o que falta)
+## Números (uma semente, σ = 0,4; as médias de 10 sementes por σ estão na spec 02 e em `results/robustness/seeds_summary.csv`)
 
 | d | economia obtida (diferida a cada d) | limite janela | limite apertado | obtido / apertado |
 |---|---|---|---|---|

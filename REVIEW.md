@@ -210,8 +210,9 @@ the real laptop (i3, 4 GB).
     licence allows it before the repository is promoted (removal on request is stated).
 79. **Liquidity floor (tight delay bound), 11 Nov 2026.** `bound.rs::liquidity_floors`,
     METHODOLOGY §9b, CLAIMS 1g, D23. For 10 s the bound drops from 0.76% to 0.054% of UB and
-    netting every 10 s realises 51% of it (`results/regimes/bound_curve.csv`). **Risks:** one
-    seed and σ = 0.4 only (spec 02 asks for 10 seeds, four σ and scale); the theorem is simple
+    netting every 10 s realises 51% of it (`results/regimes/bound_curve.csv`). With 10 seeds
+    (`robustness/seeds_summary.csv`): 0.014% (σ = 1.0) to 0.138% (σ = 0). **Risks:** heterogeneity
+    and funding-window runs still use the window form (spec 02); the theorem is simple
     enough that it may already exist in the literature (spec 01, open question 1) — check before
     claiming novelty; the floor is per participant and the sum is not attainable (spec 03).
 80. **Claim 1f revised.** With the tight bound the stylised large-value system also shows ≈ 0

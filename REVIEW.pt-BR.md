@@ -218,8 +218,9 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     isso antes de divulgar o repositório (a remoção a pedido está declarada).
 79. **Piso de liquidez (limite de atraso apertado), 11/11/2026.** `bound.rs::liquidity_floors`,
     METHODOLOGY §9b, CLAIMS 1g, D23. Para 10 s o limite cai de 0,76% para 0,054% do UB e a
-    compensação a cada 10 s obtém 51% dele (`results/regimes/bound_curve.csv`). **Riscos:** só
-    uma semente e σ = 0,4 (a spec 02 pede 10 sementes, quatro σ e escala); o teorema é simples o
+    compensação a cada 10 s obtém 51% dele (`results/regimes/bound_curve.csv`). Com 10 sementes
+    (`robustness/seeds_summary.csv`): de 0,014% (σ = 1,0) a 0,138% (σ = 0). **Riscos:** as rodadas
+    de heterogeneidade e de janelas de abastecimento ainda usam a forma de janela (spec 02); o teorema é simples o
     bastante para já existir na literatura (spec 01, pergunta em aberto 1) — conferir antes de
     afirmar novidade; o piso é por participante e a soma não é atingível (spec 03).
 80. **Afirmação 1f revista.** Com o limite apertado, o sistema de alto valor estilizado também dá
