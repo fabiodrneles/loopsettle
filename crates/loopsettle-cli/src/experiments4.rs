@@ -9,18 +9,13 @@
 use crate::experiments::{f64_list, scenario_json};
 use crate::out::{f, table, Results};
 use loopsettle_core::json::Json;
-use loopsettle_sim::bound::delay_bounds;
+use loopsettle_sim::bound::{delay_bounds, liquidity_floors};
 use loopsettle_sim::toml_lite::Doc;
+use crate::stats::{par_map, quantile};
 use loopsettle_sim::{run as run_engines, EngineSpec, Opening, RunOutput, ScenarioConfig};
 
 /// WP 619 target ranges (p25, median, p75), as fractions.
 const WP619: [(f64, f64); 3] = [(0.18, 0.45), (0.57, 0.80), (0.73, 0.90)];
-
-fn quantile(sorted: &[f64], q: f64) -> f64 {
-    let pos = q * (sorted.len() - 1) as f64;
-    let (lo, hi) = (pos.floor() as usize, pos.ceil() as usize);
-    sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo as f64)
-}
 
 /// Per-bank nettable ratio quartiles (WP 619 eq. 3.2) of one simulated day.
 fn wp619_quartiles(o: &RunOutput) -> [f64; 3] {
@@ -103,47 +98,64 @@ pub fn heterogeneity(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(),
     let sigmas = f64_list(doc, "heterogeneity.receiver_bias_sigma", &[base.receiver_bias_sigma]);
     let mut rows = Vec::new();
     let mut k1 = Vec::new();
+    let mut cases = Vec::new();
     for &sigma in &sigmas {
         for &lam in &lambdas {
             for &ppd in &scales {
-                let cfg = ScenarioConfig {
-                    profile_strength: lam,
-                    receiver_bias_sigma: sigma,
-                    payments_per_day: ppd,
-                    scale_factor: base.scale_factor * base.payments_per_day / ppd,
-                    ..base.clone()
-                };
-                let t0 = std::time::Instant::now();
-                let mut specs = vec![EngineSpec::Gross];
-                specs.extend(ENGINES.iter().map(|(s, _)| EngineSpec::parse(s).unwrap()));
-                let o = run_engines(&cfg, &specs, &Opening::Unlimited, false, None);
-                let ub = o.ub();
-                let bounds = delay_bounds(&cfg, &ENGINES.iter().map(|&(_, d)| d).collect::<Vec<_>>());
-                let pct = |b: &Vec<i64>| 100.0 * b.iter().map(|&v| v as i128).sum::<i128>() as f64 / ub.max(1) as f64;
-                let q = wp619_quartiles(&o);
-                eprintln!("  sigma {sigma} lambda {lam} {ppd:.0}/day: {:.1} s", t0.elapsed().as_secs_f64());
-                for (k, (name, d)) in ENGINES.iter().enumerate() {
-                    rows.push(vec![
-                        f(sigma),
-                        f(lam),
-                        f(ppd),
-                        name.to_string(),
-                        d.to_string(),
-                        f(100.0 * o.results[k + 1].saving_vs(ub)),
-                        f(pct(&bounds[k])),
-                        f(o.lb() as f64 / ub.max(1) as f64),
-                        f(q[0]),
-                        f(q[1]),
-                    ]);
-                }
-                if (ppd - 30e6).abs() < 1.0 {
-                    let b10 = pct(&bounds[0]);
-                    k1.push(Json::obj().set("receiver_bias_sigma", sigma).set("profile_strength", lam).set("bound_10s_pct_of_ub", b10).set("k1_fires", b10 > 2.0));
-                }
+                cases.push((sigma, lam, ppd));
             }
         }
     }
-    let header = ["receiver_bias_sigma", "profile_strength", "payments_per_day", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "lb_over_ub", "wp619_ratio_p25", "wp619_ratio_p50"];
+    let delays: Vec<u64> = ENGINES.iter().map(|&(_, d)| d).collect();
+    let mut uniq = delays.clone();
+    uniq.sort_unstable();
+    uniq.dedup();
+    // One case per thread; `par_map` returns the cases in the order above.
+    let measured = par_map(&cases, |&(sigma, lam, ppd)| {
+        let cfg = ScenarioConfig { profile_strength: lam, receiver_bias_sigma: sigma, payments_per_day: ppd, scale_factor: base.scale_factor * base.payments_per_day / ppd, ..base.clone() };
+        let t0 = std::time::Instant::now();
+        let mut specs = vec![EngineSpec::Gross];
+        specs.extend(ENGINES.iter().map(|(s, _)| EngineSpec::parse(s).unwrap()));
+        let o = run_engines(&cfg, &specs, &Opening::Unlimited, false, None);
+        let bounds = delay_bounds(&cfg, &delays);
+        let floors = liquidity_floors(&cfg, &uniq);
+        eprintln!("  sigma {sigma} lambda {lam} {ppd:.0}/day: {:.1} s", t0.elapsed().as_secs_f64());
+        (o, bounds, floors)
+    });
+    for (&(sigma, lam, ppd), (o, bounds, floors)) in cases.iter().zip(&measured) {
+        let ub = o.ub();
+        let pct = |b: &Vec<i64>| 100.0 * b.iter().map(|&v| v as i128).sum::<i128>() as f64 / ub.max(1) as f64;
+        // tight bound = UB - sum of liquidity floors (METHODOLOGY section 9b)
+        let tight = |d: u64| 100.0 * (ub - floors[uniq.iter().position(|&x| x == d).unwrap()].iter().map(|&v| v as i128).sum::<i128>()) as f64 / ub.max(1) as f64;
+        let q = wp619_quartiles(o);
+        for (k, (name, d)) in ENGINES.iter().enumerate() {
+            rows.push(vec![
+                f(sigma),
+                f(lam),
+                f(ppd),
+                name.to_string(),
+                d.to_string(),
+                f(100.0 * o.results[k + 1].saving_vs(ub)),
+                f(pct(&bounds[k])),
+                f(o.lb() as f64 / ub.max(1) as f64),
+                f(q[0]),
+                f(q[1]),
+                f(tight(*d)),
+            ]);
+        }
+        if (ppd - 30e6).abs() < 1.0 {
+            let b10 = pct(&bounds[0]);
+            k1.push(
+                Json::obj()
+                    .set("receiver_bias_sigma", sigma)
+                    .set("profile_strength", lam)
+                    .set("bound_10s_pct_of_ub", b10)
+                    .set("tight_bound_10s_pct_of_ub", tight(10_000))
+                    .set("k1_fires", b10 > 2.0),
+            );
+        }
+    }
+    let header = ["receiver_bias_sigma", "profile_strength", "payments_per_day", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "lb_over_ub", "wp619_ratio_p25", "wp619_ratio_p50", "tight_bound_pct"];
     res.csv("heterogeneity.csv", &table(&header, &rows));
     res.set("scenario", scenario_json(base));
     res.set("kill_criterion_k1", Json::obj().set("rule", "stop if the 10 s delay bound exceeds 2% of UB at 30M payments/day").set("cases", Json::Arr(k1)));

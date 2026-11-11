@@ -96,8 +96,8 @@ PT = {
     "cal_best": "Melhor ajuste: σ = {}, multiplicador das IPs = {} (p25 {}, mediana {}, p75 {}).",
     "h9": "## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)",
     "het_intro": "Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:",
-    "c_het": ["σ viés", "λ", "pagamentos/dia", "motor", "economia vs UB", "limite de atraso", "LB/UB"],
-    "k1": "Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso {}; disparou: {}.",
+    "c_het": ["σ viés", "λ", "pagamentos/dia", "motor", "economia vs UB", "limite (janela)", "LB/UB", "limite apertado"],
+    "k1": "Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso {} na forma de janela e {} na forma apertada; disparou: {}.",
     "yes": "sim", "no": "não",
     "hodge_null": "Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = {} arestas, n = {} nós): (m − n + 1)/m = {}, contra {} observado — em grafo denso, a fração rotacional mede sobretudo a densidade.",
     "h10": "## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)",
@@ -162,8 +162,8 @@ EN = {
     "cal_best": "Best fit: σ = {}, payment-institution multiplier = {} (p25 {}, median {}, p75 {}).",
     "h9": "## 9. Intraday heterogeneity and scale (W2, kill criterion K1)",
     "het_intro": "Class-specific intraday profiles with strength λ (0 = one profile for everyone, 1 = full profiles), at σ = 0.4 and at the calibrated σ:",
-    "c_het": ["σ bias", "λ", "payments/day", "engine", "saving vs UB", "delay bound", "LB/UB"],
-    "k1": "Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case {}; fired: {}.",
+    "c_het": ["σ bias", "λ", "payments/day", "engine", "saving vs UB", "window bound", "LB/UB", "tight bound"],
+    "k1": "Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case {} in the window form and {} in the tight form; fired: {}.",
     "yes": "yes", "no": "no",
     "hodge_null": "Hodge null value (random flows on the same net graph, m = {} edges, n = {} nodes): (m − n + 1)/m = {}, against {} observed — on a dense graph the curl share mostly measures density.",
     "h10": "## 10. Conta PI funding windows: nights and the weekend (W3)",
@@ -301,10 +301,11 @@ def build(T):
     s = load("heterogeneity")
     md += [T["h9"], meta(s, T), "", T["het_intro"], ""]
     md.append(table(T["c_het"], [[r["receiver_bias_sigma"], r["profile_strength"], num(r["payments_per_day"], 0), r["engine"], f"{float(r['saving_vs_ub_pct']):.4f}%",
-                                   f"{float(r['delay_bound_pct']):.3f}%", num(r["lb_over_ub"], 3)] for r in rows("heterogeneity", "heterogeneity.csv")]))
+                                   f"{float(r['delay_bound_pct']):.3f}%", num(r["lb_over_ub"], 3), f"{float(r['tight_bound_pct']):.4f}%"] for r in rows("heterogeneity", "heterogeneity.csv")]))
     k1 = s["kill_criterion_k1"]["cases"]
     worst = max(c["bound_10s_pct_of_ub"] for c in k1)
-    md += ["", T["k1"].format(f"{worst:.2f}%", T["yes"] if any(c["k1_fires"] for c in k1) else T["no"]), ""]
+    worst_tight = max(c["tight_bound_10s_pct_of_ub"] for c in k1)
+    md += ["", T["k1"].format(f"{worst:.2f}%", f"{worst_tight:.3f}%", T["yes"] if any(c["k1_fires"] for c in k1) else T["no"]), ""]
 
     # --- funding windows (W3)
     s = load("funding-windows")

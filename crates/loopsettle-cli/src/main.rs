@@ -13,6 +13,7 @@ mod experiments4;
 mod experiments5;
 mod out;
 mod realdata;
+mod stats;
 mod svg;
 
 use loopsettle_sim::toml_lite;

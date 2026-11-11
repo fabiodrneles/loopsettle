@@ -8,6 +8,7 @@
 
 use crate::experiments::{f64_list, scenario_json};
 use crate::out::{f, table, Results};
+use crate::stats::{mean_ci95, mean_sd, par_map, quantile};
 use crate::svg::{Chart, Series};
 use loopsettle_core::json::Json;
 use loopsettle_sim::bound::{delay_bounds, liquidity_floors};
@@ -23,6 +24,7 @@ const ENGINES: &[(&str, u64)] = &[
     ("deferred:1", 86_400_000),
 ];
 
+#[derive(Clone)]
 struct Measure {
     saving_pct: Vec<f64>,
     bound_pct: Vec<f64>,
@@ -58,37 +60,6 @@ fn measure(cfg: &ScenarioConfig) -> Measure {
     }
 }
 
-fn mean_sd(v: &[f64]) -> (f64, f64) {
-    let n = v.len() as f64;
-    let m = v.iter().sum::<f64>() / n;
-    let var = if v.len() > 1 { v.iter().map(|x| (x - m).powi(2)).sum::<f64>() / (n - 1.0) } else { 0.0 };
-    (m, var.sqrt())
-}
-
-/// Two-sided 95% Student t critical value (small tables are enough here).
-fn t95(df: usize) -> f64 {
-    const T: [f64; 30] = [
-        12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093, 2.086, 2.080, 2.074,
-        2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045, 2.042,
-    ];
-    if df == 0 {
-        f64::NAN
-    } else if df <= 30 {
-        T[df - 1]
-    } else {
-        1.96
-    }
-}
-
-fn quantile(sorted: &[f64], q: f64) -> f64 {
-    if sorted.is_empty() {
-        return f64::NAN;
-    }
-    let pos = q * (sorted.len() - 1) as f64;
-    let (lo, hi) = (pos.floor() as usize, pos.ceil() as usize);
-    sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo as f64)
-}
-
 pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
     let mut res = Results::new("robustness", base.seed, path);
     let t_all = std::time::Instant::now();
@@ -104,9 +75,9 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         let mut perb: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
         let mut pert: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
         let mut lbub = Vec::new();
-        for &seed in &seeds {
-            let cfg = ScenarioConfig { seed, receiver_bias_sigma: sigma, ..base.clone() };
-            let m = measure(&cfg);
+        // Seeds run in parallel; `par_map` returns them in seed order.
+        let measured = par_map(&seeds, |&seed| measure(&ScenarioConfig { seed, receiver_bias_sigma: sigma, ..base.clone() }));
+        for (&seed, m) in seeds.iter().zip(&measured) {
             lbub.push(m.lb as f64 / m.ub.max(1) as f64);
             for (k, (name, _)) in ENGINES.iter().enumerate() {
                 per[k].push(m.saving_pct[k]);
@@ -120,11 +91,10 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         for (k, (name, d)) in ENGINES.iter().enumerate() {
             let (m, sd) = mean_sd(&per[k]);
             let (bm, _) = mean_sd(&perb[k]);
-            let half = t95(per[k].len() - 1) * sd / (per[k].len() as f64).sqrt();
-            let (tm, tsd) = mean_sd(&pert[k]);
-            let thalf = t95(pert[k].len() - 1) * tsd / (pert[k].len() as f64).sqrt();
+            let (_, lo, hi) = mean_ci95(&per[k]);
+            let (tm, tlo, thi) = mean_ci95(&pert[k]);
             let positive = per[k].iter().filter(|&&x| x > 0.0).count();
-            sum_rows.push(vec![f(sigma), name.to_string(), d.to_string(), seeds.len().to_string(), f(m), f(sd), f(m - half), f(m + half), positive.to_string(), f(bm), f(lm), f(tm), f(tm - thalf), f(tm + thalf), f(if tm > 0.0 { m / tm } else { 0.0 })]);
+            sum_rows.push(vec![f(sigma), name.to_string(), d.to_string(), seeds.len().to_string(), f(m), f(sd), f(lo), f(hi), positive.to_string(), f(bm), f(lm), f(tm), f(tlo), f(thi), f(if tm > 0.0 { m / tm } else { 0.0 })]);
             sum_json.push(
                 Json::obj()
                     .set("receiver_bias_sigma", sigma)
@@ -133,12 +103,12 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
                     .set("seeds", seeds.len() as u64)
                     .set("saving_pct_mean", m)
                     .set("saving_pct_sd", sd)
-                    .set("saving_pct_ci95_low", m - half)
-                    .set("saving_pct_ci95_high", m + half)
+                    .set("saving_pct_ci95_low", lo)
+                    .set("saving_pct_ci95_high", hi)
                     .set("bound_pct_mean", bm)
                     .set("tight_bound_pct_mean", tm)
-                    .set("tight_bound_pct_ci95_low", tm - thalf)
-                    .set("tight_bound_pct_ci95_high", tm + thalf),
+                    .set("tight_bound_pct_ci95_low", tlo)
+                    .set("tight_bound_pct_ci95_high", thi),
             );
         }
     }
@@ -156,11 +126,14 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let mut series: Vec<Series> = ENGINES.iter().take(3).map(|(n, _)| Series { label: n.to_string(), points: Vec::new(), line: true }).collect();
     let mut bound_series = Series { label: "window bound, 10 s".into(), points: Vec::new(), line: true };
     let mut tight_series = Series { label: "tight bound, 10 s".into(), points: Vec::new(), line: true };
-    for &ppd in &scales {
-        let cfg = ScenarioConfig { payments_per_day: ppd, scale_factor: base.scale_factor * base.payments_per_day / ppd, ..base.clone() };
+    let scale_cfg = |ppd: f64| ScenarioConfig { payments_per_day: ppd, scale_factor: base.scale_factor * base.payments_per_day / ppd, ..base.clone() };
+    let scaled = par_map(&scales, |&ppd| {
         let t0 = std::time::Instant::now();
-        let m = measure(&cfg);
-        let secs = t0.elapsed().as_secs_f64();
+        (measure(&scale_cfg(ppd)), t0.elapsed().as_secs_f64())
+    });
+    for (&ppd, (m, secs)) in scales.iter().zip(&scaled) {
+        let cfg = scale_cfg(ppd);
+        let secs = *secs;
         eprintln!("  R2 {ppd:.0} payments/day: {secs:.1} s");
         res.measure(&format!("scale_{ppd:.0}_seconds"), secs);
         for (k, (name, d)) in ENGINES.iter().enumerate() {

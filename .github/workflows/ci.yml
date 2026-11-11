@@ -40,6 +40,11 @@ jobs:
         with:
           python-version: "3.x"
       - run: python -I scripts/golden.py --check
+      # Results must not depend on the number of worker threads (default: 2).
+      - if: matrix.os == 'ubuntu-latest'
+        run: python -I scripts/golden.py --check
+        env:
+          LOOPSETTLE_THREADS: "1"
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
