@@ -184,6 +184,42 @@ fn failed_batch_leaves_ledger_untouched() {
     assert!(scratch.iter().all(|&x| x == 0));
 }
 
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(600))]
+
+    /// The event-driven gross retry is the literal definition, payment by payment: same
+    /// outcome, same time and same kind for every payment, and the same final balances.
+    /// Tight liquidity and long deadlines, so queues are deep and receipts release chains.
+    #[test]
+    fn event_driven_retry_equals_the_reference(
+        ps in payments(6, 250),
+        opening in prop::collection::vec(0i64..6_000, 6),
+        window in 1u64..3_000,
+        max_delay in 1u64..60_000,
+        strict in any::<bool>(),
+        search in any::<bool>(),
+        max_len in 2usize..5,
+    ) {
+        let mut out = Vec::new();
+        for reference in [false, true] {
+            let mut cfg = MicroCycleConfig::new(window, max_delay, QueueMode::QueueOnShortfall);
+            cfg.max_cycle_len = max_len;
+            cfg.search_cycles = search;
+            cfg.reference_retry = reference;
+            cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
+            let mut eng = AtomicMicroCycle::new(cfg, 6);
+            let mut ledger = Ledger::new(opening.clone());
+            let mut rec = Recorder::default();
+            drive_checked(&mut eng, &ps, &mut ledger, &mut rec, true)?;
+            prop_assert!(!rec.dup);
+            let mut ev: Vec<(u64, TimeMs, Option<SettleKind>)> = rec.ev.iter().map(|(id, e)| (*id, e.0, e.1)).collect();
+            ev.sort_by_key(|e| e.0);
+            out.push((ev, ledger.balances().to_vec(), eng.cycles_settled));
+        }
+        prop_assert_eq!(&out[0], &out[1]);
+    }
+}
+
 #[test]
 fn bilateral_pair_offsets_without_liquidity() {
     // A->B 100 at t=0 and B->A 100 at t=10, zero balances: gross rejects both; the

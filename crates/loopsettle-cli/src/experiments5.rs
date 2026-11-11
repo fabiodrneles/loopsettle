@@ -133,12 +133,10 @@ fn b_hours(a: u64, b: u64) -> f64 {
     (b - a) as f64 / H as f64
 }
 
-pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
-    let mut res = Results::new("regimes", base.seed, path);
-    let delays: Vec<u64> = vec![2_000, 5_000, 10_000];
-    // ASSUMPTION: a stylised large-value system — 20 participants, payments with a median of
-    // R$ 1 million and a heavy tail, a few thousand to a few hundred thousand payments a day.
-    let wholesale = |ppd: f64| ScenarioConfig {
+/// ASSUMPTION: a stylised large-value system — 20 participants, payments with a median of
+/// R$ 1 million and a heavy tail. Not calibrated to any real system.
+pub(crate) fn wholesale_config(base: &ScenarioConfig, ppd: f64) -> ScenarioConfig {
+    ScenarioConfig {
         participants: 20,
         n_big: 5,
         n_mid: 5,
@@ -146,7 +144,15 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
         payments_per_day: ppd,
         amounts: AmountModel { body_median: 1.0e6, body_sigma: 2.0, tail_prob: 0.05, tail_xm: 2.0e7, tail_alpha: 1.3, max_amount: 5.0e9 },
         ..base.clone()
-    };
+    }
+}
+
+pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
+    let mut res = Results::new("regimes", base.seed, path);
+    let delays: Vec<u64> = vec![2_000, 5_000, 10_000];
+    // ASSUMPTION: a stylised large-value system — 20 participants, payments with a median of
+    // R$ 1 million and a heavy tail, a few thousand to a few hundred thousand payments a day.
+    let wholesale = |ppd: f64| wholesale_config(base, ppd);
     let wholesale_ppd = f64_list(doc, "regimes.wholesale_payments_per_day", &[2e3, 2e4, 2e5]);
     let mut cases: Vec<(String, ScenarioConfig)> = vec![("retail (Pix calibrated)".into(), base.clone())];
     for &p in &wholesale_ppd {
