@@ -25,7 +25,12 @@ McMahon et al. (2024), Denbee & McLafferty (2012) e os estudos com o BoF-PSS med
 - **AC:** com liquidez ilimitada é idêntico ao `GrossRealTime` (teste); com liquidez = UB
   nunca enfileira; conservação, sem saldo negativo, determinismo (proptest).
 
-## M2 — `HoldToDeadline`: o motor que atinge o piso de um participante
+## M2 — `HoldToDeadline`: o motor que atinge o piso de um participante — **FEITO em 11/11/2026**
+
+> `hold:<atraso_ms>[:<participante>]` (`engines.rs::HoldToDeadline`). Com um único participante
+> segurando, a liquidez dele é igual ao piso ao centavo em 108 casos
+> (`a_single_holder_needs_exactly_its_floor`). Detalhe de fronteira: um pagamento que vence em `t`
+> só é liberado depois de aplicado tudo o que chega em `t`.
 
 Segura todo pagamento por exatamente `d` e liquida bruto. Trivial de implementar e útil como
 instrumento: mostra que só atrasar, sem compensar, já muda a liquidez, e separa o efeito

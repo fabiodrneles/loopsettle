@@ -188,6 +188,39 @@ mod tests {
         assert!(20 - f[2][0] <= w[0][0]);
     }
 
+    /// The floor is attained: when one participant alone holds its payments for exactly `d`
+    /// (everybody else settles on arrival), it needs exactly its liquidity floor. So the floor
+    /// cannot be improved by any argument that looks at one participant's flows only.
+    #[test]
+    fn a_single_holder_needs_exactly_its_floor() {
+        for (seed, profile_strength) in [(1u64, 0.0), (2, 0.0), (3, 1.0)] {
+            let cfg = ScenarioConfig { seed, participants: 12, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, profile_strength, ..Default::default() };
+            for d in [1_000u64, 10_000, 600_000] {
+                let floors = liquidity_floors(&cfg, &[d]);
+                let specs: Vec<EngineSpec> = (0..cfg.participants as u32).map(|i| EngineSpec::Hold { delay_ms: d, only: Some(i) }).collect();
+                let o = run(&cfg, &specs, &Opening::Unlimited, false, None);
+                for (i, r) in o.results.iter().enumerate() {
+                    assert_eq!(r.liquidity_by_participant[i], floors[0][i], "seed {seed}, d {d}, participant {i}");
+                }
+            }
+        }
+    }
+
+    /// Holding everything for `d` (no netting) respects the floor and, for the system as a
+    /// whole, needs as much as gross settlement does when the day is long compared with `d`.
+    #[test]
+    fn holding_everything_respects_the_floor() {
+        let cfg = ScenarioConfig { seed: 4, participants: 15, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let d = 10_000;
+        let o = run(&cfg, &[EngineSpec::Gross, EngineSpec::parse("hold:10000").unwrap()], &Opening::Unlimited, false, None);
+        let floors = liquidity_floors(&cfg, &[d]);
+        for i in 0..cfg.participants {
+            assert!(o.results[1].liquidity_by_participant[i] >= floors[0][i]);
+        }
+        assert_eq!(o.results[1].metrics.delay.max(), d);
+        assert_eq!(o.results[1].metrics.rejected_count, 0);
+    }
+
     #[test]
     fn floor_is_ub_at_zero_delay_and_never_grows() {
         let cfg = ScenarioConfig { participants: 20, payments_per_day: 20_000.0, n_big: 2, n_mid: 3, ..Default::default() };

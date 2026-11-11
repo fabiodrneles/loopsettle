@@ -13,6 +13,9 @@ pub enum EngineSpec {
     Gross,
     Deferred { cycles_per_day: u32 },
     Micro(MicroCycleSpec),
+    /// `hold:<delay_ms>[:<participant>]`: hold every payment (or only one participant's) for
+    /// exactly the delay, then settle gross. No netting.
+    Hold { delay_ms: TimeMs, only: Option<u32> },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -34,6 +37,12 @@ impl EngineSpec {
         match parts[0] {
             "gross" => Ok(EngineSpec::Gross),
             "deferred" => Ok(EngineSpec::Deferred { cycles_per_day: num(1)? as u32 }),
+            "hold" => {
+                if parts.len() > 3 {
+                    return Err(format!("engine '{s}': expected hold:<delay_ms>[:<participant>]"));
+                }
+                Ok(EngineSpec::Hold { delay_ms: num(1)?, only: if parts.len() > 2 { Some(num(2)? as u32) } else { None } })
+            }
             // Plain queue: settle gross when funds allow, otherwise wait (retried every
             // `retry_ms`, 100 ms by default) and reject at the deadline. No netting.
             "queue" => {
@@ -73,6 +82,7 @@ impl EngineSpec {
         match *self {
             EngineSpec::Gross => Box::new(GrossRealTime),
             EngineSpec::Deferred { cycles_per_day } => Box::new(DeferredNet::new(cycles_per_day, n)),
+            EngineSpec::Hold { delay_ms, only } => Box::new(HoldToDeadline::new(delay_ms, only)),
             EngineSpec::Micro(m) => {
                 let mut c = MicroCycleConfig::new(m.window_ms, m.max_delay_ms, m.mode);
                 c.max_cycle_len = m.max_cycle_len;
@@ -87,6 +97,13 @@ impl EngineSpec {
         match *self {
             EngineSpec::Gross => Json::obj().set("kind", "gross"),
             EngineSpec::Deferred { cycles_per_day } => Json::obj().set("kind", "deferred").set("cycles_per_day", cycles_per_day),
+            EngineSpec::Hold { delay_ms, only } => {
+                let j = Json::obj().set("kind", "hold").set("delay_ms", delay_ms);
+                match only {
+                    Some(i) => j.set("only_participant", i),
+                    None => j,
+                }
+            }
             EngineSpec::Micro(m) => Json::obj()
                 .set("kind", if m.search_cycles { "micro" } else { "queue" })
                 .set("mode", if m.mode == QueueMode::QueueAll { "all" } else { "shortfall" })

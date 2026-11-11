@@ -164,7 +164,7 @@ piso_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = piso_
 
 `UB_i − piso_i(d)` nunca passa do limite de janela (tome `s = t* − d`), e o `piso_i` é atingido
 por um participante sozinho com "seguro meus pagamentos por exatamente `d` e recebo tudo na
-hora"; por isso é o melhor limite que usa só os fluxos do próprio `i`. É calculado em streaming
+hora"; por isso é o melhor limite que usa só os fluxos do próprio `i` (teste `a_single_holder_needs_exactly_its_floor`, com o motor `hold:<d>:<i>`: igualdade ao centavo). É calculado em streaming
 com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
 contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
 `tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, uma semente),

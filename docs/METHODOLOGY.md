@@ -162,7 +162,7 @@ floor_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = floo
 
 `UB_i − floor_i(d)` is never larger than the window bound (take `s = t* − d`), and `floor_i` is
 attained for one participant alone by "hold my payments for exactly `d`, receive everything at
-once", so it is the best bound that uses only `i`'s own flows. It is computed in streaming with
+once", so it is the best bound that uses only `i`'s own flows (test `a_single_holder_needs_exactly_its_floor`, with the `hold:<d>:<i>` engine: equality to the cent). It is computed in streaming with
 one lagging and one leading pass (`loopsettle_sim::bound::liquidity_floors`), tested against the
 engines in the same test, and reported by `loopsettle bound` (`liquidity_floor`, `tight_bound`).
 In the calibrated retail scenario (`results/regimes/bound_curve.csv`, one seed) the tight bound

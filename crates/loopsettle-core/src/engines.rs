@@ -81,6 +81,74 @@ impl SettlementEngine for DeferredNet {
 }
 
 // =======================================================================================
+// HoldToDeadline
+// =======================================================================================
+
+/// Holds each payment for exactly `delay_ms` and then settles it gross (rejects it if the
+/// payer lacks funds). No netting at all: an instrument, not a proposal. It separates the
+/// effect of *delay* from the effect of *offsetting*, and with a single holding participant it
+/// attains that participant's liquidity floor exactly (`docs/METHODOLOGY.md`, section 9b):
+/// its own payments leave as late as allowed while everything it is paid arrives at once.
+///
+/// `only = Some(i)`: only participant `i` holds its payments; everybody else settles on arrival.
+pub struct HoldToDeadline {
+    pub delay_ms: TimeMs,
+    pub only: Option<ParticipantId>,
+    held: VecDeque<Payment>,
+}
+
+impl HoldToDeadline {
+    pub fn new(delay_ms: TimeMs, only: Option<ParticipantId>) -> Self {
+        HoldToDeadline { delay_ms, only, held: VecDeque::new() }
+    }
+    fn release(&mut self, until: TimeMs, inclusive: bool, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        while let Some(p) = self.held.front() {
+            let due = p.t_arrival + self.delay_ms;
+            if due > until || (due == until && !inclusive) {
+                break;
+            }
+            let p = self.held.pop_front().unwrap();
+            if ledger.transfer(p.payer, p.payee, p.amount) {
+                sink.settled(&p, due, SettleKind::Gross);
+            } else {
+                sink.rejected(&p, due);
+            }
+        }
+    }
+}
+
+impl SettlementEngine for HoldToDeadline {
+    fn name(&self) -> String {
+        match self.only {
+            Some(i) => format!("hold_d{}_only{}", self.delay_ms, i),
+            None => format!("hold_d{}", self.delay_ms),
+        }
+    }
+    /// Releases payments due strictly before `t`. Those due exactly at `t` wait until the
+    /// clock moves past `t`, so that everything arriving at `t` is applied first: a payment
+    /// due at `t` and a receipt arriving at `t` then meet, as in the definition of the floor.
+    fn advance_to(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        self.release(t, false, ledger, sink);
+    }
+    fn submit(&mut self, p: Payment, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        let holds = self.delay_ms > 0 && self.only.map(|i| i == p.payer).unwrap_or(true);
+        if holds {
+            self.held.push_back(p);
+        } else if ledger.transfer(p.payer, p.payee, p.amount) {
+            sink.settled(&p, p.t_arrival, SettleKind::Gross);
+        } else {
+            sink.rejected(&p, p.t_arrival);
+        }
+    }
+    fn finish(&mut self, _t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        self.release(TimeMs::MAX, true, ledger, sink);
+    }
+    fn queued(&self) -> usize {
+        self.held.len()
+    }
+}
+
+// =======================================================================================
 // AtomicMicroCycle
 // =======================================================================================
 

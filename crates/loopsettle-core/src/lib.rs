@@ -13,7 +13,7 @@ pub mod sys;
 pub mod types;
 
 pub use engine::{GrossRealTime, SettlementEngine, Sink};
-pub use engines::{AtomicMicroCycle, DeferredNet, MicroCycleConfig, QueueDiscipline, QueueMode};
+pub use engines::{AtomicMicroCycle, DeferredNet, HoldToDeadline, MicroCycleConfig, QueueDiscipline, QueueMode};
 pub use ledger::{Ledger, UNLIMITED};
 pub use metrics::{FlowStats, LogHistogram, RunMetrics, SLA_PIX_MS};
 pub use types::*;
