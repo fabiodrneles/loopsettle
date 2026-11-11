@@ -197,3 +197,28 @@ lido (W4) e o experimento de estresse foi refeito (W6, `results/stress/cases.csv
 submissão). O esqueleto revisto está em [`PAPER_OUTLINE.pt-BR.md`](PAPER_OUTLINE.pt-BR.md). O que deve
 ficar fora do texto até existirem dados reais por participante: qualquer número de economia potencial
 no Pix real além da faixa de 0,2–3%, e qualquer afirmação sobre sistemas de outros países.
+
+## Atualização 4 — o piso de liquidez (11/11/2026)
+
+Este arquivo é um registro datado; o texto acima fica como foi escrito. O que mudou desde então:
+
+- **A fraqueza D.6 ("o limite de atraso é folgado") está resolvida.** O piso de liquidez
+  ([`METHODOLOGY.pt-BR.md`](METHODOLOGY.pt-BR.md) §9b) é uma forma mais apertada do mesmo limite.
+  Para 10 s, em 10 sementes, o teto da economia vai de 0,014% do UB (σ = 1,0) a 0,138% (σ = 0), em
+  vez de 0,7–3,3%, e a compensação a cada 10 s obtém 38–46% dele
+  (`results/robustness/seeds_summary.csv`). Leia todo "0,06–3,3%" acima como a forma de janela.
+- **A reconciliação com McMahon et al. da Atualização 3 está retirada.** Ela se apoiava em o
+  limite de janela ser grande (13,7%) no sistema de alto valor estilizado. O limite apertado ali é
+  ≤ 0,004% (`results/regimes/regimes.csv`): contra a liquidação bruta em tempo real com liquidez
+  ilimitada, mecanismos de segundos economizam ≈ 0 nos dois regimes. Os 14–30% deles são medidos
+  contra uma fila FIFO com liquidez restrita. O LoopSettle ainda não simula essa base
+  (`specs/06`), então a afirmação honesta hoje é "pergunta diferente, ainda não comparada".
+- **K1 com o limite apertado:** no máximo 0,042% do UB com 30 milhões de pagamentos por dia e
+  perfis por classe (`results/heterogeneity/heterogeneity.csv`), contra o limiar de 2%.
+- **O K2 vale também para o teorema novo.** O piso é simples o bastante para já estar na
+  literatura (cálculo de redes, troca entre liquidez e atraso em RTGS). Ainda não conferido.
+- **Reprodutibilidade:** os resultados são idênticos byte a byte em Linux, Windows e macOS (CI).
+
+O veredito continua **PIVOTAR**, com uma afirmação central mais afiada: *nenhum mecanismo com
+prazo de 10 s consegue economizar mais do que cerca de 0,01–0,14% da liquidez que um sistema
+instantâneo precisa, e a compensação simples já obtém cerca de 40% desse teto.*

@@ -88,10 +88,13 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
 - **Micro-ciclos atômicos de até 10 s liquidam até 63% do valor dentro de ciclos, mas
   economizam cerca de 0,01% da liquidez** (0,0116%, IC 95% [0,008; 0,015]%), qualquer que seja
   o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
-- **Há um teto demonstrável:** nenhum mecanismo que segure cada pagamento por no máximo *d*
-  consegue economizar mais do que o valor pago nos *d* segundos antes do pico de cada
-  participante. Para 10 s, esse teto vai de 0,06% a 3,3% da liquidez nas configurações testadas
-  (até 1,5% com a estrutura calibrada ao WP 619), e a economia obtida nunca passa de 0,02%.
+- **Há um teto demonstrável:** um mecanismo que segura cada pagamento por no máximo *d* nunca
+  precisa de menos liquidez do que o **piso de liquidez** de cada participante: o maior valor de
+  "tudo o que ele pagou até um instante, menos tudo o que recebeu até *d* depois". Para 10 s, em
+  10 sementes, esse teto de economia vai de 0,014% da liquidez (estrutura calibrada ao WP 619) a
+  0,14% (sem viés recebedor), e a compensação a cada 10 s obtém de 38% a 46% dele. Uma forma
+  mais simples e mais folgada do mesmo limite (o valor pago nos *d* segundos antes do pico) dá
+  0,7% a 3,3%.
 - Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
   com 1 milhão de pagamentos), **mas esse "potencial" encolhe com o volume**. Com a estrutura
   bilateral calibrada em dados reais do Pix (BCB WP 619) e 30 milhões de pagamentos por dia, uma
@@ -837,10 +840,13 @@ million payments per day):
 - **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save about
   0.01% of liquidity** (0.0116%, 95% CI [0.008; 0.015]%), whatever the maximum cycle length,
   and the saving goes to zero as volume grows.
-- **There is a provable ceiling:** no mechanism that holds each payment for at most *d* can save
-  more than the value paid in the *d* seconds before each participant's peak. For 10 s that
-  ceiling ranges from 0.06% to 3.3% of the liquidity across the configurations tested (at most
-  1.5% with the structure calibrated to WP 619), and the realised saving never exceeds 0.02%.
+- **There is a provable ceiling:** a mechanism that holds each payment for at most *d* never
+  needs less liquidity than each participant's **liquidity floor**: the largest value of
+  "everything it has paid by some instant, minus everything it has received by *d* later". For
+  10 s, over 10 seeds, that ceiling on the saving ranges from 0.014% of the liquidity (structure
+  calibrated to WP 619) to 0.14% (no receiver bias), and netting every 10 s realises 38% to 46%
+  of it. A simpler, looser form of the same bound (the value paid in the *d* seconds before the
+  peak) gives 0.7% to 3.3%.
 - Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
   payments), **but that "potential" shrinks with volume**. With the bilateral structure calibrated
   to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between

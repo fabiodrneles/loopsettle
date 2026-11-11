@@ -194,3 +194,28 @@ stress experiment was redesigned (W6, `results/stress/cases.csv`); what remains 
 revised outline is in [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md). What must stay out of the text until
 real per-participant data exist: any number for the potential saving in real Pix beyond the
 0.2–3% band, and any claim about other countries' systems.
+
+## Update 4 — the liquidity floor (11 Nov 2026)
+
+This file is a dated record; the text above is kept as written. What changed since:
+
+- **Weakness D.6 ("the delay bound is loose") is resolved.** The liquidity floor
+  ([`METHODOLOGY.md`](METHODOLOGY.md) §9b) is a tighter form of the same bound. For 10 s, over 10
+  seeds, the ceiling on the saving is 0.014% of UB (σ = 1.0) to 0.138% (σ = 0), instead of
+  0.7–3.3%, and netting every 10 s realises 38–46% of it (`results/robustness/seeds_summary.csv`).
+  Read every "0.06–3.3%" above as the window form.
+- **The reconciliation with McMahon et al. in Update 3 is withdrawn.** It rested on the window
+  bound being large (13.7%) in the stylised large-value system. The tight bound there is ≤ 0.004%
+  (`results/regimes/regimes.csv`): against real-time gross settlement with unlimited liquidity,
+  second-scale mechanisms save ≈ 0 in both regimes. Their 14–30% is measured against a FIFO queue
+  under constrained liquidity. LoopSettle does not simulate that baseline yet (`specs/06`), so
+  the honest statement today is "different question, not yet compared".
+- **K1 with the tight bound:** at most 0.042% of UB at 30 million payments a day with class
+  profiles (`results/heterogeneity/heterogeneity.csv`), against the 2% threshold.
+- **K2 applies to the new theorem too.** The floor is simple enough that it may already be in the
+  literature (network calculus, RTGS liquidity-delay trade-off). Not checked yet.
+- **Reproducibility:** results are identical byte for byte on Linux, Windows and macOS (CI).
+
+The verdict stays **PIVOT**, with a sharper central claim: *no mechanism with a 10 s deadline can
+save more than about 0.01–0.14% of the liquidity an instant system needs, and simple netting
+already realises about 40% of that ceiling.*

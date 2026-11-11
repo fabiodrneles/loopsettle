@@ -29,8 +29,13 @@ instantâneos? Um limite de atraso e evidências de um simulador calibrado com o
   liquidez (UB, LB, janelas de abastecimento).
 
 ### 4. O limite de atraso
-- Teorema e demonstração ([`METHODOLOGY.pt-BR.md`](METHODOLOGY.pt-BR.md) §9); Figura 1 — economia obtida ×
-  limite em função de d (`regimes/fig_bound.svg`); Tabela 5 — regimes, varejo × alto valor (`regimes/regimes.csv`).
+- O piso de liquidez: teorema e demonstração ([`METHODOLOGY.pt-BR.md`](METHODOLOGY.pt-BR.md) §9b), com a
+  forma de janela (§9) como corolário; Figura 1 — economia obtida × limites apertado e de janela em
+  função de d (`regimes/fig_bound.svg`); Tabela 5 — o limite por semente e por viés recebedor
+  (`robustness/seeds_summary.csv`).
+- Sai desta seção: "o limite separa o varejo do alto valor". O limite apertado é ≈ 0 nos dois
+  (`regimes/regimes.csv`); a comparação com os estudos de LSM em alto valor depende do experimento com
+  liquidez restrita (`specs/06`) e, até lá, vai para a discussão como ponto em aberto.
 
 ### 5. Resultados
 - 5.1 Potencial × realizável, com sementes, escala e comprimento do ciclo — Tabela 6

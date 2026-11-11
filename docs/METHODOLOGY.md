@@ -146,7 +146,7 @@ The bound covers atomic micro-cycles with `max_delay_ms = d`, deferred netting e
 any optimal gridlock solver with the same deadline. It is computed in two streaming passes
 (`loopsettle_sim::bound::delay_bounds`) and tested participant by participant against the
 engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate: in the
-calibrated scenario the realised 10 s saving is about 1.5% of it
+calibrated scenario the realised 10 s saving is about 1.5% of it (28–46% of the tight form of §9b)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. The liquidity floor (tight form of the bound).** The argument above uses one instant,

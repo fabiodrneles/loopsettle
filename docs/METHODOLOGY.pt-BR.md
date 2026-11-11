@@ -148,7 +148,7 @@ O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensa�
 cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
 passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
 participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
-estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele
+estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (28–46% da forma apertada da §9b)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,

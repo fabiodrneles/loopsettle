@@ -29,8 +29,13 @@ evidence from a calibrated Pix simulator.*
   (UB, LB, funding windows).
 
 ### 4. The delay bound
-- Theorem and proof ([`METHODOLOGY.md`](METHODOLOGY.md) §9); Figure 1 — realised saving vs bound over d
-  (`regimes/fig_bound.svg`); Table 5 — regimes, retail vs large-value (`regimes/regimes.csv`).
+- The liquidity floor: theorem and proof ([`METHODOLOGY.md`](METHODOLOGY.md) §9b), with the window form
+  (§9) as a corollary; Figure 1 — realised saving vs tight and window bounds over d
+  (`regimes/fig_bound.svg`); Table 5 — the bound over seeds and receiver bias
+  (`robustness/seeds_summary.csv`).
+- Not in this section any more: "the bound separates retail from large-value". The tight bound is
+  ≈ 0 in both (`regimes/regimes.csv`); the comparison with large-value LSM studies needs the
+  constrained-liquidity experiment (`specs/06`) and goes to the discussion as an open point until then.
 
 ### 5. Results
 - 5.1 Potential vs realizable, with seeds, scale and cycle length — Table 6 (`robustness/seeds_summary.csv`),
