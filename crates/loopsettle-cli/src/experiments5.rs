@@ -15,7 +15,8 @@
 use crate::experiments::{f64_list, scenario_json};
 use crate::out::{f, table, Results};
 use loopsettle_core::json::Json;
-use loopsettle_sim::bound::{delay_bounds, liquidity_floors, window_stats};
+use crate::stats::par_map;
+use loopsettle_sim::bound::{delay_bounds, liquidity_floors, window_floors, window_stats};
 use loopsettle_sim::scenario::{AmountModel, SPI_2024_HOURLY, SPI_2024_WEEKDAY};
 use loopsettle_sim::toml_lite::Doc;
 use loopsettle_sim::{run as run_engines, EngineSpec, Opening, PaymentStream, ScenarioConfig};
@@ -43,28 +44,43 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
     let scales = f64_list(doc, "windows.payments_per_thursday", &[1e6, 10e6]);
     let mut rows = Vec::new();
     let mut js = Vec::new();
+    let mut cases = Vec::new();
     for &ppd in &scales {
         for &sigma in &sigmas {
             for &lam in &lambdas {
-                let cfg = ScenarioConfig {
-                    days: 5,
-                    day_weights: day_weights.clone(),
-                    hourly: SPI_2024_HOURLY.to_vec(),
-                    payments_per_day: ppd,
-                    scale_factor: base.scale_factor * base.payments_per_day / ppd,
-                    receiver_bias_sigma: sigma,
-                    profile_strength: lam,
-                    ..base.clone()
-                };
-                let t0 = std::time::Instant::now();
-                let ws: Vec<(u64, u64)> = windows.iter().map(|w| (w.2, w.3)).collect();
-                let st = window_stats(cfg.participants, || PaymentStream::new(&cfg), &ws, &delays);
-                eprintln!("  {ppd:.0}/Thursday sigma {sigma} lambda {lam}: {:.1} s", t0.elapsed().as_secs_f64());
+                cases.push((ppd, sigma, lam));
+            }
+        }
+    }
+    let ws: Vec<(u64, u64)> = windows.iter().map(|w| (w.2, w.3)).collect();
+    // One case per thread; `par_map` returns the cases in the order above.
+    let measured = par_map(&cases, |&(ppd, sigma, lam)| {
+        let cfg = ScenarioConfig {
+            days: 5,
+            day_weights: day_weights.clone(),
+            hourly: SPI_2024_HOURLY.to_vec(),
+            payments_per_day: ppd,
+            scale_factor: base.scale_factor * base.payments_per_day / ppd,
+            receiver_bias_sigma: sigma,
+            profile_strength: lam,
+            ..base.clone()
+        };
+        let t0 = std::time::Instant::now();
+        let st = window_stats(cfg.participants, || PaymentStream::new(&cfg), &ws, &delays);
+        let fl = window_floors(cfg.participants, || PaymentStream::new(&cfg), &ws, &delays);
+        eprintln!("  {ppd:.0}/Thursday sigma {sigma} lambda {lam}: {:.1} s", t0.elapsed().as_secs_f64());
+        (st, fl)
+    });
+    {
+        {
+            for (&(ppd, sigma, lam), (st, fl)) in cases.iter().zip(&measured) {
                 for (k, (name, kind, w_start, w_end)) in windows.iter().enumerate() {
                     let need: i128 = st[k].need.iter().map(|&v| v as i128).sum();
                     let net: i128 = st[k].net.iter().map(|&v| v as i128).sum();
                     let pct = |x: i128| if need == 0 { 0.0 } else { 100.0 * x as f64 / need as f64 };
                     let b: Vec<f64> = st[k].bound.iter().map(|v| pct(v.iter().map(|&x| x as i128).sum())).collect();
+                    // tight bound = need - sum of window floors (METHODOLOGY section 10)
+                    let tb: Vec<f64> = fl[k].iter().map(|v| pct(need - v.iter().map(|&x| x as i128).sum::<i128>())).collect();
                     rows.push(vec![
                         f(ppd),
                         f(sigma),
@@ -78,6 +94,9 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
                         f(b[0]),
                         f(b[1]),
                         f(b[2]),
+                        f(tb[0]),
+                        f(tb[1]),
+                        f(tb[2]),
                     ]);
                     js.push(
                         Json::obj()
@@ -89,7 +108,9 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
                             .set("need_brl", need as f64 / 100.0)
                             .set("netting_saving_pct", 100.0 - pct(net))
                             .set("bound_10s_pct", b[0])
-                            .set("bound_15min_pct", b[1]),
+                            .set("bound_15min_pct", b[1])
+                            .set("tight_bound_10s_pct", tb[0])
+                            .set("tight_bound_15min_pct", tb[1]),
                     );
                 }
             }
@@ -97,7 +118,7 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
     }
     let header = [
         "payments_per_thursday", "receiver_bias_sigma", "profile_strength", "window", "kind", "hours", "prefunding_need_brl", "end_of_window_netting_need_brl", "netting_saving_pct",
-        "bound_10s_pct", "bound_15min_pct", "bound_1h_pct",
+        "bound_10s_pct", "bound_15min_pct", "bound_1h_pct", "tight_bound_10s_pct", "tight_bound_15min_pct", "tight_bound_1h_pct",
     ];
     res.csv("windows.csv", &table(&header, &rows));
     res.set("scenario", scenario_json(base));

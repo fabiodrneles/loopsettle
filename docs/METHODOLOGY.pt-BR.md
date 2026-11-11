@@ -148,7 +148,7 @@ O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensa�
 cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
 passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
 participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
-estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (28–46% da forma apertada da §9b)
+estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (cerca de 28% da forma apertada da §9b; a compensação a cada 10 s obtém cerca de 46%)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,
@@ -195,6 +195,20 @@ net_i  = max(0, x_i(a) − x_i(b))                  o que uma compensação no f
 O limite de atraso da seção 9 vale dentro da janela, com `t*` o mínimo da janela. Calculado por
 `loopsettle_sim::bound::window_stats`; experimento `funding-windows` (quinta a segunda, perfil
 horário e volumes por dia com fonte).
+
+**O piso de liquidez dentro de uma janela.** A forma apertada da seção 9b vale aqui com um termo
+a mais. A necessidade de um motor na janela é `y_i(a) − min_{a≤t<b} y_i(t)`. Recebimentos dos
+últimos `d` antes da janela podem ainda não ter liquidado quando ela abre, então
+`y_i(a) ≥ x_i(a) − I_i[a − d, a)`, e o argumento do piso dá `−y_i(t) ≥ CO_i(t − d) − CI_i(t)`.
+Juntando:
+
+```text
+necessidade_i ≥ max_{s ≥ a, s + d < b} [(CO_i(s) − CO_i(a)) − (CI_i(s + d) − CI_i(a))] − I_i[a − d, a)
+```
+
+com piso em zero; com `d = 0` é a necessidade bruta acima. Calculado por
+`loopsettle_sim::bound::window_floors` e testado contra os motores reconstruindo a posição de cada
+motor a partir dos eventos de liquidação (`engines_never_need_less_than_the_window_floor`).
 
 ## 11. Rodar em dados reais
 

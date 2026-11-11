@@ -291,6 +291,95 @@ where
         .collect()
 }
 
+/// Liquidity floor inside windows that cannot be topped up (tight form of the window bound of
+/// [`window_stats`]; `docs/METHODOLOGY.md`, section 10).
+///
+/// For a window `[a, b)`, a participant's prefunding need under an engine is
+/// `y(a) - min_{t in [a, b)} y(t)`, with `y` the engine's cumulative position and `y(a)` taken
+/// just before the window opens. For any engine with maximum delay `d`:
+///
+/// ```text
+/// y(a)  >= x(a) - I[a - d, a)                (only receipts of the last d can be unsettled)
+/// -y(t) >= CO(t - d) - CI(t)                 (the liquidity floor argument)
+/// need  >= max_{s >= a, s + d < b} [ (CO(s) - CO(a)) - (CI(s + d) - CI(a)) ] - I[a - d, a)
+/// ```
+///
+/// where `CO`, `CI` are cumulative outflow and inflow by arrival time, `CO(a)`, `CI(a)` count
+/// arrivals before `a`, and `I[a - d, a)` is what the participant received in the `d` before
+/// the window. The result is floored at zero and is never above the gross need of
+/// [`WindowStats::need`]; with `d = 0` it equals it.
+///
+/// Returns `floor[window][delay][participant]`. One lagging pass plus one leading pass per
+/// delay; memory O(windows x delays x participants).
+pub fn window_floors<I, F>(n: usize, make: F, windows: &[(TimeMs, TimeMs)], delays_ms: &[TimeMs]) -> Vec<Vec<Vec<Cents>>>
+where
+    I: Iterator<Item = loopsettle_core::Payment>,
+    F: Fn() -> I,
+{
+    let (w, k) = (windows.len(), delays_ms.len());
+    let mut leads: Vec<std::iter::Peekable<I>> = (0..k).map(|_| make().peekable()).collect();
+    let mut ci = vec![vec![0i64; n]; k];
+    // per delay, per window: CI just before a - d and just before a (None until reached)
+    let mut ci_pre: Vec<Vec<Option<Vec<i64>>>> = vec![vec![None; w]; k];
+    let mut ci_a: Vec<Vec<Option<Vec<i64>>>> = vec![vec![None; w]; k];
+    let mut co = vec![0i64; n];
+    let mut co_a: Vec<Option<Vec<i64>>> = vec![None; w];
+    let mut best = vec![vec![vec![0i64; n]; k]; w];
+
+    // Advance lead `j` over every payment with arrival <= `horizon`, taking the snapshots of
+    // the windows it crosses just before the first payment at or after the snapshot time.
+    let advance = |j: usize, horizon: TimeMs, leads: &mut Vec<std::iter::Peekable<I>>, ci: &mut Vec<Vec<i64>>, ci_pre: &mut Vec<Vec<Option<Vec<i64>>>>, ci_a: &mut Vec<Vec<Option<Vec<i64>>>>| {
+        while let Some(q) = leads[j].next_if(|q| q.t_arrival <= horizon) {
+            for (x, &(a, _)) in windows.iter().enumerate() {
+                if ci_pre[j][x].is_none() && q.t_arrival >= a.saturating_sub(delays_ms[j]) {
+                    ci_pre[j][x] = Some(ci[j].clone());
+                }
+                if ci_a[j][x].is_none() && q.t_arrival >= a {
+                    ci_a[j][x] = Some(ci[j].clone());
+                }
+            }
+            ci[j][q.payee as usize] += q.amount;
+        }
+    };
+
+    for p in make() {
+        for (x, &(a, _)) in windows.iter().enumerate() {
+            if co_a[x].is_none() && p.t_arrival >= a {
+                co_a[x] = Some(co.clone());
+            }
+        }
+        let i = p.payer as usize;
+        co[i] += p.amount;
+        for j in 0..k {
+            let horizon = p.t_arrival.saturating_add(delays_ms[j]);
+            advance(j, horizon, &mut leads, &mut ci, &mut ci_pre, &mut ci_a);
+            for (x, &(a, b)) in windows.iter().enumerate() {
+                if p.t_arrival < a || horizon >= b {
+                    continue;
+                }
+                // The lead has consumed `p` itself (arrival s >= a), so both snapshots exist.
+                let (Some(co0), Some(ci0)) = (&co_a[x], &ci_a[j][x]) else { continue };
+                let c = (co[i] - co0[i]) - (ci[j][i] - ci0[i]);
+                if c > best[x][j][i] {
+                    best[x][j][i] = c;
+                }
+            }
+        }
+    }
+    // Subtract what was received in the d before the window (it may still be unsettled when
+    // the window opens, which lowers the opening position the need is measured from).
+    for x in 0..w {
+        for j in 0..k {
+            if let (Some(pre), Some(at)) = (&ci_pre[j][x], &ci_a[j][x]) {
+                for i in 0..n {
+                    best[x][j][i] = (best[x][j][i] - (at[i] - pre[i])).max(0);
+                }
+            }
+        }
+    }
+    best
+}
+
 #[cfg(test)]
 mod window_tests {
     use super::*;
@@ -306,5 +395,106 @@ mod window_tests {
         assert_eq!(s[0].net, vec![3, 0]);
         // the minimum of A inside the window is at t = 10; outflows in [7, 10] = 5
         assert_eq!(s[0].bound[0], vec![5, 0]);
+    }
+
+    /// Hand example for the floor inside a window [10, 100).
+    /// A: pays 5 at t=12 and 7 at t=20, receives 4 at t=22 and 3 at t=8 (before the window).
+    /// Gross need from the window start: 5 + 7 = 12 (the 4 arrives after the minimum).
+    /// d = 2: at t = 22 both payments are due and the 4 has arrived: 12 - 4 = 8; the 3 arrived
+    ///        at t = 8, inside [a - d, a) = [8, 10), so it may be unsettled at the opening: 8 - 3 = 5.
+    /// d = 1: the 4 is too late for the deadline t = 21: 12; [9, 10) holds no receipt: 12.
+    #[test]
+    fn window_floor_hand_example() {
+        let p = |t, a, b, v| Payment { id: 0, t_arrival: t, payer: a, payee: b, amount: v };
+        let v = vec![p(8, 1, 0, 3), p(12, 0, 1, 5), p(20, 0, 1, 7), p(22, 1, 0, 4), p(150, 0, 1, 1)];
+        let need = window_stats(2, || v.clone().into_iter(), &[(10, 100)], &[]);
+        assert_eq!(need[0].need[0], 12);
+        let f = window_floors(2, || v.clone().into_iter(), &[(10, 100)], &[0, 1, 2]);
+        assert_eq!(f[0][0][0], 12, "d = 0 is the gross need");
+        assert_eq!(f[0][1][0], 12);
+        assert_eq!(f[0][2][0], 5);
+    }
+
+    /// The floor holds inside windows for real engines: reconstruct each engine's position
+    /// from its settlement events and compare its need in every window with the floor.
+    #[test]
+    fn engines_never_need_less_than_the_window_floor() {
+        use crate::scenario::ScenarioConfig;
+        use crate::stream::PaymentStream;
+        use loopsettle_core::*;
+        struct Events(Vec<(TimeMs, u32, u32, Cents)>);
+        impl Sink for Events {
+            fn settled(&mut self, p: &Payment, t: TimeMs, _k: SettleKind) {
+                self.0.push((t, p.payer, p.payee, p.amount));
+            }
+            fn rejected(&mut self, _p: &Payment, _t: TimeMs) {
+                panic!("unlimited liquidity: nothing is rejected");
+            }
+        }
+        const HOUR: TimeMs = 3_600_000;
+        let windows = [(2 * HOUR, 9 * HOUR), (13 * HOUR, 13 * HOUR + 600_000), (18 * HOUR, 24 * HOUR)];
+        for seed in [1u64, 2, 3] {
+            let n = 15;
+            let cfg = ScenarioConfig { seed, participants: n, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+            let ps: Vec<Payment> = PaymentStream::new(&cfg).collect();
+            // (engine, its maximum settlement delay)
+            let engines: Vec<(Box<dyn SettlementEngine>, TimeMs)> = vec![
+                (Box::new(GrossRealTime), 0),
+                (Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(500, 5_000, QueueMode::QueueAll), n)), 5_000),
+                (Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(2_000, 60_000, QueueMode::QueueAll), n)), 60_000),
+                (Box::new(DeferredNet::new(8_640, n)), 10_000),
+                (Box::new(DeferredNet::new(96, n)), 900_000),
+            ];
+            let delays: Vec<TimeMs> = engines.iter().map(|e| e.1).collect();
+            let floors = window_floors(n, || ps.iter().copied(), &windows, &delays);
+            let gross = window_stats(n, || ps.iter().copied(), &windows, &[]);
+            for (j, (mut eng, d)) in engines.into_iter().enumerate() {
+                let mut ledger = Ledger::unlimited(n);
+                let mut ev = Events(Vec::new());
+                for p in &ps {
+                    eng.advance_to(p.t_arrival, &mut ledger, &mut ev);
+                    eng.submit(*p, &mut ledger, &mut ev);
+                }
+                let end = cfg.horizon_ms();
+                eng.advance_to(end, &mut ledger, &mut ev);
+                eng.finish(end, &mut ledger, &mut ev);
+                ev.0.sort_by_key(|e| e.0); // stable: keeps the engine's order inside an instant
+                for (x, &(a, b)) in windows.iter().enumerate() {
+                    // position after all settlements before `a`, then the lowest end-of-instant
+                    // position inside [a, b)
+                    let mut y = vec![0i64; n];
+                    let mut open: Option<Vec<i64>> = None;
+                    let mut low = vec![i64::MAX; n];
+                    let mut k = 0;
+                    while k < ev.0.len() && ev.0[k].0 < b {
+                        let t = ev.0[k].0;
+                        if t >= a && open.is_none() {
+                            open = Some(y.clone());
+                            low = y.clone();
+                        }
+                        while k < ev.0.len() && ev.0[k].0 == t {
+                            let (_, pa, pe, v) = ev.0[k];
+                            y[pa as usize] -= v;
+                            y[pe as usize] += v;
+                            k += 1;
+                        }
+                        if t >= a {
+                            for i in 0..n {
+                                low[i] = low[i].min(y[i]);
+                            }
+                        }
+                    }
+                    let open = open.unwrap_or_else(|| y.clone());
+                    for i in 0..n {
+                        let need = if low[i] == i64::MAX { 0 } else { (open[i] - low[i]).max(0) };
+                        assert!(need >= floors[x][j][i], "seed {seed}, engine {j} (d = {d}), window {x}, participant {i}: need {need} < floor {}", floors[x][j][i]);
+                        assert!(floors[x][j][i] <= gross[x].need[i], "the floor never exceeds the gross need");
+                        if d == 0 {
+                            assert_eq!(floors[x][j][i], gross[x].need[i]);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -146,7 +146,7 @@ The bound covers atomic micro-cycles with `max_delay_ms = d`, deferred netting e
 any optimal gridlock solver with the same deadline. It is computed in two streaming passes
 (`loopsettle_sim::bound::delay_bounds`) and tested participant by participant against the
 engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate: in the
-calibrated scenario the realised 10 s saving is about 1.5% of it (28–46% of the tight form of §9b)
+calibrated scenario the realised 10 s saving is about 1.5% of it (about 28% of the tight form of §9b; netting every 10 s realises about 46%)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. The liquidity floor (tight form of the bound).** The argument above uses one instant,
@@ -192,6 +192,19 @@ net_i  = max(0, x_i(a) − x_i(b))                  what one netting at the end 
 The delay bound of section 9 applies inside the window with `t*` the window's minimum. Computed
 by `loopsettle_sim::bound::window_stats`; experiment `funding-windows` (Thursday to Monday, sourced
 hourly profile and day volumes).
+
+**The liquidity floor inside a window.** The tight form of section 9b carries over with one extra
+term. An engine's need in the window is `y_i(a) − min_{a≤t<b} y_i(t)`. Receipts of the last `d`
+before the window may still be unsettled when it opens, so `y_i(a) ≥ x_i(a) − I_i[a − d, a)`, and
+the floor argument gives `−y_i(t) ≥ CO_i(t − d) − CI_i(t)`. Together:
+
+```text
+need_i ≥ max_{s ≥ a, s + d < b} [(CO_i(s) − CO_i(a)) − (CI_i(s + d) − CI_i(a))] − I_i[a − d, a)
+```
+
+floored at zero; with `d = 0` it is the gross need above. Computed by
+`loopsettle_sim::bound::window_floors` and tested against the engines by rebuilding each engine's
+position from its settlement events (`engines_never_need_less_than_the_window_floor`).
 
 ## 11. Running on real data
 

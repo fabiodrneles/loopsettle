@@ -7,6 +7,7 @@ produced by `cargo run --release -p loopsettle-cli -- experiment <name>`.
 import csv
 import json
 import os
+import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
 
@@ -102,7 +103,7 @@ PT = {
     "hodge_null": "Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = {} arestas, n = {} nós): (m − n + 1)/m = {}, contra {} observado — em grafo denso, a fração rotacional mede sobretudo a densidade.",
     "h10": "## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)",
     "fw_intro": "A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.",
-    "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s", "limite 15 min"],
+    "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s (janela)", "limite 15 min (janela)", "limite apertado 10 s", "limite apertado 15 min"],
     "closed": "fechada", "open": "aberta",
     "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
     "rg_intro": "O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
@@ -168,7 +169,7 @@ EN = {
     "hodge_null": "Hodge null value (random flows on the same net graph, m = {} edges, n = {} nodes): (m − n + 1)/m = {}, against {} observed — on a dense graph the curl share mostly measures density.",
     "h10": "## 10. Conta PI funding windows: nights and the weekend (W3)",
     "fw_intro": "The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.",
-    "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "bound 10 s", "bound 15 min"],
+    "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "window bound 10 s", "window bound 15 min", "tight bound 10 s", "tight bound 15 min"],
     "closed": "closed", "open": "open",
     "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
     "rg_intro": "The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
@@ -311,7 +312,7 @@ def build(T):
     s = load("funding-windows")
     md += [T["h10"], meta(s, T), "", T["fw_intro"], ""]
     md.append(table(T["c_fw"], [[num(r["payments_per_thursday"], 0), r["receiver_bias_sigma"], r["profile_strength"], r["window"], T["closed"] if r["kind"] == "closed" else T["open"], r["hours"],
-                                  num(r["prefunding_need_brl"]), f"{float(r['netting_saving_pct']):.2f}%", f"{float(r['bound_10s_pct']):.2f}%", f"{float(r['bound_15min_pct']):.2f}%"]
+                                  num(r["prefunding_need_brl"]), f"{float(r['netting_saving_pct']):.2f}%", f"{float(r['bound_10s_pct']):.2f}%", f"{float(r['bound_15min_pct']):.2f}%", f"{float(r['tight_bound_10s_pct']):.3f}%", f"{float(r['tight_bound_15min_pct']):.2f}%"]
                                  for r in rows("funding-windows", "windows.csv")]))
     md.append("")
 
@@ -327,7 +328,38 @@ def build(T):
     return "\n".join(md) + "\n"
 
 
+def check_sandwich():
+    """Every row of every result file must satisfy realised <= tight bound <= window bound.
+
+    The bounds are theorems (docs/METHODOLOGY.md, sections 9, 9b and 10), so a violation means a
+    bug in an engine or in a bound, and the summary must not be written.
+    """
+    eps = 1e-6  # the files hold 6 decimals
+    bad = []
+
+    def chk(exp, name, realised, tight, window):
+        for i, r in enumerate(rows(exp, name)):
+            t, w = float(r[tight]), float(r[window])
+            if realised is not None and float(r[realised]) > t + eps:
+                bad.append(f"{exp}/{name} row {i + 2}: {realised}={r[realised]} > {tight}={r[tight]}")
+            if t > w + eps:
+                bad.append(f"{exp}/{name} row {i + 2}: {tight}={r[tight]} > {window}={r[window]}")
+
+    chk("robustness", "seeds.csv", "saving_vs_ub_pct", "tight_bound_pct", "delay_bound_pct")
+    chk("robustness", "scale.csv", "saving_vs_ub_pct", "tight_bound_pct", "delay_bound_pct")
+    chk("heterogeneity", "heterogeneity.csv", "saving_vs_ub_pct", "tight_bound_pct", "delay_bound_pct")
+    chk("regimes", "regimes.csv", "micro_cycle_saving_pct", "tight_bound_pct", "delay_bound_pct")
+    for d in ("10s", "15min", "1h"):
+        chk("funding-windows", "windows.csv", None, f"tight_bound_{d}_pct", f"bound_{d}_pct")
+    for i, r in enumerate(rows("regimes", "bound_curve.csv")):
+        if float(r["realised_saving_pct"]) > float(r["tight_bound_pct"]) + eps:
+            bad.append(f"regimes/bound_curve.csv row {i + 2}: realised above the tight bound")
+    if bad:
+        sys.exit("sandwich check failed (realised <= tight <= window):\n  " + "\n  ".join(bad))
+
+
 def main():
+    check_sandwich()
     for name, T in (("SUMMARY.md", EN), ("SUMMARY.pt-BR.md", PT)):
         path = os.path.join(ROOT, name)
         with open(path, "w", encoding="utf-8", newline="\n") as f:

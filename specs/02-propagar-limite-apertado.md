@@ -15,7 +15,15 @@ e escala de 1 a 30 milhões. Limite apertado de 10 s: 0,138% (σ = 0), 0,041% [0
 apertado: 0,38–0,46 (diferida a cada 10 s), 0,13–0,28 (micro-ciclos). `CLAIMS` 1g já usa esses
 números. **FR2 feito** (`experiments4.rs`, `results/heterogeneity/`): com perfis por classe e 30
 milhões de pagamentos, o limite apertado de 10 s é no máximo 0,042% (janela: 0,46%); K1 segue
-longe de disparar. **Faltam FR3 a FR7.** A escala (R2) e a heterogeneidade continuam com uma
+longe de disparar. **FR3 feito** (`bound.rs::window_floors`, METHODOLOGY §10): dentro das janelas fechadas o piso
+ganha um termo de fronteira (o que foi recebido nos `d` antes da janela); é mais apertado que a
+forma de janela nas 120 combinações do `funding-windows`; no fim de semana com σ calibrado o
+limite de 10 s é ≤ 0,03%. **FR4 feito** de outro modo: as tabelas das seções 7, 9, 10 e 11 do
+`SUMMARY` trazem obtido, apertado e janela lado a lado, e `scripts/summarize.py::check_sandwich`
+recusa escrever o resumo se alguma linha violar obtido ≤ apertado ≤ janela (AC2). **FR6 feito**
+(README, ASSESSMENT Atualização 4, NOVELTY, PAPER_OUTLINE, METHODOLOGY); o rascunho do JOSS não
+citava o argumento antigo. **Faltam FR5 (distribuição do piso por participante) e FR7 (interface
+web).** A escala (R2) e a heterogeneidade continuam com uma
 semente por ponto.
 
 ## Requisitos
