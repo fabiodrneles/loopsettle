@@ -74,9 +74,11 @@ proptest! {
         max_delay in 1u64..6_000,
         mode in mode_strategy(),
         max_len in 2usize..6,
+        strict in any::<bool>(),
     ) {
         let mut cfg = MicroCycleConfig::new(window, max_delay, mode);
         cfg.max_cycle_len = max_len;
+        cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
         let mut eng = AtomicMicroCycle::new(cfg, 6).with_log();
         let mut ledger = Ledger::new(opening);
         let mut rec = Recorder::default();

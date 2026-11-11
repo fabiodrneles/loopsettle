@@ -6,7 +6,8 @@ use loopsettle_core::json::Json;
 use loopsettle_core::*;
 
 /// Which engine to build. Parsed from strings such as `gross`, `deferred:10`,
-/// `micro:all:1000:5000` (mode, window_ms, max_delay_ms).
+/// `micro:all:1000:5000` (mode, window_ms, max_delay_ms), optionally followed by the maximum
+/// cycle length and, for `shortfall`, the queue discipline: `micro:shortfall:500:10000:6:fifo`.
 #[derive(Clone, Debug, PartialEq)]
 pub enum EngineSpec {
     Gross,
@@ -20,6 +21,8 @@ pub struct MicroCycleSpec {
     pub window_ms: TimeMs,
     pub max_delay_ms: TimeMs,
     pub max_cycle_len: usize,
+    /// gross-retry order in `shortfall` mode (`bypass` by default, or `fifo`)
+    pub discipline: QueueDiscipline,
 }
 
 impl EngineSpec {
@@ -36,7 +39,15 @@ impl EngineSpec {
                     _ => return Err(format!("engine '{s}': mode must be all|shortfall")),
                 };
                 let max_cycle_len = if parts.len() > 4 { num(4)? as usize } else { 6 };
-                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len }))
+                let discipline = match parts.get(5).copied() {
+                    None | Some("bypass") => QueueDiscipline::BypassFifo,
+                    Some("fifo") => QueueDiscipline::StrictFifoPerPayer,
+                    Some(x) => return Err(format!("engine '{s}': discipline must be fifo|bypass, got '{x}'")),
+                };
+                if parts.len() > 6 {
+                    return Err(format!("engine '{s}': too many fields"));
+                }
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len, discipline }))
             }
             _ => Err(format!("unknown engine '{s}'")),
         }
@@ -49,6 +60,7 @@ impl EngineSpec {
             EngineSpec::Micro(m) => {
                 let mut c = MicroCycleConfig::new(m.window_ms, m.max_delay_ms, m.mode);
                 c.max_cycle_len = m.max_cycle_len;
+                c.discipline = m.discipline;
                 Box::new(AtomicMicroCycle::new(c, n))
             }
         }
@@ -63,7 +75,8 @@ impl EngineSpec {
                 .set("mode", if m.mode == QueueMode::QueueAll { "all" } else { "shortfall" })
                 .set("window_ms", m.window_ms)
                 .set("max_delay_ms", m.max_delay_ms)
-                .set("max_cycle_len", m.max_cycle_len),
+                .set("max_cycle_len", m.max_cycle_len)
+                .set("discipline", if m.discipline == QueueDiscipline::StrictFifoPerPayer { "fifo" } else { "bypass" }),
         }
     }
 }
@@ -126,7 +139,7 @@ impl EngineResult {
             .set("delay_max_ms", m.delay.max())
             .set("delay_mean_ms", m.delay.mean())
             .set("delay_value_weighted_mean_ms", m.value_weighted_mean_delay_ms())
-            .set("share_settled_within_2800ms", m.delay.fraction_at_most(2_800));
+            .set("share_settled_within_2800ms", m.share_within_ms(SLA_PIX_MS).unwrap_or_else(|| m.delay.fraction_at_most(SLA_PIX_MS)));
         for (k, v) in &self.stats {
             j.push(k, *v);
         }
@@ -231,6 +244,11 @@ mod tests {
             _ => panic!(),
         }
         assert!(EngineSpec::parse("micro:x:1:1").is_err());
+        match EngineSpec::parse("micro:shortfall:500:2000:4:fifo").unwrap() {
+            EngineSpec::Micro(m) => assert!(m.max_cycle_len == 4 && m.discipline == QueueDiscipline::StrictFifoPerPayer),
+            _ => panic!(),
+        }
+        assert!(EngineSpec::parse("micro:shortfall:500:2000:4:lifo").is_err());
     }
 
     #[test]

@@ -128,7 +128,7 @@ pub fn run(args: &[String], settle: bool) -> Result<(), String> {
                 f(100.0 * e.saving_vs(ub)),
                 e.delay_q(0.5).to_string(),
                 e.delay_q(0.95).to_string(),
-                f(m.delay.fraction_at_most(2800)),
+                f(m.share_within_ms(2_800).unwrap_or_else(|| m.delay.fraction_at_most(2_800))),
                 f(m.value_by_kind[1] as f64 / settled),
             ]);
             ejson.push(e.to_json(ub, lb));

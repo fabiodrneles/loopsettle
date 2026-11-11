@@ -82,7 +82,27 @@ impl LogHistogram {
         }
         self.max
     }
-    /// Fraction of recorded values `<= v` (exact when `v` is a bucket lower bound or < 64).
+    /// Lower and upper bound of the `q` quantile: the true value lies in `[lo, hi]`
+    /// (`hi - lo` is at most 1/64 of the value; both are equal below 64).
+    pub fn quantile_bounds(&self, q: f64) -> (u64, u64) {
+        if self.total == 0 {
+            return (0, 0);
+        }
+        let rank = ((q * self.total as f64).ceil() as u64).clamp(1, self.total);
+        let mut acc = 0;
+        for (i, &c) in self.counts.iter().enumerate() {
+            acc += c;
+            if acc >= rank {
+                let lo = Self::lower_bound(i).min(self.max);
+                let hi = (Self::lower_bound(i + 1).saturating_sub(1)).min(self.max).max(lo);
+                return (lo, hi);
+            }
+        }
+        (self.max, self.max)
+    }
+    /// Fraction of recorded values `<= v`. **Approximate** above 63: it counts the whole
+    /// bucket that contains `v` (up to 1/64 too far). For a regulatory threshold use the exact
+    /// counters of [`RunMetrics::share_within_ms`]. (Exact when `v` is a bucket lower bound or < 64.)
     pub fn fraction_at_most(&self, v: u64) -> f64 {
         if self.total == 0 {
             return 1.0;
@@ -132,8 +152,8 @@ impl FlowStats {
         let (a, b) = (p.payer as usize, p.payee as usize);
         self.count += 1;
         self.gross_value += p.amount as i128;
-        self.out_value[a] += p.amount;
-        self.in_value[b] += p.amount;
+        self.out_value[a] = self.out_value[a].checked_add(p.amount).expect("outflow overflows i64 cents");
+        self.in_value[b] = self.in_value[b].checked_add(p.amount).expect("inflow overflows i64 cents");
         self.cum_net[a] -= p.amount;
         self.cum_net[b] += p.amount;
         if self.cum_net[a] < self.min_cum_net[a] {
@@ -203,7 +223,14 @@ pub struct RunMetrics {
     pub delay: LogHistogram,
     /// value-weighted delay sum (cents * ms), for the value-weighted mean delay
     pub value_delay_sum: f64,
+    /// delay thresholds (ms) counted exactly; default `[2_800]`, the Pix 50% target
+    pub sla_thresholds_ms: Vec<TimeMs>,
+    /// number of settled payments with delay `<=` each threshold
+    pub sla_counts: Vec<u64>,
 }
+
+/// The Pix "Manual de Tempos" target used across the reports: 50% settled within 2.8 s.
+pub const SLA_PIX_MS: TimeMs = 2_800;
 
 pub fn kind_index(k: SettleKind) -> usize {
     match k {
@@ -225,7 +252,22 @@ impl RunMetrics {
             rejected_value_by_payer: vec![0; n],
             delay: LogHistogram::default(),
             value_delay_sum: 0.0,
+            sla_thresholds_ms: vec![SLA_PIX_MS],
+            sla_counts: vec![0],
         }
+    }
+    /// Same, with other exact delay thresholds.
+    pub fn with_sla_thresholds(n: usize, thresholds_ms: &[TimeMs]) -> Self {
+        let mut m = Self::new(n);
+        m.sla_thresholds_ms = thresholds_ms.to_vec();
+        m.sla_counts = vec![0; thresholds_ms.len()];
+        m
+    }
+    /// Exact share of settled payments with delay `<= ms`; `None` if `ms` is not one of the
+    /// configured thresholds. 1.0 when nothing settled (as `fraction_at_most`).
+    pub fn share_within_ms(&self, ms: TimeMs) -> Option<f64> {
+        let k = self.sla_thresholds_ms.iter().position(|&t| t == ms)?;
+        Some(if self.settled_count == 0 { 1.0 } else { self.sla_counts[k] as f64 / self.settled_count as f64 })
     }
     pub fn value_weighted_mean_delay_ms(&self) -> f64 {
         if self.settled_value == 0 { 0.0 } else { self.value_delay_sum / self.settled_value as f64 }
@@ -241,6 +283,11 @@ impl Sink for RunMetrics {
         self.value_by_kind[kind_index(kind)] += p.amount as i128;
         self.count_by_kind[kind_index(kind)] += 1;
         self.delay.record(d);
+        for (k, &th) in self.sla_thresholds_ms.iter().enumerate() {
+            if d <= th {
+                self.sla_counts[k] += 1;
+            }
+        }
         self.value_delay_sum += p.amount as f64 * d as f64;
     }
     fn rejected(&mut self, p: &Payment, _t: TimeMs) {

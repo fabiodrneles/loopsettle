@@ -11,7 +11,7 @@ use std::collections::{BTreeMap, VecDeque};
 // =======================================================================================
 
 /// Deferred net settlement at fixed times (`cycles_per_day` evenly spaced cycles, the last
-/// one at the end of each day; UPI-style with 10 cycles/day as a reference).
+/// one exactly at the end of each day; UPI-style with 10 cycles/day as a reference).
 ///
 /// Every payment settles in the next cycle, so its settlement time is known on arrival:
 /// the engine reports it immediately and keeps only the per-participant net deltas
@@ -20,7 +20,8 @@ use std::collections::{BTreeMap, VecDeque};
 #[derive(Clone, Debug)]
 pub struct DeferredNet {
     pub cycles_per_day: u32,
-    interval: TimeMs,
+    /// index of the next cycle (1 = first cycle of day 0)
+    next_index: u64,
     next_cycle: TimeMs,
     deltas: Vec<Cents>,
     pending: usize,
@@ -29,8 +30,20 @@ pub struct DeferredNet {
 impl DeferredNet {
     pub fn new(cycles_per_day: u32, participants: usize) -> Self {
         assert!(cycles_per_day >= 1);
-        let interval = MS_PER_DAY / cycles_per_day as TimeMs;
-        DeferredNet { cycles_per_day, interval, next_cycle: interval, deltas: vec![0; participants], pending: 0 }
+        let mut d = DeferredNet { cycles_per_day, next_index: 1, next_cycle: 0, deltas: vec![0; participants], pending: 0 };
+        d.next_cycle = d.cycle_time(1);
+        d
+    }
+    /// Time of cycle `k >= 1`: cycle `j` of a day is at `floor(j * day / cycles_per_day)`, so
+    /// the last cycle of every day falls exactly at the end of the day even when
+    /// `cycles_per_day` does not divide it (no rounding error accumulates).
+    fn cycle_time(&self, k: u64) -> TimeMs {
+        let c = self.cycles_per_day as u64;
+        (k / c) * MS_PER_DAY + (k % c) * MS_PER_DAY / c
+    }
+    /// Longest gap between two consecutive cycles = the engine's maximum settlement delay.
+    pub fn max_delay_ms(&self) -> TimeMs {
+        MS_PER_DAY.div_ceil(self.cycles_per_day as TimeMs)
     }
     fn settle_batch(&mut self, ledger: &mut Ledger) {
         if self.pending > 0 {
@@ -48,7 +61,8 @@ impl SettlementEngine for DeferredNet {
     fn advance_to(&mut self, t: TimeMs, ledger: &mut Ledger, _s: &mut dyn Sink) {
         while self.next_cycle <= t {
             self.settle_batch(ledger);
-            self.next_cycle += self.interval;
+            self.next_index += 1;
+            self.next_cycle = self.cycle_time(self.next_index);
         }
     }
     fn submit(&mut self, p: Payment, _l: &mut Ledger, sink: &mut dyn Sink) {
@@ -78,6 +92,20 @@ pub enum QueueMode {
     QueueOnShortfall,
 }
 
+/// Order in which one payer's queued payments may settle gross in `QueueOnShortfall`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum QueueDiscipline {
+    /// A payment that fits settles even if an older, larger payment of the same payer is
+    /// still queued (bypass FIFO; DECISIONS.md D13). The default.
+    #[default]
+    BypassFifo,
+    /// A payer's payments settle gross strictly in arrival order: a new payment queues behind
+    /// anything the payer already has queued, and a retry stops at the payer's first payment
+    /// that does not fit. Cycles may still settle a queued payment out of order (that is
+    /// what a liquidity-saving mechanism is for).
+    StrictFifoPerPayer,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct MicroCycleConfig {
     pub window_ms: TimeMs,
@@ -85,11 +113,13 @@ pub struct MicroCycleConfig {
     pub mode: QueueMode,
     /// Longest cycle searched (2 = bilateral only). Bounded to keep the search cheap.
     pub max_cycle_len: usize,
+    /// Only used by `QueueOnShortfall`.
+    pub discipline: QueueDiscipline,
 }
 
 impl MicroCycleConfig {
     pub fn new(window_ms: TimeMs, max_delay_ms: TimeMs, mode: QueueMode) -> Self {
-        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6 }
+        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo }
     }
 }
 
@@ -272,13 +302,38 @@ impl AtomicMicroCycle {
         }
     }
 
-    /// QueueOnShortfall: retry queued payments gross in arrival order (FIFO per edge).
+    /// QueueOnShortfall: retry queued payments gross in arrival order, to a fixed point.
+    ///
+    /// One pass visits every queued payment in arrival order and settles those that fit, so
+    /// several payments of the same edge can go in one window. A settlement credits a payee
+    /// that an earlier part of the pass may have skipped for lack of funds, so passes repeat
+    /// until one settles nothing. With `StrictFifoPerPayer`, a payer is skipped for the rest
+    /// of the pass after its first payment that does not fit.
     fn retry_gross(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        let snapshot: Vec<Payment> = self.deadlines.iter().copied().filter(|p| self.is_head(p)).collect();
-        for p in snapshot {
-            if self.is_head(&p) && ledger.transfer(p.payer, p.payee, p.amount) {
-                self.pop_head(p.payer, p.payee);
-                sink.settled(&p, t, SettleKind::Gross);
+        let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        let mut stuck = vec![false; if strict { self.out.len() } else { 0 }];
+        loop {
+            let mut progressed = false;
+            stuck.iter_mut().for_each(|b| *b = false);
+            // Index loop: `deadlines` is not modified here, and copying a `Payment` out of it
+            // ends the borrow before the queues are changed.
+            for i in 0..self.deadlines.len() {
+                let p = self.deadlines[i];
+                // Still queued <=> head of its edge *now* (older payments of the edge were
+                // visited earlier in this pass).
+                if !self.is_head(&p) || (strict && stuck[p.payer as usize]) {
+                    continue;
+                }
+                if ledger.transfer(p.payer, p.payee, p.amount) {
+                    self.pop_head(p.payer, p.payee);
+                    sink.settled(&p, t, SettleKind::Gross);
+                    progressed = true;
+                } else if strict {
+                    stuck[p.payer as usize] = true;
+                }
+            }
+            if !progressed || self.queued == 0 {
+                break;
             }
         }
     }
@@ -313,7 +368,8 @@ impl SettlementEngine for AtomicMicroCycle {
             QueueMode::QueueAll => "all",
             QueueMode::QueueOnShortfall => "shortfall",
         };
-        format!("micro_cycle_{m}_w{}_d{}", self.cfg.window_ms, self.cfg.max_delay_ms)
+        let f = if self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer { "_fifo" } else { "" };
+        format!("micro_cycle_{m}_w{}_d{}{f}", self.cfg.window_ms, self.cfg.max_delay_ms)
     }
 
     /// Fire window ticks and deadlines due at or before `t`, in time order (a tick before
@@ -350,7 +406,8 @@ impl SettlementEngine for AtomicMicroCycle {
     }
 
     fn submit(&mut self, p: Payment, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        if self.cfg.mode == QueueMode::QueueOnShortfall && ledger.transfer(p.payer, p.payee, p.amount) {
+        let behind_queue = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer && !self.out[p.payer as usize].is_empty();
+        if self.cfg.mode == QueueMode::QueueOnShortfall && !behind_queue && ledger.transfer(p.payer, p.payee, p.amount) {
             sink.settled(&p, p.t_arrival, SettleKind::Gross);
             return;
         }
@@ -371,7 +428,7 @@ impl SettlementEngine for AtomicMicroCycle {
         if let Some(last) = self.deadlines.back().map(|p| p.t_arrival + self.cfg.max_delay_ms) {
             self.advance_to(last, ledger, sink);
         }
-        debug_assert_eq!(self.queued, 0);
+        assert_eq!(self.queued, 0, "every queued payment settles or expires by its deadline");
     }
 
     fn queued(&self) -> usize {

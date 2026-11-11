@@ -108,7 +108,8 @@ impl Ledger {
 
     fn apply(&mut self, p: ParticipantId, delta: Cents) {
         let i = p as usize;
-        self.balance[i] += delta;
+        // Checked: a silent wrap-around on real data would corrupt every result after it.
+        self.balance[i] = self.balance[i].checked_add(delta).expect("balance overflows i64 cents");
         if self.balance[i] < self.min_balance[i] {
             self.min_balance[i] = self.balance[i];
         }
