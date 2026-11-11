@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.1.0+git.222730f",
+  "code_version": "0.1.0+git.5d140a4",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
   "platform": "x86_64-linux",

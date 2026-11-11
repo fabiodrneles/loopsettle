@@ -94,7 +94,7 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -131,7 +131,7 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -449,7 +449,7 @@ A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos di
 | 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.0ef4e7d-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 
@@ -491,7 +491,7 @@ O limite apertado por participante (uma semente): quanto cada um poderia economi
 | 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 
 ## 12. Liquidez restrita: rejeição, atraso e liquidez equivalente
-_seed `20260930`, código `0.1.0+git.b6548e3-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
+_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
 
 Saldos de abertura fixos (regra `ub`: α × UB de cada participante; regra `outflow`: α × UB total, repartido pelo volume de saída) e o que acontece em cada desenho. Dois horizontes: espera de até 10 s (prazo de pagamento instantâneo) e de até 1 hora (regime dos mecanismos de economia de liquidez de alto valor). Pagamento rejeitado não é tentado de novo (ASSUMPTION). Médias de 10 sementes, 300 mil pagamentos por dia.
 

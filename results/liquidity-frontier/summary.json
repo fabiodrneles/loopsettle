@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "liquidity-frontier",
   "seed": 20260930,
-  "code_version": "0.1.0+git.b6548e3-dirty",
+  "code_version": "0.1.0+git.5d140a4",
   "config_file": "experiments/liquidity-frontier.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment liquidity-frontier",
   "platform": "x86_64-linux",

@@ -94,7 +94,7 @@ By settlement design (unlimited liquidity; maximum wait in seconds):
 Figure: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-cycles: saving × delay
-_seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, code `0.1.0+git.5d140a4`, command `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | window (ms) | max delay (ms) | saving vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2.8 s | value in cycles |
 |---|---|---|---|---|---|---|---|
@@ -131,7 +131,7 @@ Constrained liquidity (opening balance = a fraction of each participant's UB):
 Figure: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Stress: a participant offline for 30 minutes
-_seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, code `0.1.0+git.5d140a4`, command `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participant 0 offline from 10.0h for 30 min: 11692 payments (R$ 5 866 760) delayed, on average 903 s.
 
@@ -449,7 +449,7 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
-_seed `20260930`, code `0.1.0+git.0ef4e7d-dirty`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, code `0.1.0+git.5d140a4`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
 
@@ -491,7 +491,7 @@ The tight bound per participant (one seed): the most each one could save, in % o
 | 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 
 ## 12. Constrained liquidity: rejection, delay and equivalent liquidity
-_seed `20260930`, code `0.1.0+git.b6548e3-dirty`, command `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
+_seed `20260930`, code `0.1.0+git.5d140a4`, command `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
 
 Fixed opening balances (rule `ub`: α × each participant's UB; rule `outflow`: α × total UB, shared by outflow volume) and what happens under each design. Two horizons: holding a payment for at most 10 s (an instant-payment deadline) and for at most 1 hour (the regime of large-value liquidity-saving mechanisms). A rejected payment is not retried (ASSUMPTION). Means over 10 seeds, 300,000 payments a day.
 
