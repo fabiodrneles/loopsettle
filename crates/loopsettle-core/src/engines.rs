@@ -115,11 +115,15 @@ pub struct MicroCycleConfig {
     pub max_cycle_len: usize,
     /// Only used by `QueueOnShortfall`.
     pub discipline: QueueDiscipline,
+    /// `false` turns the cycle search off: with `QueueOnShortfall` the engine is then a plain
+    /// queue (settle gross when funds allow, retry every window, reject at the deadline) — the
+    /// "FIFO queue" baseline of the liquidity-saving-mechanism literature.
+    pub search_cycles: bool,
 }
 
 impl MicroCycleConfig {
     pub fn new(window_ms: TimeMs, max_delay_ms: TimeMs, mode: QueueMode) -> Self {
-        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo }
+        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo, search_cycles: true }
     }
 }
 
@@ -342,7 +346,9 @@ impl AtomicMicroCycle {
         if self.queued == 0 {
             return;
         }
-        self.run_cycles(t, ledger, sink);
+        if self.cfg.search_cycles {
+            self.run_cycles(t, ledger, sink);
+        }
         if self.cfg.mode == QueueMode::QueueOnShortfall && self.queued > 0 {
             self.retry_gross(t, ledger, sink);
         }
@@ -368,7 +374,11 @@ impl SettlementEngine for AtomicMicroCycle {
             QueueMode::QueueAll => "all",
             QueueMode::QueueOnShortfall => "shortfall",
         };
-        let f = if self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer { "_fifo" } else { "" };
+        let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        if !self.cfg.search_cycles && self.cfg.mode == QueueMode::QueueOnShortfall {
+            return format!("queue_{}_d{}", if strict { "fifo" } else { "bypass" }, self.cfg.max_delay_ms);
+        }
+        let f = if strict { "_fifo" } else { "" };
         format!("micro_cycle_{m}_w{}_d{}{f}", self.cfg.window_ms, self.cfg.max_delay_ms)
     }
 

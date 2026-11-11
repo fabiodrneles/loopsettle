@@ -141,7 +141,7 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     let mut specs = vec![EngineSpec::Gross];
     for &d in &delays {
         for &w in &windows {
-            specs.push(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: w as u64, max_delay_ms: d as u64, max_cycle_len: max_len, discipline: Default::default() }));
+            specs.push(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: w as u64, max_delay_ms: d as u64, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true }));
         }
     }
     let t0 = std::time::Instant::now();
@@ -186,8 +186,8 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     let mut sjson = Vec::new();
     let cspecs = [
         EngineSpec::Gross,
-        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default() }),
-        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default() }),
+        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true }),
+        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true }),
     ];
     for &fr in &fracs {
         let opening: Vec<i64> = ubs.iter().map(|&u| (u as f64 * fr).floor() as i64).collect();

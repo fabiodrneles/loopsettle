@@ -49,7 +49,7 @@ fn scenario(p: &Params) -> ScenarioConfig {
 }
 
 fn micro(mode: QueueMode, w: u64, d: u64) -> EngineSpec {
-    EngineSpec::Micro(MicroCycleSpec { mode, window_ms: w.max(1), max_delay_ms: d, max_cycle_len: 6, discipline: Default::default() })
+    EngineSpec::Micro(MicroCycleSpec { mode, window_ms: w.max(1), max_delay_ms: d, max_cycle_len: 6, discipline: Default::default(), search_cycles: true })
 }
 
 pub fn simulate_json(p: &Params) -> Json {

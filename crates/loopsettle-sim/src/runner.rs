@@ -23,6 +23,8 @@ pub struct MicroCycleSpec {
     pub max_cycle_len: usize,
     /// gross-retry order in `shortfall` mode (`bypass` by default, or `fifo`)
     pub discipline: QueueDiscipline,
+    /// `false` for the plain queue (`queue:fifo|bypass:<max_delay_ms>[:<retry_ms>]`)
+    pub search_cycles: bool,
 }
 
 impl EngineSpec {
@@ -32,6 +34,20 @@ impl EngineSpec {
         match parts[0] {
             "gross" => Ok(EngineSpec::Gross),
             "deferred" => Ok(EngineSpec::Deferred { cycles_per_day: num(1)? as u32 }),
+            // Plain queue: settle gross when funds allow, otherwise wait (retried every
+            // `retry_ms`, 100 ms by default) and reject at the deadline. No netting.
+            "queue" => {
+                let discipline = match parts.get(1).copied() {
+                    Some("fifo") => QueueDiscipline::StrictFifoPerPayer,
+                    Some("bypass") => QueueDiscipline::BypassFifo,
+                    _ => return Err(format!("engine '{s}': discipline must be fifo|bypass")),
+                };
+                let window_ms = if parts.len() > 3 { num(3)? } else { 100 };
+                if parts.len() > 4 || window_ms == 0 {
+                    return Err(format!("engine '{s}': expected queue:fifo|bypass:<max_delay_ms>[:<retry_ms>]"));
+                }
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms, max_delay_ms: num(2)?, max_cycle_len: 2, discipline, search_cycles: false }))
+            }
             "micro" => {
                 let mode = match parts.get(1).copied() {
                     Some("all") => QueueMode::QueueAll,
@@ -47,7 +63,7 @@ impl EngineSpec {
                 if parts.len() > 6 {
                     return Err(format!("engine '{s}': too many fields"));
                 }
-                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len, discipline }))
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len, discipline, search_cycles: true }))
             }
             _ => Err(format!("unknown engine '{s}'")),
         }
@@ -61,6 +77,7 @@ impl EngineSpec {
                 let mut c = MicroCycleConfig::new(m.window_ms, m.max_delay_ms, m.mode);
                 c.max_cycle_len = m.max_cycle_len;
                 c.discipline = m.discipline;
+                c.search_cycles = m.search_cycles;
                 Box::new(AtomicMicroCycle::new(c, n))
             }
         }
@@ -71,7 +88,7 @@ impl EngineSpec {
             EngineSpec::Gross => Json::obj().set("kind", "gross"),
             EngineSpec::Deferred { cycles_per_day } => Json::obj().set("kind", "deferred").set("cycles_per_day", cycles_per_day),
             EngineSpec::Micro(m) => Json::obj()
-                .set("kind", "micro")
+                .set("kind", if m.search_cycles { "micro" } else { "queue" })
                 .set("mode", if m.mode == QueueMode::QueueAll { "all" } else { "shortfall" })
                 .set("window_ms", m.window_ms)
                 .set("max_delay_ms", m.max_delay_ms)
@@ -249,6 +266,52 @@ mod tests {
             _ => panic!(),
         }
         assert!(EngineSpec::parse("micro:shortfall:500:2000:4:lifo").is_err());
+        match EngineSpec::parse("queue:fifo:10000").unwrap() {
+            EngineSpec::Micro(m) => assert!(!m.search_cycles && m.window_ms == 100 && m.max_delay_ms == 10_000 && m.discipline == QueueDiscipline::StrictFifoPerPayer),
+            _ => panic!(),
+        }
+        assert!(EngineSpec::parse("queue:lifo:10").is_err() && EngineSpec::parse("queue:fifo:10:0").is_err());
+    }
+
+    /// The plain queue is gross settlement when nobody is short of funds: with unlimited
+    /// liquidity, and with opening balances equal to each participant's UB.
+    #[test]
+    fn queue_equals_gross_when_liquidity_suffices() {
+        let cfg = ScenarioConfig { participants: 25, payments_per_day: 25_000.0, n_big: 3, n_mid: 5, ..Default::default() };
+        let specs = [EngineSpec::Gross, EngineSpec::parse("queue:fifo:10000").unwrap(), EngineSpec::parse("queue:bypass:10000").unwrap()];
+        let a = run(&cfg, &specs, &Opening::Unlimited, false, None);
+        let b = run(&cfg, &specs, &Opening::Given(a.flow.ubs()), false, None);
+        for o in [&a, &b] {
+            for r in &o.results[1..] {
+                assert_eq!(r.liquidity_by_participant, o.results[0].liquidity_by_participant, "{}", r.name);
+                assert_eq!((r.metrics.rejected_count, r.metrics.delay.max(), r.metrics.count_by_kind[1]), (0, 0, 0), "{}", r.name);
+            }
+        }
+    }
+
+    /// With too little liquidity the queue never settles in cycles and gives every payment
+    /// exactly one outcome. It does **not** have to reject less than gross settlement: in this
+    /// scenario it rejects slightly more (159.72 M against 159.59 M of 623 M), because the
+    /// shortfall lasts hours, not seconds, and a payment released late uses funds that gross
+    /// settlement would have given to another payment. So nothing is asserted about the order
+    /// of the two rejection totals; the liquidity-frontier experiment measures it.
+    #[test]
+    fn queue_under_constrained_liquidity_is_consistent() {
+        let cfg = ScenarioConfig { participants: 25, payments_per_day: 25_000.0, n_big: 3, n_mid: 5, ..Default::default() };
+        let specs = [EngineSpec::Gross, EngineSpec::parse("queue:fifo:10000").unwrap(), EngineSpec::parse("queue:bypass:10000").unwrap()];
+        let ubs = run(&cfg, &specs[..1], &Opening::Unlimited, false, None).flow.ubs();
+        let half: Vec<Cents> = ubs.iter().map(|u| u / 2).collect();
+        let o = run(&cfg, &specs, &Opening::Given(half), false, None);
+        assert!(o.results[0].metrics.rejected_value > 0);
+        for r in &o.results {
+            let m = &r.metrics;
+            assert_eq!(m.settled_count + m.rejected_count, o.flow.count, "{}", r.name);
+            assert_eq!(m.settled_value + m.rejected_value, o.flow.gross_value, "{}", r.name);
+            assert_eq!(m.count_by_kind[1], 0, "{}", r.name);
+            assert!(m.delay.max() <= 10_000, "{}", r.name);
+            assert!(r.liquidity_by_participant.iter().zip(&ubs).all(|(l, u)| *l <= u / 2), "{}: no account goes below zero", r.name);
+        }
+        assert!(o.results[1].metrics.delay.max() > 0, "some payment waited in the queue");
     }
 
     #[test]
