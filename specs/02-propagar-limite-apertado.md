@@ -13,7 +13,10 @@ semente com σ = 0,4, o que `CLAIMS` ("não pode afirmar" 11) proíbe publicar.
 e escala de 1 a 30 milhões. Limite apertado de 10 s: 0,138% (σ = 0), 0,041% [0,025; 0,056]
 (σ = 0,4), 0,018% (σ = 0,8), 0,014% [0,007; 0,021] (σ = 1,0); com 30 milhões, 0,024%. Obtido /
 apertado: 0,38–0,46 (diferida a cada 10 s), 0,13–0,28 (micro-ciclos). `CLAIMS` 1g já usa esses
-números. **Faltam FR2 a FR7.** A escala (R2) continua com uma semente por ponto.
+números. **FR2 feito** (`experiments4.rs`, `results/heterogeneity/`): com perfis por classe e 30
+milhões de pagamentos, o limite apertado de 10 s é no máximo 0,042% (janela: 0,46%); K1 segue
+longe de disparar. **Faltam FR3 a FR7.** A escala (R2) e a heterogeneidade continuam com uma
+semente por ponto.
 
 ## Requisitos
 

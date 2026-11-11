@@ -1,5 +1,17 @@
 # 09 — Estatística, reprodutibilidade e CI (P0)
 
+> **Estado em 11/11/2026** (detalhe no REVIEW 83):
+> - **E2 feito:** `stats::par_map`, idêntico com 1, 2 e 4 threads.
+> - **E3 feito:** resultados-ouro idênticos em Linux, Windows e macOS no CI; não foi preciso
+>   trocar a libm.
+> - **E4 feito**, menos `cargo fmt --check` (295 diferenças; decisão do dono) e o `MANIFEST.sha256`.
+> - **E6 feito:** esquema, plataforma, rustc e hash do `Cargo.lock` no `summary.json`.
+> - **E1 parcial:** `stats.rs` existe (`mean_ci95`); só `robustness` e `bias-calibration` usam
+>   várias sementes. Falta dar colunas de IC aos outros oito experimentos.
+> - **E5 parcial:** metamórficos e leitores feitos; faltam o simulador ingênuo de referência e a
+>   rodada de mutação.
+> - Para mudar um resultado de propósito: `make golden`, conferir o `git diff` e commitar junto.
+
 Achados A9, A10, A11. Objetivo: que qualquer número do repositório tenha incerteza declarada,
 se reproduza em qualquer máquina e não possa mudar sem alguém perceber.
 

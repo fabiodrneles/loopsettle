@@ -241,3 +241,21 @@ the real laptop (i3, 4 GB).
     about 0.6 s per million payments (10 million payments: 26.1 s against 19.8 s for gross, CSV
     parsing included), so it is not the bottleneck; the rewrite must keep the exact cycle order
     and is left for when scale runs need it.
+83. **Reproducibility, statistics and CI (spec 09), 11 Nov 2026.** (a) `results-golden/` and
+    `scripts/golden.py`: a small run of every experiment, compared byte for byte in CI on Linux,
+    Windows and macOS, and with 1 and 2 threads. First run: identical on the three platforms
+    ([run 43061345632](https://github.com/fabiodrneles/loopsettle/actions/runs/43061345632)), so
+    the cross-platform doubt of the audit (A11) is settled for the golden scenarios. The check was
+    confirmed to fail on a changed file. (b) CI also runs clippy with `-D warnings`, the wasm build
+    and smoke test, and the bilingual-document check (`scripts/check_twins.py`). (c)
+    `crates/loopsettle-sim/tests/metamorphic.rs`: scaling amounts, relabelling participants,
+    shifting time, and 2,000 garbage inputs to the TOML and CSV readers (no panic found). (d)
+    Seeds and cases run in parallel (`stats::par_map`, 2 threads by default,
+    `LOOPSETTLE_THREADS`); output order is fixed, results identical with 1, 2 and 4 threads;
+    `robustness` went from 118 s to 75 s on 4 cores. (e) `summary.json` records a schema version,
+    platform, rustc and a hash of `Cargo.lock`. **Not done:** `cargo fmt --check` (the code is
+    not rustfmt-formatted: 295 diffs with the default width; reformatting is a separate, noisy
+    commit to be decided by the owner); several seeds in `baseline`, `potential-vs-realizable`,
+    `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows` and `regimes` (the helper
+    exists, each experiment's tables still need their CI columns); the naive reference simulator
+    for differential tests; `results/MANIFEST.sha256`.

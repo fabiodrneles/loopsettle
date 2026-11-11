@@ -28,14 +28,14 @@ frentes decidem se o trabalho vira referência:
 |---|---|---|---|---|
 | 00 | [Auditoria: achados com evidência](00-auditoria.md) | registro | escrito | ler primeiro |
 | 01 | [Piso de liquidez (limite apertado)](01-piso-de-liquidez.md) | ciência | **implementado** | — |
-| 02 | [Propagar o limite apertado](02-propagar-limite-apertado.md) | ciência + docs | FR1 feito; FR2–FR7 a fazer | P0 |
+| 02 | [Propagar o limite apertado](02-propagar-limite-apertado.md) | ciência + docs | FR1 e FR2 feitos; FR3–FR7 a fazer | P0 |
 | 03 | [Ótimo offline e o sanduíche](03-otimo-offline.md) | ciência | a fazer | P1 |
 | 04 | [Correções nos motores e nas métricas](04-correcoes-motores.md) | correção | **feito** (C1–C4, C6); C5 medido e adiado | P0 |
 | 05 | [Motores novos](05-motores-novos.md) | funcionalidade | a fazer | P1 |
 | 06 | [Fronteira com liquidez restrita](06-liquidez-restrita.md) | ciência | a fazer | P1 |
 | 07 | [Gerador: rajadas, vários dias, modelos nulos](07-gerador.md) | modelo | a fazer | P2 |
 | 08 | [Topologia: BFF, escala, circularidade temporal](08-topologia.md) | ciência | a fazer | P2 |
-| 09 | [Estatística, reprodutibilidade e CI](09-estatistica-reprodutibilidade-ci.md) | qualidade | a fazer | P0 |
+| 09 | [Estatística, reprodutibilidade e CI](09-estatistica-reprodutibilidade-ci.md) | qualidade | E2, E3, E4, E6 feitos; E1 e E5 parciais | P0 |
 | 10 | [Dados reais, interoperabilidade e interface](10-dados-reais-e-interface.md) | adoção | a fazer | P1 |
 
 Ordem sugerida: 04 → 09 → 02 → 06 → 03 → 05 → 10 → 07 → 08. A 04 e a 09 vêm antes porque

@@ -18,6 +18,13 @@
   02 (propagate the tight bound and fix the documents that still carry the old 1f argument).
   Measured here (Linux, 4 cores): `cargo test --workspace` passes; `experiment regimes` 3.2 s,
   7 MiB; CSVs of baseline, microcycle-sweep, robustness and regimes reproduce byte for byte.
+- **11 Nov 2026, later — specs 04 and 09 executed.** Engine fixes with regression tests
+  (`tests/spec04.rs`), golden results checked in CI on three platforms, parallel seeds. **Exact
+  next step:** spec 02 FR3–FR7 (funding windows with the tight bound, the sandwich table, and the
+  documents that still carry the old claim 1f), then spec 06. Before changing any engine or the
+  generator run `make verify`; to accept a change of results run `make golden` and commit it.
+  Measured (Linux, 4 cores, 2 worker threads): `robustness` 75 s, `heterogeneity` 127 s,
+  `funding-windows` 36 s, all others under 8 s; peak RSS at most 16 MiB; golden check 50 s.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

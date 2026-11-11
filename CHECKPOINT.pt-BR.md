@@ -19,6 +19,14 @@
   trazem o argumento antigo da 1f). Medido aqui (Linux, 4 núcleos): `cargo test --workspace`
   passa; `experiment regimes` 3,2 s, 7 MiB; os CSVs de baseline, microcycle-sweep, robustness e
   regimes se reproduzem byte a byte.
+- **11/11/2026, mais tarde — specs 04 e 09 executadas.** Correções nos motores com testes de
+  regressão (`tests/spec04.rs`), resultados-ouro conferidos no CI em três plataformas, sementes
+  em paralelo. **Próximo passo exato:** spec 02 FR3–FR7 (janelas de abastecimento com o limite
+  apertado, a tabela do sanduíche e os documentos que ainda trazem a afirmação 1f antiga), depois
+  a spec 06. Antes de mexer em motor ou gerador, rode `make verify`; para aceitar uma mudança de
+  resultados, rode `make golden` e faça o commit. Medido (Linux, 4 núcleos, 2 threads):
+  `robustness` 75 s, `heterogeneity` 127 s, `funding-windows` 36 s, os demais abaixo de 8 s; pico
+  de RAM de no máximo 16 MiB; checagem-ouro 50 s.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

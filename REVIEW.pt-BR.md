@@ -251,3 +251,21 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     de pagamentos (10 milhões: 26,1 s contra 19,8 s do bruto, com a leitura do CSV incluída), então
     não é o gargalo; a reescrita precisa manter exatamente a ordem dos ciclos e fica para quando
     as rodadas em escala precisarem.
+83. **Reprodutibilidade, estatística e CI (spec 09), 11/11/2026.** (a) `results-golden/` e
+    `scripts/golden.py`: uma rodada pequena de cada experimento, comparada byte a byte no CI em
+    Linux, Windows e macOS, e com 1 e 2 threads. Primeira rodada: idêntica nas três plataformas
+    ([run 43061345632](https://github.com/fabiodrneles/loopsettle/actions/runs/43061345632)); a
+    dúvida da auditoria sobre plataformas (A11) fica resolvida para os cenários-ouro. Foi
+    confirmado que a checagem falha quando um arquivo muda. (b) O CI também roda o clippy com
+    `-D warnings`, o build e o teste de fumaça do wasm e a checagem de documentos bilíngues
+    (`scripts/check_twins.py`). (c) `crates/loopsettle-sim/tests/metamorphic.rs`: multiplicar
+    valores, renomear participantes, deslocar horários, e 2.000 entradas de lixo nos leitores de
+    TOML e CSV (nenhum pânico). (d) Sementes e casos rodam em paralelo (`stats::par_map`, 2 threads
+    por padrão, `LOOPSETTLE_THREADS`); a ordem da saída é fixa e os resultados são idênticos com
+    1, 2 e 4 threads; o `robustness` caiu de 118 s para 75 s em 4 núcleos. (e) O `summary.json`
+    registra versão do esquema, plataforma, rustc e um hash do `Cargo.lock`. **Não feito:**
+    `cargo fmt --check` (o código não está no formato do rustfmt: 295 diferenças com a largura
+    padrão; reformatar é um commit separado e ruidoso, a decidir pelo dono); várias sementes em
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`,
+    `funding-windows` e `regimes` (a função de apoio existe, falta dar a cada tabela as colunas
+    de IC); o simulador ingênuo de referência para testes diferenciais; `results/MANIFEST.sha256`.

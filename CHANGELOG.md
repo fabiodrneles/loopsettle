@@ -10,6 +10,10 @@ whose results changed.
 - Liquidity floor (tight form of the delay bound): `liquidity_floors`, new columns in
   `loopsettle bound` and in the `regimes` experiment, METHODOLOGY §9b, claim 1g.
 - `specs/`: audit findings and the post-v0.1.0 roadmap as specifications.
+- `results-golden/` and `scripts/golden.py`: results regression test, run in CI on Linux, Windows
+  and macOS; clippy, wasm build and bilingual-docs check in CI; `make verify`.
+- Parallel seeds (`LOOPSETTLE_THREADS`, 2 by default) with thread-independent output.
+- Metamorphic tests; `summary.json` records schema, platform, rustc and a `Cargo.lock` hash.
 
 ### Fixed
 - `QueueOnShortfall` gross retry runs to a fixed point (it released one payment per edge per window).

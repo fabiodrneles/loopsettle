@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "bias-calibration",
   "seed": 20260930,
-  "code_version": "0.1.0+git.d5afc05",
+  "code_version": "0.1.0+git.222730f",
   "config_file": "experiments/bias-calibration.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment bias-calibration",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "92bf92e6a3855b5d",
   "scenario": {
     "participants": 200,
     "days": 1,

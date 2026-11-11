@@ -79,7 +79,7 @@ uma semente. As sementes rodam em série (`experiments3.rs:97`), com 4 threads o
 `.github/workflows/ci.yml`: sem `clippy`, sem `fmt --check`, sem build do wasm, sem teste de
 regressão dos resultados, sem verificação de documentos gêmeos. Spec 09.
 
-### A11 — Reprodutibilidade entre plataformas não foi verificada. HIPÓTESE
+### A11 — Reprodutibilidade entre plataformas. **Resolvido: idêntico em Linux, Windows e macOS** (CI, REVIEW 83). MEDIDO
 O gerador usa `exp`, `ln`, `powf` de `f64` (16 ocorrências em `crates/`), que em Rust chamam a
 libm do sistema. Linux (glibc) e Windows (MSVC) podem divergir no último bit, o que mudaria
 valores em centavos e, daí, todos os resultados. Nesta sessão os CSVs versionados se
