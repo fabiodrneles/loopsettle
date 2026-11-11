@@ -216,3 +216,21 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     `references.bib`. Cada um é redistribuído como publicado pelo autor ou
     instituição, com o link original; o revisor deve confirmar que a licença de cada um permite
     isso antes de divulgar o repositório (a remoção a pedido está declarada).
+79. **Piso de liquidez (limite de atraso apertado), 11/11/2026.** `bound.rs::liquidity_floors`,
+    METHODOLOGY §9b, CLAIMS 1g, D23. Para 10 s o limite cai de 0,76% para 0,054% do UB e a
+    compensação a cada 10 s obtém 51% dele (`results/regimes/bound_curve.csv`). **Riscos:** só
+    uma semente e σ = 0,4 (a spec 02 pede 10 sementes, quatro σ e escala); o teorema é simples o
+    bastante para já existir na literatura (spec 01, pergunta em aberto 1) — conferir antes de
+    afirmar novidade; o piso é por participante e a soma não é atingível (spec 03).
+80. **Afirmação 1f revista.** Com o limite apertado, o sistema de alto valor estilizado também dá
+    ≈ 0 (≤ 0,004%), então o limite de janela não reconcilia o LoopSettle com McMahon et al.; a
+    base de comparação (fila FIFO com liquidez restrita) reconcilia, e ela ainda não é simulada
+    (spec 06). A "Atualização 3" do ASSESSMENT, o README, o NOVELTY, o PAPER_OUTLINE e o rascunho
+    do JOSS ainda trazem o argumento antigo (spec 02, FR6). **Corrigir antes de submeter
+    qualquer texto.**
+81. **Auditoria de 11/11/2026 e o conjunto de specs.** `specs/00-auditoria.md` lista o que foi
+    lido, o que não foi e 14 achados com rótulo de evidência. Defeitos lidos e ainda sem teste:
+    `retry_gross` libera um pagamento por aresta por janela (só afeta resultados com liquidez
+    restrita), `fraction_at_most(2800)` conta atrasos até 2.815 ms, `DeferredNet` trunca o
+    intervalo quando o número de ciclos não divide o dia (nenhum resultado publicado afetado). A
+    reprodutibilidade bit a bit entre plataformas não foi verificada (spec 09 E3).

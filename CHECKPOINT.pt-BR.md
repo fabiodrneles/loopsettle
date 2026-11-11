@@ -10,6 +10,15 @@
 
 ## Estado atual
 
+- **11/11/2026 — auditoria, piso de liquidez, specs.** Resultado novo: o piso de liquidez
+  (`bound.rs::liquidity_floors`, METHODOLOGY §9b) é a forma apertada, por participante, do limite
+  de atraso; para 10 s ele é 0,054% do UB em vez de 0,76%. A afirmação 1f foi revista por causa
+  dele. O roteiro agora está em [`specs/`](specs/README.md): 11 especificações com evidência,
+  critérios de aceite e passos de validação. **Próximo passo exato:** specs 04 (correções nos
+  motores) → 09 (sementes, CI) → 02 (propagar o limite apertado e corrigir os documentos que ainda
+  trazem o argumento antigo da 1f). Medido aqui (Linux, 4 núcleos): `cargo test --workspace`
+  passa; `experiment regimes` 3,2 s, 7 MiB; os CSVs de baseline, microcycle-sweep, robustness e
+  regimes se reproduzem byte a byte.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

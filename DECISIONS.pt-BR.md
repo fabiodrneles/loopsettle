@@ -210,3 +210,22 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   participante e escrevem agregados; linhas por participante só com `--per-participant`. A saída vai
   para `loopsettle-out/` (ignorado pelo git), nunca para `results/`.
 - **Por quê:** uma instituição precisa poder rodar em dados confidenciais e compartilhar a saída.
+
+## D22 — Specs são documentos de trabalho, só em português
+- **Decisão:** `specs/` guarda o roteiro pós-v0.1.0 em especificações curtas (contexto e
+  evidência, requisitos, critérios de aceite, como validar). Ficam só em português; tudo o que o
+  usuário lê (README, docs, resultados) continua bilíngue.
+- **Alternativas:** arquivo gêmeo para cada spec.
+- **Por quê:** specs são instruções para quem continua a construção e mudam muito; um gêmeo para
+  cada dobra o custo sem leitor para ele. O CLAUDE.md pede documentação em português.
+- **Reverter:** traduzir `specs/*.md` para `*.md` + `*.pt-BR.md`, como na D17.
+
+## D23 — O limite de atraso é informado em duas formas; a apertada é o resultado
+- **Decisão:** o piso de liquidez `max_s [CO_i(s) − CI_i(s+d)]` (`UB − piso` = limite apertado)
+  é o limite que o estudo informa; a forma de janela `O_i[t* − d, t*]` fica como corolário e em
+  todas as colunas de CSV que já existiam, para os resultados anteriores seguirem comparáveis.
+- **Alternativas:** trocar a forma de janela em todo lugar; manter só a forma de janela.
+- **Por quê:** o limite apertado é 14× menor para 10 s no cenário calibrado e é atingido por um
+  participante sozinho, então é a afirmação mais forte e mais honesta; ele também mostrou que a
+  afirmação 1f (o limite de janela explica varejo × alto valor) era artefato da forma de janela.
+- **Reverter:** ignorar as colunas `tight_*` e `liquidity_floor`.

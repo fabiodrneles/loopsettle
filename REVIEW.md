@@ -208,3 +208,20 @@ the real laptop (i3, 4 GB).
     with an index and `references.bib`. Each is redistributed as published by its
     author or institution, with the original link; the reviewer should confirm that each
     licence allows it before the repository is promoted (removal on request is stated).
+79. **Liquidity floor (tight delay bound), 11 Nov 2026.** `bound.rs::liquidity_floors`,
+    METHODOLOGY §9b, CLAIMS 1g, D23. For 10 s the bound drops from 0.76% to 0.054% of UB and
+    netting every 10 s realises 51% of it (`results/regimes/bound_curve.csv`). **Risks:** one
+    seed and σ = 0.4 only (spec 02 asks for 10 seeds, four σ and scale); the theorem is simple
+    enough that it may already exist in the literature (spec 01, open question 1) — check before
+    claiming novelty; the floor is per participant and the sum is not attainable (spec 03).
+80. **Claim 1f revised.** With the tight bound the stylised large-value system also shows ≈ 0
+    (≤ 0.004%), so the window bound does not reconcile LoopSettle with McMahon et al.; the
+    baseline (FIFO queue under constrained liquidity) does, and that is not yet simulated
+    (spec 06). ASSESSMENT "Update 3", README, NOVELTY, PAPER_OUTLINE and the JOSS draft still
+    carry the old argument (spec 02, FR6). **This must be fixed before any text is submitted.**
+81. **Audit of 11 Nov 2026 and the spec set.** `specs/00-auditoria.md` lists what was read, what
+    was not, and 14 findings with evidence labels. Read-but-untested defects: `retry_gross`
+    releases one payment per edge per window (affects constrained-liquidity results only),
+    `fraction_at_most(2800)` counts delays up to 2,815 ms, `DeferredNet` truncates the interval
+    for cycle counts that do not divide the day (no published result affected). Cross-platform
+    bit-for-bit reproducibility is unverified (spec 09 E3).

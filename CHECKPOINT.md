@@ -10,6 +10,14 @@
 
 ## Current state
 
+- **11 Nov 2026 — audit, liquidity floor, specs.** New result: the liquidity floor
+  (`bound.rs::liquidity_floors`, METHODOLOGY §9b) is a tight per-participant form of the delay
+  bound; for 10 s it is 0.054% of UB instead of 0.76%. Claim 1f was revised because of it. The
+  roadmap now lives in [`specs/`](specs/README.md): 11 specifications with evidence, acceptance
+  criteria and validation steps. **Exact next step:** specs 04 (engine fixes) → 09 (seeds, CI) →
+  02 (propagate the tight bound and fix the documents that still carry the old 1f argument).
+  Measured here (Linux, 4 cores): `cargo test --workspace` passes; `experiment regimes` 3.2 s,
+  7 MiB; CSVs of baseline, microcycle-sweep, robustness and regimes reproduce byte for byte.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

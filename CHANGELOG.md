@@ -7,6 +7,14 @@ whose results changed.
 ## [Unreleased]
 
 ### Added
+- Liquidity floor (tight form of the delay bound): `liquidity_floors`, new columns in
+  `loopsettle bound` and in the `regimes` experiment, METHODOLOGY §9b, claim 1g.
+- `specs/`: audit findings and the post-v0.1.0 roadmap as specifications.
+
+### Changed
+- Claim 1f revised: the window bound does not explain retail vs large-value savings.
+
+### Added (earlier)
 - `paper/`: Portuguese draft of the JOSS paper, `paper.bib` and a JOSS-readiness checklist.
 - `CONTRIBUTING.md` (EN/PT) with support expectations; this changelog.
 

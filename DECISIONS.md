@@ -208,3 +208,22 @@ Each entry: what was decided, alternatives, why, and how to revert.
   write aggregates; per-participant rows only with `--per-participant`. Output goes to
   `loopsettle-out/` (git-ignored), never to `results/`.
 - **Why:** an institution must be able to run it on confidential data and share the output.
+
+## D22 — Specs are working documents, in Portuguese only
+- **Decision:** `specs/` holds the post-v0.1.0 roadmap as short specifications (context and
+  evidence, requirements, acceptance criteria, how to validate). They are written in Portuguese
+  only; everything a user reads (README, docs, results) stays bilingual.
+- **Alternatives:** twin files for every spec.
+- **Why:** specs are instructions for whoever continues the build and change often; a twin for
+  each doubles the cost without a reader for it. CLAUDE.md asks for documentation in Portuguese.
+- **Revert:** translate `specs/*.md` to `*.md` + `*.pt-BR.md` as in D17.
+
+## D23 — The delay bound is reported in two forms; the tight one is the result
+- **Decision:** the liquidity floor `max_s [CO_i(s) − CI_i(s+d)]` (`UB − floor` = tight bound)
+  is the bound the study reports; the window form `O_i[t* − d, t*]` is kept as a corollary and in
+  every existing CSV column so earlier results stay comparable.
+- **Alternatives:** replace the window form everywhere; keep only the window form.
+- **Why:** the tight bound is 14× smaller for 10 s in the calibrated scenario and is attained by
+  a single participant, so it is the stronger and more honest statement; it also showed that
+  claim 1f (window bound explains retail vs large-value) was an artefact of the window form.
+- **Revert:** ignore the `tight_*` and `liquidity_floor` columns.
