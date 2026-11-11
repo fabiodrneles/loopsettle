@@ -15,6 +15,8 @@ whose results changed.
 - Parallel seeds (`LOOPSETTLE_THREADS`, 2 by default) with thread-independent output.
 - Metamorphic tests; `summary.json` records schema, platform, rustc and a `Cargo.lock` hash.
 
+- Offline optimum as a linear programme (test oracle) and the `optimality_gap` example: floors ≤
+  optimum ≤ engines.
 - `liquidity-frontier` experiment: rejection, delay and equivalent liquidity under fixed balances.
 - Plain queue engine (`queue:fifo|bypass:<delay>`); event-driven gross retry, tested identical to
   the literal one.

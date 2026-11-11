@@ -171,6 +171,25 @@ of it; for a one-day delay it equals UB − LB exactly. In the stylised large-va
 window bound is large only because it counts the payment that makes the peak; the tight bound
 there is ≤ 0.004%.
 
+**9c. The offline optimum and the sandwich.** The floor is a bound for one participant at a time;
+the sum over participants need not be attainable, because one participant's delayed payment is
+another's delayed receipt. The exact question is a linear programme: given all payments in
+advance and a deadline `d`, choose the share of each payment settled at each instant of
+`[arrival, arrival + d]` so that `Σ_i L_i` is smallest, with `L_i ≥ −y_i(τ)` at every instant and
+simultaneous settlements counted by their net effect. Its value sits between the two:
+
+```text
+Σ_i floor_i(d)  ≤  LP(d)  ≤  optimum with whole payments  ≤  L(any engine with deadline d)
+```
+
+`LP(0) = UB` and `LP(∞) = LB`. The programme is solved only as a test oracle
+(`crates/loopsettle-sim/tests/optimum.rs`: two hand examples and 300 random instances) and in the
+`optimality_gap` example. On dense small systems (20 participants, about 1,500 payments in an
+hour, 20 seeds, deadlines of 2, 10 and 60 s) the optimum equals the sum of the floors in 116 of
+120 instances and is within 0.3% of it in the other four, while the best engine realises 44–61%
+of it (`results/optimality-gap/gap.csv`). So the slack between engines and the bound is in the
+engines, not in the bound.
+
 **Hodge null value.** For random flows on a connected graph with `m` edges and `n` nodes, the
 expected share of the squared norm outside the gradient space is `(m − n + 1)/m`. On the net
 graph of the baseline (`m = 6620`, `n = 200`) that is 0.970, against an observed L2 curl share

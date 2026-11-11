@@ -642,3 +642,16 @@ Coerência: a rejeição do bruto subiu quando a liquidez subiu em 0 passos da g
 
 Figura: [`liquidity-frontier/fig_frontier.svg`](liquidity-frontier/fig_frontier.svg)
 
+## 13. O sanduíche: pisos de liquidez ≤ ótimo offline ≤ motores
+
+Sistema pequeno numa hora movimentada (20 participantes, cerca de 1.500 pagamentos, 20 sementes; ASSUMPTION, não calibrado). Para cada prazo: a economia máxima segundo os pisos por participante, segundo o ótimo offline do sistema inteiro (programa linear, pagamentos fracionáveis, lotes arbitrários) e a obtida pelo melhor motor. Gerado por `cargo run --release -p loopsettle-sim --example optimality_gap`.
+
+| σ viés | prazo (s) | limite dos pisos | ótimo offline [IC 95%] | melhor motor | ótimo / pisos | motor / ótimo | instâncias com ótimo acima dos pisos |
+|---|---|---|---|---|---|---|---|
+| 0.4 | 2 | 0.132% | 0.132% [0.053; 0.211] | 0.074% | 1.0000 | 0.565 | 0/20 |
+| 0.4 | 10 | 0.595% | 0.595% [0.343; 0.847] | 0.261% | 1.0000 | 0.439 | 0/20 |
+| 0.4 | 60 | 3.314% | 3.310% [2.645; 3.976] | 1.584% | 0.9987 | 0.479 | 2/20 |
+| 1 | 2 | 0.091% | 0.091% [0.036; 0.146] | 0.045% | 1.0000 | 0.491 | 0/20 |
+| 1 | 10 | 0.368% | 0.368% [0.225; 0.511] | 0.223% | 1.0000 | 0.607 | 0/20 |
+| 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
+

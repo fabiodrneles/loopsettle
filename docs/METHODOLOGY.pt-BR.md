@@ -173,6 +173,26 @@ cada 10 s obtém 51% dele; com atraso de um dia ele é exatamente UB − LB. No 
 estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
 apertado ali é ≤ 0,004%.
 
+**9c. O ótimo offline e o sanduíche.** O piso é um limite para um participante de cada vez; a
+soma sobre os participantes não precisa ser atingível, porque o pagamento atrasado de um é o
+recebimento atrasado de outro. A pergunta exata é um programa linear: conhecendo todos os
+pagamentos de antemão e um prazo `d`, escolher a parcela de cada pagamento liquidada em cada
+instante de `[chegada, chegada + d]` de modo que `Σ_i L_i` seja o menor possível, com
+`L_i ≥ −y_i(τ)` em todo instante e as liquidações simultâneas contadas pelo efeito líquido. O
+valor dele fica entre os dois:
+
+```text
+Σ_i piso_i(d)  ≤  PL(d)  ≤  ótimo com pagamentos inteiros  ≤  L(qualquer motor com prazo d)
+```
+
+`PL(0) = UB` e `PL(∞) = LB`. O programa é resolvido só como oráculo de teste
+(`crates/loopsettle-sim/tests/optimum.rs`: dois exemplos à mão e 300 instâncias aleatórias) e no
+exemplo `optimality_gap`. Em sistemas pequenos e densos (20 participantes, cerca de 1.500
+pagamentos numa hora, 20 sementes, prazos de 2, 10 e 60 s), o ótimo é igual à soma dos pisos em
+116 de 120 instâncias e fica a menos de 0,3% dela nas outras quatro, enquanto o melhor motor obtém
+44–61% dele (`results/optimality-gap/gap.csv`). Ou seja, a folga entre os motores e o limite está
+nos motores, não no limite.
+
 **Valor nulo de Hodge.** Para fluxos aleatórios num grafo conexo com `m` arestas e `n` nós, a
 fração esperada da norma ao quadrado fora do espaço gradiente é `(m − n + 1)/m`. No grafo
 líquido do baseline (`m = 6620`, `n = 200`) isso dá 0,970, contra uma fração rotacional L2

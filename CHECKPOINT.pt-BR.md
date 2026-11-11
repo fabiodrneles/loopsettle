@@ -32,6 +32,10 @@
   em instâncias pequenas), depois spec 05 M2 (`HoldToDeadline`, que prova que o piso é atingido) e
   M3; spec 02 FR7 e spec 10 para a interface web. Em aberto do REVIEW 84: grade de α mais fina
   perto de 1.
+- **11/11/2026, fim da sessão — spec 03 executada.** Pisos = ótimo offline em 116 de 120
+  instâncias (`results/optimality-gap/`, 55 s). **Próximo passo exato:** spec 05 M2 e M3, spec 10
+  (relatório para dados reais, painel web), depois 07 e 08; os itens em aberto de cada spec estão
+  no topo dela.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

@@ -29,6 +29,9 @@
   `liquidity-frontier` (4 min 46 s, 20 MiB). **Exact next step:** spec 03 (offline optimum on
   small instances), then spec 05 M2 (`HoldToDeadline`, which proves the floor is attained) and M3;
   spec 02 FR7 and spec 10 for the web interface. Open from REVIEW 84: a finer α grid near 1.
+- **11 Nov 2026, end of session — spec 03 executed.** Floors = offline optimum in 116 of 120
+  instances (`results/optimality-gap/`, 55 s). **Exact next step:** spec 05 M2 and M3, spec 10
+  (real-data report, web panel), then 07 and 08; open items of each spec are listed at its top.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

@@ -21,6 +21,7 @@ experiments:
 	$(CARGO) build --release -p loopsettle-cli
 	for e in $(EXPERIMENTS); do $(CARGO) run --release -q -p loopsettle-cli -- experiment $$e || exit 1; done
 	$(CARGO) run --release -q -p loopsettle-cli -- topology data/samples/triangle.csv
+	$(CARGO) run --release -q -p loopsettle-sim --example optimality_gap > /dev/null
 
 summary:
 	$(PYTHON) -I scripts/summarize.py
@@ -36,7 +37,7 @@ data:
 	$(PYTHON) -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30
 
 clean-results:
-	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/bias-calibration results/heterogeneity results/funding-windows results/regimes results/liquidity-frontier results/topology-triangle results/SUMMARY.md results/SUMMARY.pt-BR.md
+	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/bias-calibration results/heterogeneity results/funding-windows results/regimes results/liquidity-frontier results/optimality-gap results/topology-triangle results/SUMMARY.md results/SUMMARY.pt-BR.md
 
 # Small, fast run of every experiment, compared byte for byte in CI (specs/09).
 golden:

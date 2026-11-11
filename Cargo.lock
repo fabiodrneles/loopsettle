@@ -97,6 +97,7 @@ name = "loopsettle-sim"
 version = "0.1.0"
 dependencies = [
  "loopsettle-core",
+ "minilp",
 ]
 
 [[package]]

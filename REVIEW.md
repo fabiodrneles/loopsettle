@@ -277,3 +277,14 @@ the real laptop (i3, 4 GB).
     whole experiment takes 4 min 46 s); the literal version stays as `reference_retry` and the two
     give identical settlements in 30,000 random cases. This replaces item C5 of spec 04 for the
     retry; the cycle search itself is unchanged.
+85. **Offline optimum and the sandwich (spec 03), 11 Nov 2026.** `tests/common/optimum.rs`,
+    `tests/optimum.rs`, example `optimality_gap`, CLAIMS 1i, D25, METHODOLOGY §9c. The LP optimum
+    equals the sum of the floors in 116 of 120 dense small instances; the best engine realises
+    44–61% of it. **Risks:** (a) the LP lets payments be split and batches be arbitrary, so it
+    bounds the whole-payment optimum from below; the brute-force integer check of the spec (FR2)
+    was not written; (b) instances are small (20 participants, 1,500 payments) and not
+    calibrated; a 300 s deadline did not finish within 9 minutes, so the claim covers deadlines up
+    to 60 s; (c) "floors = optimum" is an empirical regularity, not a theorem: a random test finds
+    strict gaps in 4% of tiny instances. A proof of when equality holds would be a contribution;
+    (d) `results/optimality-gap/` is not part of the golden check (LP solutions in floating point
+    are not guaranteed identical across platforms; the files keep 2 to 4 decimals).

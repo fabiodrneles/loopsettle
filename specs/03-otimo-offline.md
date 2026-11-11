@@ -1,5 +1,12 @@
 # 03 — Ótimo offline e o sanduíche piso ≤ ótimo ≤ motores (P1)
 
+> **Estado em 11/11/2026: FR1, FR3, FR4 e FR6 feitos** (`tests/common/optimum.rs`,
+> `tests/optimum.rs`, exemplo `optimality_gap`, CLAIMS 1i, D25, REVIEW 85). Resposta: a folga está
+> nos motores. A PL coincide com a soma dos pisos em 116 de 120 instâncias densas, e o melhor motor
+> obtém 44–61% do ótimo. O experimento é um exemplo do `loopsettle-sim`, não um comando do CLI
+> (D25). **Faltam:** FR2 (ótimo inteiro por força bruta), FR5 (método que escale; a PL com prazo de
+> 300 s não terminou em 9 minutos) e uma prova de quando pisos = ótimo.
+
 ## Contexto
 
 Hoje temos, para um prazo `d`: um limite inferior de liquidez por participante (piso, spec 01)

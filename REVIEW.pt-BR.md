@@ -288,3 +288,15 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     inteiro leva 4 min 46 s); a versão literal fica como `reference_retry` e as duas dão
     liquidações idênticas em 30.000 casos aleatórios. Isso substitui o item C5 da spec 04 para a
     nova tentativa; a busca de ciclos em si não mudou.
+85. **Ótimo offline e o sanduíche (spec 03), 11/11/2026.** `tests/common/optimum.rs`,
+    `tests/optimum.rs`, exemplo `optimality_gap`, CLAIMS 1i, D25, METHODOLOGY §9c. O ótimo da PL é
+    igual à soma dos pisos em 116 de 120 instâncias pequenas e densas; o melhor motor obtém 44–61%
+    dele. **Riscos:** (a) a PL permite fracionar pagamentos e lotes arbitrários, então limita por
+    baixo o ótimo com pagamentos inteiros; a checagem inteira por força bruta da spec (FR2) não foi
+    escrita; (b) as instâncias são pequenas (20 participantes, 1.500 pagamentos) e não calibradas;
+    um prazo de 300 s não terminou em 9 minutos, então a afirmação cobre prazos de até 60 s; (c)
+    "pisos = ótimo" é uma regularidade empírica, não um teorema: um teste aleatório acha folga
+    estrita em 4% de instâncias minúsculas. Uma prova de quando vale a igualdade seria uma
+    contribuição; (d) `results/optimality-gap/` não entra na checagem-ouro (soluções de PL em
+    ponto flutuante não têm garantia de serem idênticas entre plataformas; os arquivos guardam de
+    2 a 4 casas).

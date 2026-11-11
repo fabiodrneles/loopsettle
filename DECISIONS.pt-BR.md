@@ -250,3 +250,15 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   de liquidez (fila com liquidez restrita) mantendo o prazo de pagamento instantâneo como caso
   principal; toda escolha é um parâmetro de `experiments/liquidity-frontier.toml`.
 - **Reverter:** o experimento é aditivo; nenhum resultado anterior depende dele.
+
+## D25 — O ótimo offline é um exemplo com resolvedor só de teste, não um experimento do CLI
+- **Decisão:** o programa linear do ótimo offline fica em
+  `crates/loopsettle-sim/tests/common/optimum.rs` e é resolvido com o `minilp`, dependência só de
+  desenvolvimento do `loopsettle-sim`. Os resultados saem de
+  `cargo run --release -p loopsettle-sim --example optimality_gap` (que o `make all` também roda),
+  não de `loopsettle experiment`.
+- **Alternativas:** uma feature opcional `oracle` no CLI; um simplex escrito à mão.
+- **Por quê:** o CLAUDE.md só permite resolvedor de PL como oráculo de teste, nunca no caminho
+  principal; exemplos podem usar dependências de desenvolvimento, então a biblioteca e o CLI
+  continuam sem dependências e todo número ainda sai de um comando.
+- **Reverter:** apagar o exemplo e `results/optimality-gap/`; nada mais depende deles.
