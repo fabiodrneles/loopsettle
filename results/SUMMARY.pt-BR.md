@@ -449,7 +449,7 @@ A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos di
 | 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.1.0+git.0ef4e7d-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 
@@ -480,4 +480,13 @@ Curva do limite (W5): economia obtida pela compensação a cada d contra o limit
 | 86400 | 1 | 9.2669% | 100.00% | 0.034 | 9.267% | 1.000 |
 
 Figura: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
+
+O limite apertado por participante (uma semente): quanto cada um poderia economizar, no máximo, em % do próprio UB:
+
+| d (s) | participantes com UB > 0 | p10 | mediana | p90 | máximo | parcela do limite total nos 5 maiores |
+|---|---|---|---|---|---|---|
+| 10 | 182 | 0.000% | 0.000% | 0.107% | 100.00% | 77.5% |
+| 60 | 182 | 0.000% | 0.000% | 2.118% | 100.00% | 78.6% |
+| 900 | 182 | 0.000% | 3.508% | 58.166% | 100.00% | 80.1% |
+| 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 

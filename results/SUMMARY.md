@@ -449,7 +449,7 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
-_seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, code `0.1.0+git.0ef4e7d-dirty`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
 
@@ -480,4 +480,13 @@ Bound curve (W5): realised saving of netting every d vs the delay bound for the 
 | 86400 | 1 | 9.2669% | 100.00% | 0.034 | 9.267% | 1.000 |
 
 Figure: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
+
+The tight bound per participant (one seed): the most each one could save, in % of its own UB:
+
+| d (s) | participants with UB > 0 | p10 | median | p90 | max | share of the total bound in the top 5 |
+|---|---|---|---|---|---|---|
+| 10 | 182 | 0.000% | 0.000% | 0.107% | 100.00% | 77.5% |
+| 60 | 182 | 0.000% | 0.000% | 2.118% | 100.00% | 78.6% |
+| 900 | 182 | 0.000% | 3.508% | 58.166% | 100.00% | 80.1% |
+| 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 

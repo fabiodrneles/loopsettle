@@ -208,6 +208,33 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
         log_x: true,
     };
     res.csv("fig_bound.svg", &chart.render());
+    // Per-participant view (specs/02, FR5): the aggregate can hide a participant for whom a
+    // short deadline would matter. Distribution of (UB_i - floor_i) / UB_i over participants
+    // that need liquidity, and the share of the total possible saving held by the top five.
+    let pd: [u64; 4] = [10_000, 60_000, 900_000, 3_600_000];
+    let pf = liquidity_floors(base, &pd);
+    let mut prow = Vec::new();
+    for (k, &d) in pd.iter().enumerate() {
+        let mut rel: Vec<f64> = Vec::new();
+        let mut abs: Vec<i64> = Vec::new();
+        for i in 0..base.participants {
+            let u = o.flow.ub(i as u32);
+            if u > 0 {
+                rel.push(100.0 * (u - pf[k][i]) as f64 / u as f64);
+                abs.push(u - pf[k][i]);
+            }
+        }
+        rel.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        abs.sort_unstable_by(|a, b| b.cmp(a));
+        let total: i128 = abs.iter().map(|&v| v as i128).sum();
+        let top5: i128 = abs.iter().take(5).map(|&v| v as i128).sum();
+        let q = |x: f64| crate::stats::quantile(&rel, x);
+        prow.push(vec![f(d as f64 / 1000.0), rel.len().to_string(), f(q(0.1)), f(q(0.5)), f(q(0.9)), f(q(1.0)), f(if total > 0 { top5 as f64 / total as f64 } else { 0.0 })]);
+    }
+    res.csv(
+        "floor_by_participant.csv",
+        &table(&["max_delay_s", "participants_with_ub", "tight_bound_pct_of_own_ub_p10", "p50", "p90", "max", "share_of_total_bound_in_top5_participants"], &prow),
+    );
     res.set("scenario", scenario_json(base));
     res.set("cases", Json::Arr(js));
     res.set("note", "McMahon et al. (2024) report 14-30% savings from payment reordering with delays under 5 s in T2 (large-value); this experiment asks whether the delay bound separates the two regimes");
