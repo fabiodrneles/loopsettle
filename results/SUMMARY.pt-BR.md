@@ -449,35 +449,35 @@ A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos di
 | 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.ebc6eb6`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.1.0+git.5e0fb3a-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
-O limite de atraso depende do tamanho dos pagamentos em relação à liquidez necessária. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
+O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 
-| caso | participantes | pagamentos | pagamento médio / UB médio | atraso máx. (ms) | economia micro-ciclos | limite de atraso |
-|---|---|---|---|---|---|---|
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 2000 | 0.0000% | 0.863% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 5000 | 0.0000% | 0.864% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 10000 | -0.0181% | 0.950% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 2000 | 0.0055% | 0.248% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% |
+| caso | participantes | pagamentos | pagamento médio / UB médio | atraso máx. (ms) | economia micro-ciclos | limite (janela) | limite apertado |
+|---|---|---|---|---|---|---|---|
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% | 0.0062% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% | 0.0184% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% | 0.0541% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% | 0.0000% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% | 0.0000% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% | 0.0034% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 2000 | 0.0000% | 0.863% | 0.0000% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 5000 | 0.0000% | 0.864% | 0.0000% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 10000 | -0.0181% | 0.950% | 0.0005% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 2000 | 0.0055% | 0.248% | 0.0114% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% | 0.0188% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% | 0.0401% |
 
 Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):
 
-| d (s) | ciclos/dia | economia obtida | limite (até 100%) | obtido / limite |
-|---|---|---|---|---|
-| 10 | 8640 | 0.0276% | 0.76% | 0.036 |
-| 60 | 1440 | 0.0712% | 2.67% | 0.027 |
-| 900 | 96 | 0.3248% | 7.96% | 0.041 |
-| 3600 | 24 | 1.0545% | 23.12% | 0.046 |
-| 21600 | 4 | 3.7443% | 100.00% | 0.030 |
-| 86400 | 1 | 9.2669% | 100.00% | 0.034 |
+| d (s) | ciclos/dia | economia obtida | limite janela (até 100%) | obtido / janela | limite apertado | obtido / apertado |
+|---|---|---|---|---|---|---|
+| 10 | 8640 | 0.0276% | 0.76% | 0.036 | 0.054% | 0.511 |
+| 60 | 1440 | 0.0712% | 2.67% | 0.027 | 0.254% | 0.280 |
+| 900 | 96 | 0.3248% | 7.96% | 0.041 | 3.198% | 0.102 |
+| 3600 | 24 | 1.0545% | 23.12% | 0.046 | 7.693% | 0.137 |
+| 21600 | 4 | 3.7443% | 100.00% | 0.030 | 9.232% | 0.406 |
+| 86400 | 1 | 9.2669% | 100.00% | 0.034 | 9.267% | 1.000 |
 
 Figura: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 

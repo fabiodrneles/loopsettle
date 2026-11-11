@@ -5,7 +5,7 @@
 
 use crate::out::{f, table};
 use loopsettle_core::json::Json;
-use loopsettle_sim::bound::delay_bounds_from;
+use loopsettle_sim::bound::{delay_bounds_from, liquidity_floors_from};
 use loopsettle_sim::csvfile::CsvSchema;
 use loopsettle_sim::{run_payments, EngineSpec, Opening};
 use std::path::PathBuf;
@@ -78,19 +78,29 @@ pub fn run(args: &[String], settle: bool) -> Result<(), String> {
     let ub = r.ub();
     let lb = r.lb();
     let bounds = delay_bounds_from(n, || s.payments().expect("file was readable a moment ago"), &o.delays_ms);
+    let floors = liquidity_floors_from(n, || s.payments().expect("file was readable a moment ago"), &o.delays_ms);
     let pct = |x: i128| if ub == 0 { 0.0 } else { 100.0 * x as f64 / ub as f64 };
 
     let mut brows = Vec::new();
     let mut bjson = Vec::new();
     for (k, &d) in o.delays_ms.iter().enumerate() {
         let total: i128 = bounds[k].iter().map(|&v| v as i128).sum();
-        brows.push(vec![f(d as f64 / 1000.0), f(total as f64 / 100.0), f(pct(total))]);
-        bjson.push(Json::obj().set("max_delay_s", d as f64 / 1000.0).set("bound", total as f64 / 100.0).set("bound_pct_of_ub", pct(total)));
+        let floor: i128 = floors[k].iter().map(|&v| v as i128).sum();
+        brows.push(vec![f(d as f64 / 1000.0), f(total as f64 / 100.0), f(pct(total)), f(floor as f64 / 100.0), f((ub - floor) as f64 / 100.0), f(pct(ub - floor))]);
+        bjson.push(
+            Json::obj()
+                .set("max_delay_s", d as f64 / 1000.0)
+                .set("bound", total as f64 / 100.0)
+                .set("bound_pct_of_ub", pct(total))
+                .set("liquidity_floor", floor as f64 / 100.0)
+                .set("tight_bound", (ub - floor) as f64 / 100.0)
+                .set("tight_bound_pct_of_ub", pct(ub - floor)),
+        );
     }
-    let bheader = ["max_delay_s", "delay_bound", "delay_bound_pct_of_ub"];
+    let bheader = ["max_delay_s", "delay_bound", "delay_bound_pct_of_ub", "liquidity_floor", "tight_bound", "tight_bound_pct_of_ub"];
     println!("UB (liquidity for real-time gross settlement): {:.2}", ub as f64 / 100.0);
     println!("LB (one netting at the end of the file's period): {:.2}  (LB/UB = {:.4})", lb as f64 / 100.0, if ub == 0 { 0.0 } else { lb as f64 / ub as f64 });
-    println!("\nCeiling on the saving of ANY mechanism that settles each payment within d:\n{}", table(&bheader, &brows));
+    println!("\nCeiling on the saving of ANY mechanism that settles each payment within d\n(delay_bound = window form; tight_bound = UB - liquidity floor, always <= delay_bound):\n{}", table(&bheader, &brows));
     write(&o.out, "bound.csv", &table(&bheader, &brows))?;
 
     let mut summary = Json::obj()
@@ -132,10 +142,12 @@ pub fn run(args: &[String], settle: bool) -> Result<(), String> {
         for i in 0..n {
             let mut row = vec![s.names[i].clone(), f(r.flow.out_value[i] as f64 / 100.0), f(r.flow.in_value[i] as f64 / 100.0), f(r.flow.ub(i as u32) as f64 / 100.0), f(r.flow.lb(i as u32) as f64 / 100.0)];
             row.extend(bounds.iter().map(|b| f(b[i] as f64 / 100.0)));
+            row.extend(floors.iter().map(|b| f(b[i] as f64 / 100.0)));
             prows.push(row);
         }
         let mut h: Vec<String> = ["participant", "out", "in", "ub", "lb"].iter().map(|s| s.to_string()).collect();
         h.extend(o.delays_ms.iter().map(|d| format!("bound_{}s", d / 1000)));
+        h.extend(o.delays_ms.iter().map(|d| format!("floor_{}s", d / 1000)));
         let hr: Vec<&str> = h.iter().map(String::as_str).collect();
         write(&o.out, "participants.csv", &table(&hr, &prows))?;
     }

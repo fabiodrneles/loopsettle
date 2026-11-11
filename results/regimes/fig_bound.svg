@@ -33,14 +33,23 @@
 <circle cx="453.3" cy="56.4" r="3.5" fill="#0072B2"/>
 <circle cx="518.6" cy="56.4" r="3.5" fill="#0072B2"/>
 <rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
-<text x="570.0" y="50.0">delay bound (any mechanism)</text>
-<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,384.9 175.8,384.8 303.5,383.9 368.8,381.5 453.3,372.7 518.6,354.6"/>
-<circle cx="91.4" cy="384.9" r="3.5" fill="#D55E00"/>
-<circle cx="175.8" cy="384.8" r="3.5" fill="#D55E00"/>
-<circle cx="303.5" cy="383.9" r="3.5" fill="#D55E00"/>
-<circle cx="368.8" cy="381.5" r="3.5" fill="#D55E00"/>
-<circle cx="453.3" cy="372.7" r="3.5" fill="#D55E00"/>
+<text x="570.0" y="50.0">window bound (any mechanism)</text>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,384.8 175.8,384.2 303.5,374.5 368.8,359.7 453.3,354.7 518.6,354.6"/>
+<circle cx="91.4" cy="384.8" r="3.5" fill="#D55E00"/>
+<circle cx="175.8" cy="384.2" r="3.5" fill="#D55E00"/>
+<circle cx="303.5" cy="374.5" r="3.5" fill="#D55E00"/>
+<circle cx="368.8" cy="359.7" r="3.5" fill="#D55E00"/>
+<circle cx="453.3" cy="354.7" r="3.5" fill="#D55E00"/>
 <circle cx="518.6" cy="354.6" r="3.5" fill="#D55E00"/>
 <rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
-<text x="570.0" y="68.0">deferred netting every d (realised)</text>
+<text x="570.0" y="68.0">tight bound: UB - liquidity floor</text>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,384.9 175.8,384.8 303.5,383.9 368.8,381.5 453.3,372.7 518.6,354.6"/>
+<circle cx="91.4" cy="384.9" r="3.5" fill="#009E73"/>
+<circle cx="175.8" cy="384.8" r="3.5" fill="#009E73"/>
+<circle cx="303.5" cy="383.9" r="3.5" fill="#009E73"/>
+<circle cx="368.8" cy="381.5" r="3.5" fill="#009E73"/>
+<circle cx="453.3" cy="372.7" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="354.6" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">deferred netting every d (realised)</text>
 </svg>

@@ -105,10 +105,10 @@ PT = {
     "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s", "limite 15 min"],
     "closed": "fechada", "open": "aberta",
     "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
-    "rg_intro": "O limite de atraso depende do tamanho dos pagamentos em relação à liquidez necessária. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
-    "c_rg": ["caso", "participantes", "pagamentos", "pagamento médio / UB médio", "atraso máx. (ms)", "economia micro-ciclos", "limite de atraso"],
+    "rg_intro": "O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
+    "c_rg": ["caso", "participantes", "pagamentos", "pagamento médio / UB médio", "atraso máx. (ms)", "economia micro-ciclos", "limite (janela)", "limite apertado"],
     "curve": "Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):",
-    "c_curve": ["d (s)", "ciclos/dia", "economia obtida", "limite (até 100%)", "obtido / limite"],
+    "c_curve": ["d (s)", "ciclos/dia", "economia obtida", "limite janela (até 100%)", "obtido / janela", "limite apertado", "obtido / apertado"],
 }
 
 EN = {
@@ -171,10 +171,10 @@ EN = {
     "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "bound 10 s", "bound 15 min"],
     "closed": "closed", "open": "open",
     "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
-    "rg_intro": "The delay bound depends on payment size relative to liquidity needs. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
-    "c_rg": ["case", "participants", "payments", "avg payment / avg UB", "max delay (ms)", "micro-cycle saving", "delay bound"],
+    "rg_intro": "The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
+    "c_rg": ["case", "participants", "payments", "avg payment / avg UB", "max delay (ms)", "micro-cycle saving", "window bound", "tight bound"],
     "curve": "Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):",
-    "c_curve": ["d (s)", "cycles/day", "realised saving", "bound (capped at 100%)", "realised / bound"],
+    "c_curve": ["d (s)", "cycles/day", "realised saving", "window bound (capped at 100%)", "realised / window", "tight bound", "realised / tight"],
 }
 
 
@@ -317,10 +317,10 @@ def build(T):
     s = load("regimes")
     md += [T["h11"], meta(s, T), "", T["rg_intro"], ""]
     md.append(table(T["c_rg"], [[r["case"], r["participants"], r["payments"], num(r["avg_payment_over_avg_participant_ub"], 4), r["max_delay_ms"], f"{float(r['micro_cycle_saving_pct']):.4f}%",
-                                  f"{float(r['delay_bound_pct']):.3f}%"] for r in rows("regimes", "regimes.csv")]))
+                                  f"{float(r['delay_bound_pct']):.3f}%", f"{float(r['tight_bound_pct']):.4f}%"] for r in rows("regimes", "regimes.csv")]))
     md += ["", T["curve"], ""]
     md.append(table(T["c_curve"], [[r["max_delay_s"], r["deferred_cycles_per_day"], f"{float(r['realised_saving_pct']):.4f}%", f"{float(r['delay_bound_pct_capped_100']):.2f}%",
-                                     num(r["realised_over_bound"], 3)] for r in rows("regimes", "bound_curve.csv")]))
+                                     num(r["realised_over_bound"], 3), f"{float(r['tight_bound_pct']):.3f}%", num(r["realised_over_tight_bound"], 3)] for r in rows("regimes", "bound_curve.csv")]))
     md += ["", T["fig"] + " [`regimes/fig_bound.svg`](regimes/fig_bound.svg)", ""]
     return "\n".join(md) + "\n"
 

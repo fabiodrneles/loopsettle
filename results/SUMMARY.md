@@ -449,35 +449,35 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
-_seed `20260930`, code `0.1.0+git.ebc6eb6`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, code `0.1.0+git.5e0fb3a-dirty`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
-The delay bound depends on payment size relative to liquidity needs. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
+The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
 
-| case | participants | payments | avg payment / avg UB | max delay (ms) | micro-cycle saving | delay bound |
-|---|---|---|---|---|---|---|
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% |
-| large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 2000 | 0.0000% | 0.863% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 5000 | 0.0000% | 0.864% |
-| large-value 20000/day | 20 | 20116 | 0.0039 | 10000 | -0.0181% | 0.950% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 2000 | 0.0055% | 0.248% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% |
-| large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% |
+| case | participants | payments | avg payment / avg UB | max delay (ms) | micro-cycle saving | window bound | tight bound |
+|---|---|---|---|---|---|---|---|
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% | 0.0062% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% | 0.0184% |
+| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% | 0.0541% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% | 0.0000% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% | 0.0000% |
+| large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% | 0.0034% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 2000 | 0.0000% | 0.863% | 0.0000% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 5000 | 0.0000% | 0.864% | 0.0000% |
+| large-value 20000/day | 20 | 20116 | 0.0039 | 10000 | -0.0181% | 0.950% | 0.0005% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 2000 | 0.0055% | 0.248% | 0.0114% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% | 0.0188% |
+| large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% | 0.0401% |
 
 Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):
 
-| d (s) | cycles/day | realised saving | bound (capped at 100%) | realised / bound |
-|---|---|---|---|---|
-| 10 | 8640 | 0.0276% | 0.76% | 0.036 |
-| 60 | 1440 | 0.0712% | 2.67% | 0.027 |
-| 900 | 96 | 0.3248% | 7.96% | 0.041 |
-| 3600 | 24 | 1.0545% | 23.12% | 0.046 |
-| 21600 | 4 | 3.7443% | 100.00% | 0.030 |
-| 86400 | 1 | 9.2669% | 100.00% | 0.034 |
+| d (s) | cycles/day | realised saving | window bound (capped at 100%) | realised / window | tight bound | realised / tight |
+|---|---|---|---|---|---|---|
+| 10 | 8640 | 0.0276% | 0.76% | 0.036 | 0.054% | 0.511 |
+| 60 | 1440 | 0.0712% | 2.67% | 0.027 | 0.254% | 0.280 |
+| 900 | 96 | 0.3248% | 7.96% | 0.041 | 3.198% | 0.102 |
+| 3600 | 24 | 1.0545% | 23.12% | 0.046 | 7.693% | 0.137 |
+| 21600 | 4 | 3.7443% | 100.00% | 0.030 | 9.232% | 0.406 |
+| 86400 | 1 | 9.2669% | 100.00% | 0.034 | 9.267% | 1.000 |
 
 Figure: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 

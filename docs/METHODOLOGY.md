@@ -149,6 +149,28 @@ engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate
 calibrated scenario the realised 10 s saving is about 1.5% of it
 (`results/robustness/seeds_summary.csv`).
 
+**9b. The liquidity floor (tight form of the bound).** The argument above uses one instant,
+`t*`. Using every instant gives a stronger statement. Let `CO_i(s)` be the value `i` has paid by
+time `s` and `CI_i(s)` the value it has been paid by `s` (arrival times, inclusive). In any
+engine with maximum delay `d`, at time `s + d` every payment that arrived by `s` has settled, and
+no incoming payment settles before it arrives, so
+
+```text
+−y_i(s + d) ≥ CO_i(s) − CI_i(s + d)      for every s
+floor_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = floor_i(0).
+```
+
+`UB_i − floor_i(d)` is never larger than the window bound (take `s = t* − d`), and `floor_i` is
+attained for one participant alone by "hold my payments for exactly `d`, receive everything at
+once", so it is the best bound that uses only `i`'s own flows. It is computed in streaming with
+one lagging and one leading pass (`loopsettle_sim::bound::liquidity_floors`), tested against the
+engines in the same test, and reported by `loopsettle bound` (`liquidity_floor`, `tight_bound`).
+In the calibrated retail scenario (`results/regimes/bound_curve.csv`, one seed) the tight bound
+for 10 s is 0.054% of UB against 0.76% for the window form, and netting every 10 s realises 51%
+of it; for a one-day delay it equals UB − LB exactly. In the stylised large-value system the
+window bound is large only because it counts the payment that makes the peak; the tight bound
+there is ≤ 0.004%.
+
 **Hodge null value.** For random flows on a connected graph with `m` edges and `n` nodes, the
 expected share of the squared norm outside the gradient space is `(m − n + 1)/m`. On the net
 graph of the baseline (`m = 6620`, `n = 200`) that is 0.970, against an observed L2 curl share

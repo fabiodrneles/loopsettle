@@ -15,7 +15,7 @@
 use crate::experiments::{f64_list, scenario_json};
 use crate::out::{f, table, Results};
 use loopsettle_core::json::Json;
-use loopsettle_sim::bound::{delay_bounds, window_stats};
+use loopsettle_sim::bound::{delay_bounds, liquidity_floors, window_stats};
 use loopsettle_sim::scenario::{AmountModel, SPI_2024_HOURLY, SPI_2024_WEEKDAY};
 use loopsettle_sim::toml_lite::Doc;
 use loopsettle_sim::{run as run_engines, EngineSpec, Opening, PaymentStream, ScenarioConfig};
@@ -138,17 +138,20 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
         let o = run_engines(cfg, &specs, &Opening::Unlimited, false, None);
         let ub = o.ub();
         let bounds = delay_bounds(cfg, &delays);
+        let floors = liquidity_floors(cfg, &delays);
         let pct = |b: &Vec<i64>| 100.0 * b.iter().map(|&v| v as i128).sum::<i128>() as f64 / ub.max(1) as f64;
+        // tight bound = UB - sum of liquidity floors (METHODOLOGY section 9b)
+        let tight = |fl: &Vec<i64>| 100.0 * (ub - fl.iter().map(|&v| v as i128).sum::<i128>()) as f64 / ub.max(1) as f64;
         // average payment relative to the average participant's liquidity need
         let avg_payment = o.flow.gross_value as f64 / o.flow.count.max(1) as f64;
         let size_ratio = avg_payment / (ub as f64 / cfg.participants as f64);
         for (k, &d) in delays.iter().enumerate() {
-            rows.push(vec![name.clone(), f(cfg.participants as f64), f(o.flow.count as f64), f(size_ratio), d.to_string(), f(100.0 * o.results[k + 1].saving_vs(ub)), f(pct(&bounds[k]))]);
+            rows.push(vec![name.clone(), f(cfg.participants as f64), f(o.flow.count as f64), f(size_ratio), d.to_string(), f(100.0 * o.results[k + 1].saving_vs(ub)), f(pct(&bounds[k])), f(tight(&floors[k]))]);
         }
-        js.push(Json::obj().set("case", name.as_str()).set("avg_payment_over_avg_ub", size_ratio).set("bound_5s_pct", pct(&bounds[1])).set("micro_5s_saving_pct", 100.0 * o.results[2].saving_vs(ub)));
+        js.push(Json::obj().set("case", name.as_str()).set("avg_payment_over_avg_ub", size_ratio).set("bound_5s_pct", pct(&bounds[1])).set("tight_bound_5s_pct", tight(&floors[1])).set("micro_5s_saving_pct", 100.0 * o.results[2].saving_vs(ub)));
         eprintln!("  {name}: done");
     }
-    let header = ["case", "participants", "payments", "avg_payment_over_avg_participant_ub", "max_delay_ms", "micro_cycle_saving_pct", "delay_bound_pct"];
+    let header = ["case", "participants", "payments", "avg_payment_over_avg_participant_ub", "max_delay_ms", "micro_cycle_saving_pct", "delay_bound_pct", "tight_bound_pct"];
     res.csv("regimes.csv", &table(&header, &rows));
     // W5: realised saving of deferred netting with interval d vs the delay bound for the same d,
     // retail scenario, d from 10 s to one day.
@@ -157,23 +160,28 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
     dspecs.extend(ds.iter().map(|&(c, _)| EngineSpec::Deferred { cycles_per_day: c }));
     let o = run_engines(base, &dspecs, &Opening::Unlimited, false, None);
     let ub = o.ub();
-    let bnd = delay_bounds(base, &ds.iter().map(|&(_, d)| d).collect::<Vec<_>>());
+    let dd: Vec<u64> = ds.iter().map(|&(_, d)| d).collect();
+    let bnd = delay_bounds(base, &dd);
+    let flo = liquidity_floors(base, &dd);
     let mut crow = Vec::new();
-    let (mut real_pts, mut bound_pts) = (Vec::new(), Vec::new());
+    let (mut real_pts, mut bound_pts, mut tight_pts) = (Vec::new(), Vec::new(), Vec::new());
     for (k, &(c, d)) in ds.iter().enumerate() {
         let saving = 100.0 * o.results[k + 1].saving_vs(ub);
         let bp = 100.0 * bnd[k].iter().map(|&v| v as i128).sum::<i128>() as f64 / ub.max(1) as f64;
-        crow.push(vec![f(d as f64 / 1000.0), c.to_string(), f(saving), f(bp.min(100.0)), f(if bp > 0.0 { saving / bp } else { 0.0 })]);
+        let tp = 100.0 * (ub - flo[k].iter().map(|&v| v as i128).sum::<i128>()) as f64 / ub.max(1) as f64;
+        crow.push(vec![f(d as f64 / 1000.0), c.to_string(), f(saving), f(bp.min(100.0)), f(if bp > 0.0 { saving / bp } else { 0.0 }), f(tp), f(if tp > 0.0 { saving / tp } else { 0.0 })]);
+        tight_pts.push((d as f64 / 1000.0, tp));
         real_pts.push((d as f64 / 1000.0, saving));
         bound_pts.push((d as f64 / 1000.0, bp.min(100.0)));
     }
-    res.csv("bound_curve.csv", &table(&["max_delay_s", "deferred_cycles_per_day", "realised_saving_pct", "delay_bound_pct_capped_100", "realised_over_bound"], &crow));
+    res.csv("bound_curve.csv", &table(&["max_delay_s", "deferred_cycles_per_day", "realised_saving_pct", "delay_bound_pct_capped_100", "realised_over_bound", "tight_bound_pct", "realised_over_tight_bound"], &crow));
     let chart = crate::svg::Chart {
         title: "Realised saving vs delay bound (retail, Pix calibrated)".into(),
         x_label: "maximum settlement delay d (s, log)".into(),
         y_label: "% of UB".into(),
         series: vec![
-            crate::svg::Series { label: "delay bound (any mechanism)".into(), points: bound_pts, line: true },
+            crate::svg::Series { label: "window bound (any mechanism)".into(), points: bound_pts, line: true },
+            crate::svg::Series { label: "tight bound: UB - liquidity floor".into(), points: tight_pts, line: true },
             crate::svg::Series { label: "deferred netting every d (realised)".into(), points: real_pts, line: true },
         ],
         log_x: true,

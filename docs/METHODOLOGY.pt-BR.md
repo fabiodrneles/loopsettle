@@ -151,6 +151,28 @@ participante contra os motores (`engines_never_beat_the_delay_bound`). É um tet
 estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele
 (`results/robustness/seeds_summary.csv`).
 
+**9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,
+`t*`. Usando todos os instantes, a afirmação fica mais forte. Seja `CO_i(s)` o valor que `i` já
+pagou até `s` e `CI_i(s)` o valor que já recebeu até `s` (horários de chegada, inclusive). Em
+qualquer motor com atraso máximo `d`, no instante `s + d` todo pagamento que chegou até `s` já
+liquidou, e nenhum recebimento liquida antes de chegar, então
+
+```text
+−y_i(s + d) ≥ CO_i(s) − CI_i(s + d)      para todo s
+piso_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = piso_i(0).
+```
+
+`UB_i − piso_i(d)` nunca passa do limite de janela (tome `s = t* − d`), e o `piso_i` é atingido
+por um participante sozinho com "seguro meus pagamentos por exatamente `d` e recebo tudo na
+hora"; por isso é o melhor limite que usa só os fluxos do próprio `i`. É calculado em streaming
+com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
+contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
+`tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, uma semente),
+o limite apertado para 10 s é 0,054% do UB, contra 0,76% na forma de janela, e a compensação a
+cada 10 s obtém 51% dele; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
+estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
+apertado ali é ≤ 0,004%.
+
 **Valor nulo de Hodge.** Para fluxos aleatórios num grafo conexo com `m` arestas e `n` nós, a
 fração esperada da norma ao quadrado fora do espaço gradiente é `(m − n + 1)/m`. No grafo
 líquido do baseline (`m = 6620`, `n = 200`) isso dá 0,970, contra uma fração rotacional L2
