@@ -1,5 +1,5 @@
 //! Phase 1 invariants for `GrossRealTime`:
-//! 1. conservation of total balance, 3. no negative balance, 7. determinism.
+//! (1) conservation of total balance, (3) no negative balance, (7) determinism.
 //! Plus the hand-worked UB/LB example from docs/METHODOLOGY.md.
 
 use loopsettle_core::*;

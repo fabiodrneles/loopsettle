@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="70" y="24" font-size="15" font-weight="bold">Atomic micro-cycles: liquidity saving vs p95 delay</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
+<text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
+<line x1="70" y1="247.7" x2="540.0" y2="247.7" stroke="#e5e5e5"/>
+<text x="64.0" y="251.7" text-anchor="end" fill="#444">0.01</text>
+<line x1="70" y1="110.4" x2="540.0" y2="110.4" stroke="#e5e5e5"/>
+<text x="64.0" y="114.4" text-anchor="end" fill="#444">0.01</text>
+<line x1="91.4" y1="40" x2="91.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="91.4" y="401.0" text-anchor="middle" fill="#444">2</text>
+<line x1="198.4" y1="40" x2="198.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="198.4" y="401.0" text-anchor="middle" fill="#444">4</text>
+<line x1="305.4" y1="40" x2="305.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="305.4" y="401.0" text-anchor="middle" fill="#444">6</text>
+<line x1="412.5" y1="40" x2="412.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="412.5" y="401.0" text-anchor="middle" fill="#444">8</text>
+<line x1="519.5" y1="40" x2="519.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="519.5" y="401.0" text-anchor="middle" fill="#444">10</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#333"/>
+<line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
+<text x="305.0" y="426.0" text-anchor="middle">p95 settlement delay (s); points = window 0.5, 1, 2, 5, 10 s</text>
+<text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">liquidity saving vs gross UB (%)</text>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,385.0 91.4,385.0 91.4,385.0 91.4,385.0 91.4,385.0"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#0072B2"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#0072B2"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#0072B2"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#0072B2"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#0072B2"/>
+<rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
+<text x="570.0" y="50.0">max_delay 2 s</text>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="251.5,385.0 251.5,385.0 251.5,385.0 251.5,385.0 251.5,385.0"/>
+<circle cx="251.5" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="251.5" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="251.5" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="251.5" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="251.5" cy="385.0" r="3.5" fill="#D55E00"/>
+<rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
+<text x="570.0" y="68.0">max_delay 5 s</text>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="518.6,56.4 518.6,56.4 518.6,56.4 518.6,385.0 518.6,385.0"/>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">max_delay 10 s</text>
+</svg>

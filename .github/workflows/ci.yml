@@ -1,5 +1,11 @@
 name: ci
 on: [push, pull_request]
+
+# One run per branch: a new push cancels the run of the previous one.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -7,3 +13,69 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --workspace --locked
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      # The two allowed lints are style choices of the numeric code (index loops over several
+      # arrays at once; `!(a > b)` where NaN must count as "not greater").
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings -A clippy::needless_range_loop -A clippy::neg_cmp_op_on_partial_ord
+
+  # No result may change unnoticed, and results must be identical on every platform:
+  # a small run of every experiment is compared byte for byte with results-golden/.
+  golden:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -I scripts/golden.py --check
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-got-${{ matrix.os }}
+          path: target/golden-got
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: every document has its twin
+        run: python -I scripts/check_twins.py
+      - name: twins changed together in this pull request
+        if: github.event_name == 'pull_request'
+        run: python -I scripts/check_twins.py --base origin/${{ github.base_ref }}
+
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: curl -sSf https://rustwasm.github.io/wasm-pack/installer/init.sh | sh
+      - run: npm install --no-audit --no-fund
+        working-directory: web
+      - run: npm run wasm
+        working-directory: web
+      - run: npm run build
+        working-directory: web
+      - run: node scripts/wasm-smoke.mjs

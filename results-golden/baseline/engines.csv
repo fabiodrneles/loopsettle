@@ -1,0 +1,4 @@
+engine,liquidity_brl,saving_vs_ub_pct,recovered_share_of_ub_minus_lb,delay_p50_ms,delay_p95_ms,delay_p99_ms,share_within_2800ms,cycle_value_share,rejected_value_share
+gross_real_time,3280489.56,0,0,0,0,0,1,0,0
+deferred_net_1x,3009201.89,8.269731,1,31719424,60817408,82837504,0,0,0
+deferred_net_10x,3175003.36,3.215563,0.388835,4325376,8192000,8519680,0.000432,0,0

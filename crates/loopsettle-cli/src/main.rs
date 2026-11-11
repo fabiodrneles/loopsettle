@@ -20,7 +20,7 @@ use std::time::Instant;
 
 fn usage() -> ! {
     eprintln!(
-        "usage: loopsettle experiment <name> [--quick]\n       loopsettle list\n       loopsettle bound  <payments.csv> [--delays 1,10,60] [--out DIR] [--per-participant]\n       loopsettle settle <payments.csv> [--engines gross,deferred:96,micro:all:500:10000] [--delays ...] [--out DIR] [--per-participant]\n       loopsettle export <experiment> <out.csv> [--payments N] [--participants N]\n       loopsettle topology <transfers.csv>"
+        "usage: loopsettle experiment <name> [--quick] [--config FILE.toml]\n       loopsettle list\n       loopsettle bound  <payments.csv> [--delays 1,10,60] [--out DIR] [--per-participant]\n       loopsettle settle <payments.csv> [--engines gross,deferred:96,micro:all:500:10000] [--delays ...] [--out DIR] [--per-participant]\n       loopsettle export <experiment> <out.csv> [--payments N] [--participants N]\n       loopsettle topology <transfers.csv>"
     );
     std::process::exit(2)
 }
@@ -55,7 +55,10 @@ fn main() {
         Some("experiment") => {
             let name = args.get(1).unwrap_or_else(|| usage());
             let quick = args.iter().any(|a| a == "--quick");
-            let path = format!("experiments/{name}.toml");
+            let path = match args.iter().position(|a| a == "--config") {
+                Some(i) => args.get(i + 1).cloned().unwrap_or_else(|| usage()),
+                None => format!("experiments/{name}.toml"),
+            };
             let src = std::fs::read_to_string(&path).unwrap_or_else(|e| {
                 eprintln!("cannot read {path}: {e} (run from the repository root)");
                 std::process::exit(1)

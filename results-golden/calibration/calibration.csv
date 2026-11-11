@@ -1,0 +1,10 @@
+aggregate,real,simulated,relative_error,note
+daily_count (scaled),238990813.1,239723718.26017335,0.003067,"SOURCED; sim count x scale factor"
+daily_value_brl (scaled),107504810067.9,103773919300.09863,-0.034704,"SOURCED; sim value x scale factor"
+ticket_mean_brl,449.8282,432.88966170411345,-0.037656,"SOURCED target, matched via body/tail means"
+tail_count_share (B2B proxy),0.042962,0.042457,-0.011755,"SOURCED proxy"
+tail_value_share (B2B proxy),0.520536,0.5142184110296424,-0.012137,"CALIBRATED via tail_xm"
+top5_share,0.577806282476253,0.5736076033497275,-0.007267,"SOURCED (key shares, renormalised to simulated participants)"
+top10_share,0.8142183228317801,0.8090190083743187,-0.006386,"SOURCED (key shares)"
+top20_share,0.9509195603096248,0.9504519473614249,-0.000492,"SOURCED (key shares)"
+hhi,0.09140041940580393,0.09066793067699747,-0.008014,"SOURCED (key shares)"
