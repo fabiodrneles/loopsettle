@@ -401,7 +401,7 @@ Class-specific intraday profiles with strength λ (0 = one profile for everyone,
 Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case 0.46% in the window form and 0.042% in the tight form; fired: no.
 
 ## 10. Conta PI funding windows: nights and the weekend (W3)
-_seed `20260930`, code `0.1.0+git.3c136cd-dirty`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, code `0.1.0+git.0ef4e7d`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.
 
