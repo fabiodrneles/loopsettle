@@ -449,7 +449,7 @@ A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos di
 | 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.5e0fb3a-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.1.0+git.0eea21f`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 

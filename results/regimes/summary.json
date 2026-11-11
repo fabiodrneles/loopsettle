@@ -1,7 +1,7 @@
 {
   "experiment": "regimes",
   "seed": 20260930,
-  "code_version": "0.1.0+git.5e0fb3a-dirty",
+  "code_version": "0.1.0+git.0eea21f",
   "config_file": "experiments/regimes.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment regimes",
   "scenario": {
