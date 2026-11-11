@@ -10,7 +10,7 @@ use crate::experiments::{f64_list, scenario_json};
 use crate::out::{f, table, Results};
 use crate::svg::{Chart, Series};
 use loopsettle_core::json::Json;
-use loopsettle_sim::bound::delay_bounds;
+use loopsettle_sim::bound::{delay_bounds, liquidity_floors};
 use loopsettle_sim::toml_lite::Doc;
 use loopsettle_sim::{run as run_engines, EngineSpec, Opening, ScenarioConfig};
 
@@ -26,6 +26,8 @@ const ENGINES: &[(&str, u64)] = &[
 struct Measure {
     saving_pct: Vec<f64>,
     bound_pct: Vec<f64>,
+    /// tight bound: UB minus the sum of liquidity floors, % of UB (METHODOLOGY section 9b)
+    tight_pct: Vec<f64>,
     ub: i128,
     lb: i128,
     gross: i128,
@@ -39,10 +41,17 @@ fn measure(cfg: &ScenarioConfig) -> Measure {
     let ub = o.ub();
     let delays: Vec<u64> = ENGINES.iter().map(|&(_, d)| d).collect();
     let bounds = delay_bounds(cfg, &delays);
+    // floors for the distinct delays only (each one costs a pass over the stream)
+    let mut uniq = delays.clone();
+    uniq.sort_unstable();
+    uniq.dedup();
+    let floors = liquidity_floors(cfg, &uniq);
+    let floor_of = |d: u64| -> i128 { floors[uniq.iter().position(|&x| x == d).unwrap()].iter().map(|&v| v as i128).sum() };
     let pct = |x: i128| if ub == 0 { 0.0 } else { 100.0 * x as f64 / ub as f64 };
     Measure {
         saving_pct: o.results[1..].iter().map(|r| 100.0 * r.saving_vs(ub)).collect(),
         bound_pct: bounds.iter().map(|b| pct(b.iter().map(|&v| v as i128).sum())).collect(),
+        tight_pct: delays.iter().map(|&d| pct(ub - floor_of(d))).collect(),
         ub,
         lb: o.lb(),
         gross: o.flow.gross_value,
@@ -93,6 +102,7 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     for &sigma in &sigmas {
         let mut per: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
         let mut perb: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
+        let mut pert: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
         let mut lbub = Vec::new();
         for &seed in &seeds {
             let cfg = ScenarioConfig { seed, receiver_bias_sigma: sigma, ..base.clone() };
@@ -101,7 +111,8 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
             for (k, (name, _)) in ENGINES.iter().enumerate() {
                 per[k].push(m.saving_pct[k]);
                 perb[k].push(m.bound_pct[k]);
-                seed_rows.push(vec![f(sigma), seed.to_string(), name.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / 100.0)]);
+                pert[k].push(m.tight_pct[k]);
+                seed_rows.push(vec![f(sigma), seed.to_string(), name.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / 100.0), f(m.tight_pct[k])]);
             }
         }
         eprintln!("  R1 sigma {sigma}: {} seeds done ({:.0} s)", seeds.len(), t_all.elapsed().as_secs_f64());
@@ -110,8 +121,10 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
             let (m, sd) = mean_sd(&per[k]);
             let (bm, _) = mean_sd(&perb[k]);
             let half = t95(per[k].len() - 1) * sd / (per[k].len() as f64).sqrt();
+            let (tm, tsd) = mean_sd(&pert[k]);
+            let thalf = t95(pert[k].len() - 1) * tsd / (pert[k].len() as f64).sqrt();
             let positive = per[k].iter().filter(|&&x| x > 0.0).count();
-            sum_rows.push(vec![f(sigma), name.to_string(), d.to_string(), seeds.len().to_string(), f(m), f(sd), f(m - half), f(m + half), positive.to_string(), f(bm), f(lm)]);
+            sum_rows.push(vec![f(sigma), name.to_string(), d.to_string(), seeds.len().to_string(), f(m), f(sd), f(m - half), f(m + half), positive.to_string(), f(bm), f(lm), f(tm), f(tm - thalf), f(tm + thalf), f(if tm > 0.0 { m / tm } else { 0.0 })]);
             sum_json.push(
                 Json::obj()
                     .set("receiver_bias_sigma", sigma)
@@ -122,14 +135,17 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
                     .set("saving_pct_sd", sd)
                     .set("saving_pct_ci95_low", m - half)
                     .set("saving_pct_ci95_high", m + half)
-                    .set("bound_pct_mean", bm),
+                    .set("bound_pct_mean", bm)
+                    .set("tight_bound_pct_mean", tm)
+                    .set("tight_bound_pct_ci95_low", tm - thalf)
+                    .set("tight_bound_pct_ci95_high", tm + thalf),
             );
         }
     }
-    res.csv("seeds.csv", &table(&["receiver_bias_sigma", "seed", "engine", "saving_vs_ub_pct", "delay_bound_pct", "ub_brl"], &seed_rows));
+    res.csv("seeds.csv", &table(&["receiver_bias_sigma", "seed", "engine", "saving_vs_ub_pct", "delay_bound_pct", "ub_brl", "tight_bound_pct"], &seed_rows));
     let sum_header = [
         "receiver_bias_sigma", "engine", "max_delay_ms", "seeds", "saving_pct_mean", "saving_pct_sd", "saving_pct_ci95_low", "saving_pct_ci95_high", "seeds_with_positive_saving",
-        "delay_bound_pct_mean", "lb_over_ub_mean",
+        "delay_bound_pct_mean", "lb_over_ub_mean", "tight_bound_pct_mean", "tight_bound_pct_ci95_low", "tight_bound_pct_ci95_high", "saving_over_tight_bound",
     ];
     res.csv("seeds_summary.csv", &table(&sum_header, &sum_rows));
 
@@ -138,7 +154,8 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let mut scale_rows = Vec::new();
     let mut scale_json = Vec::new();
     let mut series: Vec<Series> = ENGINES.iter().take(3).map(|(n, _)| Series { label: n.to_string(), points: Vec::new(), line: true }).collect();
-    let mut bound_series = Series { label: "delay bound, 10 s".into(), points: Vec::new(), line: true };
+    let mut bound_series = Series { label: "window bound, 10 s".into(), points: Vec::new(), line: true };
+    let mut tight_series = Series { label: "tight bound, 10 s".into(), points: Vec::new(), line: true };
     for &ppd in &scales {
         let cfg = ScenarioConfig { payments_per_day: ppd, scale_factor: base.scale_factor * base.payments_per_day / ppd, ..base.clone() };
         let t0 = std::time::Instant::now();
@@ -147,23 +164,26 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         eprintln!("  R2 {ppd:.0} payments/day: {secs:.1} s");
         res.measure(&format!("scale_{ppd:.0}_seconds"), secs);
         for (k, (name, d)) in ENGINES.iter().enumerate() {
-            scale_rows.push(vec![f(ppd), f(cfg.scale_factor), name.to_string(), d.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / m.gross.max(1) as f64)]);
+            scale_rows.push(vec![f(ppd), f(cfg.scale_factor), name.to_string(), d.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / m.gross.max(1) as f64), f(m.tight_pct[k])]);
             if k < 3 {
                 series[k].points.push((ppd / 1e6, m.saving_pct[k]));
             }
         }
         bound_series.points.push((ppd / 1e6, m.bound_pct[1]));
+        tight_series.points.push((ppd / 1e6, m.tight_pct[1]));
         scale_json.push(
             Json::obj()
                 .set("payments_per_day", ppd)
                 .set("scale_factor", cfg.scale_factor)
                 .set("ub_over_gross", m.ub as f64 / m.gross.max(1) as f64)
                 .set("saving_pct", Json::Arr(m.saving_pct.iter().map(|&x| Json::from(x)).collect()))
-                .set("bound_pct", Json::Arr(m.bound_pct.iter().map(|&x| Json::from(x)).collect())),
+                .set("bound_pct", Json::Arr(m.bound_pct.iter().map(|&x| Json::from(x)).collect()))
+                .set("tight_bound_pct", Json::Arr(m.tight_pct.iter().map(|&x| Json::from(x)).collect())),
         );
     }
-    res.csv("scale.csv", &table(&["payments_per_day", "scale_factor", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "ub_over_gross"], &scale_rows));
+    res.csv("scale.csv", &table(&["payments_per_day", "scale_factor", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "ub_over_gross", "tight_bound_pct"], &scale_rows));
     series.push(bound_series);
+    series.push(tight_series);
     let chart = Chart {
         title: "Scale: liquidity saving of second-scale netting as volume grows".into(),
         x_label: "simulated payments per day (millions, log)".into(),

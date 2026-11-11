@@ -83,9 +83,9 @@ PT = {
     "c_fin": ["σ viés", "ciclos/dia", "razão média", "dp", "mín", "máx", "sementes"],
     "h7": "## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso",
     "r1": "R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):",
-    "c_seeds": ["σ viés", "motor", "sementes", "economia média", "dp (p.p.)", "IC 95%", "limite de atraso", "LB/UB"],
+    "c_seeds": ["σ viés", "motor", "sementes", "economia média", "dp (p.p.)", "IC 95%", "limite (janela)", "LB/UB", "limite apertado [IC 95%]", "obtido / apertado"],
     "r2": "R2 — escala (mesmo cenário, de 1 a 30 milhões de pagamentos por dia):",
-    "c_scale": ["pagamentos/dia", "fator de escala", "motor", "economia vs UB", "limite de atraso", "UB / volume"],
+    "c_scale": ["pagamentos/dia", "fator de escala", "motor", "economia vs UB", "limite (janela)", "UB / volume", "limite apertado"],
     "r3": "R3 — comprimento máximo do micro-ciclo (janela 0,5 s, atraso 10 s):",
     "c_len": ["comprimento máx.", "economia vs UB", "valor em ciclos"],
     "r5": "R5 — razão por participante: liquidez instantânea / liquidez com N ciclos por dia:",
@@ -149,9 +149,9 @@ EN = {
     "c_fin": ["σ bias", "cycles/day", "mean ratio", "sd", "min", "max", "seeds"],
     "h7": "## 7. Robustness: seeds, scale, cycle length and delay bound",
     "r1": "R1 — many seeds × receiver bias (mean, standard deviation and 95% interval; bound = ceiling for any mechanism with that maximum delay):",
-    "c_seeds": ["σ bias", "engine", "seeds", "mean saving", "sd (p.p.)", "95% CI", "delay bound", "LB/UB"],
+    "c_seeds": ["σ bias", "engine", "seeds", "mean saving", "sd (p.p.)", "95% CI", "window bound", "LB/UB", "tight bound [95% CI]", "realised / tight"],
     "r2": "R2 — scale (same scenario, 1 to 30 million payments per day):",
-    "c_scale": ["payments/day", "scale factor", "engine", "saving vs UB", "delay bound", "UB / volume"],
+    "c_scale": ["payments/day", "scale factor", "engine", "saving vs UB", "window bound", "UB / volume", "tight bound"],
     "r3": "R3 — maximum micro-cycle length (0.5 s window, 10 s delay):",
     "c_len": ["max length", "saving vs UB", "value in cycles"],
     "r5": "R5 — per-participant ratio: instant liquidity / liquidity with N cycles per day:",
@@ -275,11 +275,12 @@ def build(T):
     md += [T["h7"], meta(s, T), "", T["r1"], ""]
     md.append(table(T["c_seeds"],
                     [[r["receiver_bias_sigma"], r["engine"], r["seeds"], f"{float(r['saving_pct_mean']):.4f}%", f"{float(r['saving_pct_sd']):.4f}",
-                      f"[{float(r['saving_pct_ci95_low']):.4f}; {float(r['saving_pct_ci95_high']):.4f}]%", f"{float(r['delay_bound_pct_mean']):.3f}%", num(r["lb_over_ub_mean"], 3)]
+                      f"[{float(r['saving_pct_ci95_low']):.4f}; {float(r['saving_pct_ci95_high']):.4f}]%", f"{float(r['delay_bound_pct_mean']):.3f}%", num(r["lb_over_ub_mean"], 3),
+                      f"{float(r['tight_bound_pct_mean']):.4f}% [{float(r['tight_bound_pct_ci95_low']):.4f}; {float(r['tight_bound_pct_ci95_high']):.4f}]", num(r["saving_over_tight_bound"], 3)]
                      for r in rows("robustness", "seeds_summary.csv")]))
     md += ["", T["r2"], ""]
     md.append(table(T["c_scale"],
-                    [[num(r["payments_per_day"], 0), num(r["scale_factor"], 1), r["engine"], f"{float(r['saving_vs_ub_pct']):.4f}%", f"{float(r['delay_bound_pct']):.3f}%", num(r["ub_over_gross"], 4)]
+                    [[num(r["payments_per_day"], 0), num(r["scale_factor"], 1), r["engine"], f"{float(r['saving_vs_ub_pct']):.4f}%", f"{float(r['delay_bound_pct']):.3f}%", num(r["ub_over_gross"], 4), f"{float(r['tight_bound_pct']):.4f}%"]
                      for r in rows("robustness", "scale.csv")]))
     md += ["", T["r3"], ""]
     md.append(table(T["c_len"], [[r["max_cycle_len"], f"{float(r['saving_vs_ub_pct']):.4f}%", pct(r["value_share_settled_in_cycles"])] for r in rows("robustness", "cycle_len.csv")]))
