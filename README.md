@@ -782,7 +782,7 @@ os PDFs estão em [`docs/references/`](docs/references/README.pt-BR.md).
 @software{dorneles_loopsettle,
   author  = {Dorneles, Fabio D.},
   title   = {LoopSettle: an open simulator of circular liquidity in instant payment systems},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/fabiodrneles/loopsettle},
   license = {Apache-2.0}
 }
@@ -1538,7 +1538,7 @@ in [`docs/references/`](docs/references/README.md).
 @software{dorneles_loopsettle,
   author  = {Dorneles, Fabio D.},
   title   = {LoopSettle: an open simulator of circular liquidity in instant payment systems},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/fabiodrneles/loopsettle},
   license = {Apache-2.0}
 }

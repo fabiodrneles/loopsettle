@@ -52,7 +52,7 @@ const pt = {
   reduced: "Modo reduzido: cenários menores para caber no aparelho.",
   loading: "Carregando o simulador…",
   footer: (k: string) =>
-    `LoopSettle 0.1 · Apache-2.0 · dados sintéticos calibrados com agregados públicos do Pix, não dados interbancários reais. Cada pagamento simulado representa cerca de ${k} pagamentos reais do Pix. Pix é marca do Banco Central do Brasil; o LoopSettle é independente, sem afiliação nem endosso do BCB.`,
+    `LoopSettle 0.2 · Apache-2.0 · dados sintéticos calibrados com agregados públicos do Pix, não dados interbancários reais. Cada pagamento simulado representa cerca de ${k} pagamentos reais do Pix. Pix é marca do Banco Central do Brasil; o LoopSettle é independente, sem afiliação nem endosso do BCB.`,
   netTitle: "A rede de um dia",
   keyCirc: "parte circular máxima (CDFD)",
   keyDir: "parte direcional",
@@ -142,7 +142,7 @@ const en: Strings = {
   reduced: "Reduced mode: smaller scenarios to fit this device.",
   loading: "Loading the simulator…",
   footer: (k: string) =>
-    `LoopSettle 0.1 · Apache-2.0 · synthetic data calibrated to public Pix aggregates, not real interbank data. Each simulated payment stands for about ${k} real Pix payments. Pix is a trademark of Banco Central do Brasil; LoopSettle is independent and not affiliated with or endorsed by the BCB.`,
+    `LoopSettle 0.2 · Apache-2.0 · synthetic data calibrated to public Pix aggregates, not real interbank data. Each simulated payment stands for about ${k} real Pix payments. Pix is a trademark of Banco Central do Brasil; LoopSettle is independent and not affiliated with or endorsed by the BCB.`,
   netTitle: "The network of one day",
   keyCirc: "maximum circular part (CDFD)",
   keyDir: "directional part",

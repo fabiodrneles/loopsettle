@@ -6,6 +6,15 @@ whose results changed.
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-11-12
+
+The post-v0.1.0 roadmap in `specs/` (audit, then specs 01 to 10). Every experiment's results were
+regenerated with this version. Highlights: the liquidity floor (a tight, attainable delay bound,
+equal to the offline optimum in 116 of 120 dense instances); the central claim made conditional
+on the absence of fast bilateral returns (`echo-sweep`); constrained-liquidity comparison at equal
+service (`liquidity-frontier`); several seeds in every experiment; results checked byte for byte on
+Linux, Windows and macOS in CI. See `REVIEW.md`, points 79 to 95.
+
 ### Added
 - Liquidity floor (tight form of the delay bound): `liquidity_floors`, new columns in
   `loopsettle bound` and in the `regimes` experiment, METHODOLOGY §9b, claim 1g.
@@ -77,5 +86,6 @@ First public version.
 - Eight property-tested invariants; byte-for-byte reproducible results; bilingual documentation and
   a reference library.
 
-[Unreleased]: https://github.com/fabiodrneles/loopsettle/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/fabiodrneles/loopsettle/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/fabiodrneles/loopsettle/releases/tag/v0.2.0
 [0.1.0]: https://github.com/fabiodrneles/loopsettle/releases/tag/v0.1.0
