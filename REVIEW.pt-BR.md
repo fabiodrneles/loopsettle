@@ -321,3 +321,14 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     50% de eco adiante a 1 s (IC [−7,5; −1,5]): segurar pagamentos que seriam financiados pelo
     próprio gatilho custa caro, e isso merece um olhar próprio; (e) não se sabe se os fluxos
     reais têm devoluções bilaterais rápidas.
+88. **Continuação do teste de eco, 12/11/2026.** `echo-sweep/sensitivity.csv` e
+    `order_diagnostic.csv`, CLAIMS 1j (ampliada) e 1k. (a) O resultado condicional vale na direção
+    em todas as variações testadas, com tamanho menor: limite apertado de 10 s de 1,7% (metade do
+    valor), 0,6% (um quarto), 1,8% (σ = 1,0), 2,1% (três vezes mais pagamentos), contra 4,2% na
+    varredura. A queda com o volume não era esperada e tem IC sobrepostos ([0,8; 3,4] contra
+    [2,2; 6,2]); uma rodada com 10 e 30 milhões resolveria se ela é real. (b) O risco (d) do ponto
+    87 tem explicação: o motor de espera (só atraso, ordem mantida) economiza exatamente 0,000% em
+    todos os casos, então a perda dos micro-ciclos com eco adiante vem de liquidar fora da ordem de
+    chegada. "Exatamente zero" é plausível (deslocar toda liquidação pelo mesmo atraso desloca
+    cada curva de posição sem mudar a profundidade, a menos de efeitos de borda), mas é uma
+    observação, ainda não uma afirmação demonstrada.

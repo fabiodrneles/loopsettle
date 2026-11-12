@@ -28,8 +28,9 @@ abaixo é um parâmetro com padrão desligado, para que os resultados atuais nã
 > `echo_share`, `echo_delay_ms`, `echo_return_prob` em `ScenarioConfig`; experimento `echo-sweep`.
 > Eco adiante: nada muda (limite ≤ 0,18% com 20% de eco). Eco de volta a quem pagou: limite de
 > 4,2% e economia obtida de 3,9% com 20% de eco a 1 s. A afirmação central virou condicional
-> (CLAIMS 1j, ASSESSMENT atualização 5, REVIEW 87). Em aberto: valores parciais, outras escalas e
-> σ, e por que os micro-ciclos pioram a liquidez com eco adiante.
+> (CLAIMS 1j, ASSESSMENT atualização 5, REVIEW 87). Sensibilidade feita (REVIEW 88): metade do valor 1,7%, um quarto 0,6%, σ = 1,0 1,8%, 3× o
+> volume 2,1%; a piora dos micro-ciclos vem de liquidar fora da ordem (CLAIMS 1k). Em aberto:
+> rodar com 10 e 30 milhões para ver se o efeito cai mesmo com o volume.
 
 Parte dos pagamentos é consequência de um recebimento (o cliente recebe e paga em seguida).
 Parâmetro `echo_prob`: com essa probabilidade, um pagamento recebido por `j` gera um pagamento

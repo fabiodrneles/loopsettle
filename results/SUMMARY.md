@@ -48,8 +48,8 @@ Hodge potential × net position correlation: 0.9971.
 
 Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):
 
-| σ bias | UB (R$) | LB/UB | potential | gross Hodge L1 | gross CDFD | gross cycles | net CDFD | micro-cycle saving | p95 (ms) |
-|---|---|---|---|---|---|---|---|---|---|
+| variant | engine | saving [95% CI] | tight bound [95% CI] |
+|---|---|---|---|
 | 0 | 29 689 174 | 0.591 | 96.04% | 1.038 | 0.958 | 0.934 | 0.644 | 0.0480% | 9984 |
 | 0.2 | 49 241 487 | 0.798 | 91.13% | 1.105 | 0.907 | 0.864 | 0.320 | 0.0051% | 9984 |
 | 0.4 | 71 271 128 | 0.907 | 85.41% | 1.183 | 0.831 | 0.795 | 0.174 | 0.0120% | 9984 |
@@ -656,7 +656,7 @@ A small system in a busy hour (20 participants, about 1,500 payments, 20 seeds; 
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)
-_seed `20260930`, code `0.1.0+git.14970ac`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, code `0.1.0+git.14970ac-dirty`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.
 
@@ -702,4 +702,36 @@ A share of all payments is a response to a receipt: the payee pays the same amou
 | 0.5 | 60 | 1 | deferred:8640 | 5.792% [1.273; 10.312] | 9.228% [3.799; 14.657] | 0% | 0.003 |
 
 Kill criterion (the claim is conditional if the 10 s tight bound (upper end of its 95% CI) exceeds 2% of UB for an echo share of at most 20%): worst case 6.23%; fired: yes.
+
+Sensitivity of the case that fired the criterion (20% echo share, 1 s, straight back), one change at a time; 10 s deadline:
+
+| variant | engine | saving [95% CI] | tight bound [95% CI] |
+|---|---|---|---|
+| as in the sweep (same amount; base bias and scale) | micro:all:500:10000 | 2.512% [1.129; 3.896] | 4.211% [2.188; 6.234] |
+| as in the sweep (same amount; base bias and scale) | deferred:8640 | 3.919% [1.993; 5.846] | 4.211% [2.188; 6.234] |
+| echo passes on half of the amount | micro:all:500:10000 | 0.969% [0.365; 1.572] | 1.712% [0.696; 2.727] |
+| echo passes on half of the amount | deferred:8640 | 1.583% [0.631; 2.535] | 1.712% [0.696; 2.727] |
+| echo passes on a quarter of the amount | micro:all:500:10000 | 0.328% [0.086; 0.570] | 0.586% [0.199; 0.972] |
+| echo passes on a quarter of the amount | deferred:8640 | 0.543% [0.163; 0.922] | 0.586% [0.199; 0.972] |
+| calibrated receiver bias (sigma 1.0) | micro:all:500:10000 | 1.222% [0.334; 2.110] | 1.770% [0.714; 2.826] |
+| calibrated receiver bias (sigma 1.0) | deferred:8640 | 1.699% [0.632; 2.766] | 1.770% [0.714; 2.826] |
+| 3x the payments | micro:all:500:10000 | 1.290% [0.426; 2.154] | 2.114% [0.806; 3.423] |
+| 3x the payments | deferred:8640 | 1.905% [0.605; 3.205] | 2.114% [0.806; 3.423] |
+
+Ordering diagnostic: delaying only (hold, arrival order kept) against engines that settle some payments earlier and others later, with onward echoes:
+
+| case | engine | saving [95% CI] |
+|---|---|---|
+| no echo | hold_d10000 | 0.000% [0.000; 0.000] |
+| no echo | deferred_net_8640x | 0.018% [0.011; 0.025] |
+| no echo | micro_cycle_all_w500_d10000 | 0.010% [0.006; 0.014] |
+| no echo | micro_cycle_all_w10000_d10000 | 0.006% [0.001; 0.012] |
+| 20% onward echoes at 1 s | hold_d10000 | 0.000% [0.000; 0.000] |
+| 20% onward echoes at 1 s | deferred_net_8640x | 0.156% [-0.128; 0.440] |
+| 20% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -0.061% [-0.204; 0.082] |
+| 20% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -0.778% [-2.028; 0.471] |
+| 50% onward echoes at 1 s | hold_d10000 | 0.000% [0.000; 0.000] |
+| 50% onward echoes at 1 s | deferred_net_8640x | 0.607% [-0.657; 1.872] |
+| 50% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -4.489% [-7.477; -1.502] |
+| 50% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -4.570% [-9.592; 0.452] |
 

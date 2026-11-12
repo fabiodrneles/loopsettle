@@ -12,7 +12,7 @@ use crate::out::{f, table, Results};
 use crate::stats::{mean_ci95, par_map};
 use loopsettle_core::json::Json;
 use loopsettle_sim::toml_lite::Doc;
-use loopsettle_sim::ScenarioConfig;
+use loopsettle_sim::{run as run_engines, EngineSpec, Opening, ScenarioConfig};
 
 /// Kill criterion (docs/ASSESSMENT.md, update 5): the claim "second-scale mechanisms recover a
 /// negligible share" stops being unconditional if the 10 s tight bound passes this share of UB
@@ -82,6 +82,71 @@ pub fn echo_sweep(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         "tight_bound_pct_ci95_low", "tight_bound_pct_ci95_high", "saving_over_tight_bound", "cycle_value_share_mean", "lb_over_ub_mean",
     ];
     res.csv("echo.csv", &table(&header, &rows));
+
+    // ---- Sensitivity of the case that fired the criterion (20% share, 1 s, straight back):
+    // one thing changed at a time. Does the conditional result depend on echoes repeating the
+    // exact amount, on the receiver bias, or on the scale?
+    let fired = ScenarioConfig { echo_share: 0.2, echo_delay_ms: 1_000.0, echo_return_prob: 1.0, ..base.clone() };
+    let variants: Vec<(&str, ScenarioConfig)> = vec![
+        ("as in the sweep (same amount, base bias and scale)", fired.clone()),
+        ("echo passes on half of the amount", ScenarioConfig { echo_amount_fraction: 0.5, ..fired.clone() }),
+        ("echo passes on a quarter of the amount", ScenarioConfig { echo_amount_fraction: 0.25, ..fired.clone() }),
+        ("calibrated receiver bias (sigma 1.0)", ScenarioConfig { receiver_bias_sigma: 1.0, ..fired.clone() }),
+        ("3x the payments", ScenarioConfig { payments_per_day: 3.0 * base.payments_per_day, scale_factor: base.scale_factor / 3.0, ..fired.clone() }),
+    ];
+    let mut vjobs = Vec::new();
+    for v in 0..variants.len() {
+        for &seed in &seeds {
+            vjobs.push((v, seed));
+        }
+    }
+    let vdone: Vec<Measure> = par_map(&vjobs, |&(v, seed)| measure(&ScenarioConfig { seed, ..variants[v].1.clone() }));
+    let mut vrows = Vec::new();
+    for (v, (label, _)) in variants.iter().enumerate() {
+        let ms: Vec<&Measure> = vjobs.iter().zip(&vdone).filter(|(j, _)| j.0 == v).map(|(_, m)| m).collect();
+        for (k, (name, d)) in ENGINES.iter().enumerate() {
+            if *d != 10_000 {
+                continue;
+            }
+            let (sv, slo, shi) = mean_ci95(&ms.iter().map(|m| m.saving_pct[k]).collect::<Vec<_>>());
+            let (tb, tlo, thi) = mean_ci95(&ms.iter().map(|m| m.tight_pct[k]).collect::<Vec<_>>());
+            vrows.push(vec![label.replace(',', ";"), name.to_string(), ms.len().to_string(), f(sv), f(slo), f(shi), f(tb), f(tlo), f(thi)]);
+        }
+    }
+    let vheader = ["variant", "engine", "seeds", "saving_pct_mean", "saving_pct_ci95_low", "saving_pct_ci95_high", "tight_bound_pct_mean", "tight_bound_pct_ci95_low", "tight_bound_pct_ci95_high"];
+    res.csv("sensitivity.csv", &table(&vheader, &vrows));
+
+    // ---- Diagnostic: why do micro-cycles need *more* liquidity than gross with onward echoes?
+    // Compare, on the same payments, an engine that only delays (hold: every payment exactly
+    // 10 s, arrival order kept) with engines that settle some payments early and others late.
+    let dspecs: Vec<EngineSpec> = ["gross", "hold:10000", "deferred:8640", "micro:all:500:10000", "micro:all:10000:10000"].iter().map(|s| EngineSpec::parse(s)).collect::<Result<_, _>>()?;
+    let dcases: Vec<(&str, ScenarioConfig)> = vec![
+        ("no echo", base.clone()),
+        ("20% onward echoes at 1 s", ScenarioConfig { echo_share: 0.2, echo_delay_ms: 1_000.0, ..base.clone() }),
+        ("50% onward echoes at 1 s", ScenarioConfig { echo_share: 0.5, echo_delay_ms: 1_000.0, ..base.clone() }),
+    ];
+    let mut djobs = Vec::new();
+    for c in 0..dcases.len() {
+        for &seed in &seeds {
+            djobs.push((c, seed));
+        }
+    }
+    let ddone: Vec<Vec<f64>> = par_map(&djobs, |&(c, seed)| {
+        let o = run_engines(&ScenarioConfig { seed, ..dcases[c].1.clone() }, &dspecs, &Opening::Unlimited, false, None);
+        let ub = o.ub();
+        o.results[1..].iter().map(|r| 100.0 * r.saving_vs(ub)).collect()
+    });
+    let mut drows = Vec::new();
+    for (c, (label, _)) in dcases.iter().enumerate() {
+        let per: Vec<&Vec<f64>> = djobs.iter().zip(&ddone).filter(|(j, _)| j.0 == c).map(|(_, v)| v).collect();
+        for (k, spec) in dspecs[1..].iter().enumerate() {
+            let (m, lo, hi) = mean_ci95(&per.iter().map(|v| v[k]).collect::<Vec<_>>());
+            drows.push(vec![label.to_string(), spec.build(1).name(), per.len().to_string(), f(m), f(lo), f(hi)]);
+        }
+    }
+    let dheader = ["case", "engine", "seeds", "saving_pct_mean", "saving_pct_ci95_low", "saving_pct_ci95_high"];
+    res.csv("order_diagnostic.csv", &table(&dheader, &drows));
+    eprintln!("{}\n{}", table(&vheader, &vrows), table(&dheader, &drows));
     res.set("scenario", scenario_json(base));
     res.set("seeds", Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()));
     res.set("cases_10s", Json::Arr(js));

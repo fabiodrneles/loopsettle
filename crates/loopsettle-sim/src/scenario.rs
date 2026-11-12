@@ -165,6 +165,8 @@ pub struct ScenarioConfig {
     /// probability that an echo goes straight back to the participant that paid (a two-payment
     /// cycle); otherwise its payee is drawn like any other payment of the echoing participant
     pub echo_return_prob: f64,
+    /// share of the received amount that an echo passes on (1 = the same amount)
+    pub echo_amount_fraction: f64,
     pub amounts: AmountModel,
     /// how many real payments one simulated payment stands for (documentation only)
     pub scale_factor: f64,
@@ -193,6 +195,7 @@ impl Default for ScenarioConfig {
             echo_share: 0.0,
             echo_delay_ms: 5_000.0,
             echo_return_prob: 0.0,
+            echo_amount_fraction: 1.0,
             amounts: AmountModel::default(),
             scale_factor: 1.0,
         }
@@ -321,6 +324,7 @@ impl ScenarioConfig {
         num!(c.echo_share, "echo_share", as_f64, f64);
         num!(c.echo_delay_ms, "echo_delay_ms", as_f64, f64);
         num!(c.echo_return_prob, "echo_return_prob", as_f64, f64);
+        num!(c.echo_amount_fraction, "echo_amount_fraction", as_f64, f64);
         num!(c.amounts.body_sigma, "body_sigma", as_f64, f64);
         num!(c.amounts.tail_alpha, "tail_alpha", as_f64, f64);
         num!(c.amounts.max_amount, "max_amount_brl", as_f64, f64);

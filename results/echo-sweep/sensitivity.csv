@@ -1,0 +1,11 @@
+variant,engine,seeds,saving_pct_mean,saving_pct_ci95_low,saving_pct_ci95_high,tight_bound_pct_mean,tight_bound_pct_ci95_low,tight_bound_pct_ci95_high
+as in the sweep (same amount; base bias and scale),micro:all:500:10000,8,2.51234,1.129125,3.895556,4.21098,2.188376,6.233585
+as in the sweep (same amount; base bias and scale),deferred:8640,8,3.919322,1.992875,5.84577,4.21098,2.188376,6.233585
+echo passes on half of the amount,micro:all:500:10000,8,0.968714,0.365403,1.572025,1.711524,0.696278,2.726771
+echo passes on half of the amount,deferred:8640,8,1.582821,0.630695,2.534946,1.711524,0.696278,2.726771
+echo passes on a quarter of the amount,micro:all:500:10000,8,0.32779,0.085537,0.570044,0.585554,0.199391,0.971716
+echo passes on a quarter of the amount,deferred:8640,8,0.542809,0.163197,0.92242,0.585554,0.199391,0.971716
+calibrated receiver bias (sigma 1.0),micro:all:500:10000,8,1.221894,0.333911,2.109877,1.769944,0.713674,2.826214
+calibrated receiver bias (sigma 1.0),deferred:8640,8,1.699206,0.632027,2.766385,1.769944,0.713674,2.826214
+3x the payments,micro:all:500:10000,8,1.289851,0.425758,2.153943,2.114393,0.805917,3.422869
+3x the payments,deferred:8640,8,1.904563,0.604595,3.204532,2.114393,0.805917,3.422869

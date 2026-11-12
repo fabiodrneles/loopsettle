@@ -309,3 +309,13 @@ the real laptop (i3, 4 GB).
     (CI [−7.5; −1.5]): holding payments that would have been funded by their own trigger is
     costly, and this deserves its own look; (e) whether real flows have fast bilateral returns is
     unknown.
+88. **Echo follow-up, 12 Nov 2026.** `echo-sweep/sensitivity.csv` and `order_diagnostic.csv`,
+    CLAIMS 1j (extended) and 1k. (a) The conditional result holds in direction under every
+    variation tried, with smaller size: 10 s tight bound 1.7% (half the amount), 0.6% (a quarter),
+    1.8% (σ = 1.0), 2.1% (three times the payments), against 4.2% in the sweep. The fall with
+    volume was not expected and has overlapping CIs ([0.8; 3.4] against [2.2; 6.2]); a run at 10
+    and 30 million would settle whether it is real. (b) Risk (d) of point 87 has an explanation:
+    the hold engine (delay only, order kept) saves exactly 0.000% in every case, so the loss of
+    micro-cycles with onward echoes comes from settling out of arrival order. "Exactly zero" is
+    plausible (shifting every settlement by the same delay shifts each position curve without
+    changing its depth, up to end effects) but it is an observation, not yet a proved statement.

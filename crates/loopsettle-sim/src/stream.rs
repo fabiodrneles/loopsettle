@@ -47,6 +47,7 @@ struct Echo {
     prob: f64,
     mean_delay_ms: f64,
     return_prob: f64,
+    amount_fraction: f64,
     /// scheduled echoes, earliest first: (time ms, tie-break sequence, payer, payee, amount)
     due: std::collections::BinaryHeap<std::cmp::Reverse<DueEcho>>,
     seq: u64,
@@ -126,6 +127,7 @@ impl PaymentStream {
                 prob: cfg.echo_share / (1.0 - cfg.echo_share),
                 mean_delay_ms: cfg.echo_delay_ms.max(1.0),
                 return_prob: cfg.echo_return_prob,
+                amount_fraction: cfg.echo_amount_fraction.clamp(0.0, 1.0),
                 due: Default::default(),
                 seq: 0,
                 ahead: None,
@@ -241,7 +243,8 @@ impl Iterator for PaymentStream {
                         let hour = ((t / HOUR_MS as TimeMs) % 24) as usize;
                         Self::draw_payee(&self.payee, &self.profiles, from, hour, &mut e.rng)
                     };
-                    e.due.push(std::cmp::Reverse((t, e.seq, from as u32, to as u32, p.amount)));
+                    let amount = ((p.amount as f64 * e.amount_fraction).round() as i64).max(1);
+                    e.due.push(std::cmp::Reverse((t, e.seq, from as u32, to as u32, amount)));
                     e.seq += 1;
                 }
             }
