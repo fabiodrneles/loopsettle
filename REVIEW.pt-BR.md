@@ -330,9 +330,9 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     milhões e um argumento antes de enunciá-la como lei. O experimento agora leva 4 min 42 s. (b) O risco (d) do ponto
     87 tem explicação: o motor de espera (só atraso, ordem mantida) economiza exatamente 0,000% em
     todos os casos, então a perda dos micro-ciclos com eco adiante vem de liquidar fora da ordem de
-    chegada. "Exatamente zero" é plausível (deslocar toda liquidação pelo mesmo atraso desloca
-    cada curva de posição sem mudar a profundidade, a menos de efeitos de borda), mas é uma
-    observação, ainda não uma afirmação demonstrada.
+    chegada. "Exatamente zero" tem prova de uma linha: segurar todo pagamento pelo mesmo atraso, na
+    ordem de chegada, faz de cada curva de posição a curva do bruto deslocada no tempo, então o
+    ponto mais baixo é o mesmo.
 89. **Conferência de literatura para o piso de liquidez, 12/11/2026.** `docs/REFERENCES.pt-BR.md`
     §8. Quatro buscas na web e uma conferência em texto integral não acharam enunciado anterior do
     piso; a pista mais próxima (Bank of Canada SDP 2020-9) foi lida e é outra coisa (atraso até o

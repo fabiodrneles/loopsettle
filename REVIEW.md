@@ -317,9 +317,9 @@ the real laptop (i3, 4 GB).
     to 1/√volume. I do not have a derivation for it; a 30 million run and an argument are needed
     before it is stated as a law. The experiment now takes 4 min 42 s. (b) Risk (d) of point 87 has an explanation:
     the hold engine (delay only, order kept) saves exactly 0.000% in every case, so the loss of
-    micro-cycles with onward echoes comes from settling out of arrival order. "Exactly zero" is
-    plausible (shifting every settlement by the same delay shifts each position curve without
-    changing its depth, up to end effects) but it is an observation, not yet a proved statement.
+    micro-cycles with onward echoes comes from settling out of arrival order. "Exactly zero" has a
+    one-line proof: holding every payment for the same delay, in arrival order, makes each
+    position curve the gross curve shifted in time, so its lowest point is the same.
 89. **Literature check for the liquidity floor, 12 Nov 2026.** `docs/REFERENCES.md` §8. Four web
     searches and one full-text check found no prior statement of the floor; the closest lead
     (Bank of Canada SDP 2020-9) was read and is a different thing (delay to the end of the day,
