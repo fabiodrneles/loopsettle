@@ -26,6 +26,7 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- `custom_engine` example: plug your own settlement mechanism and compare it with the liquidity floor.
 - `circularity-horizon` and `echo-scale` experiments; the bound curve of `regimes` over 10 seeds.
 - Echo payments in the generator and the `echo-sweep` experiment.
 

@@ -38,6 +38,14 @@
   86). **Exact next step:** carry the condition into `paper/paper.pt-BR.md` and
   `docs/PAPER_OUTLINE*.md`; then the open items of REVIEW 87 (partial echo amounts, other scales).
   Measured: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier` 349 s, 20 MiB.
+- **12 Nov 2026, end of session.** Done since the last entry: `echo-scale` (the echo effect falls
+  with exponent −0.52 in volume), `gridlock` and `bilateral` engines (spec 05 M3, M4; D27),
+  10-seed bound curve, `circularity-horizon` (spec 08 T3), `custom_engine` example (spec 10 R5),
+  literature search (REFERENCES §8). **Not done, in the owner's order:** spec 05 M5 (funding
+  policy); spec 08 T1 (BFF), T2 (scale of the min-cost flow), T4, T5; spec 10 R1 (external sort,
+  ISO 20022 mapping), R4 (web panel); several seeds in `baseline`, `potential-vs-realizable`,
+  `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`. **Exact next step:** spec 05
+  M5, then those in that order. Always run `make verify` before committing.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

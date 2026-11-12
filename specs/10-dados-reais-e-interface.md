@@ -2,7 +2,10 @@
 
 > **Estado em 12/11/2026:** **R2 feito** (rótulos `P001...`, `--keep-names`, `--min-participants`;
 > falta suprimir linhas que revelam um pagamento único). **R3 feito** (`--report`: `report.md`,
-> `report.pt-BR.md`, `fig_bound.svg`; teste `privacy_defaults_and_report`). R1, R4, R5 a fazer.
+> `report.pt-BR.md`, `fig_bound.svg`; teste `privacy_defaults_and_report`). **R5 em parte:**
+> `crates/loopsettle-sim/examples/custom_engine.rs` implementa um motor de terceiro (pagar com os
+> recebimentos) e o compara com o piso de liquidez. R1 (contrato já descrito em `data/README.md`;
+> faltam ordenação externa e o mapeamento ISO 20022), R4 (interface web) e o resto do R5 a fazer.
 
 ## Contexto
 

@@ -43,6 +43,15 @@
   `paper/paper.pt-BR.md` e `docs/PAPER_OUTLINE*.md`; depois os itens em aberto do REVIEW 87 (ecos
   com valor parcial, outras escalas). Medido: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier`
   349 s, 20 MiB.
+- **12/11/2026, fim da sessão.** Feito desde a última entrada: `echo-scale` (o efeito do eco cai
+  com expoente −0,52 no volume), motores `gridlock` e `bilateral` (spec 05 M3, M4; D27), curva do
+  limite com 10 sementes, `circularity-horizon` (spec 08 T3), exemplo `custom_engine` (spec 10 R5),
+  busca de literatura (REFERENCES §8). **Não feito, na ordem pedida pelo dono:** spec 05 M5
+  (política de abastecimento); spec 08 T1 (BFF), T2 (escala do fluxo de custo mínimo), T4, T5; spec
+  10 R1 (ordenação externa, mapeamento ISO 20022), R4 (painel web); várias sementes em `baseline`,
+  `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`.
+  **Próximo passo exato:** spec 05 M5, depois esses, nessa ordem. Sempre rodar `make verify` antes
+  de commitar.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

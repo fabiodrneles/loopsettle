@@ -31,12 +31,12 @@ frentes decidem se o trabalho vira referência:
 | 02 | [Propagar o limite apertado](02-propagar-limite-apertado.md) | ciência + docs | FR1–FR6 feitos; FR7 (interface web) a fazer | P0 |
 | 03 | [Ótimo offline e o sanduíche](03-otimo-offline.md) | ciência | **feito** (sem FR2 nem FR5; ver REVIEW 85) | P1 |
 | 04 | [Correções nos motores e nas métricas](04-correcoes-motores.md) | correção | **feito** (C1–C4, C6); C5 medido e adiado | P0 |
-| 05 | [Motores novos](05-motores-novos.md) | funcionalidade | M1–M4 feitos (M3 a conferir com o artigo, D27); M5 a fazer | P1 |
+| 05 | [Motores novos](05-motores-novos.md) | funcionalidade | M1–M4 feitos (M3 a conferir com o artigo, D27); M5 (política de abastecimento) a fazer | P1 |
 | 06 | [Fronteira com liquidez restrita](06-liquidez-restrita.md) | ciência | **feito** (sem M3; ver REVIEW 84) | P1 |
 | 07 | [Gerador: rajadas, vários dias, modelos nulos](07-gerador.md) | modelo | **G2 feito: critério de morte disparou** (REVIEW 87); G1, G3–G5 a fazer | P2 |
 | 08 | [Topologia: BFF, escala, circularidade temporal](08-topologia.md) | ciência | T3 feito; T1, T2, T4, T5 a fazer | P2 |
 | 09 | [Estatística, reprodutibilidade e CI](09-estatistica-reprodutibilidade-ci.md) | qualidade | E2, E3, E4, E6 feitos; E1 e E5 parciais | P0 |
-| 10 | [Dados reais, interoperabilidade e interface](10-dados-reais-e-interface.md) | adoção | R2 e R3 feitos; R1, R4, R5 a fazer | P1 |
+| 10 | [Dados reais, interoperabilidade e interface](10-dados-reais-e-interface.md) | adoção | R2, R3 e parte do R5 (exemplo de motor próprio) feitos; R1, R4 e o resto do R5 a fazer | P1 |
 
 Ordem sugerida: 04 → 09 → 02 → 06 → 03 → 05 → 10 → 07 → 08. A 04 e a 09 vêm antes porque
 toda rodada nova de resultados deve sair já com os motores corrigidos e com várias sementes.
