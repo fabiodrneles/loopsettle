@@ -93,6 +93,7 @@ pub fn echo_sweep(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         ("echo passes on a quarter of the amount", ScenarioConfig { echo_amount_fraction: 0.25, ..fired.clone() }),
         ("calibrated receiver bias (sigma 1.0)", ScenarioConfig { receiver_bias_sigma: 1.0, ..fired.clone() }),
         ("3x the payments", ScenarioConfig { payments_per_day: 3.0 * base.payments_per_day, scale_factor: base.scale_factor / 3.0, ..fired.clone() }),
+        ("10x the payments", ScenarioConfig { payments_per_day: 10.0 * base.payments_per_day, scale_factor: base.scale_factor / 10.0, ..fired.clone() }),
     ];
     let mut vjobs = Vec::new();
     for v in 0..variants.len() {
