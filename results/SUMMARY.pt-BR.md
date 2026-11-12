@@ -656,7 +656,7 @@ Sistema pequeno numa hora movimentada (20 participantes, cerca de 1.500 pagament
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)
-_seed `20260930`, código `0.1.0+git.f3207db-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, código `0.1.0+git.14970ac`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.
 

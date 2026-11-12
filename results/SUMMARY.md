@@ -656,7 +656,7 @@ A small system in a busy hour (20 participants, about 1,500 payments, 20 seeds; 
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)
-_seed `20260930`, code `0.1.0+git.f3207db-dirty`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, code `0.1.0+git.14970ac`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.
 
