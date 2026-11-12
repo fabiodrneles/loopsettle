@@ -20,6 +20,10 @@ use loopsettle_sim::{run as run_engines, EngineSpec, Opening, PaymentStream, Sce
 use loopsettle_topology::{cdfd_max, FlowGraph};
 use std::collections::BTreeMap;
 
+/// One width's numbers for one seed: (circulating share of gross, bilateral share of gross,
+/// tight bound % of UB, realised saving % of UB).
+type Row = (f64, f64, f64, f64);
+
 /// Maximum circulation and bilateral offset of one window's payments, in cents.
 /// Participants are renumbered to the ones present, so tiny windows build tiny graphs.
 fn window_circulation(pairs: &BTreeMap<(u32, u32), i64>) -> (i128, i128) {
@@ -49,7 +53,7 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
     let t0 = std::time::Instant::now();
     // per seed: per width (circulating share of gross, bilateral share of gross, tight bound %
     // of UB, realised saving % of UB), plus UB / gross
-    let done: Vec<(Vec<(f64, f64, f64, f64)>, f64)> = par_map(&seeds, |&seed| {
+    let done: Vec<(Vec<Row>, f64)> = par_map(&seeds, |&seed| {
         let cfg = ScenarioConfig { seed, ..base.clone() };
         let k = widths_ms.len();
         let mut acc: Vec<BTreeMap<(u32, u32), i64>> = vec![BTreeMap::new(); k];
@@ -93,7 +97,7 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
     let mut rows = Vec::new();
     let (mut s_circ, mut s_tight, mut s_real) = (Vec::new(), Vec::new(), Vec::new());
     for (j, &w) in widths_ms.iter().enumerate() {
-        let col = |g: &dyn Fn(&(f64, f64, f64, f64)) -> f64| -> Vec<f64> { done.iter().map(|d| g(&d.0[j])).collect() };
+        let col = |g: &dyn Fn(&Row) -> f64| -> Vec<f64> { done.iter().map(|d| g(&d.0[j])).collect() };
         let (c, clo, chi) = mean_ci95(&col(&|x| x.0));
         let b = mean_ci95(&col(&|x| x.1)).0;
         let (t, tlo, thi) = mean_ci95(&col(&|x| x.2));
