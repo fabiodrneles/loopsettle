@@ -21,7 +21,7 @@ _seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loop
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidity and circularity ladder
-_seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, code `0.1.0+git.5452bd6-dirty`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | measure | value |
 |---|---|
@@ -35,10 +35,20 @@ _seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loop
 
 Ladder (fractions of the graph's total flow; Hodge L1 can exceed 1):
 
-| graph | edges | Hodge L1 | Hodge L2 curl | max CDFD | cycles (greedy) | triangles |
-|---|---|---|---|---|---|---|
-| gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7955 | 113417 |
-| net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1443 | 113417 |
+| graph | edges | Hodge L1 | Hodge L2 curl | max CDFD | proportional CDFD (BFF) | cycles (greedy) | triangles |
+|---|---|---|---|---|---|---|---|
+| gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7882 | 0.7955 | 113417 |
+| net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1346 | 0.1443 | 113417 |
+
+Null values (spec 08, T4): the analytic Hodge null and the level expected from payers' volumes and payees' popularity alone, shuffling the payee of every pair (20 draws):
+
+| measure | observed | null (mean) | null (sd) | observed / null | null |
+|---|---|---|---|---|---|
+| hodge_l2_cyclic_net | 0.9770 | 0.9699 | 0.0000 | 1.007 | analytic (m - n + k)/m |
+| cdfd_max_gross | 0.8315 | 0.2163 | 0.0190 | 3.844 | payee shuffle x20 |
+| cdfd_bff_gross | 0.7882 | 0.1784 | 0.0196 | 4.418 | payee shuffle x20 |
+| cycle_netting_gross | 0.7955 | 0.1940 | 0.0209 | 4.100 | payee shuffle x20 |
+
 
 Per-bank nettable ratio, BCB WP 619 definition (eq. 3.2, 2·min(out, in)/(out + in)): p25 63.2%, median 78.3%, p75 90.8%. On real Pix data WP 619 reports a median of 57% to 80%, p25 of 18% to 45% and p75 of 73% to 90% (from Nov 2020).
 

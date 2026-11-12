@@ -6,17 +6,20 @@
 //! |---|---|---|
 //! | Hodge (diagnostic) | [`hodge`] | energy of divergence-free flow; may overstate what can be netted |
 //! | CDFD maximum (static ceiling) | [`cdfd`] | largest circulation with `0 <= c <= F` |
+//! | CDFD proportional (BFF) | [`cdfd_bff`] | circulation that keeps each node's flow proportions |
 //! | Cycle netting (executable) | [`netting`] | greedy cancellation of the minimum of each cycle |
 //!
 //! [`analyze`] computes all three side by side (the "ladder").
 
 pub mod cdfd;
+pub mod cdfd_bff;
 pub mod graph;
 pub mod hodge;
 pub mod linalg;
 pub mod netting;
 
 pub use cdfd::{cdfd_max, Cdfd};
+pub use cdfd_bff::{cdfd_bff, CdfdBff};
 pub use graph::{Edge, FlowGraph};
 pub use hodge::{hodge, Hodge, HodgeConfig};
 pub use netting::{cycle_netting, NettingResult};
@@ -39,6 +42,8 @@ pub struct Ladder {
     pub hodge_triangles_capped: bool,
     /// CDFD maximum circulation / total flow.
     pub cdfd_max: f64,
+    /// CDFD proportional (BFF) circulation / total flow.
+    pub cdfd_bff: f64,
     /// Greedy cycle netting / total flow.
     pub cycles: f64,
     pub cycles_found: usize,
@@ -56,6 +61,7 @@ impl Ladder {
             .set("hodge_triangles", self.hodge_triangles)
             .set("hodge_triangles_capped", self.hodge_triangles_capped)
             .set("cdfd_max", self.cdfd_max)
+            .set("cdfd_bff", self.cdfd_bff)
             .set("cycle_netting", self.cycles)
             .set("cycles_found", self.cycles_found)
     }
@@ -111,6 +117,7 @@ fn ladder(g: &FlowGraph, h: &Hodge) -> Ladder {
         hodge_triangles: h.triangles,
         hodge_triangles_capped: h.triangles_capped,
         cdfd_max: frac(c.circular_total),
+        cdfd_bff: if total == 0 { 0.0 } else { cdfd_bff(g).circular_total / total as f64 },
         cycles: frac(nt.cancelled_total),
         cycles_found: nt.cycles,
     }

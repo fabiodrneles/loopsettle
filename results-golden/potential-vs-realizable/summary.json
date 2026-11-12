@@ -41,6 +41,7 @@
       "hodge_triangles": 5254,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.7444,
+      "cdfd_bff": 0.709586,
       "cycle_netting": 0.712531,
       "cycles_found": 628
     },
@@ -54,6 +55,7 @@
       "hodge_triangles": 5254,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.284154,
+      "cdfd_bff": 0.232699,
       "cycle_netting": 0.245513,
       "cycles_found": 246
     },

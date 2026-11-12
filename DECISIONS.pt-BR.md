@@ -61,7 +61,7 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   Bellman-Ford. Validado contra `minilp` em 1.000 grafos aleatórios.
 - **Reverter:** substituir `cdfd::cdfd_max`; o teste de oráculo continua valendo.
 
-## D6 — Variante proporcional/local da CDFD (BFF) adiada
+## D6 — (feito em 12/11/2026: `cdfd_bff.rs`, Algoritmo 2 do artigo, coluna `cdfd_bff` da escada) — Variante proporcional/local da CDFD (BFF) adiada
 - **Decisão:** não implementada nesta versão.
 - **Por quê:** a especificação exata do algoritmo local precisa ser conferida no artigo
   (arXiv 2506.12546) antes de implementar; implementar "de memória" arriscaria publicar uma

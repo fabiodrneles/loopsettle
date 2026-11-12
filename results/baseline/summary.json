@@ -2,12 +2,36 @@
   "schema": "loopsettle.result/1",
   "experiment": "baseline",
   "seed": 20260930,
-  "code_version": "0.1.0+git.222730f",
+  "code_version": "0.1.0+git.5452bd6-dirty",
   "config_file": "experiments/baseline.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
   "platform": "x86_64-linux",
   "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
-  "cargo_lock_fnv1a64": "92bf92e6a3855b5d",
+  "cargo_lock_fnv1a64": "a8becf0327cae9fe",
+  "nulls": {
+    "hodge_analytic_null": 0.96994,
+    "payee_shuffle": [
+      {
+        "measure": "cdfd_max_gross",
+        "observed": 0.831464,
+        "null_mean": 0.216315,
+        "null_sd": 0.019026
+      },
+      {
+        "measure": "cdfd_bff_gross",
+        "observed": 0.788185,
+        "null_mean": 0.178404,
+        "null_sd": 0.019593
+      },
+      {
+        "measure": "cycle_netting_gross",
+        "observed": 0.795486,
+        "null_mean": 0.194024,
+        "null_sd": 0.020894
+      }
+    ],
+    "shuffles": 20
+  },
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -44,6 +68,7 @@
       "hodge_triangles": 113417,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.831464,
+      "cdfd_bff": 0.788185,
       "cycle_netting": 0.795486,
       "cycles_found": 5756
     },
@@ -57,6 +82,7 @@
       "hodge_triangles": 113417,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.174206,
+      "cdfd_bff": 0.134649,
       "cycle_netting": 0.14433,
       "cycles_found": 2638
     },
@@ -169,6 +195,7 @@
           "hodge_triangles": 111416,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.958445,
+          "cdfd_bff": 0.947312,
           "cycle_netting": 0.93426,
           "cycles_found": 5797
         },
@@ -182,6 +209,7 @@
           "hodge_triangles": 111416,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.643915,
+          "cdfd_bff": 0.577613,
           "cycle_netting": 0.564173,
           "cycles_found": 3330
         },
@@ -247,6 +275,7 @@
           "hodge_triangles": 112169,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.906623,
+          "cdfd_bff": 0.866492,
           "cycle_netting": 0.863802,
           "cycles_found": 6069
         },
@@ -260,6 +289,7 @@
           "hodge_triangles": 112169,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.320131,
+          "cdfd_bff": 0.2621,
           "cycle_netting": 0.285233,
           "cycles_found": 3044
         },
@@ -325,6 +355,7 @@
           "hodge_triangles": 113417,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.831464,
+          "cdfd_bff": 0.788185,
           "cycle_netting": 0.795486,
           "cycles_found": 5756
         },
@@ -338,6 +369,7 @@
           "hodge_triangles": 113417,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.174206,
+          "cdfd_bff": 0.134649,
           "cycle_netting": 0.14433,
           "cycles_found": 2638
         },
@@ -403,6 +435,7 @@
           "hodge_triangles": 114820,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.695736,
+          "cdfd_bff": 0.647422,
           "cycle_netting": 0.669029,
           "cycles_found": 4956
         },
@@ -416,6 +449,7 @@
           "hodge_triangles": 114820,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.067567,
+          "cdfd_bff": 0.04869,
           "cycle_netting": 0.05411,
           "cycles_found": 1978
         },

@@ -142,6 +142,30 @@ mod tests {
 
     /// The triangle of the topology tests: A->B 10, B->C 5, C->A 5 circulates 5 on each of the
     /// three edges (15 in all); a reciprocal pair of 7 and 4 offsets 4 each way (8).
+    /// Nested windows never circulate less: a circulation of each half is a circulation of the
+    /// union (capacities add), so the maximum circulation is superadditive and C(w) cannot fall
+    /// when windows are merged. Checked on random payments and windows that divide each other.
+    #[test]
+    fn circulating_value_never_falls_when_windows_merge() {
+        let mut rng = loopsettle_core::rng::Rng::new(77);
+        for _ in 0..200 {
+            let k = 2 + rng.below(6) as u32;
+            let pays: Vec<(u64, u32, u32, i64)> = (0..rng.below(120)).map(|_| {
+                let a = rng.below(k as u64) as u32;
+                (rng.below(8_000), a, (a + 1 + rng.below(k as u64 - 1) as u32) % k, 1 + rng.below(500) as i64)
+            }).collect();
+            let c = |w: u64| -> i128 {
+                let mut by: BTreeMap<u64, BTreeMap<(u32, u32), i64>> = BTreeMap::new();
+                for &(t, a, b, v) in &pays {
+                    *by.entry(t / w).or_default().entry((a, b)).or_insert(0) += v;
+                }
+                by.values().map(|m| window_circulation(m).0).sum()
+            };
+            let (c1, c2, c4, c8) = (c(1_000), c(2_000), c(4_000), c(8_000));
+            assert!(c1 <= c2 && c2 <= c4 && c4 <= c8, "{c1} {c2} {c4} {c8}");
+        }
+    }
+
     #[test]
     fn window_circulation_by_hand() {
         let mut m = BTreeMap::new();

@@ -23,7 +23,10 @@
 8. **The measured delay is only the delay added by the engine.** The real processing time of the
    SPI and of payment service providers (part of the 2.8 s target in the Pix timing manual) is
    not modelled.
-9. **Proportional CDFD not implemented** (D6); the ladder uses only the maximum CDFD.
+9. **Proportional CDFD in its non-local form.** BFF (D6) is implemented with the paper's Algorithm 2
+   (stationary distributions per strongly connected component), which the paper states gives the
+   same decomposition as the local dynamics; the local dynamics themselves are not implemented, and
+   the paper has no per-edge example to reproduce, so the check is by properties only.
 10. **Incomplete external validation.** The `topology <csv>` command is ready, but the on-chain
     stablecoin sample has not been downloaded (Phase 8).
 11. **Hodge on dense graphs.** The Hodge curl fraction on the net graph (≈0.98) is dominated by

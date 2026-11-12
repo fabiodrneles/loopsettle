@@ -26,6 +26,7 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- Proportional CDFD (BFF) in the ladder; null values in `topology` and `baseline` (`nulls.csv`).
 - Funding layer: top-ups from reserves, prefunding of closed windows, intraday credit lines;
   `funding-windows/prefunding.csv` (rejected value when prefunding is below the need).
 - `custom_engine` example: plug your own settlement mechanism and compare it with the liquidity floor.
@@ -33,6 +34,7 @@ whose results changed.
 - Echo payments in the generator and the `echo-sweep` experiment.
 
 ### Fixed
+- Maximum circulation: primal-dual min-cost flow, about 750 times faster at 100,000 edges.
 - `QueueOnShortfall` gross retry runs to a fixed point (it released one payment per edge per window).
 - `DeferredNet`: the last cycle of a day falls exactly at its end for any cycle count.
 - The share settled within 2.8 s is counted exactly.

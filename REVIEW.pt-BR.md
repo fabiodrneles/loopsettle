@@ -369,3 +369,17 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     testadas, mas nenhum experimento as usa ainda. **A spec 05 está completa, exceto** que o motor
     de gridlock (M3) continua sem conferência com Bech & Soramäki (2001): EconStor,
     publications.bof.fi e nationalbanken.dk estão fora da rede desta sessão.
+93. **Spec 08, 12/11/2026.** (a) **T2:** a circulação máxima agora usa um fluxo de custo mínimo
+    primal-dual (fluxos bloqueantes nas arestas de custo reduzido zero): 100 mil arestas de 150 s
+    para 0,2 s, 1 milhão de arestas em 7,7 s e 117 MiB (`examples/bench_cdfd_scale.rs`); mesmo
+    ótimo do resolvedor antigo e do oráculo de PL; nenhum número publicado mudou. (b) **T1:** o
+    BFF, a CDFD proporcional, a partir do Algoritmo 2 do artigo (lido no HTML do arXiv; o PDF era
+    ilegível e parte do Apêndice F veio só resumida); coluna `cdfd_bff`: 0,79 no bruto, 0,13 no
+    líquido, abaixo dos ciclos gulosos. A dinâmica local não foi implementada, e o artigo não tem
+    exemplo com valores por aresta para reproduzir. (c) **T4:** `topology` e `baseline` gravam
+    `nulls.csv` (nulo analítico de Hodge; embaralhamento de recebedores, 20 sorteios). A escada fica
+    cerca de 4 vezes acima do nulo por embaralhamento; o Hodge fica no seu nulo. O nulo por
+    embaralhamento muda também o total de cada recebedor, não só a estrutura bilateral. (d)
+    **T3:** a monotonicidade da parcela que circula em janelas aninhadas virou teste, com prova de
+    uma linha (superaditividade). (e) **T5 não rodado:** os provedores de dados de blockchain
+    respondem 403 neste ambiente.

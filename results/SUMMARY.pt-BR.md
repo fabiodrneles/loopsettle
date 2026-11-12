@@ -21,7 +21,7 @@ _seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.1.0+git.5452bd6-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -35,10 +35,20 @@ _seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p l
 
 Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):
 
-| grafo | arestas | Hodge L1 | Hodge L2 rot. | CDFD máx. | ciclos (guloso) | triângulos |
-|---|---|---|---|---|---|---|
-| gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7955 | 113417 |
-| net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1443 | 113417 |
+| grafo | arestas | Hodge L1 | Hodge L2 rot. | CDFD máx. | CDFD proporcional (BFF) | ciclos (guloso) | triângulos |
+|---|---|---|---|---|---|---|---|
+| gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7882 | 0.7955 | 113417 |
+| net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1346 | 0.1443 | 113417 |
+
+Valores nulos (spec 08, T4): o nulo analítico de Hodge e o nível esperado só pelos volumes de quem paga e pela popularidade de quem recebe, embaralhando o recebedor de cada par (20 sorteios):
+
+| medida | observado | nulo (média) | nulo (dp) | observado / nulo | nulo |
+|---|---|---|---|---|---|
+| hodge_l2_cyclic_net | 0.9770 | 0.9699 | 0.0000 | 1.007 | analytic (m - n + k)/m |
+| cdfd_max_gross | 0.8315 | 0.2163 | 0.0190 | 3.844 | payee shuffle x20 |
+| cdfd_bff_gross | 0.7882 | 0.1784 | 0.0196 | 4.418 | payee shuffle x20 |
+| cycle_netting_gross | 0.7955 | 0.1940 | 0.0209 | 4.100 | payee shuffle x20 |
+
 
 Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 63.2%, mediana 78.3%, p75 90.8%. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).
 

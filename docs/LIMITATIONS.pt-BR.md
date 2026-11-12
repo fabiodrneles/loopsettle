@@ -23,7 +23,10 @@
    mais.
 8. **Atraso medido é só o atraso adicionado pelo motor.** O tempo de processamento real do
    SPI/PSPs (que entra na meta de 2,8 s do Manual de Tempos) não é modelado.
-9. **CDFD proporcional não implementada** (D6); a escada usa só a CDFD máxima.
+9. **CDFD proporcional na forma não local.** O BFF (D6) foi implementado com o Algoritmo 2 do artigo
+   (distribuições estacionárias por componente fortemente conexa), que o artigo diz dar a mesma
+   decomposição que a dinâmica local; a dinâmica local em si não foi implementada, e o artigo não
+   traz exemplo com valores por aresta para reproduzir, então a conferência é só por propriedades.
 10. **Validação externa incompleta.** O comando `topology <csv>` está pronto, mas a amostra
     on-chain de stablecoins não foi baixada (Fase 8).
 11. **Hodge em grafos densos.** A fração rotacional de Hodge no grafo líquido (≈0,98) é

@@ -61,7 +61,11 @@ Each entry: what was decided, alternatives, why, and how to revert.
   Bellman-Ford. Validated against `minilp` on 1,000 random graphs.
 - **Revert:** replace `cdfd::cdfd_max`; the oracle test still applies.
 
-## D6 — Proportional/local CDFD variant (BFF) postponed
+## D6 — Proportional/local CDFD variant (BFF) postponed — **done 12 Nov 2026**
+- **Update:** implemented in `crates/loopsettle-topology/src/cdfd_bff.rs` from the paper's
+  Algorithm 2 (section 5.2 and Appendix F.2, read in the HTML version), in `f64`; column `cdfd_bff`
+  of the ladder. Checked by properties on 1,000 random graphs and two hand examples; the paper's
+  own example (Figure 1) has no per-edge values.
 - **Decision:** not implemented in this version.
 - **Why:** the exact specification of the local algorithm must be checked in the paper
   (arXiv 2506.12546) before implementing; implementing it "from memory" would risk publishing a

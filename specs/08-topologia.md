@@ -1,5 +1,10 @@
 # 08 — Topologia: BFF, escala e circularidade temporal (P2)
 
+> **Estado em 12/11/2026 (REVIEW 93):** T1 feito (`cdfd_bff.rs`, Algoritmo 2 do artigo), T2 feito
+> (fluxo de custo mínimo primal-dual: 1 milhão de arestas em 7,7 s), T3 com teste de
+> monotonicidade, T4 feito (`nulls.csv` no `topology` e no `baseline`). T5 bloqueado: os
+> provedores de dados on-chain respondem 403 neste ambiente; instruções em `data/README.md`.
+
 ## T1 — CDFD proporcional / local (BFF), pendência D6
 
 O ASSESSMENT registra que o Algoritmo 1 do artigo (arXiv 2506.12546, §5.2) está totalmente

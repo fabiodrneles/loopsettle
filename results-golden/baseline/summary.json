@@ -5,6 +5,30 @@
   "code_version": "golden",
   "config_file": "target/golden-config/baseline.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
+  "nulls": {
+    "hodge_analytic_null": 0.935961,
+    "payee_shuffle": [
+      {
+        "measure": "cdfd_max_gross",
+        "observed": 0.7444,
+        "null_mean": 0.36109,
+        "null_sd": 0.043534
+      },
+      {
+        "measure": "cdfd_bff_gross",
+        "observed": 0.709586,
+        "null_mean": 0.310264,
+        "null_sd": 0.043466
+      },
+      {
+        "measure": "cycle_netting_gross",
+        "observed": 0.712531,
+        "null_mean": 0.331573,
+        "null_sd": 0.045344
+      }
+    ],
+    "shuffles": 20
+  },
   "scenario": {
     "participants": 40,
     "days": 1,
@@ -41,6 +65,7 @@
       "hodge_triangles": 5254,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.7444,
+      "cdfd_bff": 0.709586,
       "cycle_netting": 0.712531,
       "cycles_found": 628
     },
@@ -54,6 +79,7 @@
       "hodge_triangles": 5254,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.284154,
+      "cdfd_bff": 0.232699,
       "cycle_netting": 0.245513,
       "cycles_found": 246
     },
@@ -166,6 +192,7 @@
           "hodge_triangles": 4995,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.886454,
+          "cdfd_bff": 0.860557,
           "cycle_netting": 0.856581,
           "cycles_found": 654
         },
@@ -179,6 +206,7 @@
           "hodge_triangles": 4995,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.528099,
+          "cdfd_bff": 0.467148,
           "cycle_netting": 0.446272,
           "cycles_found": 292
         },
@@ -244,6 +272,7 @@
           "hodge_triangles": 5150,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.832359,
+          "cdfd_bff": 0.793167,
           "cycle_netting": 0.797611,
           "cycles_found": 660
         },
@@ -257,6 +286,7 @@
           "hodge_triangles": 5150,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.413545,
+          "cdfd_bff": 0.350582,
           "cycle_netting": 0.35602,
           "cycles_found": 289
         },
@@ -322,6 +352,7 @@
           "hodge_triangles": 5254,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.7444,
+          "cdfd_bff": 0.709586,
           "cycle_netting": 0.712531,
           "cycles_found": 628
         },
@@ -335,6 +366,7 @@
           "hodge_triangles": 5254,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.284154,
+          "cdfd_bff": 0.232699,
           "cycle_netting": 0.245513,
           "cycles_found": 246
         },
@@ -400,6 +432,7 @@
           "hodge_triangles": 5211,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.635095,
+          "cdfd_bff": 0.590527,
           "cycle_netting": 0.591655,
           "cycles_found": 533
         },
@@ -413,6 +446,7 @@
           "hodge_triangles": 5211,
           "hodge_triangles_capped": false,
           "cdfd_max": 0.14137,
+          "cdfd_bff": 0.116223,
           "cycle_netting": 0.115525,
           "cycles_found": 174
         },

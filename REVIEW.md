@@ -354,3 +354,15 @@ the real laptop (i3, 4 GB).
     are tested but no experiment uses them yet. **Spec 05 is complete except** that the gridlock
     engine (M3) is still not checked against Bech & Soramäki (2001): EconStor,
     publications.bof.fi and nationalbanken.dk are outside this session's network.
+93. **Spec 08, 12 Nov 2026.** (a) **T2:** the maximum circulation now uses a primal-dual min-cost
+    flow (blocking flows on zero-reduced-cost arcs): 100,000 edges from 150 s to 0.2 s, 1 million
+    edges in 7.7 s and 117 MiB (`examples/bench_cdfd_scale.rs`); same optimum as the old solver
+    and the LP oracle; no published number changed. (b) **T1:** BFF, the proportional CDFD, from
+    the paper's Algorithm 2 (read in the arXiv HTML; the PDF was unreadable and part of Appendix F
+    was only summarised); column `cdfd_bff`: 0.79 gross, 0.13 net, below greedy cycles. The local
+    dynamics are not implemented, and there is no per-edge example in the paper to reproduce.
+    (c) **T4:** `topology` and `baseline` write `nulls.csv` (analytic Hodge null; payee shuffle,
+    20 draws). The ladder is about 4 times its shuffle null; Hodge sits at its null. The shuffle
+    null changes each payee's total as well as the bilateral structure. (d) **T3:** the
+    monotonicity of the circulating share in nested windows is now a test, with a one-line proof
+    (superadditivity). (e) **T5 not run:** chain data providers answer 403 from this environment.

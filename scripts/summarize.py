@@ -61,7 +61,9 @@ PT = {
     "r_ub": "UB — liquidez do bruto em tempo real (R$)", "r_lb": "LB — posição líquida de fim de dia (R$)",
     "r_ub_gross": "UB / volume bruto", "r_potential": "capacidade potencial (estilo BCB)",
     "ladder": "Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):",
-    "c_ladder": ["grafo", "arestas", "Hodge L1", "Hodge L2 rot.", "CDFD máx.", "ciclos (guloso)", "triângulos"],
+    "nulls": "Valores nulos (spec 08, T4): o nulo analítico de Hodge e o nível esperado só pelos volumes de quem paga e pela popularidade de quem recebe, embaralhando o recebedor de cada par (20 sorteios):",
+    "c_nulls": ["medida", "observado", "nulo (média)", "nulo (dp)", "observado / nulo", "nulo"],
+    "c_ladder": ["grafo", "arestas", "Hodge L1", "Hodge L2 rot.", "CDFD máx.", "CDFD proporcional (BFF)", "ciclos (guloso)", "triângulos"],
     "corr": "Correlação potencial de Hodge × posição líquida: {}.",
     "wp619": "Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 {}, mediana {}, p75 {}. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).",
     "sens": "Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):",
@@ -153,7 +155,9 @@ EN = {
     "r_ub": "UB — real-time gross liquidity (R$)", "r_lb": "LB — end-of-day net position (R$)",
     "r_ub_gross": "UB / gross volume", "r_potential": "potential capacity (BCB style)",
     "ladder": "Ladder (fractions of the graph's total flow; Hodge L1 can exceed 1):",
-    "c_ladder": ["graph", "edges", "Hodge L1", "Hodge L2 curl", "max CDFD", "cycles (greedy)", "triangles"],
+    "nulls": "Null values (spec 08, T4): the analytic Hodge null and the level expected from payers' volumes and payees' popularity alone, shuffling the payee of every pair (20 draws):",
+    "c_nulls": ["measure", "observed", "null (mean)", "null (sd)", "observed / null", "null"],
+    "c_ladder": ["graph", "edges", "Hodge L1", "Hodge L2 curl", "max CDFD", "proportional CDFD (BFF)", "cycles (greedy)", "triangles"],
     "corr": "Hodge potential × net position correlation: {}.",
     "wp619": "Per-bank nettable ratio, BCB WP 619 definition (eq. 3.2, 2·min(out, in)/(out + in)): p25 {}, median {}, p75 {}. On real Pix data WP 619 reports a median of 57% to 80%, p25 of 18% to 45% and p75 of 73% to 90% (from Nov 2020).",
     "sens": "Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):",
@@ -255,8 +259,11 @@ def build(T):
                [T["r_potential"], pct(fl["potential_offset_fraction"])],
            ]), "", T["ladder"], ""]
     md.append(table(T["c_ladder"],
-                    [[r["graph"], r["edges"], num(r["hodge_l1_cyclic"], 4), num(r["hodge_l2_curl"], 4), num(r["cdfd_max"], 4), num(r["cycle_netting"], 4), r["hodge_triangles"]]
+                    [[r["graph"], r["edges"], num(r["hodge_l1_cyclic"], 4), num(r["hodge_l2_curl"], 4), num(r["cdfd_max"], 4), num(r["cdfd_bff"], 4), num(r["cycle_netting"], 4), r["hodge_triangles"]]
                      for r in rows("baseline", "ladder.csv")]))
+    md += ["", T["nulls"], ""]
+    md.append(table(T["c_nulls"], [[r["measure"], num(r["observed"], 4), num(r["null_mean"], 4), num(r["null_sd"], 4), num(r["observed_over_null"], 3), r["null"]] for r in rows("baseline", "nulls.csv")]))
+    md.append("")
     # WP 619 eq. (3.2): per-bank 2*min(out, in)/(out + in), reported as quartiles across banks
     wp = sorted(2 * min(float(r["out_brl"]), float(r["in_brl"])) / (float(r["out_brl"]) + float(r["in_brl"]))
                 for r in rows("baseline", "participants.csv") if float(r["out_brl"]) + float(r["in_brl"]) > 0)

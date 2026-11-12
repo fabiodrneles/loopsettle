@@ -24,7 +24,7 @@ use std::time::Instant;
 
 fn usage() -> ! {
     eprintln!(
-        "usage: loopsettle experiment <name> [--quick] [--config FILE.toml]\n       loopsettle list\n       loopsettle bound  <payments.csv> [--delays 1,10,60] [--out DIR] [--report] [--per-participant [--min-participants 5] [--keep-names]]\n       loopsettle settle <payments.csv> [--engines gross,deferred:96,micro:all:500:10000] [--delays ...] [--out DIR] [--per-participant]\n       loopsettle export <experiment> <out.csv> [--payments N] [--participants N]\n       loopsettle topology <transfers.csv>"
+        "usage: loopsettle experiment <name> [--quick] [--config FILE.toml]\n       loopsettle list\n       loopsettle bound  <payments.csv> [--delays 1,10,60] [--out DIR] [--report] [--per-participant [--min-participants 5] [--keep-names]]\n       loopsettle settle <payments.csv> [--engines gross,deferred:96,micro:all:500:10000] [--delays ...] [--out DIR] [--per-participant]\n       loopsettle export <experiment> <out.csv> [--payments N] [--participants N]\n       loopsettle topology <transfers.csv> [--nulls 20]"
     );
     std::process::exit(2)
 }
@@ -51,7 +51,11 @@ fn main() {
         }
         Some("topology") => {
             let path = args.get(1).unwrap_or_else(|| usage());
-            if let Err(e) = experiments2::topology_csv(path) {
+            let shuffles = match args.iter().position(|a| a == "--nulls") {
+                Some(i) => args.get(i + 1).and_then(|s| s.parse().ok()).unwrap_or_else(|| usage()),
+                None => 20,
+            };
+            if let Err(e) = experiments2::topology_csv(path, shuffles) {
                 eprintln!("error: {e}");
                 std::process::exit(1);
             }

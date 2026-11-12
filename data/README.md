@@ -50,8 +50,10 @@ entre os 200 endereços mais ativos), a escolher pelo revisor:
 - a API de um explorador de blocos (normalmente exige uma chave gratuita).
 
 Depois de exportar, renomeie as colunas para `from,to,amount` (valor em unidades do token).
-**Status:** comando implementado e testado no caso do triângulo; a amostra on-chain ainda
-não foi baixada (requer escolher a fonte e, possivelmente, uma chave de API).
+**Status:** comando implementado e testado no caso do triângulo, agora com valores nulos
+(`--nulls 20`) e a CDFD proporcional; a amostra on-chain ainda não foi baixada (requer escolher a
+fonte e, possivelmente, uma chave de API). Em 12/11/2026 o ambiente de desenvolvimento não
+alcançava os provedores (bloqueio de rede), então nada foi rodado.
 
 ---
 
@@ -103,5 +105,7 @@ active addresses), to be chosen by the reviewer:
 - a block explorer API (usually requires a free key).
 
 After exporting, rename the columns to `from,to,amount` (amount in token units).
-**Status:** the command is implemented and tested on the triangle case; the on-chain sample has
-not been downloaded yet (it requires choosing the source and possibly an API key).
+**Status:** the command is implemented and tested on the triangle case, now with null values
+(`--nulls 20`) and the proportional CDFD; the on-chain sample has not been downloaded yet (it
+requires choosing the source and possibly an API key). On 12 Nov 2026 the development environment
+could not reach the providers (network block), so nothing was run.

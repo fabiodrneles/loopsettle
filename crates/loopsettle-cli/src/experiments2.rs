@@ -23,7 +23,7 @@ pub(crate) fn topology(o: &RunOutput, doc: &Doc) -> (TopologyReport, f64) {
 }
 
 const LADDER_HEADER: &[&str] =
-    &["graph", "edges", "total_flow_brl", "hodge_l1_cyclic", "hodge_l2_curl", "hodge_l2_cyclic", "cdfd_max", "cycle_netting", "hodge_triangles", "triangles_capped"];
+    &["graph", "edges", "total_flow_brl", "hodge_l1_cyclic", "hodge_l2_curl", "hodge_l2_cyclic", "cdfd_max", "cycle_netting", "hodge_triangles", "triangles_capped", "cdfd_bff"];
 
 fn ladder_rows(t: &TopologyReport) -> Vec<Vec<String>> {
     [("gross", &t.gross), ("net", &t.net)]
@@ -40,6 +40,7 @@ fn ladder_rows(t: &TopologyReport) -> Vec<Vec<String>> {
                 f(l.cycles),
                 l.hodge_triangles.to_string(),
                 l.hodge_triangles_capped.to_string(),
+                f(l.cdfd_bff),
             ]
         })
         .collect()
@@ -62,6 +63,12 @@ pub fn baseline(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), Strin
     let mut res = Results::new("baseline", cfg.seed, path);
 
     res.csv("ladder.csv", &table(LADDER_HEADER, &ladder_rows(&topo)));
+    {
+        let shuffles = doc.i64("topology.null_shuffles").unwrap_or(20).max(0) as usize;
+        let (nrows, njson) = topology_nulls(&FlowGraph::gross_from(&o.flow), &topo, shuffles);
+        res.csv("nulls.csv", &table(&["measure", "observed", "null_mean", "null_sd", "observed_over_null", "null"], &nrows));
+        res.set("nulls", njson);
+    }
     let erows: Vec<Vec<String>> = o.results.iter().map(|r| engine_row(r, ub, lb)).collect();
     res.csv("engines.csv", &table(ENGINE_HEADER, &erows));
 
@@ -514,7 +521,7 @@ pub fn finland(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String
 /// Read `from,to,amount` rows (header required; ids are arbitrary strings, amount in
 /// currency units), aggregate them and run the circularity ladder. Streaming read: only the
 /// aggregated pair map is kept in memory.
-pub fn topology_csv(path: &str) -> Result<(), String> {
+pub fn topology_csv(path: &str, shuffles: usize) -> Result<(), String> {
     use std::collections::{BTreeMap, HashMap};
     use std::io::BufRead;
     let file = std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?;
@@ -560,6 +567,80 @@ pub fn topology_csv(path: &str) -> Result<(), String> {
     res.measure("seconds", t.elapsed().as_secs_f64());
     res.csv("ladder.csv", &table(LADDER_HEADER, &ladder_rows(&r)));
     eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&r)));
+    let (nrows, njson) = topology_nulls(&g, &r, shuffles);
+    res.csv("nulls.csv", &table(&["measure", "observed", "null_mean", "null_sd", "observed_over_null", "null"], &nrows));
+    res.set("nulls", njson);
+    eprintln!("{}", table(&["measure", "observed", "null_mean", "null_sd", "observed_over_null", "null"], &nrows));
     res.finish();
     Ok(())
+}
+
+/// Null values for the circularity measures of a flow graph (specs/08, T4).
+///
+/// * Hodge, analytic: for random flows on a graph with `m` edges, `n` nodes and `k` connected
+///   components, the expected share of the squared norm outside the gradient space is
+///   `(m - n + k) / m`; it is compared with the observed L2 cyclic share of the net graph.
+/// * Payee shuffle: the destination of every aggregated pair is permuted at random among the
+///   pairs (payer and value kept; self-pairs dropped), `shuffles` times, with a fixed seed. The
+///   measures of the shuffled graphs give the level expected from the payers' volumes and the
+///   payees' popularity alone, without the actual bilateral structure.
+fn topology_nulls(g: &FlowGraph, r: &TopologyReport, shuffles: usize) -> (Vec<Vec<String>>, loopsettle_core::json::Json) {
+    use loopsettle_core::json::Json;
+    let net = g.net();
+    // connected components of the net graph (undirected)
+    let mut parent: Vec<usize> = (0..net.n).collect();
+    fn find(p: &mut [usize], x: usize) -> usize {
+        let mut x = x;
+        while p[x] != x {
+            p[x] = p[p[x]];
+            x = p[x];
+        }
+        x
+    }
+    let mut touched = vec![false; net.n];
+    for e in &net.edges {
+        let (a, b) = (find(&mut parent, e.from as usize), find(&mut parent, e.to as usize));
+        parent[a] = b;
+        touched[e.from as usize] = true;
+        touched[e.to as usize] = true;
+    }
+    let nodes = touched.iter().filter(|&&t| t).count();
+    let comps = (0..net.n).filter(|&v| touched[v] && find(&mut parent, v) == v).count();
+    let m = net.edges.len();
+    let hodge_null = if m == 0 { 0.0 } else { (m + comps - nodes) as f64 / m as f64 };
+    let mut rows = vec![vec![
+        "hodge_l2_cyclic_net".into(),
+        f(r.net.hodge_cyclic_l2),
+        f(hodge_null),
+        f(0.0),
+        f(if hodge_null > 0.0 { r.net.hodge_cyclic_l2 / hodge_null } else { 0.0 }),
+        "analytic (m - n + k)/m".into(),
+    ]];
+    let mut js = Json::obj().set("hodge_analytic_null", hodge_null);
+    if shuffles > 0 && !g.edges.is_empty() {
+        let mut rng = loopsettle_core::rng::Rng::new(0x5EED_2026);
+        let measures: [(&str, f64); 3] = [("cdfd_max_gross", r.gross.cdfd_max), ("cdfd_bff_gross", r.gross.cdfd_bff), ("cycle_netting_gross", r.gross.cycles)];
+        let mut samples: Vec<Vec<f64>> = vec![Vec::new(); measures.len()];
+        for _ in 0..shuffles {
+            let mut to: Vec<u32> = g.edges.iter().map(|e| e.to).collect();
+            for i in (1..to.len()).rev() {
+                let j = rng.below(i as u64 + 1) as usize;
+                to.swap(i, j);
+            }
+            let t: Vec<(u32, u32, i64)> = g.edges.iter().zip(&to).filter(|(e, &b)| e.from != b).map(|(e, &b)| (e.from, b, e.flow)).collect();
+            let h = FlowGraph::from_triples(g.n, &t);
+            let tot = h.total_flow().max(1) as f64;
+            samples[0].push(loopsettle_topology::cdfd_max(&h).circular_total as f64 / tot);
+            samples[1].push(loopsettle_topology::cdfd_bff(&h).circular_total / tot);
+            samples[2].push(loopsettle_topology::cycle_netting(&h, false).cancelled_total as f64 / tot);
+        }
+        let mut nj = Vec::new();
+        for ((name, obs), s) in measures.iter().zip(&samples) {
+            let (mean, sd) = crate::stats::mean_sd(s);
+            rows.push(vec![name.to_string(), f(*obs), f(mean), f(sd), f(if mean > 0.0 { obs / mean } else { 0.0 }), format!("payee shuffle x{shuffles}")]);
+            nj.push(Json::obj().set("measure", *name).set("observed", *obs).set("null_mean", mean).set("null_sd", sd));
+        }
+        js = js.set("payee_shuffle", Json::Arr(nj)).set("shuffles", shuffles as u64);
+    }
+    (rows, js)
 }
