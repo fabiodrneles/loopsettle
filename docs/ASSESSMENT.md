@@ -246,3 +246,11 @@ instances (`optimality-gap`).
 
 The verdict stays **PIVOT**. The paper's title result is now the pair "a tight, attainable bound"
 plus "the condition under which it is small".
+
+**Addendum to update 5 (same day).** The fired case was rerun with one change at a time
+(`results/echo-sweep/sensitivity.csv`). The 10 s tight bound falls with volume: 4.2%, 2.1% and
+1.2% of UB at 1, 3 and 10 million payments a day, close to 1/√volume; it is 1.7% when the echo
+passes on half the amount and 1.8% with the calibrated receiver bias. At 10 million the bound is
+below the 2% threshold. The condition stands (the effect is 30 to 100 times the no-echo level and
+engines realise almost all of it), but its weight at real scale is probably small. This needs a
+run at 30 million or more before it is written as a result.

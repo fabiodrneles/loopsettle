@@ -656,7 +656,7 @@ A small system in a busy hour (20 participants, about 1,500 payments, 20 seeds; 
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)
-_seed `20260930`, code `0.1.0+git.14970ac-dirty`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, code `0.1.0+git.ddf64a5`, command `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.
 
@@ -717,6 +717,8 @@ Sensitivity of the case that fired the criterion (20% echo share, 1 s, straight 
 | calibrated receiver bias (sigma 1.0) | deferred:8640 | 1.699% [0.632; 2.766] | 1.770% [0.714; 2.826] |
 | 3x the payments | micro:all:500:10000 | 1.290% [0.426; 2.154] | 2.114% [0.806; 3.423] |
 | 3x the payments | deferred:8640 | 1.905% [0.605; 3.205] | 2.114% [0.806; 3.423] |
+| 10x the payments | micro:all:500:10000 | 0.691% [0.330; 1.053] | 1.197% [0.646; 1.748] |
+| 10x the payments | deferred:8640 | 1.003% [0.521; 1.486] | 1.197% [0.646; 1.748] |
 
 Ordering diagnostic: delaying only (hold, arrival order kept) against engines that settle some payments earlier and others later, with onward echoes:
 

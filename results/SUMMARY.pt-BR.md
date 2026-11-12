@@ -656,7 +656,7 @@ Sistema pequeno numa hora movimentada (20 participantes, cerca de 1.500 pagament
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)
-_seed `20260930`, código `0.1.0+git.14970ac-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, código `0.1.0+git.ddf64a5`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.
 
@@ -717,6 +717,8 @@ Sensibilidade do caso que disparou o critério (20% de eco, 1 s, de volta a quem
 | calibrated receiver bias (sigma 1.0) | deferred:8640 | 1.699% [0.632; 2.766] | 1.770% [0.714; 2.826] |
 | 3x the payments | micro:all:500:10000 | 1.290% [0.426; 2.154] | 2.114% [0.806; 3.423] |
 | 3x the payments | deferred:8640 | 1.905% [0.605; 3.205] | 2.114% [0.806; 3.423] |
+| 10x the payments | micro:all:500:10000 | 0.691% [0.330; 1.053] | 1.197% [0.646; 1.748] |
+| 10x the payments | deferred:8640 | 1.003% [0.521; 1.486] | 1.197% [0.646; 1.748] |
 
 Diagnóstico de ordem: só atrasar (hold, ordem de chegada mantida) contra motores que liquidam uns pagamentos antes e outros depois, com ecos adiante:
 

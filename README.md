@@ -91,7 +91,8 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
 - **Isso depende de como os pagamentos se respondem no tempo.** Se 20% dos pagamentos forem
   devolvidos direto a quem pagou em cerca de um segundo, compensar a cada 10 s passa a economizar
   3,9% da liquidez (teto de 4,2%); se a resposta seguir adiante para terceiros, nada muda
-  (`results/echo-sweep/`). Quanto disso existe no Pix real, os dados públicos não dizem.
+  (`results/echo-sweep/`). O efeito encolhe com o volume (teto de 4,2%, 2,1% e 1,2% com 1, 3 e 10
+  milhões de pagamentos por dia). Quanto disso existe no Pix real, os dados públicos não dizem.
 - **Há um teto demonstrável:** um mecanismo que segura cada pagamento por no máximo *d* nunca
   precisa de menos liquidez do que o **piso de liquidez** de cada participante: o maior valor de
   "tudo o que ele pagou até um instante, menos tudo o que recebeu até *d* depois". Para 10 s, em
@@ -849,6 +850,7 @@ million payments per day):
 - **This depends on how payments respond to each other in time.** If 20% of payments are returned
   straight to the payer within about a second, netting every 10 s saves 3.9% of liquidity (ceiling
   4.2%); if the response goes onwards to third parties, nothing changes (`results/echo-sweep/`).
+  The effect shrinks with volume (ceiling 4.2%, 2.1% and 1.2% at 1, 3 and 10 million payments a day).
   How much of this exists in real Pix is not known from public data.
 - **There is a provable ceiling:** a mechanism that holds each payment for at most *d* never
   needs less liquidity than each participant's **liquidity floor**: the largest value of

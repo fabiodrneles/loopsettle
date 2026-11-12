@@ -250,3 +250,11 @@ economizam nada mensurável e as filas de uma hora economizam 1,1–1,4% no vare
 
 O veredito continua **PIVOTAR**. O resultado de título do artigo passa a ser o par "um limite
 apertado e atingível" mais "a condição em que ele é pequeno".
+
+**Adendo à atualização 5 (no mesmo dia).** O caso que disparou foi refeito mudando uma coisa de
+cada vez (`results/echo-sweep/sensitivity.csv`). O limite apertado de 10 s cai com o volume: 4,2%,
+2,1% e 1,2% do UB com 1, 3 e 10 milhões de pagamentos por dia, perto de 1/√volume; é 1,7% quando
+o eco repassa metade do valor e 1,8% com o viés recebedor calibrado. Com 10 milhões o limite fica
+abaixo do limiar de 2%. A condição continua (o efeito é de 30 a 100 vezes o nível sem eco, e os
+motores obtêm quase tudo), mas o peso dela na escala real provavelmente é pequeno. Isso precisa de
+uma rodada com 30 milhões ou mais antes de ser escrito como resultado.

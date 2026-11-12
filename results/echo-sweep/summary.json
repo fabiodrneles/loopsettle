@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "echo-sweep",
   "seed": 20260930,
-  "code_version": "0.1.0+git.14970ac-dirty",
+  "code_version": "0.1.0+git.ddf64a5",
   "config_file": "experiments/echo-sweep.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment echo-sweep",
   "platform": "x86_64-linux",
