@@ -21,7 +21,7 @@ _seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loop
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidity and circularity ladder
-_seed `20260930`, code `0.1.0+git.5452bd6-dirty`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, code `0.1.0+git.7f5724c`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | measure | value |
 |---|---|
