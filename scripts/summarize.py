@@ -127,10 +127,10 @@ PT = {
     "lf_mono": "Coerência: a rejeição do bruto subiu quando a liquidez subiu em {} passos da grade (esperado: 0).",
     "rg_intro": "O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.",
     "c_rg": ["caso", "participantes", "pagamentos", "pagamento médio / UB médio", "atraso máx. (ms)", "economia micro-ciclos", "limite (janela)", "limite apertado"],
-    "curve": "Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado):",
+    "curve": "Curva do limite (W5): economia obtida pela compensação a cada d contra o limite de atraso para o mesmo d (varejo, Pix calibrado; médias de 10 sementes):",
     "fbp": "O limite apertado por participante (uma semente): quanto cada um poderia economizar, no máximo, em % do próprio UB:",
     "c_fbp": ["d (s)", "participantes com UB > 0", "p10", "mediana", "p90", "máximo", "parcela do limite total nos 5 maiores"],
-    "c_curve": ["d (s)", "ciclos/dia", "economia obtida", "limite janela (até 100%)", "obtido / janela", "limite apertado", "obtido / apertado"],
+    "c_curve": ["d (s)", "ciclos/dia", "economia obtida", "limite janela (até 100%)", "obtido / janela", "limite apertado [IC 95%]", "obtido / apertado [IC 95%]"],
 }
 
 EN = {
@@ -214,10 +214,10 @@ EN = {
     "lf_mono": "Coherence: gross rejection rose when liquidity rose in {} grid steps (expected: 0).",
     "rg_intro": "The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.",
     "c_rg": ["case", "participants", "payments", "avg payment / avg UB", "max delay (ms)", "micro-cycle saving", "window bound", "tight bound"],
-    "curve": "Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):",
+    "curve": "Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated; means over 10 seeds):",
     "fbp": "The tight bound per participant (one seed): the most each one could save, in % of its own UB:",
     "c_fbp": ["d (s)", "participants with UB > 0", "p10", "median", "p90", "max", "share of the total bound in the top 5"],
-    "c_curve": ["d (s)", "cycles/day", "realised saving", "window bound (capped at 100%)", "realised / window", "tight bound", "realised / tight"],
+    "c_curve": ["d (s)", "cycles/day", "realised saving", "window bound (capped at 100%)", "realised / window", "tight bound [95% CI]", "realised / tight [95% CI]"],
 }
 
 
@@ -365,7 +365,8 @@ def build(T):
                                   f"{float(r['delay_bound_pct']):.3f}%", f"{float(r['tight_bound_pct']):.4f}%"] for r in rows("regimes", "regimes.csv")]))
     md += ["", T["curve"], ""]
     md.append(table(T["c_curve"], [[r["max_delay_s"], r["deferred_cycles_per_day"], f"{float(r['realised_saving_pct']):.4f}%", f"{float(r['delay_bound_pct_capped_100']):.2f}%",
-                                     num(r["realised_over_bound"], 3), f"{float(r['tight_bound_pct']):.3f}%", num(r["realised_over_tight_bound"], 3)] for r in rows("regimes", "bound_curve.csv")]))
+                                     num(r["realised_over_bound"], 3), f"{float(r['tight_bound_pct']):.3f}% [{float(r['tight_ci95_low']):.3f}; {float(r['tight_ci95_high']):.3f}]",
+                                     f"{float(r['realised_over_tight_bound']):.2f} [{float(r['realised_over_tight_ci95_low']):.2f}; {float(r['realised_over_tight_ci95_high']):.2f}]"] for r in rows("regimes", "bound_curve.csv")]))
     md += ["", T["fig"] + " [`regimes/fig_bound.svg`](regimes/fig_bound.svg)", "", T["fbp"], ""]
     md.append(table(T["c_fbp"], [[r["max_delay_s"], r["participants_with_ub"], f"{float(r['tight_bound_pct_of_own_ub_p10']):.3f}%", f"{float(r['p50']):.3f}%", f"{float(r['p90']):.3f}%",
                                    f"{float(r['max']):.2f}%", pct(r["share_of_total_bound_in_top5_participants"], 1)] for r in rows("regimes", "floor_by_participant.csv")]))

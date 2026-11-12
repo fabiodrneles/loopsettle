@@ -186,22 +186,63 @@ pub fn regimes(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), Strin
     let mut dspecs = vec![EngineSpec::Gross];
     dspecs.extend(ds.iter().map(|&(c, _)| EngineSpec::Deferred { cycles_per_day: c }));
     let o = run_engines(base, &dspecs, &Opening::Unlimited, false, None);
-    let ub = o.ub();
     let dd: Vec<u64> = ds.iter().map(|&(_, d)| d).collect();
-    let bnd = delay_bounds(base, &dd);
-    let flo = liquidity_floors(base, &dd);
+    // Several seeds (the base seed first), in parallel: per seed, per delay, the realised
+    // saving, the window bound and the tight bound, all in % of that seed's UB.
+    let mut curve_seeds: Vec<u64> = vec![base.seed];
+    curve_seeds.extend(f64_list(doc, "regimes.curve_seeds", &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).iter().map(|&x| x as u64).filter(|&x| x != base.seed));
+    let per_seed: Vec<Vec<(f64, f64, f64)>> = par_map(&curve_seeds, |&seed| {
+        let cfg = ScenarioConfig { seed, ..base.clone() };
+        let o = run_engines(&cfg, &dspecs, &Opening::Unlimited, false, None);
+        let ub = o.ub();
+        let bnd = delay_bounds(&cfg, &dd);
+        let flo = liquidity_floors(&cfg, &dd);
+        (0..dd.len())
+            .map(|k| {
+                let pct = |x: i128| 100.0 * x as f64 / ub.max(1) as f64;
+                (100.0 * o.results[k + 1].saving_vs(ub), pct(bnd[k].iter().map(|&v| v as i128).sum()), pct(ub - flo[k].iter().map(|&v| v as i128).sum::<i128>()))
+            })
+            .collect()
+    });
     let mut crow = Vec::new();
     let (mut real_pts, mut bound_pts, mut tight_pts) = (Vec::new(), Vec::new(), Vec::new());
     for (k, &(c, d)) in ds.iter().enumerate() {
-        let saving = 100.0 * o.results[k + 1].saving_vs(ub);
-        let bp = 100.0 * bnd[k].iter().map(|&v| v as i128).sum::<i128>() as f64 / ub.max(1) as f64;
-        let tp = 100.0 * (ub - flo[k].iter().map(|&v| v as i128).sum::<i128>()) as f64 / ub.max(1) as f64;
-        crow.push(vec![f(d as f64 / 1000.0), c.to_string(), f(saving), f(bp.min(100.0)), f(if bp > 0.0 { saving / bp } else { 0.0 }), f(tp), f(if tp > 0.0 { saving / tp } else { 0.0 })]);
+        let col = |g: &dyn Fn(&(f64, f64, f64)) -> f64| -> Vec<f64> { per_seed.iter().map(|v| g(&v[k])).collect() };
+        let (saving, slo, shi) = crate::stats::mean_ci95(&col(&|x| x.0));
+        let bp = crate::stats::mean_ci95(&col(&|x| x.1)).0;
+        let (tp, tlo, thi) = crate::stats::mean_ci95(&col(&|x| x.2));
+        // realised / tight, seed by seed (a ratio of means would hide the spread)
+        let (rt, rlo, rhi) = crate::stats::mean_ci95(&col(&|x| if x.2 > 0.0 { x.0 / x.2 } else { 0.0 }));
+        crow.push(vec![
+            f(d as f64 / 1000.0),
+            c.to_string(),
+            f(saving),
+            f(bp.min(100.0)),
+            f(if bp > 0.0 { saving / bp } else { 0.0 }),
+            f(tp),
+            f(rt),
+            curve_seeds.len().to_string(),
+            f(slo),
+            f(shi),
+            f(tlo),
+            f(thi),
+            f(rlo),
+            f(rhi),
+        ]);
         tight_pts.push((d as f64 / 1000.0, tp));
         real_pts.push((d as f64 / 1000.0, saving));
         bound_pts.push((d as f64 / 1000.0, bp.min(100.0)));
     }
-    res.csv("bound_curve.csv", &table(&["max_delay_s", "deferred_cycles_per_day", "realised_saving_pct", "delay_bound_pct_capped_100", "realised_over_bound", "tight_bound_pct", "realised_over_tight_bound"], &crow));
+    res.csv(
+        "bound_curve.csv",
+        &table(
+            &[
+                "max_delay_s", "deferred_cycles_per_day", "realised_saving_pct", "delay_bound_pct_capped_100", "realised_over_bound", "tight_bound_pct", "realised_over_tight_bound", "seeds",
+                "realised_ci95_low", "realised_ci95_high", "tight_ci95_low", "tight_ci95_high", "realised_over_tight_ci95_low", "realised_over_tight_ci95_high",
+            ],
+            &crow,
+        ),
+    );
     let chart = crate::svg::Chart {
         title: "Realised saving vs delay bound (retail, Pix calibrated)".into(),
         x_label: "maximum settlement delay d (s, log)".into(),
