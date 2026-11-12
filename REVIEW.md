@@ -344,3 +344,13 @@ the real laptop (i3, 4 GB).
     monotonicity check (the share does not fall when windows are nested) was observed in the
     table but not written as a test. Also: the bound curve of `regimes` now has 10 seeds (10 s:
     tight bound 0.041% [0.025; 0.056], netting realises 48% of it [40; 55]).
+92. **Funding layer (spec 05, M5), 12 Nov 2026.** `crates/loopsettle-core/src/funding.rs`,
+    `Ledger::fund` and `with_credit_limits`, `tests/funding.rs` (three hand examples and a property
+    test: accounts plus reserves conserved, no balance below minus its credit line, one outcome
+    per payment), regression test in `bound.rs`, `funding-windows/prefunding.csv`, CLAIMS 1e2,
+    D28. `windows.csv` is byte-identical. **Found while testing:** the event-driven retry of
+    point 84 did not know about top-ups, so a funded payer waited one extra window; engines now get
+    a `funded` notice. **Risks:** one seed; prefunding proportional to hindsight need; credit lines
+    are tested but no experiment uses them yet. **Spec 05 is complete except** that the gridlock
+    engine (M3) is still not checked against Bech & Soramäki (2001): EconStor,
+    publications.bof.fi and nationalbanken.dk are outside this session's network.

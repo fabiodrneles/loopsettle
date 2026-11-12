@@ -292,3 +292,16 @@ Each entry: what was decided, alternatives, why, and how to revert.
   prefix/feasibility property it is known for; it must be checked against the paper before the
   name "Bech-Soramäki" is used in a publication.
 - **Revert:** do not use the `gridlock` engine; nothing else depends on it.
+
+## D28 — Funding as a layer outside the engines, with reserves outside the system
+- **Decision:** a `FundingPolicy` acts between engine events at instants it chooses; money it
+  moves comes from reserves outside the system (`Ledger::fund`), so invariant 1 becomes
+  "accounts plus reserves are constant". Engines are told when balances changed from outside
+  (`SettlementEngine::funded`) so queued payments are retried. Intraday credit is a per-account
+  lower limit (`with_credit_limits`). Remuneration of balances and the opportunity cost of
+  prefunding are not modelled (no source).
+- **Alternatives:** funding inside each engine; credit as a separate account; a cost model.
+- **Why:** it is the smallest change that represents what D20 describes (top-ups only while STR is
+  open) for every engine at once, and it keeps earlier results byte-identical (no policy = no
+  change).
+- **Revert:** run without a policy (the default).

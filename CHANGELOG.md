@@ -26,6 +26,8 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- Funding layer: top-ups from reserves, prefunding of closed windows, intraday credit lines;
+  `funding-windows/prefunding.csv` (rejected value when prefunding is below the need).
 - `custom_engine` example: plug your own settlement mechanism and compare it with the liquidity floor.
 - `circularity-horizon` and `echo-scale` experiments; the bound curve of `regimes` over 10 seeds.
 - Echo payments in the generator and the `echo-sweep` experiment.

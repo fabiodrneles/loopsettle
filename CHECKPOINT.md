@@ -46,6 +46,9 @@
   ISO 20022 mapping), R4 (web panel); several seeds in `baseline`, `potential-vs-realizable`,
   `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`. **Exact next step:** spec 05
   M5, then those in that order. Always run `make verify` before committing.
+- **12 Nov 2026 — spec 05 complete** (M5 funding layer; M3 still unchecked against the 2001 paper,
+  whose hosts are blocked here). **Exact next step:** spec 08 T1, T2, T4, T5; spec 10 R1, R4;
+  several seeds in the six older experiments.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

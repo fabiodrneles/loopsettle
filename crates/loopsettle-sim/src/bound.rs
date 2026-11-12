@@ -448,6 +448,43 @@ mod window_tests {
         assert_eq!(f[0][2][0], 5);
     }
 
+    /// Regression of specs/05 (M5): the funding layer reproduces the prefunding need of
+    /// `window_stats`. With each participant prefunded exactly its largest need over the closed
+    /// windows, gross settlement rejects nothing; with one cent less for a participant that needs
+    /// liquidity, that participant has a payment rejected. (Others may follow: a rejected payment
+    /// is a receipt its payee no longer gets, so no claim is made about anybody else.)
+    #[test]
+    fn prefunding_policy_reproduces_the_window_need() {
+        use crate::runner::{run_payments, EngineSpec, Opening};
+        use crate::scenario::ScenarioConfig;
+        use crate::stream::PaymentStream;
+        use loopsettle_core::{drive, EngineRun, FlowStats, GrossRealTime, Ledger, PrefundClosedWindows};
+        const HOUR: TimeMs = 3_600_000;
+        let cfg = ScenarioConfig { seed: 9, participants: 15, payments_per_day: 40_000.0, n_big: 2, n_mid: 3, days: 2, ..Default::default() };
+        let ps: Vec<Payment> = PaymentStream::new(&cfg).collect();
+        let n = cfg.participants;
+        let closed = vec![(19 * HOUR, 30 * HOUR + HOUR / 2), (43 * HOUR, 48 * HOUR)];
+        let st = window_stats(n, || ps.iter().copied(), &closed, &[]);
+        let need: Vec<i64> = (0..n).map(|i| st.iter().map(|w| w.need[i]).max().unwrap()).collect();
+        let run = |prefund: Vec<i64>| {
+            let mut runs = vec![EngineRun::new(Box::new(GrossRealTime), Ledger::unlimited(n)).with_funding(Box::new(PrefundClosedWindows::new(closed.clone(), prefund)))];
+            let mut flow = FlowStats::new(n, false);
+            drive(ps.iter().copied(), &mut runs, &mut flow, cfg.horizon_ms());
+            runs.pop().unwrap()
+        };
+        let exact = run(need.clone());
+        assert_eq!(exact.metrics.rejected_count, 0, "prefunding the need is enough");
+        let who = (0..n).max_by_key(|&i| need[i]).unwrap();
+        assert!(need[who] > 0);
+        let mut short = need.clone();
+        short[who] -= 1;
+        let r = run(short);
+        assert!(r.metrics.rejected_value_by_payer[who] > 0, "one cent less than its need must reject a payment of {who}");
+        // sanity: without the policy, nothing is rejected (unlimited liquidity)
+        let free = run_payments(n, ps.iter().copied(), &[EngineSpec::Gross], &Opening::Unlimited, cfg.horizon_ms());
+        assert_eq!(free.results[0].metrics.rejected_count, 0);
+    }
+
     /// The floor holds inside windows for real engines: reconstruct each engine's position
     /// from its settlement events and compare its need in every window with the floor.
     #[test]

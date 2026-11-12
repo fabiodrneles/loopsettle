@@ -52,6 +52,9 @@
   `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`.
   **Próximo passo exato:** spec 05 M5, depois esses, nessa ordem. Sempre rodar `make verify` antes
   de commitar.
+- **12/11/2026 — spec 05 completa** (M5, camada de abastecimento; M3 ainda sem conferência com o
+  artigo de 2001, cujos servidores estão bloqueados aqui). **Próximo passo exato:** spec 08 T1, T2,
+  T4, T5; spec 10 R1, R4; várias sementes nos seis experimentos antigos.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

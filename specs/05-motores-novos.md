@@ -67,7 +67,12 @@ Na chegada de `A→B`, procura na fila um `B→A` e liquida os dois pelo líquid
 vários RTGS (por exemplo o T2). Caso particular dos micro-ciclos com `max_cycle_len = 2` e
 gatilho por evento. **AC:** igual ao micro-ciclo de tamanho 2 quando `window_ms → 1`.
 
-## M5 — Política de abastecimento (funding) como camada
+## M5 — Política de abastecimento (funding) como camada — **FEITO em 12/11/2026**
+
+> `loopsettle_core::funding` (`PrefundClosedWindows`, `TopUpToTarget`), `Ledger::fund`,
+> `Ledger::with_credit_limits`, aviso `SettlementEngine::funded`; testes em `tests/funding.rs` e
+> `prefunding_policy_reproduces_the_window_need`; `funding-windows/prefunding.csv`; D28, REVIEW 92.
+> AC atendido: com 100% da necessidade nada é rejeitado e o `windows.csv` não mudou.
 
 Hoje a liquidez é medida com saldo ilimitado ou fixada na abertura. Falta o que os
 participantes fazem de fato: aportar e retirar durante o dia.

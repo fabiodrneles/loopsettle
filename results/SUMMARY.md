@@ -401,7 +401,7 @@ Class-specific intraday profiles with strength λ (0 = one profile for everyone,
 Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case 0.46% in the window form and 0.042% in the tight form; fired: no.
 
 ## 10. Conta PI funding windows: nights and the weekend (W3)
-_seed `20260930`, code `0.1.0+git.0ef4e7d`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, code `0.1.0+git.97c225e-dirty`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.
 
@@ -447,6 +447,59 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | fri_day | open | 12.5 | 956 742 931 | 3.92% | 0.46% | 8.01% | 0.095% | 7.22% |
 | 10 000 000 | 1 | 1 | weekend | closed | 59.5 | 2 537 756 124 | 0.98% | 0.23% | 2.09% | 0.018% | 1.30% |
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
+
+Prefunding below the need (funding layer, spec 05 M5): each participant enters the closed windows with a fraction of its largest need; while STR is open, top-ups are unlimited. Rejected value in % of the gross value of the five days, for gross settlement and for queues that wait up to one hour (for receipts or the reopening). One seed, smallest scale.
+
+| σ bias | λ | fraction of the need | engine | rejected value |
+|---|---|---|---|---|
+| 0.4 | 0 | 0.8 | gross | 1.967% |
+| 0.4 | 0 | 0.8 | queue:fifo:3600000:1000 | 1.587% |
+| 0.4 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 1.511% |
+| 0.4 | 0 | 0.9 | gross | 1.048% |
+| 0.4 | 0 | 0.9 | queue:fifo:3600000:1000 | 0.683% |
+| 0.4 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 0.662% |
+| 0.4 | 0 | 0.95 | gross | 0.635% |
+| 0.4 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.341% |
+| 0.4 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.332% |
+| 0.4 | 0 | 1 | gross | 0.000% |
+| 0.4 | 0 | 1 | queue:fifo:3600000:1000 | 0.000% |
+| 0.4 | 0 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
+| 0.4 | 1 | 0.8 | gross | 2.641% |
+| 0.4 | 1 | 0.8 | queue:fifo:3600000:1000 | 2.263% |
+| 0.4 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.156% |
+| 0.4 | 1 | 0.9 | gross | 1.744% |
+| 0.4 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.242% |
+| 0.4 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.200% |
+| 0.4 | 1 | 0.95 | gross | 1.282% |
+| 0.4 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.661% |
+| 0.4 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.643% |
+| 0.4 | 1 | 1 | gross | 0.000% |
+| 0.4 | 1 | 1 | queue:fifo:3600000:1000 | 0.000% |
+| 0.4 | 1 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
+| 1 | 0 | 0.8 | gross | 3.011% |
+| 1 | 0 | 0.8 | queue:fifo:3600000:1000 | 2.723% |
+| 1 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.640% |
+| 1 | 0 | 0.9 | gross | 1.495% |
+| 1 | 0 | 0.9 | queue:fifo:3600000:1000 | 1.260% |
+| 1 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.220% |
+| 1 | 0 | 0.95 | gross | 0.822% |
+| 1 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.601% |
+| 1 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.589% |
+| 1 | 0 | 1 | gross | 0.000% |
+| 1 | 0 | 1 | queue:fifo:3600000:1000 | 0.000% |
+| 1 | 0 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
+| 1 | 1 | 0.8 | gross | 3.388% |
+| 1 | 1 | 0.8 | queue:fifo:3600000:1000 | 3.120% |
+| 1 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 3.041% |
+| 1 | 1 | 0.9 | gross | 1.899% |
+| 1 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.648% |
+| 1 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.619% |
+| 1 | 1 | 0.95 | gross | 1.165% |
+| 1 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.890% |
+| 1 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.874% |
+| 1 | 1 | 1 | gross | 0.000% |
+| 1 | 1 | 1 | queue:fifo:3600000:1000 | 0.000% |
+| 1 | 1 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
 _seed `20260930`, code `0.1.0+git.1ca1280`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._

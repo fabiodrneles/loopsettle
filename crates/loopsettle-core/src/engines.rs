@@ -696,6 +696,16 @@ impl SettlementEngine for AtomicMicroCycle {
         self.queued
     }
 
+    /// A top-up can make any queued payment settle: every payer with a queue is retried at the
+    /// next window (the event-driven retry only follows credits it made itself).
+    fn funded(&mut self) {
+        for a in 0..self.out.len() as u32 {
+            if !self.out[a as usize].is_empty() {
+                self.mark(a);
+            }
+        }
+    }
+
     fn stats(&self) -> Vec<(&'static str, f64)> {
         vec![("cycles_settled", self.cycles_settled as f64), ("cycles_failed", self.cycles_failed as f64)]
     }

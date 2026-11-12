@@ -31,7 +31,7 @@ frentes decidem se o trabalho vira referência:
 | 02 | [Propagar o limite apertado](02-propagar-limite-apertado.md) | ciência + docs | FR1–FR6 feitos; FR7 (interface web) a fazer | P0 |
 | 03 | [Ótimo offline e o sanduíche](03-otimo-offline.md) | ciência | **feito** (sem FR2 nem FR5; ver REVIEW 85) | P1 |
 | 04 | [Correções nos motores e nas métricas](04-correcoes-motores.md) | correção | **feito** (C1–C4, C6); C5 medido e adiado | P0 |
-| 05 | [Motores novos](05-motores-novos.md) | funcionalidade | M1–M4 feitos (M3 a conferir com o artigo, D27); M5 (política de abastecimento) a fazer | P1 |
+| 05 | [Motores novos](05-motores-novos.md) | funcionalidade | **feito** M1–M5 (M3 ainda a conferir com o artigo, D27) | P1 |
 | 06 | [Fronteira com liquidez restrita](06-liquidez-restrita.md) | ciência | **feito** (sem M3; ver REVIEW 84) | P1 |
 | 07 | [Gerador: rajadas, vários dias, modelos nulos](07-gerador.md) | modelo | **G2 feito: critério de morte disparou** (REVIEW 87); G1, G3–G5 a fazer | P2 |
 | 08 | [Topologia: BFF, escala, circularidade temporal](08-topologia.md) | ciência | T3 feito; T1, T2, T4, T5 a fazer | P2 |

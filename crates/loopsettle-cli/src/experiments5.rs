@@ -121,6 +121,60 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
         "bound_10s_pct", "bound_15min_pct", "bound_1h_pct", "tight_bound_10s_pct", "tight_bound_15min_pct", "tight_bound_1h_pct",
     ];
     res.csv("windows.csv", &table(&header, &rows));
+
+    // ---- Prefunding below the need (specs/05, M5). Each participant holds, when STR closes,
+    // `alpha` times its largest need over the closed windows; top-ups are unlimited while STR is
+    // open. Rejected value for lack of prefunding, under gross settlement and under designs that
+    // let a payment wait (up to one hour) for receipts or for the reopening. Smallest scale only.
+    let alphas = f64_list(doc, "windows.prefund_alphas", &[0.8, 0.9, 0.95, 1.0]);
+    let pnames: Vec<String> = doc.str_array("windows.prefund_engines").unwrap_or_else(|| vec!["gross".into(), "queue:fifo:3600000:1000".into(), "micro:shortfall:1000:3600000:6:fifo".into()]);
+    let pspecs: Vec<EngineSpec> = pnames.iter().map(|s| EngineSpec::parse(s)).collect::<Result<_, _>>()?;
+    let closed: Vec<(u64, u64)> = windows.iter().filter(|w| w.1 == "closed").map(|w| (w.2, w.3)).collect();
+    let small = scales.first().copied().unwrap_or(1e6);
+    let pcases: Vec<(f64, f64)> = cases.iter().filter(|c| c.0 == small).map(|c| (c.1, c.2)).collect();
+    let pdone: Vec<Vec<(i128, i128, i128)>> = par_map(&pcases, |&(sigma, lam)| {
+        let cfg = ScenarioConfig {
+            days: 5,
+            day_weights: day_weights.clone(),
+            hourly: SPI_2024_HOURLY.to_vec(),
+            payments_per_day: small,
+            scale_factor: base.scale_factor * base.payments_per_day / small,
+            receiver_bias_sigma: sigma,
+            profile_strength: lam,
+            ..base.clone()
+        };
+        let n = cfg.participants;
+        let st = window_stats(n, || PaymentStream::new(&cfg), &closed, &[]);
+        let need: Vec<i64> = (0..n).map(|i| st.iter().map(|w| w.need[i]).max().unwrap_or(0)).collect();
+        let total_need: i128 = need.iter().map(|&v| v as i128).sum();
+        let mut out = Vec::new();
+        for &a in &alphas {
+            let prefund: Vec<i64> = need.iter().map(|&v| (v as f64 * a).floor() as i64).collect();
+            let mut runs: Vec<loopsettle_core::EngineRun> = pspecs
+                .iter()
+                .map(|sp| loopsettle_core::EngineRun::new(sp.build(n), loopsettle_core::Ledger::unlimited(n)).with_funding(Box::new(loopsettle_core::PrefundClosedWindows::new(closed.clone(), prefund.clone()))))
+                .collect();
+            let mut flow = loopsettle_core::FlowStats::new(n, false);
+            loopsettle_core::drive(PaymentStream::new(&cfg), &mut runs, &mut flow, cfg.horizon_ms());
+            for r in &runs {
+                out.push((r.metrics.rejected_value, flow.gross_value, total_need));
+            }
+        }
+        out
+    });
+    let mut prow = Vec::new();
+    for (c, &(sigma, lam)) in pcases.iter().enumerate() {
+        for (ai, &a) in alphas.iter().enumerate() {
+            for (e, name) in pnames.iter().enumerate() {
+                let (rej, gross, need) = pdone[c][ai * pnames.len() + e];
+                prow.push(vec![f(small), f(sigma), f(lam), f(a), name.clone(), f(need as f64 / 100.0), f(100.0 * rej as f64 / gross.max(1) as f64), f(rej as f64 / 100.0)]);
+            }
+        }
+    }
+    res.csv(
+        "prefunding.csv",
+        &table(&["payments_per_thursday", "receiver_bias_sigma", "profile_strength", "prefund_fraction_of_need", "engine", "total_need_brl", "rejected_value_pct_of_gross", "rejected_value_brl"], &prow),
+    );
     res.set("scenario", scenario_json(base));
     res.set("source", "STR hours and day volumes: BCB, Relatório Anual do SPI 2024, pp. 12-15; hourly profile: Gráfico 12, p. 13");
     res.set("windows", Json::Arr(js));

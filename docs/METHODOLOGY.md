@@ -226,6 +226,16 @@ floored at zero; with `d = 0` it is the gross need above. Computed by
 `loopsettle_sim::bound::window_floors` and tested against the engines by rebuilding each engine's
 position from its settlement events (`engines_never_need_less_than_the_window_floor`).
 
+**Funding as a layer.** `loopsettle_core::funding` lets a policy move money between a
+participant's reserves, outside the system, and its settlement account at instants it chooses
+(`Ledger::fund`); conservation then holds for accounts plus reserves. `PrefundClosedWindows`
+leaves each participant with a fixed balance when a closed window opens and unlimited liquidity
+when it ends; `TopUpToTarget` tops balances up to a target every period inside open windows;
+`Ledger::with_credit_limits` gives intraday credit lines. With every participant prefunded
+exactly its largest window need, gross settlement rejects nothing (test
+`prefunding_policy_reproduces_the_window_need`); `funding-windows/prefunding.csv` reports what is
+rejected below that.
+
 ## 11. Constrained liquidity
 
 Sections 2 to 10 ask how much liquidity a design *needs* when balances are unlimited. An operator

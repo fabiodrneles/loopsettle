@@ -231,6 +231,16 @@ com piso em zero; com `d = 0` é a necessidade bruta acima. Calculado por
 `loopsettle_sim::bound::window_floors` e testado contra os motores reconstruindo a posição de cada
 motor a partir dos eventos de liquidação (`engines_never_need_less_than_the_window_floor`).
 
+**Abastecimento como camada.** `loopsettle_core::funding` permite que uma política mova dinheiro
+entre as reservas do participante, fora do sistema, e a conta de liquidação, nos instantes que
+escolher (`Ledger::fund`); a conservação passa a valer para contas mais reservas.
+`PrefundClosedWindows` deixa cada participante com um saldo fixo quando uma janela fechada abre e
+com liquidez ilimitada quando ela termina; `TopUpToTarget` completa os saldos até uma meta a cada
+período dentro das janelas abertas; `Ledger::with_credit_limits` dá linhas de crédito
+intradiário. Com cada participante pré-financiado exatamente na sua maior necessidade de janela,
+o bruto não rejeita nada (teste `prefunding_policy_reproduces_the_window_need`); o
+`funding-windows/prefunding.csv` mostra o que é rejeitado abaixo disso.
+
 ## 11. Liquidez restrita
 
 As seções 2 a 10 perguntam quanta liquidez um desenho *precisa* com saldos ilimitados. Um operador

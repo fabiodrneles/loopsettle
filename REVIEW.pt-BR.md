@@ -358,3 +358,14 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     de monotonicidade da spec (a parcela não cai quando as janelas são aninhadas) foi observada na
     tabela, mas não virou teste. Também: a curva do limite do `regimes` agora tem 10 sementes
     (10 s: limite apertado de 0,041% [0,025; 0,056], a compensação obtém 48% dele [40; 55]).
+92. **Camada de abastecimento (spec 05, M5), 12/11/2026.** `crates/loopsettle-core/src/funding.rs`,
+    `Ledger::fund` e `with_credit_limits`, `tests/funding.rs` (três exemplos à mão e um teste de
+    propriedade: contas mais reservas conservadas, nenhum saldo abaixo de menos a linha de crédito,
+    um desfecho por pagamento), teste de regressão em `bound.rs`, `funding-windows/prefunding.csv`,
+    CLAIMS 1e2, D28. O `windows.csv` ficou idêntico byte a byte. **Achado durante os testes:** a
+    nova tentativa por evento do ponto 84 não sabia dos aportes, então um pagador abastecido
+    esperava uma janela a mais; os motores agora recebem um aviso `funded`. **Riscos:** uma
+    semente; pré-financiamento proporcional à necessidade vista depois; as linhas de crédito estão
+    testadas, mas nenhum experimento as usa ainda. **A spec 05 está completa, exceto** que o motor
+    de gridlock (M3) continua sem conferência com Bech & Soramäki (2001): EconStor,
+    publications.bof.fi e nationalbanken.dk estão fora da rede desta sessão.

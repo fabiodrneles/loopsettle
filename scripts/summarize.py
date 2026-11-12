@@ -105,6 +105,8 @@ PT = {
     "fw_intro": "A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.",
     "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s (janela)", "limite 15 min (janela)", "limite apertado 10 s", "limite apertado 15 min"],
     "closed": "fechada", "open": "aberta",
+    "pf_intro": "Pré-financiamento abaixo da necessidade (camada de abastecimento, spec 05 M5): cada participante entra nas janelas fechadas com uma fração da sua maior necessidade; com o STR aberto, aportes ilimitados. Valor rejeitado em % do valor bruto dos cinco dias, para o bruto e para filas que esperam até 1 hora (recebimentos ou reabertura). Uma semente, a menor escala.",
+    "c_pf": ["σ viés", "λ", "fração da necessidade", "motor", "valor rejeitado"],
     "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
     "h15": "## 15. Circularidade por horizonte: valor que circula × liquidez recuperável",
     "ch_intro": "Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.",
@@ -195,6 +197,8 @@ EN = {
     "fw_intro": "The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.",
     "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "window bound 10 s", "window bound 15 min", "tight bound 10 s", "tight bound 15 min"],
     "closed": "closed", "open": "open",
+    "pf_intro": "Prefunding below the need (funding layer, spec 05 M5): each participant enters the closed windows with a fraction of its largest need; while STR is open, top-ups are unlimited. Rejected value in % of the gross value of the five days, for gross settlement and for queues that wait up to one hour (for receipts or the reopening). One seed, smallest scale.",
+    "c_pf": ["σ bias", "λ", "fraction of the need", "engine", "rejected value"],
     "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
     "h15": "## 15. Circularity by horizon: value that circulates vs liquidity that can be recovered",
     "ch_intro": "For each width w the day is cut into windows; inside each window the maximum circulation (CDFD) of the aggregated flows is computed. The sum is the value that *could be cancelled* by netting inside windows of width w. Next to it, for the same w as a deadline: the tight bound and what netting every w realises. Cancelled value is not saved liquidity. Means over 5 seeds.",
@@ -362,6 +366,11 @@ def build(T):
     md.append(table(T["c_fw"], [[num(r["payments_per_thursday"], 0), r["receiver_bias_sigma"], r["profile_strength"], r["window"], T["closed"] if r["kind"] == "closed" else T["open"], r["hours"],
                                   num(r["prefunding_need_brl"]), f"{float(r['netting_saving_pct']):.2f}%", f"{float(r['bound_10s_pct']):.2f}%", f"{float(r['bound_15min_pct']):.2f}%", f"{float(r['tight_bound_10s_pct']):.3f}%", f"{float(r['tight_bound_15min_pct']):.2f}%"]
                                  for r in rows("funding-windows", "windows.csv")]))
+    md.append("")
+
+    md += [T["pf_intro"], ""]
+    md.append(table(T["c_pf"], [[r["receiver_bias_sigma"], r["profile_strength"], r["prefund_fraction_of_need"], r["engine"], f"{float(r['rejected_value_pct_of_gross']):.3f}%"]
+                                 for r in rows("funding-windows", "prefunding.csv")]))
     md.append("")
 
     # --- regimes and the bound curve

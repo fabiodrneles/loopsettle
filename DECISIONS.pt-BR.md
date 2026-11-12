@@ -297,3 +297,17 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   propriedade de prefixo e viabilidade pela qual ele é conhecido; precisa ser conferido com o
   artigo antes de o nome "Bech-Soramäki" ser usado numa publicação.
 - **Reverter:** não usar o motor `gridlock`; nada mais depende dele.
+
+## D28 — Abastecimento como camada fora dos motores, com reservas fora do sistema
+- **Decisão:** uma `FundingPolicy` age entre eventos dos motores, nos instantes que escolhe; o
+  dinheiro que ela move vem de reservas fora do sistema (`Ledger::fund`), então a invariante 1
+  passa a ser "contas mais reservas são constantes". Os motores são avisados quando saldos mudam
+  de fora (`SettlementEngine::funded`), para que os pagamentos na fila sejam tentados de novo.
+  Crédito intradiário é um limite inferior por conta (`with_credit_limits`). A remuneração dos
+  saldos e o custo de oportunidade do pré-financiamento não são modelados (sem fonte).
+- **Alternativas:** abastecimento dentro de cada motor; crédito como conta separada; um modelo de
+  custo.
+- **Por quê:** é a menor mudança que representa o que a D20 descreve (aportes só com o STR aberto)
+  para todos os motores de uma vez, e mantém os resultados anteriores idênticos byte a byte (sem
+  política, nada muda).
+- **Reverter:** rodar sem política (o padrão).
