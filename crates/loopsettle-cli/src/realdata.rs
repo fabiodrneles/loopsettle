@@ -82,7 +82,15 @@ pub fn run(args: &[String], settle: bool) -> Result<(), String> {
         ));
     }
     let span_ms = s.last_ms - s.first_ms;
-    eprintln!("{}: {} payments, {} participants, {} rows skipped, span {:.1} h", o.file, s.rows, n, s.skipped, span_ms as f64 / 3.6e6);
+    eprintln!(
+        "{}: {} payments, {} participants, {} rows skipped (invalid), {} rows skipped (status not settled), span {:.1} h",
+        o.file,
+        s.rows,
+        n,
+        s.skipped,
+        s.skipped_status,
+        span_ms as f64 / 3.6e6
+    );
 
     let mut specs = vec![EngineSpec::Gross];
     if settle {
@@ -126,6 +134,7 @@ pub fn run(args: &[String], settle: bool) -> Result<(), String> {
         .set("file", o.file.as_str())
         .set("payments", s.rows)
         .set("rows_skipped", s.skipped)
+        .set("rows_skipped_status_not_settled", s.skipped_status)
         .set("participants", n)
         .set("span_hours", span_ms as f64 / 3.6e6)
         .set("gross_value", r.flow.gross_value as f64 / 100.0)
