@@ -1,5 +1,9 @@
 # 10 — Dados reais, interoperabilidade e interface (P1)
 
+> **Estado em 12/11/2026:** **R2 feito** (rótulos `P001...`, `--keep-names`, `--min-participants`;
+> falta suprimir linhas que revelam um pagamento único). **R3 feito** (`--report`: `report.md`,
+> `report.pt-BR.md`, `fig_bound.svg`; teste `privacy_defaults_and_report`). R1, R4, R5 a fazer.
+
 ## Contexto
 
 O W9 do `PAPER_READINESS` diz o que transforma o estudo em referência: outras pessoas usarem.

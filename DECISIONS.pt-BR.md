@@ -262,3 +262,8 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   principal; exemplos podem usar dependências de desenvolvimento, então a biblioteca e o CLI
   continuam sem dependências e todo número ainda sai de um comando.
 - **Reverter:** apagar o exemplo e `results/optimality-gap/`; nada mais depende deles.
+- **Atualização da D21, 12/11/2026:** o `--per-participant` agora grava rótulos `P001...` no lugar
+  dos identificadores do arquivo (`--keep-names` os traz de volta) e é recusado para arquivos com
+  menos de `--min-participants` participantes (padrão 5). O `--report` gera um relatório bilíngue
+  só com agregados, que identifica a entrada por um hash FNV-1a. Não feito: suprimir linhas que
+  revelariam um pagamento único (um participante cujo pico é um só pagamento).

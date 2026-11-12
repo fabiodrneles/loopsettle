@@ -259,3 +259,8 @@ Each entry: what was decided, alternatives, why, and how to revert.
   can use dev-dependencies, so the library and the CLI stay dependency-free while every number
   still comes from one command.
 - **Revert:** delete the example and `results/optimality-gap/`; nothing else depends on them.
+- **Update to D21, 12 Nov 2026:** `--per-participant` now writes labels `P001...` instead of the
+  file's identifiers (`--keep-names` restores them) and is refused for files with fewer than
+  `--min-participants` participants (default 5). `--report` writes a bilingual report with
+  aggregates only, identifying the input by an FNV-1a hash. Not done: suppressing rows that would
+  reveal a single payment (a participant whose peak is one payment).

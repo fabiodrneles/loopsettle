@@ -51,15 +51,18 @@ fn rustc_version() -> String {
 /// set without a hashing dependency. Not cryptographic.
 fn cargo_lock_hash() -> String {
     match std::fs::read("Cargo.lock") {
-        Ok(bytes) => {
-            let mut h: u64 = 0xcbf29ce484222325;
-            for &b in bytes.iter().filter(|&&b| b != b'\r') {
-                h = (h ^ b as u64).wrapping_mul(0x100000001b3);
-            }
-            format!("{h:016x}")
-        }
+        Ok(bytes) => format!("{:016x}", fnv1a64(bytes.iter().copied().filter(|&b| b != b'\r'))),
         Err(_) => "unknown".into(),
     }
+}
+
+/// FNV-1a, 64 bit. Identifies a file without a hashing dependency; not cryptographic.
+pub fn fnv1a64(bytes: impl Iterator<Item = u8>) -> u64 {
+    let mut h: u64 = 0xcbf29ce484222325;
+    for b in bytes {
+        h = (h ^ b as u64).wrapping_mul(0x100000001b3);
+    }
+    h
 }
 
 /// `LOOPSETTLE_GOLDEN=1`: regression-test mode (`scripts/golden.py`). Results record no code

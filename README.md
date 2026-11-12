@@ -591,8 +591,8 @@ Nos exemplos abaixo, `loopsettle` significa um desses dois jeitos.
 | `loopsettle list` | lista os experimentos e o que cada um responde | terminal |
 | `loopsettle experiment <nome>` | roda um experimento com a semente fixa do seu TOML | `results/<nome>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <nome> --quick` | o mesmo com 10× menos pagamentos, para conferir rápido; **não** use para números publicados | `results/<nome>/` |
-| `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
-| `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
+| `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--report] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
+| `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--report] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
 | `loopsettle export <experimento> <saida.csv> [--payments N] [--participants N]` | grava os pagamentos sintéticos de um cenário num CSV no formato que `bound`/`settle` leem | o CSV |
 | `loopsettle topology <transferencias.csv>` | escada de circularidade (Hodge, CDFD, ciclos) de qualquer lista `from,to,amount` | `results/topology-<arquivo>/` |
 | `python3 -I scripts/summarize.py` | gera os resumos a partir de `results/` | `results/SUMMARY.md` e `SUMMARY.pt-BR.md` |
@@ -1341,8 +1341,8 @@ In the examples below, `loopsettle` means either form.
 | `loopsettle list` | lists the experiments and the question each answers | terminal |
 | `loopsettle experiment <name>` | runs an experiment with the fixed seed in its TOML | `results/<name>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <name> --quick` | the same with 10× fewer payments, for a quick check; **not** for published numbers | `results/<name>/` |
-| `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
-| `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
+| `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--report] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
+| `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--report] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
 | `loopsettle export <experiment> <out.csv> [--payments N] [--participants N]` | writes a scenario's synthetic payments to a CSV in the format `bound`/`settle` read | the CSV |
 | `loopsettle topology <transfers.csv>` | circularity ladder (Hodge, CDFD, cycles) of any `from,to,amount` list | `results/topology-<file>/` |
 | `python3 -I scripts/summarize.py` | builds the summaries from `results/` | `results/SUMMARY.md` and `SUMMARY.pt-BR.md` |
