@@ -746,3 +746,19 @@ O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite ap
 | 10 000 000 | 1.119% [0.336; 1.903] | 1.287% [0.592; 1.983] | 0.0894 |
 | 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
 
+## 15. Circularidade por horizonte: valor que circula × liquidez recuperável
+_seed `20260930`, código `0.1.0+git.c483cf6-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+
+Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.
+
+| janela / prazo (s) | valor que circula (% do bruto) [IC 95%] | só bilateral (% do bruto) | limite apertado (% do UB) | obtido a cada w (% do UB) | limite apertado (% do bruto) | circula / recuperável |
+|---|---|---|---|---|---|---|
+| 10 | 25.39% [24.48; 26.29] | 12.59% | 0.035% | 0.019% | 0.0059% | 4269 |
+| 60 | 48.05% [47.31; 48.80] | 28.44% | 0.187% | 0.059% | 0.0318% | 1509 |
+| 900 | 70.25% [69.19; 71.32] | 53.13% | 2.256% | 0.466% | 0.3833% | 183 |
+| 3600 | 76.68% [74.97; 78.38] | 62.45% | 5.863% | 2.014% | 0.9962% | 77 |
+| 21600 | 81.48% [79.20; 83.77] | 70.69% | 8.469% | 4.205% | 1.4389% | 57 |
+| 86400 | 83.44% [80.81; 86.08] | 74.73% | 8.565% | 8.565% | 1.4554% | 57 |
+
+Figura: [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)
+

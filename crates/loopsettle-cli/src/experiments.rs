@@ -21,6 +21,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("funding-windows", "prefunding for nights and weekends outside STR hours (W3)"),
     ("regimes", "delay bound in retail vs large-value systems"),
     ("echo-sweep", "echo payments: short-horizon circularity vs the bound and the saving"),
+    ("circularity-horizon", "value circulating within a window vs liquidity recoverable with that deadline"),
     ("echo-scale", "echo payments returned to the payer, 1 to 30 million payments a day"),
     ("liquidity-frontier", "rejection and delay vs liquidity held, per design (constrained liquidity)"),
 ];
@@ -45,6 +46,7 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "funding-windows" => crate::experiments5::funding_windows(path, doc, &cfg),
         "regimes" => crate::experiments5::regimes(path, doc, &cfg),
         "echo-sweep" => crate::experiments7::echo_sweep(path, doc, &cfg),
+        "circularity-horizon" => crate::experiments8::circularity_horizon(path, doc, &cfg),
         "echo-scale" => crate::experiments7::echo_scale(path, doc, &cfg),
         "liquidity-frontier" => crate::experiments6::liquidity_frontier(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),

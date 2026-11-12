@@ -106,6 +106,9 @@ PT = {
     "c_fw": ["pagamentos/quinta", "σ viés", "λ", "janela", "tipo", "horas", "pré-financiamento (R$)", "economia de compensar no fim", "limite 10 s (janela)", "limite 15 min (janela)", "limite apertado 10 s", "limite apertado 15 min"],
     "closed": "fechada", "open": "aberta",
     "h11": "## 11. Regimes: varejo × alto valor, e curva do limite",
+    "h15": "## 15. Circularidade por horizonte: valor que circula × liquidez recuperável",
+    "ch_intro": "Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.",
+    "c_ch": ["janela / prazo (s)", "valor que circula (% do bruto) [IC 95%]", "só bilateral (% do bruto)", "limite apertado (% do UB)", "obtido a cada w (% do UB)", "limite apertado (% do bruto)", "circula / recuperável"],
     "h14": "## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)",
     "ec_intro": "Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.",
     "c_ec": ["parcela de eco", "atraso do eco (s)", "retorno", "motor", "economia [IC 95%]", "limite apertado [IC 95%]", "valor em ciclos", "LB/UB"],
@@ -193,6 +196,9 @@ EN = {
     "c_fw": ["payments/Thursday", "σ bias", "λ", "window", "kind", "hours", "prefunding need (R$)", "saving of netting at the end", "window bound 10 s", "window bound 15 min", "tight bound 10 s", "tight bound 15 min"],
     "closed": "closed", "open": "open",
     "h11": "## 11. Regimes: retail vs large-value, and the bound curve",
+    "h15": "## 15. Circularity by horizon: value that circulates vs liquidity that can be recovered",
+    "ch_intro": "For each width w the day is cut into windows; inside each window the maximum circulation (CDFD) of the aggregated flows is computed. The sum is the value that *could be cancelled* by netting inside windows of width w. Next to it, for the same w as a deadline: the tight bound and what netting every w realises. Cancelled value is not saved liquidity. Means over 5 seeds.",
+    "c_ch": ["window / deadline (s)", "circulating value (% of gross) [95% CI]", "bilateral only (% of gross)", "tight bound (% of UB)", "realised every w (% of UB)", "tight bound (% of gross)", "circulating / recoverable"],
     "h14": "## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)",
     "ec_intro": "A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.",
     "c_ec": ["echo share", "echo delay (s)", "return", "engine", "saving [95% CI]", "tight bound [95% CI]", "value in cycles", "LB/UB"],
@@ -412,6 +418,13 @@ def build(T):
     md.append(table(T["c_escale"], [[num(r["payments_per_day"], 0), f"{float(r['netting_10s_saving_pct_mean']):.3f}% [{float(r['saving_ci95_low']):.3f}; {float(r['saving_ci95_high']):.3f}]",
                                       f"{float(r['tight_bound_10s_pct_mean']):.3f}% [{float(r['tight_ci95_low']):.3f}; {float(r['tight_ci95_high']):.3f}]", num(r["ub_over_gross_mean"], 4)] for r in er]))
     md.append("")
+    # --- circularity by horizon (specs/08, T3)
+    s = load("circularity-horizon")
+    md += [T["h15"], meta(s, T), "", T["ch_intro"], ""]
+    md.append(table(T["c_ch"], [[f"{float(r['window_s']):g}", f"{float(r['circulating_value_pct_of_gross']):.2f}% [{float(r['circulating_ci95_low']):.2f}; {float(r['circulating_ci95_high']):.2f}]",
+                                  f"{float(r['bilateral_offset_pct_of_gross']):.2f}%", f"{float(r['tight_bound_pct_of_ub']):.3f}%", f"{float(r['netting_every_w_saving_pct_of_ub']):.3f}%",
+                                  f"{float(r['tight_bound_pct_of_gross']):.4f}%", num(r["circulating_over_recoverable"], 0)] for r in rows("circularity-horizon", "horizon.csv")]))
+    md += ["", T["fig"] + " [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)", ""]
     return "\n".join(md) + "\n"
 
 

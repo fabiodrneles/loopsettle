@@ -26,7 +26,11 @@ especificado e que a D6 já pode ser implementada.
 - **AC:** resultado idêntico ao atual em todos os testes existentes e no oráculo de PL; tempo
   medido registrado em `CHECKPOINT*.md`.
 
-## T3 — Circularidade temporal: a ponte entre a escada e os motores
+## T3 — Circularidade temporal: a ponte entre a escada e os motores — **FEITO em 12/11/2026**
+
+> Experimento `circularity-horizon` (`experiments8.rs`, CLAIMS 2b, REVIEW 91): 25% do valor circula
+> em janelas de 10 s, contra 0,006% recuperável. 5 sementes. Falta: teste de monotonicidade e a
+> versão com eco.
 
 Hoje a escada (Hodge ≥ CDFD ≥ ciclos) é calculada no grafo agregado do dia, e a economia dos
 motores é medida no tempo. As duas não conversam: o grafo agregado tem 80% de fluxo circular e

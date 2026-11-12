@@ -746,3 +746,19 @@ The same case at higher volume (experiment `echo-scale`, 4 seeds): the 10 s tigh
 | 10 000 000 | 1.119% [0.336; 1.903] | 1.287% [0.592; 1.983] | 0.0894 |
 | 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
 
+## 15. Circularity by horizon: value that circulates vs liquidity that can be recovered
+_seed `20260930`, code `0.1.0+git.c483cf6-dirty`, command `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+
+For each width w the day is cut into windows; inside each window the maximum circulation (CDFD) of the aggregated flows is computed. The sum is the value that *could be cancelled* by netting inside windows of width w. Next to it, for the same w as a deadline: the tight bound and what netting every w realises. Cancelled value is not saved liquidity. Means over 5 seeds.
+
+| window / deadline (s) | circulating value (% of gross) [95% CI] | bilateral only (% of gross) | tight bound (% of UB) | realised every w (% of UB) | tight bound (% of gross) | circulating / recoverable |
+|---|---|---|---|---|---|---|
+| 10 | 25.39% [24.48; 26.29] | 12.59% | 0.035% | 0.019% | 0.0059% | 4269 |
+| 60 | 48.05% [47.31; 48.80] | 28.44% | 0.187% | 0.059% | 0.0318% | 1509 |
+| 900 | 70.25% [69.19; 71.32] | 53.13% | 2.256% | 0.466% | 0.3833% | 183 |
+| 3600 | 76.68% [74.97; 78.38] | 62.45% | 5.863% | 2.014% | 0.9962% | 77 |
+| 21600 | 81.48% [79.20; 83.77] | 70.69% | 8.469% | 4.205% | 1.4389% | 57 |
+| 86400 | 83.44% [80.81; 86.08] | 74.73% | 8.565% | 8.565% | 1.4554% | 57 |
+
+Figure: [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)
+

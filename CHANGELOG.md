@@ -26,6 +26,7 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- `circularity-horizon` and `echo-scale` experiments; the bound curve of `regimes` over 10 seeds.
 - Echo payments in the generator and the `echo-sweep` experiment.
 
 ### Fixed

@@ -13,6 +13,7 @@ mod experiments4;
 mod experiments5;
 mod experiments6;
 mod experiments7;
+mod experiments8;
 mod out;
 mod realdata;
 mod stats;

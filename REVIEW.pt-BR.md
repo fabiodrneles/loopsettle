@@ -349,3 +349,12 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     cerca de 0,3%, e não deve ser citada como resultado. Também novo: os motores `gridlock` e
     `bilateral` (spec 05 M3, M4; D27), com a ressalva de que o algoritmo de gridlock não foi
     conferido com o artigo de 2001.
+91. **Circularidade por horizonte (spec 08, T3), 12/11/2026.** `experiments8.rs`,
+    `results/circularity-horizon/`, CLAIMS 2b. Valor que circula por janela contra o limite
+    apertado para o mesmo prazo: 25% contra 0,006% do valor bruto com 10 s. **Riscos:** a parcela
+    que circula conta cada aresta de um ciclo (um triângulo de 5 conta 15), como a escada faz,
+    então é uma parcela do valor bruto, não um montante de liquidez; as duas colunas têm naturezas
+    diferentes e a razão é uma ilustração, não uma lei; 5 sementes, uma escala, sem eco; a checagem
+    de monotonicidade da spec (a parcela não cai quando as janelas são aninhadas) foi observada na
+    tabela, mas não virou teste. Também: a curva do limite do `regimes` agora tem 10 sementes
+    (10 s: limite apertado de 0,041% [0,025; 0,056], a compensação obtém 48% dele [40; 55]).

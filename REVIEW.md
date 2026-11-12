@@ -335,3 +335,12 @@ the real laptop (i3, 4 GB).
     extrapolation to Pix volume (about 240 million a day) would give about 0.3%, and must not be
     quoted as a result. Also new: the `gridlock` and `bilateral` engines (spec 05 M3, M4; D27),
     with the caveat that the gridlock algorithm was not checked against the 2001 paper.
+91. **Circularity by horizon (spec 08, T3), 12 Nov 2026.** `experiments8.rs`,
+    `results/circularity-horizon/`, CLAIMS 2b. Circulating value per window against the tight
+    bound for the same deadline: 25% against 0.006% of gross value at 10 s. **Risks:** the
+    circulating share counts each edge of a cycle (a triangle of 5 counts 15), as the ladder does,
+    so it is a share of gross value, not a liquidity amount; the two columns have different
+    natures and the ratio is an illustration, not a law; 5 seeds, one scale, no echoes; the spec's
+    monotonicity check (the share does not fall when windows are nested) was observed in the
+    table but not written as a test. Also: the bound curve of `regimes` now has 10 seeds (10 s:
+    tight bound 0.041% [0.025; 0.056], netting realises 48% of it [40; 55]).
