@@ -167,9 +167,10 @@ por um participante sozinho com "seguro meus pagamentos por exatamente `d` e rec
 hora"; por isso é o melhor limite que usa só os fluxos do próprio `i` (teste `a_single_holder_needs_exactly_its_floor`, com o motor `hold:<d>:<i>`: igualdade ao centavo). É calculado em streaming
 com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
 contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
-`tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, uma semente),
-o limite apertado para 10 s é 0,054% do UB, contra 0,76% na forma de janela, e a compensação a
-cada 10 s obtém 51% dele; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
+`tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, 10 sementes),
+o limite apertado para 10 s é 0,041% do UB (IC 95% [0,025; 0,056]), contra 0,80% na forma de
+janela, e a compensação a cada 10 s obtém 48% dele (IC [40; 55]); a parcela obtida é 25% com 15
+minutos e 58% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
 estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
 apertado ali é ≤ 0,004%.
 

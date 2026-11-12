@@ -449,7 +449,7 @@ The Conta PI can be topped up from reserves only while the STR is open (6:30–1
 | 10 000 000 | 1 | 1 | mon_day | open | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
 
 ## 11. Regimes: retail vs large-value, and the bound curve
-_seed `20260930`, code `0.1.0+git.5d140a4`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, code `0.1.0+git.1ca1280`, command `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 The window form of the delay bound depends on payment size relative to liquidity needs; the tight bound (UB − liquidity floor, METHODOLOGY §9b) does not: it stays near zero in both regimes. Stylised large-value system (ASSUMPTION): 20 participants, median R$ 1 million, heavy tail.
 
@@ -468,16 +468,16 @@ The window form of the delay bound depends on payment size relative to liquidity
 | large-value 200000/day | 20 | 199616 | 0.0006 | 5000 | 0.0062% | 0.249% | 0.0188% |
 | large-value 200000/day | 20 | 199616 | 0.0006 | 10000 | 0.0063% | 0.276% | 0.0401% |
 
-Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated):
+Bound curve (W5): realised saving of netting every d vs the delay bound for the same d (retail, Pix calibrated; means over 10 seeds):
 
-| d (s) | cycles/day | realised saving | window bound (capped at 100%) | realised / window | tight bound | realised / tight |
+| d (s) | cycles/day | realised saving | window bound (capped at 100%) | realised / window | tight bound [95% CI] | realised / tight [95% CI] |
 |---|---|---|---|---|---|---|
-| 10 | 8640 | 0.0276% | 0.76% | 0.036 | 0.054% | 0.511 |
-| 60 | 1440 | 0.0712% | 2.67% | 0.027 | 0.254% | 0.280 |
-| 900 | 96 | 0.3248% | 7.96% | 0.041 | 3.198% | 0.102 |
-| 3600 | 24 | 1.0545% | 23.12% | 0.046 | 7.693% | 0.137 |
-| 21600 | 4 | 3.7443% | 100.00% | 0.030 | 9.232% | 0.406 |
-| 86400 | 1 | 9.2669% | 100.00% | 0.034 | 9.267% | 1.000 |
+| 10 | 8640 | 0.0185% | 0.80% | 0.023 | 0.041% [0.025; 0.056] | 0.48 [0.40; 0.55] |
+| 60 | 1440 | 0.0690% | 1.58% | 0.044 | 0.205% [0.141; 0.269] | 0.34 [0.30; 0.38] |
+| 900 | 96 | 0.5021% | 8.19% | 0.061 | 2.361% [1.233; 3.490] | 0.25 [0.19; 0.32] |
+| 3600 | 24 | 1.8952% | 22.96% | 0.083 | 5.106% [3.089; 7.123] | 0.37 [0.30; 0.43] |
+| 21600 | 4 | 3.9985% | 100.00% | 0.029 | 7.322% [4.571; 10.073] | 0.58 [0.49; 0.67] |
+| 86400 | 1 | 7.8040% | 100.00% | 0.023 | 7.804% [4.506; 11.102] | 1.00 [1.00; 1.00] |
 
 Figure: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 

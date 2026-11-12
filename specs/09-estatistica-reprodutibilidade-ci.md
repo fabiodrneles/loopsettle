@@ -6,6 +6,8 @@
 >   trocar a libm.
 > - **E4 feito**, menos `cargo fmt --check` (295 diferenças; decisão do dono) e o `MANIFEST.sha256`.
 > - **E6 feito:** esquema, plataforma, rustc e hash do `Cargo.lock` no `summary.json`.
+> - **12/11/2026:** a curva do limite (`regimes/bound_curve.csv`) passou a 10 sementes com IC;
+>   `liquidity-frontier`, `echo-sweep` e `echo-scale` já nasceram com várias sementes.
 > - **E1 parcial:** `stats.rs` existe (`mean_ci95`); só `robustness` e `bias-calibration` usam
 >   várias sementes. Falta dar colunas de IC aos outros oito experimentos.
 > - **E5 parcial:** metamórficos e leitores feitos; faltam o simulador ingênuo de referência e a

@@ -165,9 +165,10 @@ attained for one participant alone by "hold my payments for exactly `d`, receive
 once", so it is the best bound that uses only `i`'s own flows (test `a_single_holder_needs_exactly_its_floor`, with the `hold:<d>:<i>` engine: equality to the cent). It is computed in streaming with
 one lagging and one leading pass (`loopsettle_sim::bound::liquidity_floors`), tested against the
 engines in the same test, and reported by `loopsettle bound` (`liquidity_floor`, `tight_bound`).
-In the calibrated retail scenario (`results/regimes/bound_curve.csv`, one seed) the tight bound
-for 10 s is 0.054% of UB against 0.76% for the window form, and netting every 10 s realises 51%
-of it; for a one-day delay it equals UB − LB exactly. In the stylised large-value system the
+In the calibrated retail scenario (`results/regimes/bound_curve.csv`, 10 seeds) the tight bound
+for 10 s is 0.041% of UB (95% CI [0.025; 0.056]) against 0.80% for the window form, and netting
+every 10 s realises 48% of it (CI [40; 55]); the share realised is 25% at 15 minutes and 58% at
+six hours; for a one-day delay it equals UB − LB exactly. In the stylised large-value system the
 window bound is large only because it counts the payment that makes the peak; the tight bound
 there is ≤ 0.004%.
 

@@ -29,16 +29,16 @@ Propriedades (todas testadas):
 | `crates/loopsettle-cli/src/experiments5.rs` | `regimes.csv` ganha `tight_bound_pct`; `bound_curve.csv` ganha `tight_bound_pct` e `realised_over_tight_bound`; a figura ganha a série |
 | `docs/METHODOLOGY*.md` §9b, `docs/CLAIMS*.md` 1f (revista) e 1g (nova), `scripts/summarize.py` | documentação |
 
-## Números (uma semente, σ = 0,4; as médias de 10 sementes por σ estão na spec 02 e em `results/robustness/seeds_summary.csv`)
+## Números (10 sementes, σ = 0,4; `results/regimes/bound_curve.csv`)
 
-| d | economia obtida (diferida a cada d) | limite janela | limite apertado | obtido / apertado |
-|---|---|---|---|---|
-| 10 s | 0,028% | 0,76% | 0,054% | 0,51 |
-| 60 s | 0,071% | 2,67% | 0,25% | 0,28 |
-| 15 min | 0,32% | 7,96% | 3,20% | 0,10 |
-| 1 h | 1,05% | 23,1% | 7,69% | 0,14 |
-| 6 h | 3,74% | > 100% | 9,23% | 0,41 |
-| 1 dia | 9,27% | > 100% | 9,27% | 1,00 |
+| d | economia obtida (diferida a cada d) [IC 95%] | limite apertado [IC 95%] | obtido / apertado |
+|---|---|---|---|
+| 10 s | 0,019% [0,013; 0,024] | 0,041% [0,025; 0,056] | 0,48 |
+| 60 s | 0,069% [0,049; 0,089] | 0,21% [0,14; 0,27] | 0,34 |
+| 15 min | 0,50% [0,38; 0,63] | 2,4% [1,2; 3,5] | 0,25 |
+| 1 h | 1,9% [0,9; 2,9] | 5,1% [3,1; 7,1] | 0,37 |
+| 6 h | 4,0% [2,7; 5,3] | 7,3% [4,6; 10,1] | 0,58 |
+| 1 dia | 7,8% [4,5; 11,1] | 7,8% [4,5; 11,1] | 1,00 |
 
 ## Convenções de fronteira (quem mexer nos motores precisa manter)
 
