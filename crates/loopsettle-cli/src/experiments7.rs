@@ -162,3 +162,84 @@ pub fn echo_sweep(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     res.finish();
     Ok(())
 }
+
+/// `echo-scale`: the case that fired the kill criterion of `echo-sweep`, at growing volume, with
+/// and without the echoes, and the fitted exponent of the bound in the number of payments.
+pub fn echo_scale(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
+    let mut res = Results::new("echo-scale", base.seed, path);
+    let seeds: Vec<u64> = f64_list(doc, "echo_scale.seeds", &[20260930.0, 1.0]).iter().map(|&s| s as u64).collect();
+    let scales = f64_list(doc, "echo_scale.payments_per_day", &[1e6, 3e6]);
+    let share = doc.f64("echo_scale.share").unwrap_or(0.2);
+    let delay = doc.f64("echo_scale.delay_ms").unwrap_or(1_000.0);
+    let ret = doc.f64("echo_scale.return_prob").unwrap_or(1.0);
+    // (payments a day, with echoes?)
+    let mut cases = Vec::new();
+    for &ppd in &scales {
+        // only with echoes: the same scales without them are in `robustness/scale.csv`
+        for echo in [true] {
+            cases.push((ppd, echo));
+        }
+    }
+    let mut jobs = Vec::new();
+    for c in 0..cases.len() {
+        for &seed in &seeds {
+            jobs.push((c, seed));
+        }
+    }
+    let t0 = std::time::Instant::now();
+    let done: Vec<Measure> = par_map(&jobs, |&(c, seed)| {
+        let (ppd, echo) = cases[c];
+        measure(&ScenarioConfig {
+            seed,
+            payments_per_day: ppd,
+            scale_factor: base.scale_factor * base.payments_per_day / ppd,
+            echo_share: if echo { share } else { 0.0 },
+            echo_delay_ms: delay,
+            echo_return_prob: ret,
+            ..base.clone()
+        })
+    });
+    res.measure("simulation_seconds", t0.elapsed().as_secs_f64());
+    // 10 s engines of ENGINES: index of "deferred:8640"
+    let k = ENGINES.iter().position(|(n, _)| *n == "deferred:8640").expect("deferred:8640 is in ENGINES");
+    let mut rows = Vec::new();
+    let mut pts = Vec::new(); // (ln payments, ln mean tight bound) with echoes
+    for (c, &(ppd, echo)) in cases.iter().enumerate() {
+        let ms: Vec<&Measure> = jobs.iter().zip(&done).filter(|(j, _)| j.0 == c).map(|(_, m)| m).collect();
+        let (sv, slo, shi) = mean_ci95(&ms.iter().map(|m| m.saving_pct[k]).collect::<Vec<_>>());
+        let (tb, tlo, thi) = mean_ci95(&ms.iter().map(|m| m.tight_pct[k]).collect::<Vec<_>>());
+        // the same bound in money per payment: does the *absolute* recoverable amount grow?
+        let (ab, _, _) = mean_ci95(&ms.iter().map(|m| m.tight_pct[k] / 100.0 * m.ub as f64 / 100.0).collect::<Vec<_>>());
+        let (ubg, _, _) = mean_ci95(&ms.iter().map(|m| m.ub as f64 / m.gross.max(1) as f64).collect::<Vec<_>>());
+        rows.push(vec![f(ppd), if echo { f(share) } else { f(0.0) }, ms.len().to_string(), f(sv), f(slo), f(shi), f(tb), f(tlo), f(thi), f(ab), f(ubg)]);
+        if echo && tb > 0.0 {
+            pts.push((ppd.ln(), tb.ln(), ab.max(1e-9).ln(), ubg.ln()));
+        }
+    }
+    // least-squares slopes in log-log
+    let slope = |ys: &dyn Fn(&(f64, f64, f64, f64)) -> f64| -> f64 {
+        let n = pts.len() as f64;
+        let (mx, my) = (pts.iter().map(|p| p.0).sum::<f64>() / n, pts.iter().map(ys).sum::<f64>() / n);
+        let sxy: f64 = pts.iter().map(|p| (p.0 - mx) * (ys(p) - my)).sum();
+        let sxx: f64 = pts.iter().map(|p| (p.0 - mx).powi(2)).sum();
+        if sxx > 0.0 { sxy / sxx } else { f64::NAN }
+    };
+    let header = [
+        "payments_per_day", "echo_share", "seeds", "netting_10s_saving_pct_mean", "saving_ci95_low", "saving_ci95_high", "tight_bound_10s_pct_mean", "tight_ci95_low", "tight_ci95_high",
+        "tight_bound_10s_brl_mean", "ub_over_gross_mean",
+    ];
+    res.csv("scale.csv", &table(&header, &rows));
+    res.set("scenario", scenario_json(base));
+    res.set("echo", Json::obj().set("share", share).set("delay_ms", delay).set("return_prob", ret));
+    res.set(
+        "loglog_slopes_with_echo",
+        Json::obj()
+            .set("tight_bound_pct_of_ub", slope(&|p| p.1))
+            .set("tight_bound_in_money", slope(&|p| p.2))
+            .set("ub_over_gross", slope(&|p| p.3))
+            .set("note", "exponent b in y ~ payments^b, least squares over the scales; one value per scale (the mean over seeds)"),
+    );
+    eprintln!("{}", table(&header, &rows));
+    res.finish();
+    Ok(())
+}
