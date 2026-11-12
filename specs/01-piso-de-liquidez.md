@@ -51,6 +51,10 @@ Propriedades (todas testadas):
 
 ## Perguntas em aberto
 
+> **12/11/2026:** busca limitada feita (`docs/REFERENCES.pt-BR.md` §8): nada achado; a pista mais
+> próxima (BoC SDP 2020-9) foi lida e não é o piso. Falta ler Koponen & Soramäki (1998) e Bech &
+> Soramäki (2002) e perguntar a um especialista. A pergunta 1 continua aberta.
+
 1. Existe enunciado igual na literatura? Procurar em: cálculo de redes (curvas de chegada e de
    serviço), literatura de "liquidity-delay trade-off" em RTGS (Bank of Canada WP 06-20,
    Galbiati & Soramäki, Jurgilas & Martin), Denbee & McLafferty. O critério K2 do ASSESSMENT

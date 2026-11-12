@@ -320,3 +320,9 @@ the real laptop (i3, 4 GB).
     micro-cycles with onward echoes comes from settling out of arrival order. "Exactly zero" is
     plausible (shifting every settlement by the same delay shifts each position curve without
     changing its depth, up to end effects) but it is an observation, not yet a proved statement.
+89. **Literature check for the liquidity floor, 12 Nov 2026.** `docs/REFERENCES.md` §8. Four web
+    searches and one full-text check found no prior statement of the floor; the closest lead
+    (Bank of Canada SDP 2020-9) was read and is a different thing (delay to the end of the day,
+    iterative simulation). UB and LB themselves go back to Koponen & Soramäki (1998), which the
+    repository does not cite yet and I have not read. **This does not establish novelty**; the
+    kill criterion K2 stays open for the new theorem.

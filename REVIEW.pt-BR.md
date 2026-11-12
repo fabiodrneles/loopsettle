@@ -333,3 +333,9 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     chegada. "Exatamente zero" é plausível (deslocar toda liquidação pelo mesmo atraso desloca
     cada curva de posição sem mudar a profundidade, a menos de efeitos de borda), mas é uma
     observação, ainda não uma afirmação demonstrada.
+89. **Conferência de literatura para o piso de liquidez, 12/11/2026.** `docs/REFERENCES.pt-BR.md`
+    §8. Quatro buscas na web e uma conferência em texto integral não acharam enunciado anterior do
+    piso; a pista mais próxima (Bank of Canada SDP 2020-9) foi lida e é outra coisa (atraso até o
+    fim do dia, simulação iterativa). O UB e o LB em si vêm de Koponen & Soramäki (1998), que o
+    repositório ainda não cita e que eu não li. **Isso não estabelece novidade**; o critério de
+    morte K2 continua aberto para o teorema novo.

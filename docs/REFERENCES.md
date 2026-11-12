@@ -99,3 +99,23 @@ using them in the paper's novelty table.
 | BCB, *Relatório Anual do SPI 2024* | Hourly profile (Graph 12, p. 13) and day-type volumes (Graph 11, p. 12) — now SOURCED in LoopSettle; Conta PI top-ups via STR only 6:30–18:30 on business days plus 30 min (p. 15); top-ups exceed R$ 87 bn/day, larger on Fridays for the weekend; SPI rediscount line residual (R$ 169 M in 2024 vs R$ 13.68 tn of top-ups); Conta PI balances remunerated at Selic within limits (Res. BCB 195/2022, 412/2024). | read |
 | BCB, *Relatório de Gestão do Pix 2023* | Outside STR hours the only liquidity sources are electronic-money balances, reserve requirements on demand deposits and the costly SPI liquidity line — the last two for financial institutions only; payment institutions and small banks bore a higher opportunity cost, hence the Conta PI remuneration since Aug 2022 (PDF p. 16). | read |
 | Other 2024 seminar talks (Heijmans & van der Woerd on failing participants in LVPS; Mattern & Meyer on participant criticality in RTGS; Drott on DLT cross-border platforms; Polo, Fritz & Rodloff on T2 analytics; Vacirca on initial margin; Brown on retail payment adoption; Lubbersen & Bolt on card rebates) | Not about instant-payment liquidity saving; Heijmans & van der Woerd and Mattern & Meyer are relevant to a future, stronger stress experiment. | skimmed |
+
+## 8. Search for prior statements of the liquidity floor (12 Nov 2026)
+
+Question: has anyone stated the bound `max_s [CO_i(s) − CI_i(s + d)]` (the least liquidity of any
+mechanism with maximum delay `d`), or the equality of the per-participant floors with the offline
+optimum? Four web searches (intraday liquidity bounds with a delay parameter; liquidity–delay
+trade-off; network calculus applied to payment systems; minimum liquidity under a maximum-delay
+constraint) and one full-text check.
+
+| What was found | Status |
+|---|---|
+| The two bounds without a delay parameter — the upper bound (immediate gross settlement = largest cumulative net debit position) and the lower bound (one netting at the end of the day) — are standard and attributed to Koponen & Soramäki (1998, Bank of Finland Studies E:14, sections "Theoretical bounds" and "Real bounds") and Bech & Soramäki (2001/2002). LoopSettle's UB and LB are these. | search summaries only; the 1998 study was **not read**. It must be read and cited as the origin of UB/LB. |
+| Rivadeneyra & Zhang (Bank of Canada SDP 2020-9, in `docs/references/pdf/`) compute "the minimum liquidity necessary for a given set of payments allowing for the maximum delay". | **read** (p. 10, footnote 13, and section 4.1): "maximum delay" there means delaying failed payments to the end of the day, and the minimum is found by iterative simulation. No deadline `d`, no closed form. Not the floor. |
+| Liquidity–delay trade-off by simulation: Leinonen & Soramäki (1999), Enge & Øverli (2006), Arjani (2006), Galbiati & Soramäki (2007), DNB WP 682 (2020), ECB WP 1291 (2011). | search summaries only; none is reported as stating a bound parameterised by a deadline. |
+| Network calculus (arrival curves, backlog and delay bounds). | no source found that applies it to payment-system liquidity; the floor is the analogue of a backlog bound with the roles of arrivals and service played by outflows and delayed inflows. |
+
+**Conclusion to use in the paper:** no prior statement was found, in a limited search. That is not
+evidence of novelty. Before claiming it: read Koponen & Soramäki (1998) and Bech & Soramäki
+(2002), search the Bank of Finland simulator-seminar proceedings and the *Journal of Financial
+Market Infrastructures*, and ask one specialist. The safe wording meanwhile is "to our knowledge".
