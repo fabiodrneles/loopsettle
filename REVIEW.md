@@ -288,3 +288,11 @@ the real laptop (i3, 4 GB).
     strict gaps in 4% of tiny instances. A proof of when equality holds would be a contribution;
     (d) `results/optimality-gap/` is not part of the golden check (LP solutions in floating point
     are not guaranteed identical across platforms; the files keep 2 to 4 decimals).
+86. **Liquidity frontier rerun with a finer grid, 12 Nov 2026.** Risk (a) of point 84 was real: with
+    steps of 0.01 between 0.97 and 1 the one-hour savings at 1% rejected are 1.1–1.4% (retail,
+    σ = 1.0), 2.2–3.2% (σ = 0.4) and 3.7–5.3% (large-value), up to twice the first run's values.
+    The 10 s result did not move (CIs include zero). The numbers of point 84 are superseded;
+    CLAIMS 1h carries the new ones and says the measure is grid-sensitive. Cost: the experiment
+    now takes 5 min 49 s on 4 cores with 2 threads, above the 5-minute target of spec 06 (it will
+    be longer on the reference machine). Also new: `loopsettle bound/settle --report` and private
+    per-participant output (spec 10, R2 and R3; D21 updated).

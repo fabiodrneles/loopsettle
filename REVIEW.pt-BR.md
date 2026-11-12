@@ -300,3 +300,11 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     contribuição; (d) `results/optimality-gap/` não entra na checagem-ouro (soluções de PL em
     ponto flutuante não têm garantia de serem idênticas entre plataformas; os arquivos guardam de
     2 a 4 casas).
+86. **Fronteira de liquidez refeita com grade mais fina, 12/11/2026.** O risco (a) do ponto 84 era
+    real: com passos de 0,01 entre 0,97 e 1, as economias de uma hora com 1% rejeitado são 1,1–1,4%
+    (varejo, σ = 1,0), 2,2–3,2% (σ = 0,4) e 3,7–5,3% (alto valor), até o dobro dos valores da
+    primeira rodada. O resultado de 10 s não mudou (IC incluem zero). Os números do ponto 84 estão
+    superados; a CLAIMS 1h traz os novos e diz que a medida é sensível à grade. Custo: o experimento
+    agora leva 5 min 49 s em 4 núcleos com 2 threads, acima da meta de 5 minutos da spec 06 (na
+    máquina de referência será mais). Também novo: `loopsettle bound/settle --report` e saída por
+    participante privada (spec 10, R2 e R3; D21 atualizada).

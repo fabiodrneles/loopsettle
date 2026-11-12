@@ -4,8 +4,9 @@
 > D24, REVIEW 84). Diferenças em relação ao texto abaixo: os desenhos rodam em dois horizontes
 > (10 s e 1 hora), porque com 10 s nada muda e a comparação com a literatura só aparece com espera
 > longa; a grade de α vai até 2; o Bech-Soramäki (M3) não entrou. Resposta à hipótese do FR4: sim
-> na direção (esperas de 1 h economizam 2,8–4,8% no alto valor estilizado contra 0,4–0,6% no varejo
-> calibrado), mas só com espera longa. Melhorias pendentes: grade mais fina entre 0,95 e 1; regra
+> na direção (esperas de 1 h economizam 3,7–5,3% no alto valor estilizado contra 1,1–1,4% no varejo
+> calibrado), mas só com espera longa. **12/11/2026:** grade refinada (passos de 0,01 entre 0,97 e 1); os números mudaram até 2×,
+> ver REVIEW 86; o tempo subiu para 5 min 49 s. Melhorias pendentes: regra
 > `outflow` na tabela de liquidez equivalente; política de nova tentativa; M3.
 
 ## Contexto

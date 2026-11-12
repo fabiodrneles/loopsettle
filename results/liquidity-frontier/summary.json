@@ -2,12 +2,12 @@
   "schema": "loopsettle.result/1",
   "experiment": "liquidity-frontier",
   "seed": 20260930,
-  "code_version": "0.1.0+git.5d140a4",
+  "code_version": "0.1.0+git.e8b43f6",
   "config_file": "experiments/liquidity-frontier.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment liquidity-frontier",
   "platform": "x86_64-linux",
   "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
-  "cargo_lock_fnv1a64": "92bf92e6a3855b5d",
+  "cargo_lock_fnv1a64": "a8becf0327cae9fe",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -86,7 +86,7 @@
       "discipline": "fifo"
     }
   ],
-  "gross_rejection_rose_with_liquidity_grid_steps": 0,
+  "gross_rejection_rose_with_liquidity_grid_steps": 2,
   "equivalent_liquidity": [
     {
       "scenario": "retail sigma 0.4",
@@ -94,7 +94,7 @@
       "target_rejected_value_pct": 0.01,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999849,
+      "equivalent_alpha_mean": 0.999933,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -105,7 +105,7 @@
       "target_rejected_value_pct": 0.1,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998486,
+      "equivalent_alpha_mean": 0.999328,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -116,7 +116,7 @@
       "target_rejected_value_pct": 1,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.984863,
+      "equivalent_alpha_mean": 0.992837,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -127,10 +127,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999847,
-      "liquidity_saving_vs_gross_pct_mean": 0.000114,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000011,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.00024
+      "equivalent_alpha_mean": 0.999931,
+      "liquidity_saving_vs_gross_pct_mean": 0.000227,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.000028,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000426
     },
     {
       "scenario": "retail sigma 0.4",
@@ -138,10 +138,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998475,
-      "liquidity_saving_vs_gross_pct_mean": 0.001143,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000115,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.0024
+      "equivalent_alpha_mean": 0.999305,
+      "liquidity_saving_vs_gross_pct_mean": 0.002274,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.000283,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.004265
     },
     {
       "scenario": "retail sigma 0.4",
@@ -149,10 +149,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.984749,
-      "liquidity_saving_vs_gross_pct_mean": 0.011607,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.001206,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.024419
+      "equivalent_alpha_mean": 0.992543,
+      "liquidity_saving_vs_gross_pct_mean": 0.029644,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.00228,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.061567
     },
     {
       "scenario": "retail sigma 0.4",
@@ -160,10 +160,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999847,
-      "liquidity_saving_vs_gross_pct_mean": 0.000116,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000007,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.000239
+      "equivalent_alpha_mean": 0.999931,
+      "liquidity_saving_vs_gross_pct_mean": 0.000226,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.000028,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000424
     },
     {
       "scenario": "retail sigma 0.4",
@@ -171,10 +171,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998475,
-      "liquidity_saving_vs_gross_pct_mean": 0.00116,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000072,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.002393
+      "equivalent_alpha_mean": 0.999306,
+      "liquidity_saving_vs_gross_pct_mean": 0.002262,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.000281,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.004244
     },
     {
       "scenario": "retail sigma 0.4",
@@ -182,10 +182,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.984747,
-      "liquidity_saving_vs_gross_pct_mean": 0.011789,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000767,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.024344
+      "equivalent_alpha_mean": 0.992545,
+      "liquidity_saving_vs_gross_pct_mean": 0.029527,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.002347,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.0614
     },
     {
       "scenario": "retail sigma 0.4",
@@ -193,10 +193,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999859,
-      "liquidity_saving_vs_gross_pct_mean": -0.001045,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.00266,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.00057
+      "equivalent_alpha_mean": 0.999933,
+      "liquidity_saving_vs_gross_pct_mean": -0.000013,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000491,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000464
     },
     {
       "scenario": "retail sigma 0.4",
@@ -204,10 +204,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998521,
-      "liquidity_saving_vs_gross_pct_mean": -0.003448,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.012292,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.005395
+      "equivalent_alpha_mean": 0.999311,
+      "liquidity_saving_vs_gross_pct_mean": 0.001679,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000448,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.003807
     },
     {
       "scenario": "retail sigma 0.4",
@@ -215,10 +215,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.985137,
-      "liquidity_saving_vs_gross_pct_mean": -0.027819,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.117583,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.061945
+      "equivalent_alpha_mean": 0.992589,
+      "liquidity_saving_vs_gross_pct_mean": 0.02507,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.004533,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.054673
     },
     {
       "scenario": "retail sigma 0.4",
@@ -226,10 +226,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999735,
-      "liquidity_saving_vs_gross_pct_mean": 0.011377,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.004718,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.018037
+      "equivalent_alpha_mean": 0.999584,
+      "liquidity_saving_vs_gross_pct_mean": 0.034933,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.021538,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.048329
     },
     {
       "scenario": "retail sigma 0.4",
@@ -237,10 +237,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.997349,
-      "liquidity_saving_vs_gross_pct_mean": 0.113953,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.047227,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.18068
+      "equivalent_alpha_mean": 0.995835,
+      "liquidity_saving_vs_gross_pct_mean": 0.349567,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.215503,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.48363
     },
     {
       "scenario": "retail sigma 0.4",
@@ -248,10 +248,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.973638,
-      "liquidity_saving_vs_gross_pct_mean": 1.142642,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.492768,
-      "liquidity_saving_vs_gross_pct_ci95_high": 1.792515
+      "equivalent_alpha_mean": 0.971076,
+      "liquidity_saving_vs_gross_pct_mean": 2.194012,
+      "liquidity_saving_vs_gross_pct_ci95_low": 1.415097,
+      "liquidity_saving_vs_gross_pct_ci95_high": 2.972928
     },
     {
       "scenario": "retail sigma 0.4",
@@ -259,10 +259,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.99966,
-      "liquidity_saving_vs_gross_pct_mean": 0.018912,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.011437,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.026386
+      "equivalent_alpha_mean": 0.999482,
+      "liquidity_saving_vs_gross_pct_mean": 0.04508,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.029725,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.060436
     },
     {
       "scenario": "retail sigma 0.4",
@@ -270,10 +270,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.996595,
-      "liquidity_saving_vs_gross_pct_mean": 0.189389,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.114532,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.264246
+      "equivalent_alpha_mean": 0.994823,
+      "liquidity_saving_vs_gross_pct_mean": 0.45086,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.29754,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.60418
     },
     {
       "scenario": "retail sigma 0.4",
@@ -281,10 +281,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.966187,
-      "liquidity_saving_vs_gross_pct_mean": 1.8979,
-      "liquidity_saving_vs_gross_pct_ci95_low": 1.17458,
-      "liquidity_saving_vs_gross_pct_ci95_high": 2.62122
+      "equivalent_alpha_mean": 0.963679,
+      "liquidity_saving_vs_gross_pct_mean": 2.938171,
+      "liquidity_saving_vs_gross_pct_ci95_low": 2.226813,
+      "liquidity_saving_vs_gross_pct_ci95_high": 3.649529
     },
     {
       "scenario": "retail sigma 0.4",
@@ -292,10 +292,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999727,
-      "liquidity_saving_vs_gross_pct_mean": 0.01221,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.005427,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.018993
+      "equivalent_alpha_mean": 0.999583,
+      "liquidity_saving_vs_gross_pct_mean": 0.034982,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.021564,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.048401
     },
     {
       "scenario": "retail sigma 0.4",
@@ -303,10 +303,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.997266,
-      "liquidity_saving_vs_gross_pct_mean": 0.122291,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.054331,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.190251
+      "equivalent_alpha_mean": 0.99583,
+      "liquidity_saving_vs_gross_pct_mean": 0.350059,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.215762,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.484355
     },
     {
       "scenario": "retail sigma 0.4",
@@ -314,10 +314,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.972805,
-      "liquidity_saving_vs_gross_pct_mean": 1.227415,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.563272,
-      "liquidity_saving_vs_gross_pct_ci95_high": 1.891558
+      "equivalent_alpha_mean": 0.970284,
+      "liquidity_saving_vs_gross_pct_mean": 2.273847,
+      "liquidity_saving_vs_gross_pct_ci95_low": 1.466125,
+      "liquidity_saving_vs_gross_pct_ci95_high": 3.081568
     },
     {
       "scenario": "retail sigma 0.4",
@@ -325,10 +325,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999623,
-      "liquidity_saving_vs_gross_pct_mean": 0.0226,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.014435,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.030766
+      "equivalent_alpha_mean": 0.999471,
+      "liquidity_saving_vs_gross_pct_mean": 0.046231,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.031133,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.06133
     },
     {
       "scenario": "retail sigma 0.4",
@@ -336,10 +336,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.996227,
-      "liquidity_saving_vs_gross_pct_mean": 0.226329,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.144561,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.308098
+      "equivalent_alpha_mean": 0.994708,
+      "liquidity_saving_vs_gross_pct_mean": 0.462378,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.311628,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.613127
     },
     {
       "scenario": "retail sigma 0.4",
@@ -347,10 +347,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.962302,
-      "liquidity_saving_vs_gross_pct_mean": 2.29259,
-      "liquidity_saving_vs_gross_pct_ci95_low": 1.467358,
-      "liquidity_saving_vs_gross_pct_ci95_high": 3.117822
+      "equivalent_alpha_mean": 0.960931,
+      "liquidity_saving_vs_gross_pct_mean": 3.215178,
+      "liquidity_saving_vs_gross_pct_ci95_low": 2.415193,
+      "liquidity_saving_vs_gross_pct_ci95_high": 4.015163
     },
     {
       "scenario": "retail sigma 0.4",
@@ -622,7 +622,7 @@
       "target_rejected_value_pct": 0.01,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999867,
+      "equivalent_alpha_mean": 0.999916,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -633,7 +633,7 @@
       "target_rejected_value_pct": 0.1,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998671,
+      "equivalent_alpha_mean": 0.999163,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -644,7 +644,7 @@
       "target_rejected_value_pct": 1,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986705,
+      "equivalent_alpha_mean": 0.990979,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -655,10 +655,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999866,
-      "liquidity_saving_vs_gross_pct_mean": 0.000107,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000073,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.000287
+      "equivalent_alpha_mean": 0.999914,
+      "liquidity_saving_vs_gross_pct_mean": 0.000195,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000048,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000438
     },
     {
       "scenario": "retail sigma 1",
@@ -666,10 +666,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.99866,
-      "liquidity_saving_vs_gross_pct_mean": 0.001074,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000731,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.00288
+      "equivalent_alpha_mean": 0.999143,
+      "liquidity_saving_vs_gross_pct_mean": 0.00195,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000486,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.004385
     },
     {
       "scenario": "retail sigma 1",
@@ -677,10 +677,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986598,
-      "liquidity_saving_vs_gross_pct_mean": 0.010934,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.007464,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.029331
+      "equivalent_alpha_mean": 0.990756,
+      "liquidity_saving_vs_gross_pct_mean": 0.022633,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.004731,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.049998
     },
     {
       "scenario": "retail sigma 1",
@@ -688,10 +688,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999866,
-      "liquidity_saving_vs_gross_pct_mean": 0.000112,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000068,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.000292
+      "equivalent_alpha_mean": 0.999914,
+      "liquidity_saving_vs_gross_pct_mean": 0.000195,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000047,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000438
     },
     {
       "scenario": "retail sigma 1",
@@ -699,10 +699,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998659,
-      "liquidity_saving_vs_gross_pct_mean": 0.001124,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000677,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.002926
+      "equivalent_alpha_mean": 0.999143,
+      "liquidity_saving_vs_gross_pct_mean": 0.001957,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000472,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.004386
     },
     {
       "scenario": "retail sigma 1",
@@ -710,10 +710,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986593,
-      "liquidity_saving_vs_gross_pct_mean": 0.011442,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.006917,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.029802
+      "equivalent_alpha_mean": 0.990755,
+      "liquidity_saving_vs_gross_pct_mean": 0.02269,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.004608,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.049988
     },
     {
       "scenario": "retail sigma 1",
@@ -721,10 +721,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999873,
-      "liquidity_saving_vs_gross_pct_mean": -0.000609,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.001641,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.000423
+      "equivalent_alpha_mean": 0.999918,
+      "liquidity_saving_vs_gross_pct_mean": -0.000198,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.000564,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.000168
     },
     {
       "scenario": "retail sigma 1",
@@ -732,10 +732,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998667,
-      "liquidity_saving_vs_gross_pct_mean": 0.000374,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.001314,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.002061
+      "equivalent_alpha_mean": 0.999153,
+      "liquidity_saving_vs_gross_pct_mean": 0.001025,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.001115,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.003165
     },
     {
       "scenario": "retail sigma 1",
@@ -743,10 +743,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986604,
-      "liquidity_saving_vs_gross_pct_mean": 0.010382,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.005685,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.026449
+      "equivalent_alpha_mean": 0.990836,
+      "liquidity_saving_vs_gross_pct_mean": 0.014511,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.007646,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.036669
     },
     {
       "scenario": "retail sigma 1",
@@ -754,10 +754,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999827,
-      "liquidity_saving_vs_gross_pct_mean": 0.004022,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.002114,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.005931
+      "equivalent_alpha_mean": 0.999794,
+      "liquidity_saving_vs_gross_pct_mean": 0.012199,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.007738,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.016661
     },
     {
       "scenario": "retail sigma 1",
@@ -765,10 +765,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998268,
-      "liquidity_saving_vs_gross_pct_mean": 0.040274,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.021158,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.059391
+      "equivalent_alpha_mean": 0.997943,
+      "liquidity_saving_vs_gross_pct_mean": 0.122081,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.077437,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.166724
     },
     {
       "scenario": "retail sigma 1",
@@ -776,10 +776,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.982684,
-      "liquidity_saving_vs_gross_pct_mean": 0.407946,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.213219,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.602673
+      "equivalent_alpha_mean": 0.979865,
+      "liquidity_saving_vs_gross_pct_mean": 1.120483,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.739951,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.501015
     },
     {
       "scenario": "retail sigma 1",
@@ -787,10 +787,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999819,
-      "liquidity_saving_vs_gross_pct_mean": 0.004838,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.002536,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.007139
+      "equivalent_alpha_mean": 0.999775,
+      "liquidity_saving_vs_gross_pct_mean": 0.014086,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.00903,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.019142
     },
     {
       "scenario": "retail sigma 1",
@@ -798,10 +798,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998187,
-      "liquidity_saving_vs_gross_pct_mean": 0.048434,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.025388,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.071479
+      "equivalent_alpha_mean": 0.997754,
+      "liquidity_saving_vs_gross_pct_mean": 0.14096,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.090356,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.191565
     },
     {
       "scenario": "retail sigma 1",
@@ -809,10 +809,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.981868,
-      "liquidity_saving_vs_gross_pct_mean": 0.490175,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.256548,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.723802
+      "equivalent_alpha_mean": 0.978343,
+      "liquidity_saving_vs_gross_pct_mean": 1.273244,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.829318,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.717169
     },
     {
       "scenario": "retail sigma 1",
@@ -820,10 +820,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999822,
-      "liquidity_saving_vs_gross_pct_mean": 0.004469,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.002544,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.006393
+      "equivalent_alpha_mean": 0.999791,
+      "liquidity_saving_vs_gross_pct_mean": 0.012495,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.008187,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.016804
     },
     {
       "scenario": "retail sigma 1",
@@ -831,10 +831,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998224,
-      "liquidity_saving_vs_gross_pct_mean": 0.044742,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.025459,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.064024
+      "equivalent_alpha_mean": 0.997913,
+      "liquidity_saving_vs_gross_pct_mean": 0.125041,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.081927,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.168156
     },
     {
       "scenario": "retail sigma 1",
@@ -842,10 +842,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.982237,
-      "liquidity_saving_vs_gross_pct_mean": 0.45317,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.256762,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.649578
+      "equivalent_alpha_mean": 0.979496,
+      "liquidity_saving_vs_gross_pct_mean": 1.157789,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.785306,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.530272
     },
     {
       "scenario": "retail sigma 1",
@@ -853,10 +853,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999811,
-      "liquidity_saving_vs_gross_pct_mean": 0.005651,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.003369,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.007934
+      "equivalent_alpha_mean": 0.999768,
+      "liquidity_saving_vs_gross_pct_mean": 0.014821,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.009921,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.019721
     },
     {
       "scenario": "retail sigma 1",
@@ -864,10 +864,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998105,
-      "liquidity_saving_vs_gross_pct_mean": 0.056581,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.033725,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.079436
+      "equivalent_alpha_mean": 0.997681,
+      "liquidity_saving_vs_gross_pct_mean": 0.148315,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.099276,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.197353
     },
     {
       "scenario": "retail sigma 1",
@@ -875,10 +875,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.981055,
-      "liquidity_saving_vs_gross_pct_mean": 0.572739,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.340835,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.804643
+      "equivalent_alpha_mean": 0.977439,
+      "liquidity_saving_vs_gross_pct_mean": 1.364609,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.951044,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.778173
     },
     {
       "scenario": "retail sigma 1",
@@ -896,9 +896,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "gross_real_time",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.983665,
-      "liquidity_saving_vs_gross_pct_mean": 0,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -907,11 +907,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "gross_real_time",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.764578,
-      "liquidity_saving_vs_gross_pct_mean": 0,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -929,9 +929,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d10000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.983642,
-      "liquidity_saving_vs_gross_pct_mean": 0.001145,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -940,11 +940,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d10000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.764232,
-      "liquidity_saving_vs_gross_pct_mean": 0.01974,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.034644,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.074124
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -962,9 +962,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w500_d10000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.983642,
-      "liquidity_saving_vs_gross_pct_mean": 0.001144,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -973,11 +973,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w500_d10000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.764209,
-      "liquidity_saving_vs_gross_pct_mean": 0.021041,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.049935,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.092017
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -995,9 +995,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_all_w500_d10000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.983662,
-      "liquidity_saving_vs_gross_pct_mean": 0.000144,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -1006,11 +1006,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_all_w500_d10000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.764388,
-      "liquidity_saving_vs_gross_pct_mean": 0.010975,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.103679,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.125629
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -1028,9 +1028,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d3600000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.982323,
-      "liquidity_saving_vs_gross_pct_mean": 0.067654,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -1039,11 +1039,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.761992,
-      "liquidity_saving_vs_gross_pct_mean": 0.145421,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.584716,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.875557
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -1061,9 +1061,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "queue_fifo_d3600000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.981727,
-      "liquidity_saving_vs_gross_pct_mean": 0.097713,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -1072,11 +1072,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_fifo_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.757959,
-      "liquidity_saving_vs_gross_pct_mean": 0.37085,
-      "liquidity_saving_vs_gross_pct_ci95_low": -2.348484,
-      "liquidity_saving_vs_gross_pct_ci95_high": 3.090185
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -1094,9 +1094,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.982266,
-      "liquidity_saving_vs_gross_pct_mean": 0.070519,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -1105,11 +1105,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.761665,
-      "liquidity_saving_vs_gross_pct_mean": 0.163622,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.797777,
-      "liquidity_saving_vs_gross_pct_ci95_high": 1.125021
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "retail sigma 1",
@@ -1127,9 +1127,9 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
-      "seeds_reaching_target": 1,
-      "equivalent_alpha_mean": 1.981627,
-      "liquidity_saving_vs_gross_pct_mean": 0.102749,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
     },
@@ -1138,11 +1138,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.755634,
-      "liquidity_saving_vs_gross_pct_mean": 0.503994,
-      "liquidity_saving_vs_gross_pct_ci95_low": -1.336625,
-      "liquidity_saving_vs_gross_pct_ci95_high": 2.344613
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1150,18 +1150,7 @@
       "target_rejected_value_pct": 0.01,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999871,
-      "liquidity_saving_vs_gross_pct_mean": 0,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0
-    },
-    {
-      "scenario": "large-value 20000/day",
-      "rule": "ub",
-      "target_rejected_value_pct": 0.1,
-      "engine": "gross_real_time",
-      "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998707,
+      "equivalent_alpha_mean": 0.999925,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -1169,10 +1158,21 @@
     {
       "scenario": "large-value 20000/day",
       "rule": "ub",
+      "target_rejected_value_pct": 0.1,
+      "engine": "gross_real_time",
+      "seeds_reaching_target": 10,
+      "equivalent_alpha_mean": 0.999246,
+      "liquidity_saving_vs_gross_pct_mean": 0,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0
+    },
+    {
+      "scenario": "large-value 20000/day",
+      "rule": "ub",
       "target_rejected_value_pct": 1,
       "engine": "gross_real_time",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.987068,
+      "equivalent_alpha_mean": 0.99225,
       "liquidity_saving_vs_gross_pct_mean": 0,
       "liquidity_saving_vs_gross_pct_ci95_low": 0,
       "liquidity_saving_vs_gross_pct_ci95_high": 0
@@ -1183,10 +1183,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999864,
-      "liquidity_saving_vs_gross_pct_mean": 0.000689,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000808,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.002186
+      "equivalent_alpha_mean": 0.999905,
+      "liquidity_saving_vs_gross_pct_mean": 0.001961,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.002013,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.005935
     },
     {
       "scenario": "large-value 20000/day",
@@ -1194,10 +1194,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998638,
-      "liquidity_saving_vs_gross_pct_mean": 0.0069,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.008088,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.021888
+      "equivalent_alpha_mean": 0.99905,
+      "liquidity_saving_vs_gross_pct_mean": 0.019617,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.02014,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.059375
     },
     {
       "scenario": "large-value 20000/day",
@@ -1205,10 +1205,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986379,
-      "liquidity_saving_vs_gross_pct_mean": 0.069931,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.081955,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.221818
+      "equivalent_alpha_mean": 0.989497,
+      "liquidity_saving_vs_gross_pct_mean": 0.276783,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.303879,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.857444
     },
     {
       "scenario": "large-value 20000/day",
@@ -1216,10 +1216,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999864,
-      "liquidity_saving_vs_gross_pct_mean": 0.000689,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000808,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.002186
+      "equivalent_alpha_mean": 0.999905,
+      "liquidity_saving_vs_gross_pct_mean": 0.001961,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.002013,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.005935
     },
     {
       "scenario": "large-value 20000/day",
@@ -1227,10 +1227,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.998638,
-      "liquidity_saving_vs_gross_pct_mean": 0.0069,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.008088,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.021888
+      "equivalent_alpha_mean": 0.99905,
+      "liquidity_saving_vs_gross_pct_mean": 0.019617,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.02014,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.059375
     },
     {
       "scenario": "large-value 20000/day",
@@ -1238,10 +1238,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.986379,
-      "liquidity_saving_vs_gross_pct_mean": 0.069931,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.081955,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.221818
+      "equivalent_alpha_mean": 0.989497,
+      "liquidity_saving_vs_gross_pct_mean": 0.276783,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.303879,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.857444
     },
     {
       "scenario": "large-value 20000/day",
@@ -1249,10 +1249,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 1.046804,
-      "liquidity_saving_vs_gross_pct_mean": -4.693811,
-      "liquidity_saving_vs_gross_pct_ci95_low": -15.311242,
-      "liquidity_saving_vs_gross_pct_ci95_high": 5.923619
+      "equivalent_alpha_mean": 1.046857,
+      "liquidity_saving_vs_gross_pct_mean": -4.693718,
+      "liquidity_saving_vs_gross_pct_ci95_low": -15.311344,
+      "liquidity_saving_vs_gross_pct_ci95_high": 5.923908
     },
     {
       "scenario": "large-value 20000/day",
@@ -1260,10 +1260,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 1.018041,
-      "liquidity_saving_vs_gross_pct_mean": -1.935358,
-      "liquidity_saving_vs_gross_pct_ci95_low": -6.313433,
-      "liquidity_saving_vs_gross_pct_ci95_high": 2.442717
+      "equivalent_alpha_mean": 1.018569,
+      "liquidity_saving_vs_gross_pct_mean": -1.934295,
+      "liquidity_saving_vs_gross_pct_ci95_low": -6.314031,
+      "liquidity_saving_vs_gross_pct_ci95_high": 2.445442
     },
     {
       "scenario": "large-value 20000/day",
@@ -1271,10 +1271,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_all_w500_d10000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.987188,
-      "liquidity_saving_vs_gross_pct_mean": -0.012185,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.042818,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.018448
+      "equivalent_alpha_mean": 0.992088,
+      "liquidity_saving_vs_gross_pct_mean": 0.016304,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.013113,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.045721
     },
     {
       "scenario": "large-value 20000/day",
@@ -1282,10 +1282,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999542,
-      "liquidity_saving_vs_gross_pct_mean": 0.03285,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.013015,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.052685
+      "equivalent_alpha_mean": 0.99873,
+      "liquidity_saving_vs_gross_pct_mean": 0.119447,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.010866,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.24976
     },
     {
       "scenario": "large-value 20000/day",
@@ -1293,10 +1293,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.995422,
-      "liquidity_saving_vs_gross_pct_mean": 0.328851,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.130312,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.527389
+      "equivalent_alpha_mean": 0.992283,
+      "liquidity_saving_vs_gross_pct_mean": 0.696787,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.310263,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.083311
     },
     {
       "scenario": "large-value 20000/day",
@@ -1304,10 +1304,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.959401,
-      "liquidity_saving_vs_gross_pct_mean": 2.801451,
-      "liquidity_saving_vs_gross_pct_ci95_low": 1.448476,
-      "liquidity_saving_vs_gross_pct_ci95_high": 4.154427
+      "equivalent_alpha_mean": 0.955068,
+      "liquidity_saving_vs_gross_pct_mean": 3.74513,
+      "liquidity_saving_vs_gross_pct_ci95_low": 2.607451,
+      "liquidity_saving_vs_gross_pct_ci95_high": 4.882809
     },
     {
       "scenario": "large-value 20000/day",
@@ -1315,10 +1315,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999277,
-      "liquidity_saving_vs_gross_pct_mean": 0.059374,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.030524,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.088224
+      "equivalent_alpha_mean": 0.998561,
+      "liquidity_saving_vs_gross_pct_mean": 0.136346,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.008163,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.264528
     },
     {
       "scenario": "large-value 20000/day",
@@ -1326,10 +1326,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.99277,
-      "liquidity_saving_vs_gross_pct_mean": 0.594384,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.305679,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.883089
+      "equivalent_alpha_mean": 0.991148,
+      "liquidity_saving_vs_gross_pct_mean": 0.810373,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.404426,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.21632
     },
     {
       "scenario": "large-value 20000/day",
@@ -1337,10 +1337,10 @@
       "target_rejected_value_pct": 1,
       "engine": "queue_fifo_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.940943,
-      "liquidity_saving_vs_gross_pct_mean": 4.669734,
-      "liquidity_saving_vs_gross_pct_ci95_low": 2.92134,
-      "liquidity_saving_vs_gross_pct_ci95_high": 6.418129
+      "equivalent_alpha_mean": 0.940993,
+      "liquidity_saving_vs_gross_pct_mean": 5.161321,
+      "liquidity_saving_vs_gross_pct_ci95_low": 3.366536,
+      "liquidity_saving_vs_gross_pct_ci95_high": 6.956107
     },
     {
       "scenario": "large-value 20000/day",
@@ -1348,10 +1348,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999541,
-      "liquidity_saving_vs_gross_pct_mean": 0.033018,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.013212,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.052825
+      "equivalent_alpha_mean": 0.99873,
+      "liquidity_saving_vs_gross_pct_mean": 0.119447,
+      "liquidity_saving_vs_gross_pct_ci95_low": -0.010866,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.24976
     },
     {
       "scenario": "large-value 20000/day",
@@ -1359,10 +1359,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.995405,
-      "liquidity_saving_vs_gross_pct_mean": 0.330542,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.13229,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.528793
+      "equivalent_alpha_mean": 0.992283,
+      "liquidity_saving_vs_gross_pct_mean": 0.696787,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.310263,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.083311
     },
     {
       "scenario": "large-value 20000/day",
@@ -1370,10 +1370,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.959231,
-      "liquidity_saving_vs_gross_pct_mean": 2.818665,
-      "liquidity_saving_vs_gross_pct_ci95_low": 1.466175,
-      "liquidity_saving_vs_gross_pct_ci95_high": 4.171155
+      "equivalent_alpha_mean": 0.954858,
+      "liquidity_saving_vs_gross_pct_mean": 3.766236,
+      "liquidity_saving_vs_gross_pct_ci95_low": 2.628531,
+      "liquidity_saving_vs_gross_pct_ci95_high": 4.90394
     },
     {
       "scenario": "large-value 20000/day",
@@ -1381,10 +1381,10 @@
       "target_rejected_value_pct": 0.01,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.999245,
-      "liquidity_saving_vs_gross_pct_mean": 0.062586,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.035045,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.090126
+      "equivalent_alpha_mean": 0.998561,
+      "liquidity_saving_vs_gross_pct_mean": 0.136329,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.008139,
+      "liquidity_saving_vs_gross_pct_ci95_high": 0.264519
     },
     {
       "scenario": "large-value 20000/day",
@@ -1392,10 +1392,10 @@
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.992449,
-      "liquidity_saving_vs_gross_pct_mean": 0.626528,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0.350942,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.902113
+      "equivalent_alpha_mean": 0.991044,
+      "liquidity_saving_vs_gross_pct_mean": 0.82081,
+      "liquidity_saving_vs_gross_pct_ci95_low": 0.411431,
+      "liquidity_saving_vs_gross_pct_ci95_high": 1.230189
     },
     {
       "scenario": "large-value 20000/day",
@@ -1403,10 +1403,10 @@
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
       "seeds_reaching_target": 10,
-      "equivalent_alpha_mean": 0.939561,
-      "liquidity_saving_vs_gross_pct_mean": 4.809571,
-      "liquidity_saving_vs_gross_pct_ci95_low": 3.110198,
-      "liquidity_saving_vs_gross_pct_ci95_high": 6.508944
+      "equivalent_alpha_mean": 0.939794,
+      "liquidity_saving_vs_gross_pct_mean": 5.28205,
+      "liquidity_saving_vs_gross_pct_ci95_low": 3.533554,
+      "liquidity_saving_vs_gross_pct_ci95_high": 7.030546
     },
     {
       "scenario": "large-value 20000/day",
@@ -1435,11 +1435,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "gross_real_time",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.7813,
-      "liquidity_saving_vs_gross_pct_mean": 0,
-      "liquidity_saving_vs_gross_pct_ci95_low": 0,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1468,11 +1468,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d10000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.781093,
-      "liquidity_saving_vs_gross_pct_mean": 0.011487,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.037941,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.060915
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1501,11 +1501,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w500_d10000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.781093,
-      "liquidity_saving_vs_gross_pct_mean": 0.011487,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.037941,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.060915
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1534,11 +1534,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_all_w500_d10000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.781303,
-      "liquidity_saving_vs_gross_pct_mean": -0.000163,
-      "liquidity_saving_vs_gross_pct_ci95_low": -0.000863,
-      "liquidity_saving_vs_gross_pct_ci95_high": 0.000538
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1556,8 +1556,8 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "queue_bypass_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.986897,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
       "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
@@ -1567,11 +1567,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_bypass_d3600000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.720426,
-      "liquidity_saving_vs_gross_pct_mean": 3.470021,
-      "liquidity_saving_vs_gross_pct_ci95_low": -3.319402,
-      "liquidity_saving_vs_gross_pct_ci95_high": 10.259445
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1589,8 +1589,8 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "queue_fifo_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.985799,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
       "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
@@ -1600,11 +1600,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "queue_fifo_d3600000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.623662,
-      "liquidity_saving_vs_gross_pct_mean": 8.748281,
-      "liquidity_saving_vs_gross_pct_ci95_low": -5.839902,
-      "liquidity_saving_vs_gross_pct_ci95_high": 23.336463
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1622,8 +1622,8 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.986897,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
       "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
@@ -1633,11 +1633,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.720426,
-      "liquidity_saving_vs_gross_pct_mean": 3.470021,
-      "liquidity_saving_vs_gross_pct_ci95_low": -3.319402,
-      "liquidity_saving_vs_gross_pct_ci95_high": 10.259445
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     },
     {
       "scenario": "large-value 20000/day",
@@ -1655,8 +1655,8 @@
       "rule": "outflow",
       "target_rejected_value_pct": 0.1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
-      "seeds_reaching_target": 2,
-      "equivalent_alpha_mean": 1.985799,
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
       "liquidity_saving_vs_gross_pct_mean": null,
       "liquidity_saving_vs_gross_pct_ci95_low": null,
       "liquidity_saving_vs_gross_pct_ci95_high": null
@@ -1666,11 +1666,11 @@
       "rule": "outflow",
       "target_rejected_value_pct": 1,
       "engine": "micro_cycle_shortfall_w1000_d3600000_fifo",
-      "seeds_reaching_target": 3,
-      "equivalent_alpha_mean": 1.623662,
-      "liquidity_saving_vs_gross_pct_mean": 8.748281,
-      "liquidity_saving_vs_gross_pct_ci95_low": -5.839902,
-      "liquidity_saving_vs_gross_pct_ci95_high": 23.336463
+      "seeds_reaching_target": 0,
+      "equivalent_alpha_mean": null,
+      "liquidity_saving_vs_gross_pct_mean": null,
+      "liquidity_saving_vs_gross_pct_ci95_low": null,
+      "liquidity_saving_vs_gross_pct_ci95_high": null
     }
   ],
   "note": "rejected payments are not retried (ASSUMPTION); rule ub uses the day's own peak (hindsight); equivalent liquidity is interpolated linearly on the alpha grid, per seed, and the saving vs gross is a paired difference over the seeds where both designs reach the target"
