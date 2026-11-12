@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "funding-windows",
   "seed": 20260930,
-  "code_version": "0.1.0+git.97c225e-dirty",
+  "code_version": "0.1.0+git.73263f4",
   "config_file": "experiments/funding-windows.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment funding-windows",
   "platform": "x86_64-linux",
