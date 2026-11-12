@@ -29,7 +29,12 @@ pub struct LogHistogram {
 
 impl Default for LogHistogram {
     fn default() -> Self {
-        LogHistogram { counts: vec![0; 64 * SUB as usize], total: 0, max: 0, sum: 0 }
+        LogHistogram {
+            counts: vec![0; 64 * SUB as usize],
+            total: 0,
+            max: 0,
+            sum: 0,
+        }
     }
 }
 
@@ -65,7 +70,11 @@ impl LogHistogram {
         self.max
     }
     pub fn mean(&self) -> f64 {
-        if self.total == 0 { 0.0 } else { self.sum as f64 / self.total as f64 }
+        if self.total == 0 {
+            0.0
+        } else {
+            self.sum as f64 / self.total as f64
+        }
     }
     /// `q` in [0, 1]. Returns 0 for an empty histogram.
     pub fn quantile(&self, q: f64) -> u64 {
@@ -94,7 +103,9 @@ impl LogHistogram {
             acc += c;
             if acc >= rank {
                 let lo = Self::lower_bound(i).min(self.max);
-                let hi = (Self::lower_bound(i + 1).saturating_sub(1)).min(self.max).max(lo);
+                let hi = (Self::lower_bound(i + 1).saturating_sub(1))
+                    .min(self.max)
+                    .max(lo);
                 return (lo, hi);
             }
         }
@@ -144,7 +155,11 @@ impl FlowStats {
             in_value: vec![0; n],
             cum_net: vec![0; n],
             min_cum_net: vec![0; n],
-            pair: if with_pairs { vec![0; n * n] } else { Vec::new() },
+            pair: if with_pairs {
+                vec![0; n * n]
+            } else {
+                Vec::new()
+            },
         }
     }
 
@@ -152,8 +167,12 @@ impl FlowStats {
         let (a, b) = (p.payer as usize, p.payee as usize);
         self.count += 1;
         self.gross_value += p.amount as i128;
-        self.out_value[a] = self.out_value[a].checked_add(p.amount).expect("outflow overflows i64 cents");
-        self.in_value[b] = self.in_value[b].checked_add(p.amount).expect("inflow overflows i64 cents");
+        self.out_value[a] = self.out_value[a]
+            .checked_add(p.amount)
+            .expect("outflow overflows i64 cents");
+        self.in_value[b] = self.in_value[b]
+            .checked_add(p.amount)
+            .expect("inflow overflows i64 cents");
         self.cum_net[a] -= p.amount;
         self.cum_net[b] += p.amount;
         if self.cum_net[a] < self.min_cum_net[a] {
@@ -193,7 +212,9 @@ impl FlowStats {
         if self.gross_value == 0 {
             return 0.0;
         }
-        let s: i128 = (0..self.n).map(|i| self.out_value[i].min(self.in_value[i]) as i128).sum();
+        let s: i128 = (0..self.n)
+            .map(|i| self.out_value[i].min(self.in_value[i]) as i128)
+            .sum();
         s as f64 / self.gross_value as f64
     }
     /// Aggregated pair flow `payer -> payee` (requires `with_pairs`).
@@ -267,10 +288,18 @@ impl RunMetrics {
     /// configured thresholds. 1.0 when nothing settled (as `fraction_at_most`).
     pub fn share_within_ms(&self, ms: TimeMs) -> Option<f64> {
         let k = self.sla_thresholds_ms.iter().position(|&t| t == ms)?;
-        Some(if self.settled_count == 0 { 1.0 } else { self.sla_counts[k] as f64 / self.settled_count as f64 })
+        Some(if self.settled_count == 0 {
+            1.0
+        } else {
+            self.sla_counts[k] as f64 / self.settled_count as f64
+        })
     }
     pub fn value_weighted_mean_delay_ms(&self) -> f64 {
-        if self.settled_value == 0 { 0.0 } else { self.value_delay_sum / self.settled_value as f64 }
+        if self.settled_value == 0 {
+            0.0
+        } else {
+            self.value_delay_sum / self.settled_value as f64
+        }
     }
 }
 
@@ -315,7 +344,10 @@ mod tests {
     fn histogram_relative_error_bounded() {
         for &v in &[64u64, 100, 1_000, 2_800, 12_345, 86_400_000] {
             let lb = LogHistogram::lower_bound(LogHistogram::index(v));
-            assert!(lb <= v && (v - lb) as f64 / v as f64 <= 1.0 / 64.0, "v={v} lb={lb}");
+            assert!(
+                lb <= v && (v - lb) as f64 / v as f64 <= 1.0 / 64.0,
+                "v={v} lb={lb}"
+            );
         }
     }
 }

@@ -4,10 +4,21 @@ use loopsettle_core::*;
 use proptest::prelude::*;
 
 fn pay(id: u64, t: TimeMs, a: u32, b: u32, v: Cents) -> Payment {
-    Payment { id, t_arrival: t, payer: a, payee: b, amount: v }
+    Payment {
+        id,
+        t_arrival: t,
+        payer: a,
+        payee: b,
+        amount: v,
+    }
 }
 
-fn run_one(engine: Box<dyn SettlementEngine>, ledger: Ledger, funding: Option<Box<dyn FundingPolicy>>, ps: &[Payment]) -> EngineRun {
+fn run_one(
+    engine: Box<dyn SettlementEngine>,
+    ledger: Ledger,
+    funding: Option<Box<dyn FundingPolicy>>,
+    ps: &[Payment],
+) -> EngineRun {
     let n = ledger.len();
     let mut run = EngineRun::new(engine, ledger);
     if let Some(f) = funding {
@@ -26,9 +37,22 @@ fn run_one(engine: Box<dyn SettlementEngine>, ledger: Ledger, funding: Option<Bo
 /// t=140 and pays 3 at t=150: fine. After the window (t=250) A pays 1,000 again: fine.
 #[test]
 fn prefunding_by_hand() {
-    let ps = [pay(0, 50, 0, 1, 1_000), pay(1, 110, 0, 1, 5), pay(2, 120, 0, 1, 7), pay(3, 130, 0, 1, 1), pay(4, 140, 1, 0, 4), pay(5, 150, 0, 1, 3), pay(6, 250, 0, 1, 1_000)];
+    let ps = [
+        pay(0, 50, 0, 1, 1_000),
+        pay(1, 110, 0, 1, 5),
+        pay(2, 120, 0, 1, 7),
+        pay(3, 130, 0, 1, 1),
+        pay(4, 140, 1, 0, 4),
+        pay(5, 150, 0, 1, 3),
+        pay(6, 250, 0, 1, 1_000),
+    ];
     let policy = PrefundClosedWindows::new(vec![(100, 200)], vec![12, 12]);
-    let r = run_one(Box::new(GrossRealTime), Ledger::unlimited(2), Some(Box::new(policy)), &ps);
+    let r = run_one(
+        Box::new(GrossRealTime),
+        Ledger::unlimited(2),
+        Some(Box::new(policy)),
+        &ps,
+    );
     assert_eq!(r.metrics.rejected_count, 1);
     assert_eq!(r.metrics.rejected_value, 1);
     assert_eq!(r.metrics.rejected_value_by_payer, vec![1, 0]);
@@ -43,8 +67,16 @@ fn prefunding_by_hand() {
 fn funding_instants_keep_their_place_in_time() {
     let ps = [pay(0, 10, 0, 1, 50), pay(1, 2_600, 1, 0, 1)];
     let policy = TopUpToTarget::new(vec![(1_500, 1_600)], 1_000, vec![50, 0]);
-    let engine = AtomicMicroCycle::new(MicroCycleConfig::new(1_000, 10_000, QueueMode::QueueOnShortfall), 2);
-    let r = run_one(Box::new(engine), Ledger::new(vec![0, 0]), Some(Box::new(policy)), &ps);
+    let engine = AtomicMicroCycle::new(
+        MicroCycleConfig::new(1_000, 10_000, QueueMode::QueueOnShortfall),
+        2,
+    );
+    let r = run_one(
+        Box::new(engine),
+        Ledger::new(vec![0, 0]),
+        Some(Box::new(policy)),
+        &ps,
+    );
     assert_eq!(r.metrics.rejected_count, 0);
     // payment 0 arrived at 10 and settled at the window of t=2,000: delay 1,990 ms
     assert_eq!(r.metrics.delay.max(), 1_990);
@@ -54,10 +86,17 @@ fn funding_instants_keep_their_place_in_time() {
 /// Intraday credit: the balance may go down to minus the limit and no further.
 #[test]
 fn credit_line_by_hand() {
-    let ps = [pay(0, 1, 0, 1, 30), pay(1, 2, 0, 1, 30), pay(2, 3, 0, 1, 30)];
+    let ps = [
+        pay(0, 1, 0, 1, 30),
+        pay(1, 2, 0, 1, 30),
+        pay(2, 3, 0, 1, 30),
+    ];
     let ledger = Ledger::new(vec![10, 0]).with_credit_limits(vec![50, 0]);
     let r = run_one(Box::new(GrossRealTime), ledger, None, &ps);
-    assert_eq!(r.metrics.settled_count, 2, "10 + 50 of credit covers two payments of 30");
+    assert_eq!(
+        r.metrics.settled_count, 2,
+        "10 + 50 of credit covers two payments of 30"
+    );
     assert_eq!(r.metrics.rejected_count, 1);
     assert_eq!(r.ledger.balance(0), -50);
     assert_eq!(r.ledger.max_credit_used(0), 50);

@@ -50,16 +50,36 @@ pub(crate) fn measure(cfg: &ScenarioConfig) -> Measure {
     uniq.sort_unstable();
     uniq.dedup();
     let floors = liquidity_floors(cfg, &uniq);
-    let floor_of = |d: u64| -> i128 { floors[uniq.iter().position(|&x| x == d).unwrap()].iter().map(|&v| v as i128).sum() };
-    let pct = |x: i128| if ub == 0 { 0.0 } else { 100.0 * x as f64 / ub as f64 };
+    let floor_of = |d: u64| -> i128 {
+        floors[uniq.iter().position(|&x| x == d).unwrap()]
+            .iter()
+            .map(|&v| v as i128)
+            .sum()
+    };
+    let pct = |x: i128| {
+        if ub == 0 {
+            0.0
+        } else {
+            100.0 * x as f64 / ub as f64
+        }
+    };
     Measure {
-        saving_pct: o.results[1..].iter().map(|r| 100.0 * r.saving_vs(ub)).collect(),
-        bound_pct: bounds.iter().map(|b| pct(b.iter().map(|&v| v as i128).sum())).collect(),
+        saving_pct: o.results[1..]
+            .iter()
+            .map(|r| 100.0 * r.saving_vs(ub))
+            .collect(),
+        bound_pct: bounds
+            .iter()
+            .map(|b| pct(b.iter().map(|&v| v as i128).sum()))
+            .collect(),
         tight_pct: delays.iter().map(|&d| pct(ub - floor_of(d))).collect(),
         ub,
         lb: o.lb(),
         gross: o.flow.gross_value,
-        cycle_share: o.results[1..].iter().map(|r| r.metrics.value_by_kind[1] as f64 / r.metrics.settled_value.max(1) as f64).collect(),
+        cycle_share: o.results[1..]
+            .iter()
+            .map(|r| r.metrics.value_by_kind[1] as f64 / r.metrics.settled_value.max(1) as f64)
+            .collect(),
     }
 }
 
@@ -68,7 +88,14 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let t_all = std::time::Instant::now();
 
     // ---------------- R1: seeds x receiver bias ----------------
-    let seeds: Vec<u64> = f64_list(doc, "robustness.seeds", &[20260930.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).iter().map(|&s| s as u64).collect();
+    let seeds: Vec<u64> = f64_list(
+        doc,
+        "robustness.seeds",
+        &[20260930.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+    )
+    .iter()
+    .map(|&s| s as u64)
+    .collect();
     let sigmas = f64_list(doc, "robustness.sigmas", &[0.0, 0.4, 0.8]);
     let mut seed_rows = Vec::new();
     let mut sum_rows = Vec::new();
@@ -79,17 +106,35 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         let mut pert: Vec<Vec<f64>> = vec![Vec::new(); ENGINES.len()];
         let mut lbub = Vec::new();
         // Seeds run in parallel; `par_map` returns them in seed order.
-        let measured = par_map(&seeds, |&seed| measure(&ScenarioConfig { seed, receiver_bias_sigma: sigma, ..base.clone() }));
+        let measured = par_map(&seeds, |&seed| {
+            measure(&ScenarioConfig {
+                seed,
+                receiver_bias_sigma: sigma,
+                ..base.clone()
+            })
+        });
         for (&seed, m) in seeds.iter().zip(&measured) {
             lbub.push(m.lb as f64 / m.ub.max(1) as f64);
             for (k, (name, _)) in ENGINES.iter().enumerate() {
                 per[k].push(m.saving_pct[k]);
                 perb[k].push(m.bound_pct[k]);
                 pert[k].push(m.tight_pct[k]);
-                seed_rows.push(vec![f(sigma), seed.to_string(), name.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / 100.0), f(m.tight_pct[k])]);
+                seed_rows.push(vec![
+                    f(sigma),
+                    seed.to_string(),
+                    name.to_string(),
+                    f(m.saving_pct[k]),
+                    f(m.bound_pct[k]),
+                    f(m.ub as f64 / 100.0),
+                    f(m.tight_pct[k]),
+                ]);
             }
         }
-        eprintln!("  R1 sigma {sigma}: {} seeds done ({:.0} s)", seeds.len(), t_all.elapsed().as_secs_f64());
+        eprintln!(
+            "  R1 sigma {sigma}: {} seeds done ({:.0} s)",
+            seeds.len(),
+            t_all.elapsed().as_secs_f64()
+        );
         let (lm, _) = mean_sd(&lbub);
         for (k, (name, d)) in ENGINES.iter().enumerate() {
             let (m, sd) = mean_sd(&per[k]);
@@ -97,7 +142,23 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
             let (_, lo, hi) = mean_ci95(&per[k]);
             let (tm, tlo, thi) = mean_ci95(&pert[k]);
             let positive = per[k].iter().filter(|&&x| x > 0.0).count();
-            sum_rows.push(vec![f(sigma), name.to_string(), d.to_string(), seeds.len().to_string(), f(m), f(sd), f(lo), f(hi), positive.to_string(), f(bm), f(lm), f(tm), f(tlo), f(thi), f(if tm > 0.0 { m / tm } else { 0.0 })]);
+            sum_rows.push(vec![
+                f(sigma),
+                name.to_string(),
+                d.to_string(),
+                seeds.len().to_string(),
+                f(m),
+                f(sd),
+                f(lo),
+                f(hi),
+                positive.to_string(),
+                f(bm),
+                f(lm),
+                f(tm),
+                f(tlo),
+                f(thi),
+                f(if tm > 0.0 { m / tm } else { 0.0 }),
+            ]);
             sum_json.push(
                 Json::obj()
                     .set("receiver_bias_sigma", sigma)
@@ -115,10 +176,37 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
             );
         }
     }
-    res.csv("seeds.csv", &table(&["receiver_bias_sigma", "seed", "engine", "saving_vs_ub_pct", "delay_bound_pct", "ub_brl", "tight_bound_pct"], &seed_rows));
+    res.csv(
+        "seeds.csv",
+        &table(
+            &[
+                "receiver_bias_sigma",
+                "seed",
+                "engine",
+                "saving_vs_ub_pct",
+                "delay_bound_pct",
+                "ub_brl",
+                "tight_bound_pct",
+            ],
+            &seed_rows,
+        ),
+    );
     let sum_header = [
-        "receiver_bias_sigma", "engine", "max_delay_ms", "seeds", "saving_pct_mean", "saving_pct_sd", "saving_pct_ci95_low", "saving_pct_ci95_high", "seeds_with_positive_saving",
-        "delay_bound_pct_mean", "lb_over_ub_mean", "tight_bound_pct_mean", "tight_bound_pct_ci95_low", "tight_bound_pct_ci95_high", "saving_over_tight_bound",
+        "receiver_bias_sigma",
+        "engine",
+        "max_delay_ms",
+        "seeds",
+        "saving_pct_mean",
+        "saving_pct_sd",
+        "saving_pct_ci95_low",
+        "saving_pct_ci95_high",
+        "seeds_with_positive_saving",
+        "delay_bound_pct_mean",
+        "lb_over_ub_mean",
+        "tight_bound_pct_mean",
+        "tight_bound_pct_ci95_low",
+        "tight_bound_pct_ci95_high",
+        "saving_over_tight_bound",
     ];
     res.csv("seeds_summary.csv", &table(&sum_header, &sum_rows));
 
@@ -126,10 +214,30 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let scales = f64_list(doc, "robustness.payments_per_day", &[1e6, 3e6, 10e6, 30e6]);
     let mut scale_rows = Vec::new();
     let mut scale_json = Vec::new();
-    let mut series: Vec<Series> = ENGINES.iter().take(3).map(|(n, _)| Series { label: n.to_string(), points: Vec::new(), line: true }).collect();
-    let mut bound_series = Series { label: "window bound, 10 s".into(), points: Vec::new(), line: true };
-    let mut tight_series = Series { label: "tight bound, 10 s".into(), points: Vec::new(), line: true };
-    let scale_cfg = |ppd: f64| ScenarioConfig { payments_per_day: ppd, scale_factor: base.scale_factor * base.payments_per_day / ppd, ..base.clone() };
+    let mut series: Vec<Series> = ENGINES
+        .iter()
+        .take(3)
+        .map(|(n, _)| Series {
+            label: n.to_string(),
+            points: Vec::new(),
+            line: true,
+        })
+        .collect();
+    let mut bound_series = Series {
+        label: "window bound, 10 s".into(),
+        points: Vec::new(),
+        line: true,
+    };
+    let mut tight_series = Series {
+        label: "tight bound, 10 s".into(),
+        points: Vec::new(),
+        line: true,
+    };
+    let scale_cfg = |ppd: f64| ScenarioConfig {
+        payments_per_day: ppd,
+        scale_factor: base.scale_factor * base.payments_per_day / ppd,
+        ..base.clone()
+    };
     let scaled = par_map(&scales, |&ppd| {
         let t0 = std::time::Instant::now();
         (measure(&scale_cfg(ppd)), t0.elapsed().as_secs_f64())
@@ -140,7 +248,16 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         eprintln!("  R2 {ppd:.0} payments/day: {secs:.1} s");
         res.measure(&format!("scale_{ppd:.0}_seconds"), secs);
         for (k, (name, d)) in ENGINES.iter().enumerate() {
-            scale_rows.push(vec![f(ppd), f(cfg.scale_factor), name.to_string(), d.to_string(), f(m.saving_pct[k]), f(m.bound_pct[k]), f(m.ub as f64 / m.gross.max(1) as f64), f(m.tight_pct[k])]);
+            scale_rows.push(vec![
+                f(ppd),
+                f(cfg.scale_factor),
+                name.to_string(),
+                d.to_string(),
+                f(m.saving_pct[k]),
+                f(m.bound_pct[k]),
+                f(m.ub as f64 / m.gross.max(1) as f64),
+                f(m.tight_pct[k]),
+            ]);
             if k < 3 {
                 series[k].points.push((ppd / 1e6, m.saving_pct[k]));
             }
@@ -152,12 +269,36 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
                 .set("payments_per_day", ppd)
                 .set("scale_factor", cfg.scale_factor)
                 .set("ub_over_gross", m.ub as f64 / m.gross.max(1) as f64)
-                .set("saving_pct", Json::Arr(m.saving_pct.iter().map(|&x| Json::from(x)).collect()))
-                .set("bound_pct", Json::Arr(m.bound_pct.iter().map(|&x| Json::from(x)).collect()))
-                .set("tight_bound_pct", Json::Arr(m.tight_pct.iter().map(|&x| Json::from(x)).collect())),
+                .set(
+                    "saving_pct",
+                    Json::Arr(m.saving_pct.iter().map(|&x| Json::from(x)).collect()),
+                )
+                .set(
+                    "bound_pct",
+                    Json::Arr(m.bound_pct.iter().map(|&x| Json::from(x)).collect()),
+                )
+                .set(
+                    "tight_bound_pct",
+                    Json::Arr(m.tight_pct.iter().map(|&x| Json::from(x)).collect()),
+                ),
         );
     }
-    res.csv("scale.csv", &table(&["payments_per_day", "scale_factor", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "ub_over_gross", "tight_bound_pct"], &scale_rows));
+    res.csv(
+        "scale.csv",
+        &table(
+            &[
+                "payments_per_day",
+                "scale_factor",
+                "engine",
+                "max_delay_ms",
+                "saving_vs_ub_pct",
+                "delay_bound_pct",
+                "ub_over_gross",
+                "tight_bound_pct",
+            ],
+            &scale_rows,
+        ),
+    );
     series.push(bound_series);
     series.push(tight_series);
     let chart = Chart {
@@ -173,7 +314,10 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let lens = f64_list(doc, "robustness.max_cycle_len", &[2.0, 3.0, 6.0, 10.0]);
     let mut specs = vec![EngineSpec::Gross];
     for &l in &lens {
-        specs.push(EngineSpec::parse(&format!("micro:all:500:10000:{}", l as usize))?);
+        specs.push(EngineSpec::parse(&format!(
+            "micro:all:500:10000:{}",
+            l as usize
+        ))?);
     }
     let o = run_engines(base, &specs, &Opening::Unlimited, false, None);
     let ub = o.ub();
@@ -182,12 +326,30 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         let r = &o.results[k + 1];
         let m = &r.metrics;
         let settled = m.settled_value.max(1) as f64;
-        len_rows.push(vec![f(l), f(100.0 * r.saving_vs(ub)), f(m.value_by_kind[1] as f64 / settled)]);
+        len_rows.push(vec![
+            f(l),
+            f(100.0 * r.saving_vs(ub)),
+            f(m.value_by_kind[1] as f64 / settled),
+        ]);
     }
-    res.csv("cycle_len.csv", &table(&["max_cycle_len", "saving_vs_ub_pct", "value_share_settled_in_cycles"], &len_rows));
+    res.csv(
+        "cycle_len.csv",
+        &table(
+            &[
+                "max_cycle_len",
+                "saving_vs_ub_pct",
+                "value_share_settled_in_cycles",
+            ],
+            &len_rows,
+        ),
+    );
 
     // ---------------- R5: per-participant instant / deferred ratio ----------------
-    let specs = [EngineSpec::Gross, EngineSpec::Deferred { cycles_per_day: 1 }, EngineSpec::Deferred { cycles_per_day: 10 }];
+    let specs = [
+        EngineSpec::Gross,
+        EngineSpec::Deferred { cycles_per_day: 1 },
+        EngineSpec::Deferred { cycles_per_day: 10 },
+    ];
     let o = run_engines(base, &specs, &Opening::Unlimited, false, None);
     let mut bank_rows = Vec::new();
     let mut bank_json = Vec::new();
@@ -207,7 +369,12 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         }
         ratios.sort_by(|a, b| a.partial_cmp(b).unwrap());
         let qs = [0.1, 0.25, 0.5, 0.75, 0.9];
-        let mut row = vec![cycles.to_string(), ratios.len().to_string(), zero_den.to_string(), both_zero.to_string()];
+        let mut row = vec![
+            cycles.to_string(),
+            ratios.len().to_string(),
+            zero_den.to_string(),
+            both_zero.to_string(),
+        ];
         row.extend(qs.iter().map(|&q| f(quantile(&ratios, q))));
         row.push(f(*ratios.last().unwrap_or(&f64::NAN)));
         bank_rows.push(row);
@@ -223,17 +390,48 @@ pub fn robustness(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     }
     res.csv(
         "participants_ratio.csv",
-        &table(&["cycles_per_day", "participants_with_ratio", "needs_liquidity_only_if_instant", "needs_no_liquidity", "ratio_p10", "ratio_p25", "ratio_p50", "ratio_p75", "ratio_p90", "ratio_max"], &bank_rows),
+        &table(
+            &[
+                "cycles_per_day",
+                "participants_with_ratio",
+                "needs_liquidity_only_if_instant",
+                "needs_no_liquidity",
+                "ratio_p10",
+                "ratio_p25",
+                "ratio_p50",
+                "ratio_p75",
+                "ratio_p90",
+                "ratio_max",
+            ],
+            &bank_rows,
+        ),
     );
 
     res.measure("total_seconds", t_all.elapsed().as_secs_f64());
     res.set("scenario", scenario_json(base));
-    res.set("seeds", Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()));
+    res.set(
+        "seeds",
+        Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()),
+    );
     res.set("seeds_summary", Json::Arr(sum_json));
     res.set("scale", Json::Arr(scale_json));
     res.set("participants_ratio", Json::Arr(bank_json));
     eprintln!("{}", table(&sum_header, &sum_rows));
-    eprintln!("{}", table(&["payments_per_day", "scale_factor", "engine", "max_delay_ms", "saving_vs_ub_pct", "delay_bound_pct", "ub_over_gross"], &scale_rows));
+    eprintln!(
+        "{}",
+        table(
+            &[
+                "payments_per_day",
+                "scale_factor",
+                "engine",
+                "max_delay_ms",
+                "saving_vs_ub_pct",
+                "delay_bound_pct",
+                "ub_over_gross"
+            ],
+            &scale_rows
+        )
+    );
     res.finish();
     Ok(())
 }

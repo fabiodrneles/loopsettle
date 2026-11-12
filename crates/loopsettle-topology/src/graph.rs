@@ -21,7 +21,10 @@ pub struct FlowGraph {
 impl FlowGraph {
     pub fn new(n: usize, edges: Vec<Edge>) -> Self {
         for e in &edges {
-            assert!(e.flow > 0 && e.from != e.to && (e.from as usize) < n && (e.to as usize) < n, "bad edge {e:?}");
+            assert!(
+                e.flow > 0 && e.from != e.to && (e.from as usize) < n && (e.to as usize) < n,
+                "bad edge {e:?}"
+            );
         }
         FlowGraph { n, edges }
     }
@@ -34,7 +37,12 @@ impl FlowGraph {
                 *m.entry((a, b)).or_insert(0) += v;
             }
         }
-        Self::new(n, m.into_iter().map(|((from, to), flow)| Edge { from, to, flow }).collect())
+        Self::new(
+            n,
+            m.into_iter()
+                .map(|((from, to), flow)| Edge { from, to, flow })
+                .collect(),
+        )
     }
 
     /// Gross graph: one edge per ordered pair with positive aggregated flow.
@@ -46,7 +54,11 @@ impl FlowGraph {
             for b in 0..n {
                 let v = flow.pair(a, b);
                 if a != b && v > 0 {
-                    edges.push(Edge { from: a as u32, to: b as u32, flow: v });
+                    edges.push(Edge {
+                        from: a as u32,
+                        to: b as u32,
+                        flow: v,
+                    });
                 }
             }
         }
@@ -57,13 +69,31 @@ impl FlowGraph {
     pub fn net(&self) -> Self {
         let mut m = std::collections::BTreeMap::new();
         for e in &self.edges {
-            let (key, sign) = if e.from < e.to { ((e.from, e.to), 1) } else { ((e.to, e.from), -1) };
+            let (key, sign) = if e.from < e.to {
+                ((e.from, e.to), 1)
+            } else {
+                ((e.to, e.from), -1)
+            };
             *m.entry(key).or_insert(0i64) += sign * e.flow;
         }
         let edges = m
             .into_iter()
             .filter(|&(_, v)| v != 0)
-            .map(|((a, b), v)| if v > 0 { Edge { from: a, to: b, flow: v } } else { Edge { from: b, to: a, flow: -v } })
+            .map(|((a, b), v)| {
+                if v > 0 {
+                    Edge {
+                        from: a,
+                        to: b,
+                        flow: v,
+                    }
+                } else {
+                    Edge {
+                        from: b,
+                        to: a,
+                        flow: -v,
+                    }
+                }
+            })
             .collect();
         FlowGraph { n: self.n, edges }
     }

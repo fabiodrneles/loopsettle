@@ -30,14 +30,19 @@ pub fn lp_min_liquidity(n: usize, payments: &[Payment], d: TimeMs) -> Option<f64
         return Some(0.0);
     }
     // Instants at which something can happen: arrivals and deadlines.
-    let mut t: Vec<TimeMs> = payments.iter().flat_map(|p| [p.t_arrival, p.t_arrival + d]).collect();
+    let mut t: Vec<TimeMs> = payments
+        .iter()
+        .flat_map(|p| [p.t_arrival, p.t_arrival + d])
+        .collect();
     t.sort_unstable();
     t.dedup();
     let idx = |x: TimeMs| t.binary_search(&x).unwrap();
     // Amounts are scaled to around 1 for the solver's tolerances.
     let scale = payments.iter().map(|p| p.amount as f64).sum::<f64>() / payments.len() as f64;
     let mut lp = Problem::new(OptimizationDirection::Minimize);
-    let l: Vec<Variable> = (0..n).map(|_| lp.add_var(1.0, (0.0, f64::INFINITY))).collect();
+    let l: Vec<Variable> = (0..n)
+        .map(|_| lp.add_var(1.0, (0.0, f64::INFINITY)))
+        .collect();
     // z[p] = variables for instants first..last-1 of the payment's window (at `last` it is 1)
     let mut z: Vec<(usize, usize, Vec<Variable>)> = Vec::with_capacity(payments.len());
     for p in payments {

@@ -10,7 +10,14 @@ const N: usize = 20;
 const DELAYS: [TimeMs; 3] = [2_000, 60_000, 3_600_000];
 
 fn base() -> Vec<Payment> {
-    let cfg = ScenarioConfig { seed: 7, participants: N, payments_per_day: 15_000.0, n_big: 2, n_mid: 4, ..Default::default() };
+    let cfg = ScenarioConfig {
+        seed: 7,
+        participants: N,
+        payments_per_day: 15_000.0,
+        n_big: 2,
+        n_mid: 4,
+        ..Default::default()
+    };
     PaymentStream::new(&cfg).collect()
 }
 
@@ -24,7 +31,11 @@ struct Measures {
 }
 
 fn measure(ps: &[Payment]) -> Measures {
-    let specs = [EngineSpec::Gross, EngineSpec::parse("deferred:24").unwrap(), EngineSpec::parse("micro:all:1000:5000").unwrap()];
+    let specs = [
+        EngineSpec::Gross,
+        EngineSpec::parse("deferred:24").unwrap(),
+        EngineSpec::parse("micro:all:1000:5000").unwrap(),
+    ];
     let t_end = ps.last().map(|p| p.t_arrival).unwrap_or(0);
     let o = run_payments(N, ps.iter().copied(), &specs, &Opening::Unlimited, t_end);
     Measures {
@@ -32,7 +43,11 @@ fn measure(ps: &[Payment]) -> Measures {
         lb: (0..N as u32).map(|i| o.flow.lb(i)).collect(),
         floors: liquidity_floors_from(N, || ps.iter().copied(), &DELAYS),
         bounds: delay_bounds_from(N, || ps.iter().copied(), &DELAYS),
-        engines: o.results.iter().map(|r| r.liquidity_by_participant.clone()).collect(),
+        engines: o
+            .results
+            .iter()
+            .map(|r| r.liquidity_by_participant.clone())
+            .collect(),
     }
 }
 
@@ -47,7 +62,13 @@ fn scaling_amounts_scales_every_liquidity_measure() {
     let ps = base();
     let a = measure(&ps);
     let k = 7;
-    let scaled: Vec<Payment> = ps.iter().map(|p| Payment { amount: p.amount * k, ..*p }).collect();
+    let scaled: Vec<Payment> = ps
+        .iter()
+        .map(|p| Payment {
+            amount: p.amount * k,
+            ..*p
+        })
+        .collect();
     let b = measure(&scaled);
     assert_eq!(b.ub, times(&a.ub, k));
     assert_eq!(b.lb, times(&a.lb, k));
@@ -68,7 +89,14 @@ fn relabelling_participants_permutes_the_measures() {
     let ps = base();
     let a = measure(&ps);
     let perm = |i: u32| (i * 7 + 3) % N as u32; // 7 is coprime with 20: a bijection
-    let relabelled: Vec<Payment> = ps.iter().map(|p| Payment { payer: perm(p.payer), payee: perm(p.payee), ..*p }).collect();
+    let relabelled: Vec<Payment> = ps
+        .iter()
+        .map(|p| Payment {
+            payer: perm(p.payer),
+            payee: perm(p.payee),
+            ..*p
+        })
+        .collect();
     let b = measure(&relabelled);
     for i in 0..N as u32 {
         let (x, y) = (i as usize, perm(i) as usize);
@@ -89,7 +117,13 @@ fn relabelling_participants_permutes_the_measures() {
 fn shifting_time_changes_no_bound() {
     let ps = base();
     let a = measure(&ps);
-    let shifted: Vec<Payment> = ps.iter().map(|p| Payment { t_arrival: p.t_arrival + 123_457, ..*p }).collect();
+    let shifted: Vec<Payment> = ps
+        .iter()
+        .map(|p| Payment {
+            t_arrival: p.t_arrival + 123_457,
+            ..*p
+        })
+        .collect();
     let b = measure(&shifted);
     assert_eq!(a.ub, b.ub);
     assert_eq!(a.lb, b.lb);
@@ -103,7 +137,9 @@ fn shifting_time_changes_no_bound() {
 /// use, plus mutations of valid inputs.
 #[test]
 fn readers_never_panic_on_garbage() {
-    let alphabet: Vec<char> = "abcxyz0123456789 \t\n\r,;:._-+=[]\"'#€é\u{0}".chars().collect();
+    let alphabet: Vec<char> = "abcxyz0123456789 \t\n\r,;:._-+=[]\"'#€é\u{0}"
+        .chars()
+        .collect();
     let valid_toml = "[scenario]\nseed = 1\nparticipants = 10\nhourly = [1.0, 2.5]\nname = \"x\"\n";
     let valid_csv = "time,from,to,amount\n08:00:00,A,B,10.00\n08:00:01,B,C,5\n";
     let mut rng = Rng::new(20261111);

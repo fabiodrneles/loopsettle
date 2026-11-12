@@ -30,7 +30,13 @@ struct ReceiptReactive {
 
 impl ReceiptReactive {
     fn new(max_delay_ms: TimeMs, n: usize) -> Self {
-        ReceiptReactive { max_delay_ms, waiting: vec![VecDeque::new(); n], net: vec![0; n], deadlines: VecDeque::new(), queued: 0 }
+        ReceiptReactive {
+            max_delay_ms,
+            waiting: vec![VecDeque::new(); n],
+            net: vec![0; n],
+            deadlines: VecDeque::new(),
+            queued: 0,
+        }
     }
     fn settle(&mut self, p: Payment, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
         if ledger.transfer(p.payer, p.payee, p.amount) {
@@ -84,7 +90,11 @@ impl SettlementEngine for ReceiptReactive {
         }
     }
     fn finish(&mut self, _t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        if let Some(last) = self.deadlines.back().map(|p| p.t_arrival + self.max_delay_ms) {
+        if let Some(last) = self
+            .deadlines
+            .back()
+            .map(|p| p.t_arrival + self.max_delay_ms)
+        {
             self.advance_to(last, ledger, sink);
         }
     }
@@ -94,23 +104,51 @@ impl SettlementEngine for ReceiptReactive {
 }
 
 fn main() {
-    let cfg = ScenarioConfig { seed: 1, participants: 30, payments_per_day: 100_000.0, n_big: 3, n_mid: 5, ..Default::default() };
+    let cfg = ScenarioConfig {
+        seed: 1,
+        participants: 30,
+        payments_per_day: 100_000.0,
+        n_big: 3,
+        n_mid: 5,
+        ..Default::default()
+    };
     let n = cfg.participants;
     let d = 10_000;
     let mut runs = vec![
         EngineRun::new(Box::new(GrossRealTime), Ledger::unlimited(n)),
         EngineRun::new(Box::new(ReceiptReactive::new(d, n)), Ledger::unlimited(n)),
-        EngineRun::new(Box::new(DeferredNet::new((MS_PER_DAY / d) as u32, n)), Ledger::unlimited(n)),
+        EngineRun::new(
+            Box::new(DeferredNet::new((MS_PER_DAY / d) as u32, n)),
+            Ledger::unlimited(n),
+        ),
     ];
     let mut flow = FlowStats::new(n, false);
-    drive(PaymentStream::new(&cfg), &mut runs, &mut flow, cfg.horizon_ms());
+    drive(
+        PaymentStream::new(&cfg),
+        &mut runs,
+        &mut flow,
+        cfg.horizon_ms(),
+    );
 
     let ub = flow.ub_total();
-    let floor: i128 = liquidity_floors(&cfg, &[d])[0].iter().map(|&v| v as i128).sum();
-    println!("payments {}   UB {:.2}   liquidity floor for a {} s deadline {:.2} ({:.4}% below UB)", flow.count, ub as f64 / 100.0, d / 1000, floor as f64 / 100.0, 100.0 * (ub - floor) as f64 / ub as f64);
+    let floor: i128 = liquidity_floors(&cfg, &[d])[0]
+        .iter()
+        .map(|&v| v as i128)
+        .sum();
+    println!(
+        "payments {}   UB {:.2}   liquidity floor for a {} s deadline {:.2} ({:.4}% below UB)",
+        flow.count,
+        ub as f64 / 100.0,
+        d / 1000,
+        floor as f64 / 100.0,
+        100.0 * (ub - floor) as f64 / ub as f64
+    );
     for r in &runs {
         let need: i128 = r.ledger.peak_drawdowns().iter().map(|&x| x as i128).sum();
-        assert!(need >= floor, "no engine with this deadline can need less than the floor");
+        assert!(
+            need >= floor,
+            "no engine with this deadline can need less than the floor"
+        );
         println!(
             "{:28} liquidity {:>14.2}  saving {:>8.4}% of UB  p95 delay {:>6} ms  rejected {}",
             r.engine.name(),

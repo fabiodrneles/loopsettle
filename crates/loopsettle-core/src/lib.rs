@@ -14,7 +14,9 @@ pub mod sys;
 pub mod types;
 
 pub use engine::{GrossRealTime, SettlementEngine, Sink};
-pub use engines::{AtomicMicroCycle, DeferredNet, HoldToDeadline, MicroCycleConfig, QueueDiscipline, QueueMode};
+pub use engines::{
+    AtomicMicroCycle, DeferredNet, HoldToDeadline, MicroCycleConfig, QueueDiscipline, QueueMode,
+};
 pub use funding::{FundingPolicy, PrefundClosedWindows, TopUpToTarget};
 pub use ledger::{Ledger, UNLIMITED};
 pub use metrics::{FlowStats, LogHistogram, RunMetrics, SLA_PIX_MS};
@@ -32,7 +34,12 @@ pub struct EngineRun {
 impl EngineRun {
     pub fn new(engine: Box<dyn SettlementEngine>, ledger: Ledger) -> Self {
         let n = ledger.len();
-        EngineRun { engine, ledger, metrics: RunMetrics::new(n), funding: None }
+        EngineRun {
+            engine,
+            ledger,
+            metrics: RunMetrics::new(n),
+            funding: None,
+        }
     }
 
     pub fn with_funding(mut self, policy: Box<dyn FundingPolicy>) -> Self {
@@ -43,12 +50,22 @@ impl EngineRun {
     /// Bring the run to time `t`: every funding instant due by `t` is applied in time order,
     /// each after the engine has processed its own events up to that instant.
     fn advance_to(&mut self, t: TimeMs) {
-        while let Some(f) = self.funding.as_ref().and_then(|p| p.next_instant()).filter(|&f| f <= t) {
-            self.engine.advance_to(f, &mut self.ledger, &mut self.metrics);
-            self.funding.as_mut().expect("checked above").apply(&mut self.ledger);
+        while let Some(f) = self
+            .funding
+            .as_ref()
+            .and_then(|p| p.next_instant())
+            .filter(|&f| f <= t)
+        {
+            self.engine
+                .advance_to(f, &mut self.ledger, &mut self.metrics);
+            self.funding
+                .as_mut()
+                .expect("checked above")
+                .apply(&mut self.ledger);
             self.engine.funded();
         }
-        self.engine.advance_to(t, &mut self.ledger, &mut self.metrics);
+        self.engine
+            .advance_to(t, &mut self.ledger, &mut self.metrics);
     }
 }
 

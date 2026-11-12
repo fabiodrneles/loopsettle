@@ -54,7 +54,14 @@ pub struct AmountModel {
 
 impl Default for AmountModel {
     fn default() -> Self {
-        AmountModel { body_median: 40.0, body_sigma: 1.4, tail_prob: 0.04, tail_xm: 1_000.0, tail_alpha: 1.3, max_amount: 5_000_000.0 }
+        AmountModel {
+            body_median: 40.0,
+            body_sigma: 1.4,
+            tail_prob: 0.04,
+            tail_xm: 1_000.0,
+            tail_alpha: 1.3,
+            max_amount: 5_000_000.0,
+        }
     }
 }
 
@@ -67,7 +74,8 @@ impl AmountModel {
         let tail = if (a - 1.0).abs() < 1e-12 {
             xm * (m / xm).ln() / (1.0 - xm / m)
         } else {
-            a * xm.powf(a) / (a - 1.0) * (xm.powf(1.0 - a) - m.powf(1.0 - a)) / (1.0 - (xm / m).powf(a))
+            a * xm.powf(a) / (a - 1.0) * (xm.powf(1.0 - a) - m.powf(1.0 - a))
+                / (1.0 - (xm / m).powf(a))
         };
         (1.0 - self.tail_prob) * body + self.tail_prob * tail
     }
@@ -81,7 +89,9 @@ impl AmountModel {
             let tail_mass = 1.0 - (xm / m).powf(a);
             xm / (1.0 - u * tail_mass).powf(1.0 / a)
         } else {
-            (self.body_median.ln() + self.body_sigma * rng.normal()).exp().min(self.max_amount)
+            (self.body_median.ln() + self.body_sigma * rng.normal())
+                .exp()
+                .min(self.max_amount)
         };
         ((reais * 100.0).round() as i64).max(1)
     }
@@ -91,7 +101,8 @@ impl AmountModel {
 /// descriptions of Pix usage (quiet nights, daytime plateau, evening peak); replace with a
 /// sourced hourly profile when available.
 pub const DEFAULT_HOURLY: [f64; 24] = [
-    0.9, 0.5, 0.3, 0.25, 0.25, 0.4, 0.9, 1.8, 3.0, 4.0, 4.6, 5.0, 5.2, 4.8, 4.7, 4.8, 5.0, 5.3, 5.5, 5.2, 4.6, 3.8, 2.8, 1.8,
+    0.9, 0.5, 0.3, 0.25, 0.25, 0.4, 0.9, 1.8, 3.0, 4.0, 4.6, 5.0, 5.2, 4.8, 4.7, 4.8, 5.0, 5.3,
+    5.5, 5.2, 4.6, 3.8, 2.8, 1.8,
 ];
 
 /// Class-specific intraday multipliers (W2, `docs/PAPER_READINESS.md`), indexed
@@ -102,24 +113,43 @@ pub const DEFAULT_HOURLY: [f64; 24] = [
 /// The multipliers are mixed with a flat profile by `profile_strength` (0 = off, 1 = full) and
 /// rescaled so each class keeps its daily volume (`ScenarioConfig::class_multipliers`).
 pub const CLASS_OUT_PROFILE: [[f64; 24]; 4] = [
-    [0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 1.0, 2.0, 3.0, 3.0, 2.5, 1.5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.6, 0.6, 0.6, 0.6],
+    [
+        0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 1.0, 2.0, 3.0, 3.0, 2.5, 1.5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9,
+        0.8, 0.7, 0.6, 0.6, 0.6, 0.6,
+    ],
     [1.0; 24],
-    [0.8, 0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.3, 1.6, 1.8, 1.8, 1.6, 1.3, 1.0],
-    [1.0, 3.0, 5.0, 5.0, 4.0, 3.0, 1.5, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.6],
+    [
+        0.8, 0.6, 0.5, 0.5, 0.5, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.3,
+        1.6, 1.8, 1.8, 1.6, 1.3, 1.0,
+    ],
+    [
+        1.0, 3.0, 5.0, 5.0, 4.0, 3.0, 1.5, 0.6, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4,
+        0.4, 0.4, 0.4, 0.4, 0.5, 0.6,
+    ],
 ];
 pub const CLASS_IN_PROFILE: [[f64; 24]; 4] = [
-    [0.8, 0.8, 0.8, 0.8, 0.8, 0.9, 1.0, 1.1, 1.2, 1.2, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.9, 0.8],
+    [
+        0.8, 0.8, 0.8, 0.8, 0.8, 0.9, 1.0, 1.1, 1.2, 1.2, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 0.9, 0.9, 0.8,
+    ],
     [1.0; 24],
-    [0.8, 0.7, 0.6, 0.6, 0.6, 0.7, 0.8, 1.0, 1.2, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.2, 1.2, 1.1, 1.0, 0.9],
-    [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.6, 1.0, 1.4, 1.6, 1.8, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6, 1.6, 1.5, 1.3, 1.0, 0.6, 0.3],
+    [
+        0.8, 0.7, 0.6, 0.6, 0.6, 0.7, 0.8, 1.0, 1.2, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+        1.1, 1.2, 1.2, 1.1, 1.0, 0.9,
+    ],
+    [
+        0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.6, 1.0, 1.4, 1.6, 1.8, 1.8, 1.7, 1.6, 1.6, 1.6, 1.6,
+        1.6, 1.5, 1.3, 1.0, 0.6, 0.3,
+    ],
 ];
 
 /// SOURCED hourly profile: average number of Pix settled per hour slot in 2024, in thousands
 /// (BCB, Relatório Anual do SPI 2024, Gráfico 12, p. 13). Selected with
 /// `hourly_profile = "spi2024"`.
 pub const SPI_2024_HOURLY: [f64; 24] = [
-    3022.0, 1946.0, 1226.0, 867.0, 738.0, 1069.0, 2487.0, 4402.0, 6291.0, 7921.0, 8965.0, 9850.0, 10277.0, 9580.0, 9125.0, 9312.0, 9635.0, 10152.0, 10440.0,
-    9833.0, 8768.0, 7596.0, 6011.0, 4345.0,
+    3022.0, 1946.0, 1226.0, 867.0, 738.0, 1069.0, 2487.0, 4402.0, 6291.0, 7921.0, 8965.0, 9850.0,
+    10277.0, 9580.0, 9125.0, 9312.0, 9635.0, 10152.0, 10440.0, 9833.0, 8768.0, 7596.0, 6011.0,
+    4345.0,
 ];
 
 /// SOURCED average number of Pix settled per day type in 2024, in millions (same report,
@@ -211,7 +241,11 @@ impl ScenarioConfig {
     /// class profile with a flat one by `profile_strength` and rescaling so that the
     /// volume-weighted daily mean of every class is 1 (each class keeps its daily volume).
     pub fn class_multipliers(&self, out: bool) -> [[f64; 24]; 4] {
-        let base = if out { &CLASS_OUT_PROFILE } else { &CLASS_IN_PROFILE };
+        let base = if out {
+            &CLASS_OUT_PROFILE
+        } else {
+            &CLASS_IN_PROFILE
+        };
         let lam = self.profile_strength.clamp(0.0, 1.0);
         let hsum: f64 = self.hourly.iter().sum();
         let mut m = [[1.0; 24]; 4];
@@ -242,7 +276,9 @@ impl Population {
         let mut raw: Vec<f64> = if cfg.shares.len() >= n {
             cfg.shares[..n].to_vec()
         } else {
-            (0..n).map(|i| 1.0 / ((i + 1) as f64).powf(cfg.zipf_s)).collect()
+            (0..n)
+                .map(|i| 1.0 / ((i + 1) as f64).powf(cfg.zipf_s))
+                .collect()
         };
         // sort descending so rank -> class mapping works for calibrated shares too
         raw.sort_by(|a, b| b.partial_cmp(a).unwrap());
@@ -260,7 +296,11 @@ impl Population {
                     Class::MidBank
                 } else {
                     let k = i - cfg.n_big - cfg.n_mid;
-                    if (k * n_fintech) / rest.max(1) != ((k + 1) * n_fintech) / rest.max(1) { Class::Fintech } else { Class::PaymentInstitution }
+                    if (k * n_fintech) / rest.max(1) != ((k + 1) * n_fintech) / rest.max(1) {
+                        Class::Fintech
+                    } else {
+                        Class::PaymentInstitution
+                    }
                 }
             })
             .collect();
@@ -268,10 +308,18 @@ impl Population {
             .iter()
             .map(|c| {
                 let b = (cfg.receiver_bias_sigma * rng.normal()).exp();
-                if *c == Class::PaymentInstitution { b * cfg.pi_receiver_mult } else { b }
+                if *c == Class::PaymentInstitution {
+                    b * cfg.pi_receiver_mult
+                } else {
+                    b
+                }
             })
             .collect();
-        Population { class, activity, receiver_bias }
+        Population {
+            class,
+            activity,
+            receiver_bias,
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -334,7 +382,11 @@ impl ScenarioConfig {
         match d.str("scenario.hourly_profile") {
             None | Some("default") => {}
             Some("spi2024") => c.hourly = SPI_2024_HOURLY.to_vec(),
-            Some(other) => return Err(format!("unknown hourly_profile '{other}' (use default or spi2024)")),
+            Some(other) => {
+                return Err(format!(
+                    "unknown hourly_profile '{other}' (use default or spi2024)"
+                ))
+            }
         }
         if let Some(w) = d.f64_array("scenario.day_weights") {
             c.day_weights = w;

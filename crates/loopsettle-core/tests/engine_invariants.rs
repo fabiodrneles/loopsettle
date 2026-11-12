@@ -28,14 +28,26 @@ fn payments(n: u32, max_len: usize) -> impl Strategy<Value = Vec<Payment>> {
             .enumerate()
             .map(|(i, (a, off, amt, dt))| {
                 t += dt;
-                Payment { id: i as u64, t_arrival: t, payer: a, payee: (a + off) % n, amount: amt }
+                Payment {
+                    id: i as u64,
+                    t_arrival: t,
+                    payer: a,
+                    payee: (a + off) % n,
+                    amount: amt,
+                }
             })
             .collect()
     })
 }
 
 /// Drive one engine step by step, checking invariants 1 and 3 after every call.
-fn drive_checked(eng: &mut dyn SettlementEngine, ps: &[Payment], ledger: &mut Ledger, rec: &mut Recorder, nonneg: bool) -> Result<(), TestCaseError> {
+fn drive_checked(
+    eng: &mut dyn SettlementEngine,
+    ps: &[Payment],
+    ledger: &mut Ledger,
+    rec: &mut Recorder,
+    nonneg: bool,
+) -> Result<(), TestCaseError> {
     let total = ledger.total();
     let check = |l: &Ledger| -> Result<(), TestCaseError> {
         prop_assert_eq!(l.total(), total);
@@ -254,12 +266,30 @@ fn bilateral_pair_offsets_without_liquidity() {
     // A->B 100 at t=0 and B->A 100 at t=10, zero balances: gross rejects both; the
     // micro-cycle engine settles both atomically at the first window after t=10.
     let ps = [
-        Payment { id: 0, t_arrival: 0, payer: 0, payee: 1, amount: 100 },
-        Payment { id: 1, t_arrival: 10, payer: 1, payee: 0, amount: 100 },
+        Payment {
+            id: 0,
+            t_arrival: 0,
+            payer: 0,
+            payee: 1,
+            amount: 100,
+        },
+        Payment {
+            id: 1,
+            t_arrival: 10,
+            payer: 1,
+            payee: 0,
+            amount: 100,
+        },
     ];
     let mut runs = vec![
         EngineRun::new(Box::new(GrossRealTime), Ledger::new(vec![0, 0])),
-        EngineRun::new(Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(100, 1_000, QueueMode::QueueAll), 2)), Ledger::new(vec![0, 0])),
+        EngineRun::new(
+            Box::new(AtomicMicroCycle::new(
+                MicroCycleConfig::new(100, 1_000, QueueMode::QueueAll),
+                2,
+            )),
+            Ledger::new(vec![0, 0]),
+        ),
     ];
     let mut flow = FlowStats::new(2, false);
     drive(ps, &mut runs, &mut flow, 0);

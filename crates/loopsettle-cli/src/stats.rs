@@ -7,7 +7,11 @@ use std::sync::Mutex;
 pub fn mean_sd(v: &[f64]) -> (f64, f64) {
     let n = v.len() as f64;
     let m = v.iter().sum::<f64>() / n;
-    let var = if v.len() > 1 { v.iter().map(|x| (x - m).powi(2)).sum::<f64>() / (n - 1.0) } else { 0.0 };
+    let var = if v.len() > 1 {
+        v.iter().map(|x| (x - m).powi(2)).sum::<f64>() / (n - 1.0)
+    } else {
+        0.0
+    };
     (m, var.sqrt())
 }
 
@@ -15,8 +19,9 @@ pub fn mean_sd(v: &[f64]) -> (f64, f64) {
 /// then the normal value).
 pub fn t95(df: usize) -> f64 {
     const T: [f64; 30] = [
-        12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093, 2.086, 2.080, 2.074,
-        2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045, 2.042,
+        12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.160,
+        2.145, 2.131, 2.120, 2.110, 2.101, 2.093, 2.086, 2.080, 2.074, 2.069, 2.064, 2.060, 2.056,
+        2.052, 2.048, 2.045, 2.042,
     ];
     if df == 0 {
         f64::NAN
@@ -52,7 +57,12 @@ pub fn threads() -> usize {
         .ok()
         .and_then(|s| s.parse::<usize>().ok())
         .filter(|&n| n >= 1)
-        .unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1).min(2))
+        .unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(|n| n.get())
+                .unwrap_or(1)
+                .min(2)
+        })
 }
 
 /// `items.iter().map(f)` on several threads. The output is in the order of `items` whatever
@@ -80,7 +90,11 @@ pub fn par_map<T: Sync, R: Send>(items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec
             });
         }
     });
-    out.into_inner().unwrap().into_iter().map(|r| r.expect("every item was computed")).collect()
+    out.into_inner()
+        .unwrap()
+        .into_iter()
+        .map(|r| r.expect("every item was computed"))
+        .collect()
 }
 
 #[cfg(test)]
@@ -109,8 +123,13 @@ mod tests {
     fn par_map_keeps_input_order() {
         let items: Vec<u64> = (0..37).collect();
         // uneven work, so threads finish out of order
-        let got = par_map(&items, |&x| (0..(37 - x) * 20_000).fold(x, |a, b| a.wrapping_mul(31).wrapping_add(b)));
-        let want: Vec<u64> = items.iter().map(|&x| (0..(37 - x) * 20_000).fold(x, |a, b| a.wrapping_mul(31).wrapping_add(b))).collect();
+        let got = par_map(&items, |&x| {
+            (0..(37 - x) * 20_000).fold(x, |a, b| a.wrapping_mul(31).wrapping_add(b))
+        });
+        let want: Vec<u64> = items
+            .iter()
+            .map(|&x| (0..(37 - x) * 20_000).fold(x, |a, b| a.wrapping_mul(31).wrapping_add(b)))
+            .collect();
         assert_eq!(got, want);
     }
 }

@@ -24,9 +24,18 @@ pub struct Ledger {
 
 impl Ledger {
     pub fn new(opening: Vec<Cents>) -> Self {
-        assert!(opening.iter().all(|&b| b >= 0), "opening balances must be >= 0");
+        assert!(
+            opening.iter().all(|&b| b >= 0),
+            "opening balances must be >= 0"
+        );
         let n = opening.len();
-        Ledger { min_balance: opening.clone(), balance: opening.clone(), opening, external: vec![0; n], credit_limit: vec![0; n] }
+        Ledger {
+            min_balance: opening.clone(),
+            balance: opening.clone(),
+            opening,
+            external: vec![0; n],
+            credit_limit: vec![0; n],
+        }
     }
 
     /// Every participant starts with [`UNLIMITED`] liquidity (measurement mode).
@@ -59,7 +68,9 @@ impl Ledger {
         self.opening[p as usize] - self.min_balance[p as usize]
     }
     pub fn peak_drawdowns(&self) -> Vec<Cents> {
-        (0..self.len() as u32).map(|p| self.peak_drawdown(p)).collect()
+        (0..self.len() as u32)
+            .map(|p| self.peak_drawdown(p))
+            .collect()
     }
 
     pub fn can_pay(&self, p: ParticipantId, amount: Cents) -> bool {
@@ -69,7 +80,10 @@ impl Ledger {
     /// Give every participant an intraday credit line (specs/05, M5): its balance may go down
     /// to `-limits[p]`. With all limits at zero (the default) no balance is ever negative.
     pub fn with_credit_limits(mut self, limits: Vec<Cents>) -> Self {
-        assert!(limits.len() == self.len() && limits.iter().all(|&l| l >= 0), "one non-negative limit per participant");
+        assert!(
+            limits.len() == self.len() && limits.iter().all(|&l| l >= 0),
+            "one non-negative limit per participant"
+        );
         self.credit_limit = limits;
         self
     }
@@ -87,8 +101,13 @@ impl Ledger {
     /// ([`Ledger::total_with_reserves`]). A withdrawal may not take the balance below zero.
     pub fn fund(&mut self, p: ParticipantId, delta: Cents) {
         let i = p as usize;
-        assert!(self.balance[i] + delta >= 0 || delta >= 0, "a withdrawal cannot overdraw the account");
-        self.external[i] = self.external[i].checked_add(delta).expect("external funding overflows i64 cents");
+        assert!(
+            self.balance[i] + delta >= 0 || delta >= 0,
+            "a withdrawal cannot overdraw the account"
+        );
+        self.external[i] = self.external[i]
+            .checked_add(delta)
+            .expect("external funding overflows i64 cents");
         self.apply(p, delta);
     }
     /// Net funds `p` has brought in from its reserves so far.
@@ -119,12 +138,18 @@ impl Ledger {
     /// Feasibility is checked on the *net* effect per participant, which is what an atomic
     /// (simultaneous) settlement needs. `scratch` must hold `len()` zeros and is returned
     /// zeroed; passing it in avoids one allocation per call in hot loops.
-    pub fn try_batch(&mut self, legs: &[(ParticipantId, ParticipantId, Cents)], scratch: &mut [Cents]) -> bool {
+    pub fn try_batch(
+        &mut self,
+        legs: &[(ParticipantId, ParticipantId, Cents)],
+        scratch: &mut [Cents],
+    ) -> bool {
         for &(a, b, v) in legs {
             scratch[a as usize] -= v;
             scratch[b as usize] += v;
         }
-        let ok = legs.iter().all(|&(a, _, _)| self.balance[a as usize] + scratch[a as usize] + self.credit_limit[a as usize] >= 0);
+        let ok = legs.iter().all(|&(a, _, _)| {
+            self.balance[a as usize] + scratch[a as usize] + self.credit_limit[a as usize] >= 0
+        });
         for &(a, b, _) in legs {
             for p in [a, b] {
                 let d = scratch[p as usize];
@@ -152,7 +177,9 @@ impl Ledger {
     fn apply(&mut self, p: ParticipantId, delta: Cents) {
         let i = p as usize;
         // Checked: a silent wrap-around on real data would corrupt every result after it.
-        self.balance[i] = self.balance[i].checked_add(delta).expect("balance overflows i64 cents");
+        self.balance[i] = self.balance[i]
+            .checked_add(delta)
+            .expect("balance overflows i64 cents");
         if self.balance[i] < self.min_balance[i] {
             self.min_balance[i] = self.balance[i];
         }

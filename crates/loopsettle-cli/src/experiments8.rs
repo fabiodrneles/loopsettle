@@ -37,7 +37,10 @@ fn window_circulation(pairs: &BTreeMap<(u32, u32), i64>) -> (i128, i128) {
             id.entry(x).or_insert(next);
         }
     }
-    let triples: Vec<(u32, u32, i64)> = pairs.iter().map(|(&(a, b), &v)| (id[&a], id[&b], v)).collect();
+    let triples: Vec<(u32, u32, i64)> = pairs
+        .iter()
+        .map(|(&(a, b), &v)| (id[&a], id[&b], v))
+        .collect();
     let g = FlowGraph::from_triples(id.len(), &triples);
     let bilateral = g.total_flow() - g.net().total_flow();
     (cdfd_max(&g).circular_total, bilateral)
@@ -45,8 +48,18 @@ fn window_circulation(pairs: &BTreeMap<(u32, u32), i64>) -> (i128, i128) {
 
 pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
     let mut res = Results::new("circularity-horizon", base.seed, path);
-    let seeds: Vec<u64> = f64_list(doc, "horizon.seeds", &[20260930.0, 1.0, 2.0]).iter().map(|&s| s as u64).collect();
-    let widths_ms: Vec<u64> = f64_list(doc, "horizon.window_s", &[10.0, 60.0, 900.0, 3_600.0, 86_400.0]).iter().map(|&s| (s * 1000.0) as u64).collect();
+    let seeds: Vec<u64> = f64_list(doc, "horizon.seeds", &[20260930.0, 1.0, 2.0])
+        .iter()
+        .map(|&s| s as u64)
+        .collect();
+    let widths_ms: Vec<u64> = f64_list(
+        doc,
+        "horizon.window_s",
+        &[10.0, 60.0, 900.0, 3_600.0, 86_400.0],
+    )
+    .iter()
+    .map(|&s| (s * 1000.0) as u64)
+    .collect();
     if widths_ms.iter().any(|&w| w == 0 || MS_PER_DAY % w != 0) {
         return Err("horizon.window_s: every width must divide a day".into());
     }
@@ -54,7 +67,10 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
     // per seed: per width (circulating share of gross, bilateral share of gross, tight bound %
     // of UB, realised saving % of UB), plus UB / gross
     let done: Vec<(Vec<Row>, f64)> = par_map(&seeds, |&seed| {
-        let cfg = ScenarioConfig { seed, ..base.clone() };
+        let cfg = ScenarioConfig {
+            seed,
+            ..base.clone()
+        };
         let k = widths_ms.len();
         let mut acc: Vec<BTreeMap<(u32, u32), i64>> = vec![BTreeMap::new(); k];
         let mut end: Vec<u64> = widths_ms.clone();
@@ -79,7 +95,9 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
             bil[j] += b;
         }
         let mut specs = vec![EngineSpec::Gross];
-        specs.extend(widths_ms.iter().map(|&w| EngineSpec::Deferred { cycles_per_day: (MS_PER_DAY / w) as u32 }));
+        specs.extend(widths_ms.iter().map(|&w| EngineSpec::Deferred {
+            cycles_per_day: (MS_PER_DAY / w) as u32,
+        }));
         let o = run_engines(&cfg, &specs, &Opening::Unlimited, false, None);
         let ub = o.ub();
         let floors = liquidity_floors(&cfg, &widths_ms);
@@ -87,7 +105,12 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
         let rows = (0..k)
             .map(|j| {
                 let floor: i128 = floors[j].iter().map(|&v| v as i128).sum();
-                (100.0 * circ[j] as f64 / g, 100.0 * bil[j] as f64 / g, 100.0 * (ub - floor) as f64 / ub.max(1) as f64, 100.0 * o.results[j + 1].saving_vs(ub))
+                (
+                    100.0 * circ[j] as f64 / g,
+                    100.0 * bil[j] as f64 / g,
+                    100.0 * (ub - floor) as f64 / ub.max(1) as f64,
+                    100.0 * o.results[j + 1].saving_vs(ub),
+                )
             })
             .collect();
         (rows, ub as f64 / g)
@@ -97,7 +120,8 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
     let mut rows = Vec::new();
     let (mut s_circ, mut s_tight, mut s_real) = (Vec::new(), Vec::new(), Vec::new());
     for (j, &w) in widths_ms.iter().enumerate() {
-        let col = |g: &dyn Fn(&Row) -> f64| -> Vec<f64> { done.iter().map(|d| g(&d.0[j])).collect() };
+        let col =
+            |g: &dyn Fn(&Row) -> f64| -> Vec<f64> { done.iter().map(|d| g(&d.0[j])).collect() };
         let (c, clo, chi) = mean_ci95(&col(&|x| x.0));
         let b = mean_ci95(&col(&|x| x.1)).0;
         let (t, tlo, thi) = mean_ci95(&col(&|x| x.2));
@@ -105,30 +129,73 @@ pub fn circularity_horizon(path: &str, doc: &Doc, base: &ScenarioConfig) -> Resu
         let ws = w as f64 / 1000.0;
         // the tight bound as a share of gross value, to compare with the circulating share
         let t_gross = t * ub_gross;
-        rows.push(vec![f(ws), seeds.len().to_string(), f(c), f(clo), f(chi), f(b), f(t), f(tlo), f(thi), f(r), f(rlo), f(rhi), f(t_gross), f(if t_gross > 0.0 { c / t_gross } else { 0.0 })]);
+        rows.push(vec![
+            f(ws),
+            seeds.len().to_string(),
+            f(c),
+            f(clo),
+            f(chi),
+            f(b),
+            f(t),
+            f(tlo),
+            f(thi),
+            f(r),
+            f(rlo),
+            f(rhi),
+            f(t_gross),
+            f(if t_gross > 0.0 { c / t_gross } else { 0.0 }),
+        ]);
         s_circ.push((ws, c));
         s_tight.push((ws, t_gross));
         s_real.push((ws, r * ub_gross));
     }
     let header = [
-        "window_s", "seeds", "circulating_value_pct_of_gross", "circulating_ci95_low", "circulating_ci95_high", "bilateral_offset_pct_of_gross", "tight_bound_pct_of_ub", "tight_ci95_low", "tight_ci95_high",
-        "netting_every_w_saving_pct_of_ub", "saving_ci95_low", "saving_ci95_high", "tight_bound_pct_of_gross", "circulating_over_recoverable",
+        "window_s",
+        "seeds",
+        "circulating_value_pct_of_gross",
+        "circulating_ci95_low",
+        "circulating_ci95_high",
+        "bilateral_offset_pct_of_gross",
+        "tight_bound_pct_of_ub",
+        "tight_ci95_low",
+        "tight_ci95_high",
+        "netting_every_w_saving_pct_of_ub",
+        "saving_ci95_low",
+        "saving_ci95_high",
+        "tight_bound_pct_of_gross",
+        "circulating_over_recoverable",
     ];
     res.csv("horizon.csv", &table(&header, &rows));
     let chart = Chart {
-        title: "Value that circulates within a window vs liquidity recoverable with that deadline".into(),
+        title: "Value that circulates within a window vs liquidity recoverable with that deadline"
+            .into(),
         x_label: "window / deadline (s, log)".into(),
         y_label: "% of gross value".into(),
         series: vec![
-            Series { label: "circulating value (max circulation per window)".into(), points: s_circ, line: true },
-            Series { label: "recoverable liquidity: tight bound".into(), points: s_tight, line: true },
-            Series { label: "recovered by netting every window".into(), points: s_real, line: true },
+            Series {
+                label: "circulating value (max circulation per window)".into(),
+                points: s_circ,
+                line: true,
+            },
+            Series {
+                label: "recoverable liquidity: tight bound".into(),
+                points: s_tight,
+                line: true,
+            },
+            Series {
+                label: "recovered by netting every window".into(),
+                points: s_real,
+                line: true,
+            },
         ],
         log_x: true,
     };
     res.csv("fig_horizon.svg", &chart.render());
     res.set("scenario", scenario_json(base));
-    res.set("seeds", Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()));
+    res.set(
+        "seeds",
+        Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()),
+    );
     res.set("ub_over_gross_mean", ub_gross);
     res.set("note", "circulating value = sum over windows of the maximum circulation (CDFD) of the window's aggregated flows; it counts value that could be cancelled, not liquidity saved");
     eprintln!("{}", table(&header, &rows));
@@ -150,10 +217,17 @@ mod tests {
         let mut rng = loopsettle_core::rng::Rng::new(77);
         for _ in 0..200 {
             let k = 2 + rng.below(6) as u32;
-            let pays: Vec<(u64, u32, u32, i64)> = (0..rng.below(120)).map(|_| {
-                let a = rng.below(k as u64) as u32;
-                (rng.below(8_000), a, (a + 1 + rng.below(k as u64 - 1) as u32) % k, 1 + rng.below(500) as i64)
-            }).collect();
+            let pays: Vec<(u64, u32, u32, i64)> = (0..rng.below(120))
+                .map(|_| {
+                    let a = rng.below(k as u64) as u32;
+                    (
+                        rng.below(8_000),
+                        a,
+                        (a + 1 + rng.below(k as u64 - 1) as u32) % k,
+                        1 + rng.below(500) as i64,
+                    )
+                })
+                .collect();
             let c = |w: u64| -> i128 {
                 let mut by: BTreeMap<u64, BTreeMap<(u32, u32), i64>> = BTreeMap::new();
                 for &(t, a, b, v) in &pays {

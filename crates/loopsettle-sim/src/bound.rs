@@ -128,7 +128,15 @@ mod tests {
     #[test]
     fn engines_never_beat_the_delay_bound() {
         for (seed, profile_strength) in [(1u64, 0.0), (2, 0.0), (3, 0.0), (4, 1.0), (5, 0.5)] {
-            let cfg = ScenarioConfig { seed, participants: 25, payments_per_day: 40_000.0, n_big: 3, n_mid: 5, profile_strength, ..Default::default() };
+            let cfg = ScenarioConfig {
+                seed,
+                participants: 25,
+                payments_per_day: 40_000.0,
+                n_big: 3,
+                n_mid: 5,
+                profile_strength,
+                ..Default::default()
+            };
             // (engine, its maximum settlement delay in ms)
             let cases = [
                 ("micro:all:500:2000", 2_000u64),
@@ -157,7 +165,10 @@ mod tests {
                         r.liquidity_by_participant[i],
                         floors[k][i]
                     );
-                    assert!(ub - floors[k][i] <= bounds[k][i], "floor must be at least as tight as the window bound");
+                    assert!(
+                        ub - floors[k][i] <= bounds[k][i],
+                        "floor must be at least as tight as the window bound"
+                    );
                     assert!(
                         saving <= bounds[k][i],
                         "seed {seed}, {}: participant {i} saved {saving} > bound {}",
@@ -176,13 +187,23 @@ mod tests {
     #[test]
     fn floor_hand_example() {
         use loopsettle_core::Payment;
-        let p = |id, t, a, b, v| Payment { id, t_arrival: t, payer: a, payee: b, amount: v };
+        let p = |id, t, a, b, v| Payment {
+            id,
+            t_arrival: t,
+            payer: a,
+            payee: b,
+            amount: v,
+        };
         let v = vec![p(0, 0, 0, 1, 10), p(1, 5, 0, 1, 10), p(2, 7, 1, 0, 8)];
         let f = liquidity_floors_from(2, || v.clone().into_iter(), &[0, 1, 2, 100]);
         assert_eq!(f[0], vec![20, 0], "d = 0 is the gross upper bound");
         assert_eq!(f[1], vec![20, 0]);
         assert_eq!(f[2], vec![12, 0]);
-        assert_eq!(f[3], vec![12, 0], "a long delay tends to the end-of-period net debit");
+        assert_eq!(
+            f[3],
+            vec![12, 0],
+            "a long delay tends to the end-of-period net debit"
+        );
         let w = delay_bounds_from(2, || v.clone().into_iter(), &[2]);
         assert_eq!(w[0][0], 10);
         assert!(20 - f[2][0] <= w[0][0]);
@@ -194,13 +215,29 @@ mod tests {
     #[test]
     fn a_single_holder_needs_exactly_its_floor() {
         for (seed, profile_strength) in [(1u64, 0.0), (2, 0.0), (3, 1.0)] {
-            let cfg = ScenarioConfig { seed, participants: 12, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, profile_strength, ..Default::default() };
+            let cfg = ScenarioConfig {
+                seed,
+                participants: 12,
+                payments_per_day: 30_000.0,
+                n_big: 2,
+                n_mid: 3,
+                profile_strength,
+                ..Default::default()
+            };
             for d in [1_000u64, 10_000, 600_000] {
                 let floors = liquidity_floors(&cfg, &[d]);
-                let specs: Vec<EngineSpec> = (0..cfg.participants as u32).map(|i| EngineSpec::Hold { delay_ms: d, only: Some(i) }).collect();
+                let specs: Vec<EngineSpec> = (0..cfg.participants as u32)
+                    .map(|i| EngineSpec::Hold {
+                        delay_ms: d,
+                        only: Some(i),
+                    })
+                    .collect();
                 let o = run(&cfg, &specs, &Opening::Unlimited, false, None);
                 for (i, r) in o.results.iter().enumerate() {
-                    assert_eq!(r.liquidity_by_participant[i], floors[0][i], "seed {seed}, d {d}, participant {i}");
+                    assert_eq!(
+                        r.liquidity_by_participant[i], floors[0][i],
+                        "seed {seed}, d {d}, participant {i}"
+                    );
                 }
             }
         }
@@ -210,9 +247,22 @@ mod tests {
     /// whole, needs as much as gross settlement does when the day is long compared with `d`.
     #[test]
     fn holding_everything_respects_the_floor() {
-        let cfg = ScenarioConfig { seed: 4, participants: 15, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let cfg = ScenarioConfig {
+            seed: 4,
+            participants: 15,
+            payments_per_day: 30_000.0,
+            n_big: 2,
+            n_mid: 3,
+            ..Default::default()
+        };
         let d = 10_000;
-        let o = run(&cfg, &[EngineSpec::Gross, EngineSpec::parse("hold:10000").unwrap()], &Opening::Unlimited, false, None);
+        let o = run(
+            &cfg,
+            &[EngineSpec::Gross, EngineSpec::parse("hold:10000").unwrap()],
+            &Opening::Unlimited,
+            false,
+            None,
+        );
         let floors = liquidity_floors(&cfg, &[d]);
         for i in 0..cfg.participants {
             assert!(o.results[1].liquidity_by_participant[i] >= floors[0][i]);
@@ -223,19 +273,34 @@ mod tests {
 
     #[test]
     fn floor_is_ub_at_zero_delay_and_never_grows() {
-        let cfg = ScenarioConfig { participants: 20, payments_per_day: 20_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let cfg = ScenarioConfig {
+            participants: 20,
+            payments_per_day: 20_000.0,
+            n_big: 2,
+            n_mid: 3,
+            ..Default::default()
+        };
         let o = run(&cfg, &[EngineSpec::Gross], &Opening::Unlimited, false, None);
         let f = liquidity_floors(&cfg, &[0, 1_000, 60_000, 86_400_000]);
         for i in 0..cfg.participants {
             assert_eq!(f[0][i], o.flow.ub(i as u32));
             assert!(f[0][i] >= f[1][i] && f[1][i] >= f[2][i] && f[2][i] >= f[3][i]);
-            assert!(f[3][i] >= o.flow.lb(i as u32), "no deadline lets a participant need less than its final net debit");
+            assert!(
+                f[3][i] >= o.flow.lb(i as u32),
+                "no deadline lets a participant need less than its final net debit"
+            );
         }
     }
 
     #[test]
     fn bound_grows_with_the_delay() {
-        let cfg = ScenarioConfig { participants: 20, payments_per_day: 20_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let cfg = ScenarioConfig {
+            participants: 20,
+            payments_per_day: 20_000.0,
+            n_big: 2,
+            n_mid: 3,
+            ..Default::default()
+        };
         let b = delay_bounds(&cfg, &[1_000, 10_000, 100_000]);
         for i in 0..cfg.participants {
             assert!(b[0][i] <= b[1][i] && b[1][i] <= b[2][i]);
@@ -257,7 +322,12 @@ pub struct WindowStats {
 
 /// Per-window prefunding need, end-of-window netting need and delay bound, for windows that
 /// may overlap. Two streaming passes; memory O(windows x participants).
-pub fn window_stats<I, F>(n: usize, make: F, windows: &[(TimeMs, TimeMs)], delays_ms: &[TimeMs]) -> Vec<WindowStats>
+pub fn window_stats<I, F>(
+    n: usize,
+    make: F,
+    windows: &[(TimeMs, TimeMs)],
+    delays_ms: &[TimeMs],
+) -> Vec<WindowStats>
 where
     I: Iterator<Item = loopsettle_core::Payment>,
     F: Fn() -> I,
@@ -273,7 +343,16 @@ where
     // Pass 1. A window "starts" just before the first payment at or after `start` and "ends"
     // just before the first payment at or after `end`, so positions are taken between payments.
     #[allow(clippy::too_many_arguments)]
-    fn open(t: TimeMs, windows: &[(TimeMs, TimeMs)], x: &[i64], started: &mut [bool], ended: &mut [bool], x0: &mut [Vec<i64>], min: &mut [Vec<i64>], xend: &mut [Vec<i64>]) {
+    fn open(
+        t: TimeMs,
+        windows: &[(TimeMs, TimeMs)],
+        x: &[i64],
+        started: &mut [bool],
+        ended: &mut [bool],
+        x0: &mut [Vec<i64>],
+        min: &mut [Vec<i64>],
+        xend: &mut [Vec<i64>],
+    ) {
         for k in 0..windows.len() {
             if !started[k] && t >= windows[k].0 {
                 started[k] = true;
@@ -287,7 +366,16 @@ where
         }
     }
     for p in make() {
-        open(p.t_arrival, windows, &x, &mut started, &mut ended, &mut x0, &mut min, &mut xend);
+        open(
+            p.t_arrival,
+            windows,
+            &x,
+            &mut started,
+            &mut ended,
+            &mut x0,
+            &mut min,
+            &mut xend,
+        );
         let (a, b) = (p.payer as usize, p.payee as usize);
         x[a] -= p.amount;
         x[b] += p.amount;
@@ -298,7 +386,16 @@ where
             }
         }
     }
-    open(TimeMs::MAX, windows, &x, &mut started, &mut ended, &mut x0, &mut min, &mut xend);
+    open(
+        TimeMs::MAX,
+        windows,
+        &x,
+        &mut started,
+        &mut ended,
+        &mut x0,
+        &mut min,
+        &mut xend,
+    );
     // Pass 2: outflows in [t* - d, t*] for each window.
     let mut bound = vec![vec![vec![0i64; n]; delays_ms.len()]; w];
     for p in make() {
@@ -344,7 +441,12 @@ where
 ///
 /// Returns `floor[window][delay][participant]`. One lagging pass plus one leading pass per
 /// delay; memory O(windows x delays x participants).
-pub fn window_floors<I, F>(n: usize, make: F, windows: &[(TimeMs, TimeMs)], delays_ms: &[TimeMs]) -> Vec<Vec<Vec<Cents>>>
+pub fn window_floors<I, F>(
+    n: usize,
+    make: F,
+    windows: &[(TimeMs, TimeMs)],
+    delays_ms: &[TimeMs],
+) -> Vec<Vec<Vec<Cents>>>
 where
     I: Iterator<Item = loopsettle_core::Payment>,
     F: Fn() -> I,
@@ -361,7 +463,12 @@ where
 
     // Advance lead `j` over every payment with arrival <= `horizon`, taking the snapshots of
     // the windows it crosses just before the first payment at or after the snapshot time.
-    let advance = |j: usize, horizon: TimeMs, leads: &mut Vec<std::iter::Peekable<I>>, ci: &mut Vec<Vec<i64>>, ci_pre: &mut Vec<Vec<Option<Vec<i64>>>>, ci_a: &mut Vec<Vec<Option<Vec<i64>>>>| {
+    let advance = |j: usize,
+                   horizon: TimeMs,
+                   leads: &mut Vec<std::iter::Peekable<I>>,
+                   ci: &mut Vec<Vec<i64>>,
+                   ci_pre: &mut Vec<Vec<Option<Vec<i64>>>>,
+                   ci_a: &mut Vec<Vec<Option<Vec<i64>>>>| {
         while let Some(q) = leads[j].next_if(|q| q.t_arrival <= horizon) {
             for (x, &(a, _)) in windows.iter().enumerate() {
                 if ci_pre[j][x].is_none() && q.t_arrival >= a.saturating_sub(delays_ms[j]) {
@@ -391,7 +498,9 @@ where
                     continue;
                 }
                 // The lead has consumed `p` itself (arrival s >= a), so both snapshots exist.
-                let (Some(co0), Some(ci0)) = (&co_a[x], &ci_a[j][x]) else { continue };
+                let (Some(co0), Some(ci0)) = (&co_a[x], &ci_a[j][x]) else {
+                    continue;
+                };
                 let c = (co[i] - co0[i]) - (ci[j][i] - ci0[i]);
                 if c > best[x][j][i] {
                     best[x][j][i] = c;
@@ -420,9 +529,20 @@ mod window_tests {
 
     #[test]
     fn window_need_is_drawdown_from_the_window_start() {
-        let p = |t, a, b, v| Payment { id: 0, t_arrival: t, payer: a, payee: b, amount: v };
+        let p = |t, a, b, v| Payment {
+            id: 0,
+            t_arrival: t,
+            payer: a,
+            payee: b,
+            amount: v,
+        };
         // A pays 10 before the window, then inside the window pays 5 and receives 2.
-        let v = vec![p(1, 0, 1, 10), p(10, 0, 1, 5), p(12, 1, 0, 2), p(30, 0, 1, 1)];
+        let v = vec![
+            p(1, 0, 1, 10),
+            p(10, 0, 1, 5),
+            p(12, 1, 0, 2),
+            p(30, 0, 1, 1),
+        ];
         let s = window_stats(2, || v.clone().into_iter(), &[(5, 20)], &[3]);
         assert_eq!(s[0].need, vec![5, 0]);
         assert_eq!(s[0].net, vec![3, 0]);
@@ -438,8 +558,20 @@ mod window_tests {
     /// d = 1: the 4 is too late for the deadline t = 21: 12; [9, 10) holds no receipt: 12.
     #[test]
     fn window_floor_hand_example() {
-        let p = |t, a, b, v| Payment { id: 0, t_arrival: t, payer: a, payee: b, amount: v };
-        let v = vec![p(8, 1, 0, 3), p(12, 0, 1, 5), p(20, 0, 1, 7), p(22, 1, 0, 4), p(150, 0, 1, 1)];
+        let p = |t, a, b, v| Payment {
+            id: 0,
+            t_arrival: t,
+            payer: a,
+            payee: b,
+            amount: v,
+        };
+        let v = vec![
+            p(8, 1, 0, 3),
+            p(12, 0, 1, 5),
+            p(20, 0, 1, 7),
+            p(22, 1, 0, 4),
+            p(150, 0, 1, 1),
+        ];
         let need = window_stats(2, || v.clone().into_iter(), &[(10, 100)], &[]);
         assert_eq!(need[0].need[0], 12);
         let f = window_floors(2, || v.clone().into_iter(), &[(10, 100)], &[0, 1, 2]);
@@ -458,30 +590,57 @@ mod window_tests {
         use crate::runner::{run_payments, EngineSpec, Opening};
         use crate::scenario::ScenarioConfig;
         use crate::stream::PaymentStream;
-        use loopsettle_core::{drive, EngineRun, FlowStats, GrossRealTime, Ledger, PrefundClosedWindows};
+        use loopsettle_core::{
+            drive, EngineRun, FlowStats, GrossRealTime, Ledger, PrefundClosedWindows,
+        };
         const HOUR: TimeMs = 3_600_000;
-        let cfg = ScenarioConfig { seed: 9, participants: 15, payments_per_day: 40_000.0, n_big: 2, n_mid: 3, days: 2, ..Default::default() };
+        let cfg = ScenarioConfig {
+            seed: 9,
+            participants: 15,
+            payments_per_day: 40_000.0,
+            n_big: 2,
+            n_mid: 3,
+            days: 2,
+            ..Default::default()
+        };
         let ps: Vec<Payment> = PaymentStream::new(&cfg).collect();
         let n = cfg.participants;
         let closed = vec![(19 * HOUR, 30 * HOUR + HOUR / 2), (43 * HOUR, 48 * HOUR)];
         let st = window_stats(n, || ps.iter().copied(), &closed, &[]);
-        let need: Vec<i64> = (0..n).map(|i| st.iter().map(|w| w.need[i]).max().unwrap()).collect();
+        let need: Vec<i64> = (0..n)
+            .map(|i| st.iter().map(|w| w.need[i]).max().unwrap())
+            .collect();
         let run = |prefund: Vec<i64>| {
-            let mut runs = vec![EngineRun::new(Box::new(GrossRealTime), Ledger::unlimited(n)).with_funding(Box::new(PrefundClosedWindows::new(closed.clone(), prefund)))];
+            let mut runs = vec![
+                EngineRun::new(Box::new(GrossRealTime), Ledger::unlimited(n))
+                    .with_funding(Box::new(PrefundClosedWindows::new(closed.clone(), prefund))),
+            ];
             let mut flow = FlowStats::new(n, false);
             drive(ps.iter().copied(), &mut runs, &mut flow, cfg.horizon_ms());
             runs.pop().unwrap()
         };
         let exact = run(need.clone());
-        assert_eq!(exact.metrics.rejected_count, 0, "prefunding the need is enough");
+        assert_eq!(
+            exact.metrics.rejected_count, 0,
+            "prefunding the need is enough"
+        );
         let who = (0..n).max_by_key(|&i| need[i]).unwrap();
         assert!(need[who] > 0);
         let mut short = need.clone();
         short[who] -= 1;
         let r = run(short);
-        assert!(r.metrics.rejected_value_by_payer[who] > 0, "one cent less than its need must reject a payment of {who}");
+        assert!(
+            r.metrics.rejected_value_by_payer[who] > 0,
+            "one cent less than its need must reject a payment of {who}"
+        );
         // sanity: without the policy, nothing is rejected (unlimited liquidity)
-        let free = run_payments(n, ps.iter().copied(), &[EngineSpec::Gross], &Opening::Unlimited, cfg.horizon_ms());
+        let free = run_payments(
+            n,
+            ps.iter().copied(),
+            &[EngineSpec::Gross],
+            &Opening::Unlimited,
+            cfg.horizon_ms(),
+        );
         assert_eq!(free.results[0].metrics.rejected_count, 0);
     }
 
@@ -502,16 +661,39 @@ mod window_tests {
             }
         }
         const HOUR: TimeMs = 3_600_000;
-        let windows = [(2 * HOUR, 9 * HOUR), (13 * HOUR, 13 * HOUR + 600_000), (18 * HOUR, 24 * HOUR)];
+        let windows = [
+            (2 * HOUR, 9 * HOUR),
+            (13 * HOUR, 13 * HOUR + 600_000),
+            (18 * HOUR, 24 * HOUR),
+        ];
         for seed in [1u64, 2, 3] {
             let n = 15;
-            let cfg = ScenarioConfig { seed, participants: n, payments_per_day: 30_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+            let cfg = ScenarioConfig {
+                seed,
+                participants: n,
+                payments_per_day: 30_000.0,
+                n_big: 2,
+                n_mid: 3,
+                ..Default::default()
+            };
             let ps: Vec<Payment> = PaymentStream::new(&cfg).collect();
             // (engine, its maximum settlement delay)
             let engines: Vec<(Box<dyn SettlementEngine>, TimeMs)> = vec![
                 (Box::new(GrossRealTime), 0),
-                (Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(500, 5_000, QueueMode::QueueAll), n)), 5_000),
-                (Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(2_000, 60_000, QueueMode::QueueAll), n)), 60_000),
+                (
+                    Box::new(AtomicMicroCycle::new(
+                        MicroCycleConfig::new(500, 5_000, QueueMode::QueueAll),
+                        n,
+                    )),
+                    5_000,
+                ),
+                (
+                    Box::new(AtomicMicroCycle::new(
+                        MicroCycleConfig::new(2_000, 60_000, QueueMode::QueueAll),
+                        n,
+                    )),
+                    60_000,
+                ),
                 (Box::new(DeferredNet::new(8_640, n)), 10_000),
                 (Box::new(DeferredNet::new(96, n)), 900_000),
             ];
@@ -556,9 +738,16 @@ mod window_tests {
                     }
                     let open = open.unwrap_or_else(|| y.clone());
                     for i in 0..n {
-                        let need = if low[i] == i64::MAX { 0 } else { (open[i] - low[i]).max(0) };
+                        let need = if low[i] == i64::MAX {
+                            0
+                        } else {
+                            (open[i] - low[i]).max(0)
+                        };
                         assert!(need >= floors[x][j][i], "seed {seed}, engine {j} (d = {d}), window {x}, participant {i}: need {need} < floor {}", floors[x][j][i]);
-                        assert!(floors[x][j][i] <= gross[x].need[i], "the floor never exceeds the gross need");
+                        assert!(
+                            floors[x][j][i] <= gross[x].need[i],
+                            "the floor never exceeds the gross need"
+                        );
                         if d == 0 {
                             assert_eq!(floors[x][j][i], gross[x].need[i]);
                         }

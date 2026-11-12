@@ -20,7 +20,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
+          components: clippy, rustfmt
+      - run: cargo fmt --check
       # The two allowed lints are style choices of the numeric code (index loops over several
       # arrays at once; `!(a > b)` where NaN must count as "not greater").
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings -A clippy::needless_range_loop -A clippy::neg_cmp_op_on_partial_ord

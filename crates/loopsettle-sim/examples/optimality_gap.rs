@@ -50,19 +50,53 @@ fn main() {
             let (mut fb, mut lb, mut eb) = (Vec::new(), Vec::new(), Vec::new());
             let mut strict = 0;
             for seed in 1..=SEEDS {
-                let cfg = ScenarioConfig { seed, participants: PARTICIPANTS, payments_per_day: PAYMENTS, n_big: 2, n_mid: 3, receiver_bias_sigma: sigma, ..Default::default() };
+                let cfg = ScenarioConfig {
+                    seed,
+                    participants: PARTICIPANTS,
+                    payments_per_day: PAYMENTS,
+                    n_big: 2,
+                    n_mid: 3,
+                    receiver_bias_sigma: sigma,
+                    ..Default::default()
+                };
                 // compress the day into one hour (24x), keeping order and relative spacing
-                let ps: Vec<Payment> = PaymentStream::new(&cfg).map(|p| Payment { t_arrival: p.t_arrival / 24, ..p }).collect();
+                let ps: Vec<Payment> = PaymentStream::new(&cfg)
+                    .map(|p| Payment {
+                        t_arrival: p.t_arrival / 24,
+                        ..p
+                    })
+                    .collect();
                 let t_end = ps.last().map(|p| p.t_arrival).unwrap_or(0);
-                let names = [format!("micro:all:100:{d}"), format!("micro:all:500:{d}"), format!("micro:all:{d}:{d}"), format!("deferred:{}", 86_400_000 / d)];
+                let names = [
+                    format!("micro:all:100:{d}"),
+                    format!("micro:all:500:{d}"),
+                    format!("micro:all:{d}:{d}"),
+                    format!("deferred:{}", 86_400_000 / d),
+                ];
                 let mut specs = vec![EngineSpec::Gross];
                 specs.extend(names.iter().map(|s| EngineSpec::parse(s).unwrap()));
-                let o = run_payments(PARTICIPANTS, ps.iter().copied(), &specs, &Opening::Unlimited, t_end);
+                let o = run_payments(
+                    PARTICIPANTS,
+                    ps.iter().copied(),
+                    &specs,
+                    &Opening::Unlimited,
+                    t_end,
+                );
                 let ub = o.ub() as f64;
-                let floors: f64 = liquidity_floors_from(PARTICIPANTS, || ps.iter().copied(), &[d])[0].iter().map(|&v| v as f64).sum();
-                let lp = optimum::lp_min_liquidity(PARTICIPANTS, &ps, d).expect("the LP is feasible: gross settlement is a solution");
+                let floors: f64 = liquidity_floors_from(PARTICIPANTS, || ps.iter().copied(), &[d])
+                    [0]
+                .iter()
+                .map(|&v| v as f64)
+                .sum();
+                let lp = optimum::lp_min_liquidity(PARTICIPANTS, &ps, d)
+                    .expect("the LP is feasible: gross settlement is a solution");
                 let best = o.results[1..].iter().min_by_key(|r| r.liquidity).unwrap();
-                assert!(floors <= lp * (1.0 + 1e-6) + 1e-6 && lp <= best.liquidity as f64 * (1.0 + 1e-6) + 1e-6, "sandwich violated: {floors} {lp} {}", best.liquidity);
+                assert!(
+                    floors <= lp * (1.0 + 1e-6) + 1e-6
+                        && lp <= best.liquidity as f64 * (1.0 + 1e-6) + 1e-6,
+                    "sandwich violated: {floors} {lp} {}",
+                    best.liquidity
+                );
                 if lp > floors * (1.0 + 1e-6) + 1e-6 {
                     strict += 1;
                 }
@@ -70,7 +104,17 @@ fn main() {
                 fb.push(pct(floors));
                 lb.push(pct(lp));
                 eb.push(pct(best.liquidity as f64));
-                writeln!(inst, "{sigma},{seed},{d},{},{:.0},{:.0},{:.2},{},{}", ps.len(), ub, floors, lp, best.name, best.liquidity).unwrap();
+                writeln!(
+                    inst,
+                    "{sigma},{seed},{d},{},{:.0},{:.0},{:.2},{},{}",
+                    ps.len(),
+                    ub,
+                    floors,
+                    lp,
+                    best.name,
+                    best.liquidity
+                )
+                .unwrap();
             }
             let (f, fl, fh) = mean_ci(&fb);
             let (l, ll, lh) = mean_ci(&lb);
@@ -89,6 +133,9 @@ fn main() {
     std::fs::create_dir_all(dir).expect("cannot create results/optimality-gap");
     std::fs::write(dir.join("gap.csv"), &out).unwrap();
     std::fs::write(dir.join("instances.csv"), &inst).unwrap();
-    eprintln!("wrote results/optimality-gap/gap.csv and instances.csv in {:.0} s", t0.elapsed().as_secs_f64());
+    eprintln!(
+        "wrote results/optimality-gap/gap.csv and instances.csv in {:.0} s",
+        t0.elapsed().as_secs_f64()
+    );
     print!("{out}");
 }

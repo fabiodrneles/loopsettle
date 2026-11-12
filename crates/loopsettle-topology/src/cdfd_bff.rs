@@ -49,7 +49,14 @@ fn stationary(p: &[f64], k: usize) -> Vec<f64> {
     }
     b[k - 1] = 1.0;
     for col in 0..k {
-        let piv = (col..k).max_by(|&x, &y| a[x * k + col].abs().partial_cmp(&a[y * k + col].abs()).unwrap()).unwrap();
+        let piv = (col..k)
+            .max_by(|&x, &y| {
+                a[x * k + col]
+                    .abs()
+                    .partial_cmp(&a[y * k + col].abs())
+                    .unwrap()
+            })
+            .unwrap();
         if piv != col {
             for j in 0..k {
                 a.swap(col * k + j, piv * k + j);
@@ -160,7 +167,8 @@ pub fn cdfd_bff(g: &FlowGraph) -> CdfdBff {
         let alive: Vec<bool> = (0..m).map(|e| rest[e] > 1e-9 * orig[e]).collect();
         let comp = scc(g.n, &ends, &alive);
         // group the alive edges that stay inside a component
-        let mut by_comp: std::collections::BTreeMap<usize, Vec<usize>> = std::collections::BTreeMap::new();
+        let mut by_comp: std::collections::BTreeMap<usize, Vec<usize>> =
+            std::collections::BTreeMap::new();
         for e in 0..m {
             let (a, b) = ends[e];
             if alive[e] && comp[a as usize] == comp[b as usize] {
@@ -173,7 +181,8 @@ pub fn cdfd_bff(g: &FlowGraph) -> CdfdBff {
         for es in by_comp.values() {
             rounds += 1;
             // local indices of the component's nodes
-            let mut local: std::collections::BTreeMap<u32, usize> = std::collections::BTreeMap::new();
+            let mut local: std::collections::BTreeMap<u32, usize> =
+                std::collections::BTreeMap::new();
             for &e in es {
                 for v in [ends[e].0, ends[e].1] {
                     let k = local.len();
@@ -191,12 +200,19 @@ pub fn cdfd_bff(g: &FlowGraph) -> CdfdBff {
                 p[i * k + j] += rest[e] / out[i];
             }
             let pi = stationary(&p, k);
-            let scale = (0..k).filter(|&i| pi[i] > 0.0).map(|i| out[i] / pi[i]).fold(f64::INFINITY, f64::min);
+            let scale = (0..k)
+                .filter(|&i| pi[i] > 0.0)
+                .map(|i| out[i] / pi[i])
+                .fold(f64::INFINITY, f64::min);
             for &e in es {
                 let i = local[&ends[e].0];
                 let x = pi[i] * scale;
                 // the saturating node(s) give exactly their remaining flow
-                let take = if out[i] - x <= 1e-12 * out[i] { rest[e] } else { (x * rest[e] / out[i]).min(rest[e]) };
+                let take = if out[i] - x <= 1e-12 * out[i] {
+                    rest[e]
+                } else {
+                    (x * rest[e] / out[i]).min(rest[e])
+                };
                 circ[e] += take;
                 rest[e] -= take;
                 if rest[e] <= 1e-9 * orig[e] {
@@ -207,7 +223,12 @@ pub fn cdfd_bff(g: &FlowGraph) -> CdfdBff {
     }
     let circular_total = circ.iter().sum();
     let directional = orig.iter().zip(&circ).map(|(f, c)| f - c).collect();
-    CdfdBff { circular: circ, directional, circular_total, rounds }
+    CdfdBff {
+        circular: circ,
+        directional,
+        circular_total,
+        rounds,
+    }
 }
 
 #[cfg(test)]
@@ -252,10 +273,17 @@ mod tests {
         let g = tri(3, &[(0, 1, 2), (0, 2, 2), (1, 0, 2), (2, 1, 2)]);
         let b = cdfd_bff(&g);
         let get = |a: u32, z: u32| {
-            let k = g.edges.iter().position(|e| e.from == a && e.to == z).unwrap();
+            let k = g
+                .edges
+                .iter()
+                .position(|e| e.from == a && e.to == z)
+                .unwrap();
             (b.circular[k] * 1e9).round() / 1e9
         };
-        assert_eq!((get(0, 1), get(0, 2), get(1, 0), get(2, 1)), (1.0, 1.0, 2.0, 1.0));
+        assert_eq!(
+            (get(0, 1), get(0, 2), get(1, 0), get(2, 1)),
+            (1.0, 1.0, 2.0, 1.0)
+        );
         assert!((b.circular_total - 5.0).abs() < 1e-9);
         assert_eq!(cdfd_max(&g).circular_total, 6);
     }
@@ -268,20 +296,49 @@ mod tests {
         for case in 0..1_000 {
             let n = 2 + rng.below(9) as usize;
             let m = rng.below(30) as usize;
-            let t: Vec<(u32, u32, i64)> = (0..m).map(|_| (rng.below(n as u64) as u32, rng.below(n as u64) as u32, 1 + rng.below(10_000) as i64)).collect();
+            let t: Vec<(u32, u32, i64)> = (0..m)
+                .map(|_| {
+                    (
+                        rng.below(n as u64) as u32,
+                        rng.below(n as u64) as u32,
+                        1 + rng.below(10_000) as i64,
+                    )
+                })
+                .collect();
             let g = tri(n, &t);
             let b = cdfd_bff(&g);
-            assert!(balance_ok(&g, &b.circular), "case {case}: not a circulation");
+            assert!(
+                balance_ok(&g, &b.circular),
+                "case {case}: not a circulation"
+            );
             for (e, &c) in g.edges.iter().zip(&b.circular) {
-                assert!(c >= -1e-9 && c <= e.flow as f64 * (1.0 + 1e-12) + 1e-9, "case {case}: 0 <= c <= F");
+                assert!(
+                    c >= -1e-9 && c <= e.flow as f64 * (1.0 + 1e-12) + 1e-9,
+                    "case {case}: 0 <= c <= F"
+                );
             }
             let max = cdfd_max(&g).circular_total as f64;
-            assert!(b.circular_total <= max * (1.0 + 1e-9) + 1e-6, "case {case}: BFF {} > max {}", b.circular_total, max);
+            assert!(
+                b.circular_total <= max * (1.0 + 1e-9) + 1e-6,
+                "case {case}: BFF {} > max {}",
+                b.circular_total,
+                max
+            );
             // nothing circular is left: the edges with directional flow > 0 form no cycle
-            let alive: Vec<bool> = b.directional.iter().zip(&g.edges).map(|(d, e)| *d > 1e-9 * e.flow as f64).collect();
+            let alive: Vec<bool> = b
+                .directional
+                .iter()
+                .zip(&g.edges)
+                .map(|(d, e)| *d > 1e-9 * e.flow as f64)
+                .collect();
             let ends: Vec<(u32, u32)> = g.edges.iter().map(|e| (e.from, e.to)).collect();
             let comp = scc(g.n, &ends, &alive);
-            assert!(ends.iter().zip(&alive).all(|(&(a, z), &al)| !al || comp[a as usize] != comp[z as usize]), "case {case}: a cycle is left in d");
+            assert!(
+                ends.iter()
+                    .zip(&alive)
+                    .all(|(&(a, z), &al)| !al || comp[a as usize] != comp[z as usize]),
+                "case {case}: a cycle is left in d"
+            );
         }
     }
 }

@@ -23,14 +23,22 @@ mod imp {
     #[link(name = "kernel32")]
     extern "system" {
         fn GetCurrentProcess() -> isize;
-        fn K32GetProcessMemoryInfo(process: isize, counters: *mut ProcessMemoryCounters, cb: u32) -> i32;
+        fn K32GetProcessMemoryInfo(
+            process: isize,
+            counters: *mut ProcessMemoryCounters,
+            cb: u32,
+        ) -> i32;
     }
     pub fn peak_rss_bytes() -> Option<u64> {
         let mut c: ProcessMemoryCounters = unsafe { std::mem::zeroed() };
         c.cb = std::mem::size_of::<ProcessMemoryCounters>() as u32;
         // SAFETY: `c` is a properly sized, writable struct and `cb` holds its size.
         let ok = unsafe { K32GetProcessMemoryInfo(GetCurrentProcess(), &mut c, c.cb) };
-        if ok != 0 { Some(c.PeakWorkingSetSize as u64) } else { None }
+        if ok != 0 {
+            Some(c.PeakWorkingSetSize as u64)
+        } else {
+            None
+        }
     }
 }
 
@@ -58,5 +66,7 @@ pub fn peak_rss_bytes() -> Option<u64> {
 
 /// Peak RSS in MiB (0.0 if unknown).
 pub fn peak_rss_mib() -> f64 {
-    peak_rss_bytes().map(|b| b as f64 / (1024.0 * 1024.0)).unwrap_or(0.0)
+    peak_rss_bytes()
+        .map(|b| b as f64 / (1024.0 * 1024.0))
+        .unwrap_or(0.0)
 }

@@ -10,11 +10,20 @@ use loopsettle_sim::bound::liquidity_floors_from;
 use loopsettle_sim::{run_payments, EngineSpec, Opening};
 
 fn pay(id: u64, t: TimeMs, a: u32, b: u32, v: Cents) -> Payment {
-    Payment { id, t_arrival: t, payer: a, payee: b, amount: v }
+    Payment {
+        id,
+        t_arrival: t,
+        payer: a,
+        payee: b,
+        amount: v,
+    }
 }
 
 fn floors_total(n: usize, ps: &[Payment], d: TimeMs) -> f64 {
-    liquidity_floors_from(n, || ps.iter().copied(), &[d])[0].iter().map(|&v| v as f64).sum()
+    liquidity_floors_from(n, || ps.iter().copied(), &[d])[0]
+        .iter()
+        .map(|&v| v as f64)
+        .sum()
 }
 
 fn close(a: f64, b: f64) -> bool {
@@ -65,14 +74,29 @@ fn sandwich_on_random_instances() {
             })
             .collect();
         let t_end = ps.last().unwrap().t_arrival;
-        let gross = run_payments(n, ps.iter().copied(), &[EngineSpec::Gross], &Opening::Unlimited, t_end);
+        let gross = run_payments(
+            n,
+            ps.iter().copied(),
+            &[EngineSpec::Gross],
+            &Opening::Unlimited,
+            t_end,
+        );
         let (ub, lb) = (gross.ub() as f64, gross.lb() as f64);
-        assert!(close(lp_min_liquidity(n, &ps, 0).unwrap(), ub), "case {case}: LP(0) must be UB");
-        assert!(close(lp_min_liquidity(n, &ps, t_end + 1).unwrap(), lb), "case {case}: LP(long) must be LB");
+        assert!(
+            close(lp_min_liquidity(n, &ps, 0).unwrap(), ub),
+            "case {case}: LP(0) must be UB"
+        );
+        assert!(
+            close(lp_min_liquidity(n, &ps, t_end + 1).unwrap(), lb),
+            "case {case}: LP(long) must be LB"
+        );
         for d in [500u64, 2_000, 10_000] {
             let lp = lp_min_liquidity(n, &ps, d).unwrap();
             let fl = floors_total(n, &ps, d);
-            assert!(fl <= lp + 1e-6 * (1.0 + lp), "case {case}, d {d}: floors {fl} > LP {lp}");
+            assert!(
+                fl <= lp + 1e-6 * (1.0 + lp),
+                "case {case}, d {d}: floors {fl} > LP {lp}"
+            );
             assert!(lp <= ub + 1e-6 * (1.0 + ub));
             if fl < lp - 1e-6 * (1.0 + lp) {
                 strict_gap += 1;
@@ -81,16 +105,28 @@ fn sandwich_on_random_instances() {
             let specs = [
                 EngineSpec::parse(&format!("micro:all:100:{d}")).unwrap(),
                 EngineSpec::parse(&format!("micro:all:{d}:{d}")).unwrap(),
-                EngineSpec::Deferred { cycles_per_day: (86_400_000 / d) as u32 },
+                EngineSpec::Deferred {
+                    cycles_per_day: (86_400_000 / d) as u32,
+                },
             ];
             let o = run_payments(n, ps.iter().copied(), &specs, &Opening::Unlimited, t_end);
             for r in &o.results {
                 let need = r.liquidity as f64;
-                assert!(lp <= need + 1e-6 * (1.0 + need), "case {case}, d {d}: {} needs {need} < LP {lp}", r.name);
+                assert!(
+                    lp <= need + 1e-6 * (1.0 + need),
+                    "case {case}, d {d}: {} needs {need} < LP {lp}",
+                    r.name
+                );
             }
         }
     }
     // The floors are not always attainable together: the LP is strictly above them sometimes.
-    assert!(strict_gap > 0, "expected at least one instance with LP > sum of floors");
-    eprintln!("LP strictly above the floors in {strict_gap} of {} (instance, d) pairs", cases * 3);
+    assert!(
+        strict_gap > 0,
+        "expected at least one instance with LP > sum of floors"
+    );
+    eprintln!(
+        "LP strictly above the floors in {strict_gap} of {} (instance, d) pairs",
+        cases * 3
+    );
 }

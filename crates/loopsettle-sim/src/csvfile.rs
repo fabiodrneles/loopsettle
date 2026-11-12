@@ -53,7 +53,10 @@ fn parse_cents(s: &str) -> Option<Cents> {
         Some((i, f)) => (i, f),
         None => (s, ""),
     };
-    if int.is_empty() && frac.is_empty() || !int.bytes().all(|b| b.is_ascii_digit()) || !frac.bytes().all(|b| b.is_ascii_digit()) {
+    if int.is_empty() && frac.is_empty()
+        || !int.bytes().all(|b| b.is_ascii_digit())
+        || !frac.bytes().all(|b| b.is_ascii_digit())
+    {
         return None;
     }
     let units: i64 = if int.is_empty() { 0 } else { int.parse().ok()? };
@@ -94,7 +97,10 @@ impl CsvSchema {
     pub fn scan(path: &str) -> Result<Self, String> {
         let file = std::fs::File::open(path).map_err(|e| format!("{path}: {e}"))?;
         let mut lines = BufReader::new(file).lines();
-        let header = lines.next().ok_or(format!("{path}: empty file"))?.map_err(|e| e.to_string())?;
+        let header = lines
+            .next()
+            .ok_or(format!("{path}: empty file"))?
+            .map_err(|e| e.to_string())?;
         let mut s = Self::from_header(path, &header)?;
         let mut last: Option<TimeMs> = None;
         for (k, line) in lines.enumerate() {
@@ -111,7 +117,10 @@ impl CsvSchema {
                 Some((t, a, b, _)) => {
                     if let Some(l) = last {
                         if t < l {
-                            return Err(format!("{path}: line {}: time goes backwards; sort the file by time first", k + 2));
+                            return Err(format!(
+                                "{path}: line {}: time goes backwards; sort the file by time first",
+                                k + 2
+                            ));
                         }
                     } else {
                         s.first_ms = t;
@@ -137,33 +146,73 @@ impl CsvSchema {
     /// Column positions from a header line; `label` names the source in error messages.
     pub fn from_header(label: &str, header: &str) -> Result<Self, String> {
         let path = label;
-        let cols: Vec<String> = header.split(',').map(|c| c.trim().trim_matches('"').to_lowercase()).collect();
+        let cols: Vec<String> = header
+            .split(',')
+            .map(|c| c.trim().trim_matches('"').to_lowercase())
+            .collect();
         let find = |names: &[&str]| cols.iter().position(|c| names.contains(&c.as_str()));
         let (time, time_is_ms) = time_column(header).map_err(|e| format!("{path}: {e}"))?;
-        let from = find(&["from", "payer", "sender"]).ok_or(format!("{path}: header needs a `from` column"))?;
-        let to = find(&["to", "payee", "receiver"]).ok_or(format!("{path}: header needs a `to` column"))?;
-        let amount = find(&["amount", "value"]).ok_or(format!("{path}: header needs an `amount` column"))?;
+        let from = find(&["from", "payer", "sender"])
+            .ok_or(format!("{path}: header needs a `from` column"))?;
+        let to = find(&["to", "payee", "receiver"])
+            .ok_or(format!("{path}: header needs a `to` column"))?;
+        let amount =
+            find(&["amount", "value"]).ok_or(format!("{path}: header needs an `amount` column"))?;
         let status = find(&["status", "state", "situacao"]);
-        Ok(CsvSchema { path: path.into(), time, time_is_ms, from, to, amount, status, ids: HashMap::new(), names: Vec::new(), rows: 0, skipped: 0, skipped_status: 0, first_ms: 0, last_ms: 0 })
+        Ok(CsvSchema {
+            path: path.into(),
+            time,
+            time_is_ms,
+            from,
+            to,
+            amount,
+            status,
+            ids: HashMap::new(),
+            names: Vec::new(),
+            rows: 0,
+            skipped: 0,
+            skipped_status: 0,
+            first_ms: 0,
+            last_ms: 0,
+        })
     }
 
     /// `false` if the file has a status column and this row's status is not a settled one.
     fn settled(&self, line: &str) -> bool {
         match self.status {
             None => true,
-            Some(k) => line.split(',').nth(k).map(|v| SETTLED_STATUSES.contains(&v.trim().trim_matches('"').to_lowercase().as_str())).unwrap_or(false),
+            Some(k) => line
+                .split(',')
+                .nth(k)
+                .map(|v| {
+                    SETTLED_STATUSES.contains(&v.trim().trim_matches('"').to_lowercase().as_str())
+                })
+                .unwrap_or(false),
         }
     }
 
     /// `Ok(None)` for rows to skip (self-payments, non-positive amounts).
-    fn parse_row<'a>(&self, line: &'a str) -> Result<Option<(TimeMs, &'a str, &'a str, Cents)>, String> {
-        let c: Vec<&str> = line.split(',').map(|x| x.trim().trim_matches('"')).collect();
+    fn parse_row<'a>(
+        &self,
+        line: &'a str,
+    ) -> Result<Option<(TimeMs, &'a str, &'a str, Cents)>, String> {
+        let c: Vec<&str> = line
+            .split(',')
+            .map(|x| x.trim().trim_matches('"'))
+            .collect();
         let need = self.time.max(self.from).max(self.to).max(self.amount);
         if c.len() <= need {
-            return Err(format!("{}: row has {} columns, expected at least {}: {line}", self.path, c.len(), need + 1));
+            return Err(format!(
+                "{}: row has {} columns, expected at least {}: {line}",
+                self.path,
+                c.len(),
+                need + 1
+            ));
         }
-        let t = parse_time_ms(c[self.time], self.time_is_ms).ok_or(format!("{}: bad time `{}`", self.path, c[self.time]))?;
-        let amt = parse_cents(c[self.amount]).ok_or(format!("{}: bad amount `{}`", self.path, c[self.amount]))?;
+        let t = parse_time_ms(c[self.time], self.time_is_ms)
+            .ok_or(format!("{}: bad time `{}`", self.path, c[self.time]))?;
+        let amt = parse_cents(c[self.amount])
+            .ok_or(format!("{}: bad amount `{}`", self.path, c[self.amount]))?;
         if amt <= 0 || c[self.from] == c[self.to] {
             return Ok(None);
         }
@@ -179,7 +228,11 @@ impl CsvSchema {
         let file = std::fs::File::open(&self.path).map_err(|e| format!("{}: {e}", self.path))?;
         let mut lines = BufReader::new(file).lines();
         lines.next();
-        Ok(CsvPayments { schema: self.clone_light(), lines, next_id: 0 })
+        Ok(CsvPayments {
+            schema: self.clone_light(),
+            lines,
+            next_id: 0,
+        })
     }
 
     fn clone_light(&self) -> CsvSchema {
@@ -208,7 +261,13 @@ impl Iterator for CsvPayments {
             if let Ok(Some((t, a, b, amount))) = self.schema.parse_row(&line) {
                 let id = self.next_id;
                 self.next_id += 1;
-                return Some(Payment { id, t_arrival: t - self.schema.first_ms, payer: self.schema.ids[a], payee: self.schema.ids[b], amount });
+                return Some(Payment {
+                    id,
+                    t_arrival: t - self.schema.first_ms,
+                    payer: self.schema.ids[a],
+                    payee: self.schema.ids[b],
+                    amount,
+                });
             }
         }
     }
@@ -261,18 +320,39 @@ pub fn payments_from_text(text: &str) -> Result<TextPayments, String> {
     rows.sort_by_key(|r| r.0); // stable
     let first = rows.first().map(|r| r.0).unwrap_or(0);
     let span_ms = rows.last().map(|r| r.0 - first).unwrap_or(0);
-    let payments = rows.iter().enumerate().map(|(k, &(t, a, b, amount))| Payment { id: k as u64, t_arrival: t - first, payer: a, payee: b, amount }).collect();
-    Ok(TextPayments { payments, names: s.names, skipped: s.skipped, skipped_status: s.skipped_status, span_ms })
+    let payments = rows
+        .iter()
+        .enumerate()
+        .map(|(k, &(t, a, b, amount))| Payment {
+            id: k as u64,
+            t_arrival: t - first,
+            payer: a,
+            payee: b,
+            amount,
+        })
+        .collect();
+    Ok(TextPayments {
+        payments,
+        names: s.names,
+        skipped: s.skipped,
+        skipped_status: s.skipped_status,
+        span_ms,
+    })
 }
 
 /// Position of the time column in a header line and whether it is in milliseconds (`t_ms`).
 pub fn time_column(header: &str) -> Result<(usize, bool), String> {
-    let cols: Vec<String> = header.split(',').map(|c| c.trim().trim_matches('"').to_lowercase()).collect();
+    let cols: Vec<String> = header
+        .split(',')
+        .map(|c| c.trim().trim_matches('"').to_lowercase())
+        .collect();
     let find = |names: &[&str]| cols.iter().position(|c| names.contains(&c.as_str()));
     match (find(&["t_ms"]), find(&["time", "t", "timestamp"])) {
         (Some(i), _) => Ok((i, true)),
         (None, Some(i)) => Ok((i, false)),
-        _ => Err(format!("header needs a `time` (or `t_ms`) column; found {cols:?}")),
+        _ => Err(format!(
+            "header needs a `time` (or `t_ms`) column; found {cols:?}"
+        )),
     }
 }
 
@@ -285,10 +365,16 @@ pub fn sort_file(input: &str, output: &str, block_rows: usize) -> Result<u64, St
     let block_rows = block_rows.max(1);
     let file = std::fs::File::open(input).map_err(|e| format!("{input}: {e}"))?;
     let mut lines = BufReader::new(file).lines();
-    let header = lines.next().ok_or(format!("{input}: empty file"))?.map_err(|e| e.to_string())?;
+    let header = lines
+        .next()
+        .ok_or(format!("{input}: empty file"))?
+        .map_err(|e| e.to_string())?;
     let (tcol, is_ms) = time_column(&header).map_err(|e| format!("{input}: {e}"))?;
     let key = |line: &str, n: u64| -> Result<TimeMs, String> {
-        let cell = line.split(',').nth(tcol).ok_or(format!("{input}: line {n}: no time column"))?;
+        let cell = line
+            .split(',')
+            .nth(tcol)
+            .ok_or(format!("{input}: line {n}: no time column"))?;
         parse_time_ms(cell, is_ms).ok_or(format!("{input}: line {n}: bad time `{cell}`"))
     };
     let tmp_dir = std::path::Path::new(output).with_extension("sort-tmp");
@@ -296,13 +382,17 @@ pub fn sort_file(input: &str, output: &str, block_rows: usize) -> Result<u64, St
     let mut runs: Vec<std::path::PathBuf> = Vec::new();
     let mut block: Vec<(TimeMs, u64, String)> = Vec::with_capacity(block_rows.min(1 << 20));
     let mut n: u64 = 0;
-    let flush = |block: &mut Vec<(TimeMs, u64, String)>, runs: &mut Vec<std::path::PathBuf>| -> Result<(), String> {
+    let flush = |block: &mut Vec<(TimeMs, u64, String)>,
+                 runs: &mut Vec<std::path::PathBuf>|
+     -> Result<(), String> {
         if block.is_empty() {
             return Ok(());
         }
         block.sort_by_key(|r| (r.0, r.1)); // (time, input order): stable
         let p = tmp_dir.join(format!("run{:05}.txt", runs.len()));
-        let mut w = std::io::BufWriter::new(std::fs::File::create(&p).map_err(|e| format!("{}: {e}", p.display()))?);
+        let mut w = std::io::BufWriter::new(
+            std::fs::File::create(&p).map_err(|e| format!("{}: {e}", p.display()))?,
+        );
         for (t, seq, l) in block.iter() {
             writeln!(w, "{t}\t{seq}\t{l}").map_err(|e| e.to_string())?;
         }
@@ -325,7 +415,11 @@ pub fn sort_file(input: &str, output: &str, block_rows: usize) -> Result<u64, St
     flush(&mut block, &mut runs)?;
     drop(block);
     // k-way merge
-    let mut readers: Vec<std::io::Lines<BufReader<std::fs::File>>> = runs.iter().map(|p| std::fs::File::open(p).map(|f| BufReader::new(f).lines())).collect::<Result<_, _>>().map_err(|e| e.to_string())?;
+    let mut readers: Vec<std::io::Lines<BufReader<std::fs::File>>> = runs
+        .iter()
+        .map(|p| std::fs::File::open(p).map(|f| BufReader::new(f).lines()))
+        .collect::<Result<_, _>>()
+        .map_err(|e| e.to_string())?;
     let parse_run = |s: String| -> (TimeMs, u64, String) {
         let mut it = s.splitn(3, '\t');
         let t = it.next().unwrap().parse().unwrap();
@@ -339,7 +433,9 @@ pub fn sort_file(input: &str, output: &str, block_rows: usize) -> Result<u64, St
             heap.push(std::cmp::Reverse((t, q, k, line)));
         }
     }
-    let mut w = std::io::BufWriter::new(std::fs::File::create(output).map_err(|e| format!("{output}: {e}"))?);
+    let mut w = std::io::BufWriter::new(
+        std::fs::File::create(output).map_err(|e| format!("{output}: {e}"))?,
+    );
     writeln!(w, "{header}").map_err(|e| e.to_string())?;
     let mut written = 0u64;
     while let Some(std::cmp::Reverse((_, _, k, line))) = heap.pop() {
@@ -384,26 +480,63 @@ mod tests {
         use crate::bound::{delay_bounds, delay_bounds_from};
         use crate::runner::{run, run_payments, EngineSpec, Opening};
         use crate::{PaymentStream, ScenarioConfig};
-        let cfg = ScenarioConfig { participants: 15, payments_per_day: 20_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let cfg = ScenarioConfig {
+            participants: 15,
+            payments_per_day: 20_000.0,
+            n_big: 2,
+            n_mid: 3,
+            ..Default::default()
+        };
         let path = std::env::temp_dir().join("loopsettle_csv_equiv.csv");
         let mut txt = String::from("t_ms,from,to,amount\n");
         for p in PaymentStream::new(&cfg) {
-            txt.push_str(&format!("{},bank{},bank{},{}.{:02}\n", p.t_arrival, p.payer, p.payee, p.amount / 100, p.amount % 100));
+            txt.push_str(&format!(
+                "{},bank{},bank{},{}.{:02}\n",
+                p.t_arrival,
+                p.payer,
+                p.payee,
+                p.amount / 100,
+                p.amount % 100
+            ));
         }
         std::fs::write(&path, txt).unwrap();
         let s = CsvSchema::scan(path.to_str().unwrap()).unwrap();
-        let specs = [EngineSpec::Gross, EngineSpec::parse("micro:all:500:10000").unwrap()];
+        let specs = [
+            EngineSpec::Gross,
+            EngineSpec::parse("micro:all:500:10000").unwrap(),
+        ];
         let mem = run(&cfg, &specs, &Opening::Unlimited, false, None);
-        let file = run_payments(s.participants(), s.payments().unwrap(), &specs, &Opening::Unlimited, cfg.horizon_ms());
+        let file = run_payments(
+            s.participants(),
+            s.payments().unwrap(),
+            &specs,
+            &Opening::Unlimited,
+            cfg.horizon_ms(),
+        );
         assert_eq!((file.ub(), file.lb()), (mem.ub(), mem.lb()));
         assert_eq!(file.results[1].liquidity, mem.results[1].liquidity);
         let d = [2_000u64, 10_000, 900_000];
         let tot = |b: Vec<Vec<i64>>| b.iter().map(|v| v.iter().sum::<i64>()).collect::<Vec<_>>();
         // the file's clock starts at its first payment; shift the synthetic stream the same way
         let first = PaymentStream::new(&cfg).next().unwrap().t_arrival;
-        let shifted = || PaymentStream::new(&cfg).map(move |mut p| { p.t_arrival -= first; p });
-        assert_eq!(tot(delay_bounds_from(s.participants(), || s.payments().unwrap(), &d)), tot(delay_bounds_from(cfg.participants, shifted, &d)));
-        assert_eq!(tot(delay_bounds(&cfg, &d)), tot(delay_bounds_from(cfg.participants, shifted, &d)));
+        let shifted = || {
+            PaymentStream::new(&cfg).map(move |mut p| {
+                p.t_arrival -= first;
+                p
+            })
+        };
+        assert_eq!(
+            tot(delay_bounds_from(
+                s.participants(),
+                || s.payments().unwrap(),
+                &d
+            )),
+            tot(delay_bounds_from(cfg.participants, shifted, &d))
+        );
+        assert_eq!(
+            tot(delay_bounds(&cfg, &d)),
+            tot(delay_bounds_from(cfg.participants, shifted, &d))
+        );
     }
 
     #[test]
@@ -415,10 +548,15 @@ mod tests {
         assert_eq!((s.participants(), s.rows, s.skipped), (3, 3, 1));
         let v: Vec<Payment> = s.payments().unwrap().collect();
         assert_eq!(v.len(), 3);
-        assert_eq!((v[0].t_arrival, v[0].amount, v[2].t_arrival, v[2].amount), (0, 1000, 3000, 550));
+        assert_eq!(
+            (v[0].t_arrival, v[0].amount, v[2].t_arrival, v[2].amount),
+            (0, 1000, 3000, 550)
+        );
         let bad = dir.join("loopsettle_csv_bad.csv");
         std::fs::write(&bad, "time,from,to,amount\n10,A,B,1\n5,B,A,1\n").unwrap();
-        assert!(CsvSchema::scan(bad.to_str().unwrap()).unwrap_err().contains("backwards"));
+        assert!(CsvSchema::scan(bad.to_str().unwrap())
+            .unwrap_err()
+            .contains("backwards"));
     }
 
     /// External sort: same rows, sorted by time, stable for ties, whatever the block size.
@@ -433,7 +571,13 @@ mod tests {
         for k in 0..500 {
             let t = rng.below(60);
             rows.push((t, k));
-            txt.push_str(&format!("A{},B{},00:00:{:02},{}.00,row{k}\n", k % 7, k % 5, t, 1 + k % 9));
+            txt.push_str(&format!(
+                "A{},B{},00:00:{:02},{}.00,row{k}\n",
+                k % 7,
+                k % 5,
+                t,
+                1 + k % 9
+            ));
         }
         std::fs::write(&input, &txt).unwrap();
         rows.sort(); // by (time, input order)
@@ -441,10 +585,18 @@ mod tests {
             let out = dir.join(format!("out{block}.csv"));
             let n = sort_file(input.to_str().unwrap(), out.to_str().unwrap(), block).unwrap();
             assert_eq!(n, 500);
-            let got: Vec<String> = std::fs::read_to_string(&out).unwrap().lines().skip(1).map(|l| l.rsplit(',').next().unwrap().to_string()).collect();
+            let got: Vec<String> = std::fs::read_to_string(&out)
+                .unwrap()
+                .lines()
+                .skip(1)
+                .map(|l| l.rsplit(',').next().unwrap().to_string())
+                .collect();
             let want: Vec<String> = rows.iter().map(|&(_, k)| format!("row{k}")).collect();
             assert_eq!(got, want, "block {block}");
-            assert!(CsvSchema::scan(out.to_str().unwrap()).is_ok(), "the sorted file is accepted");
+            assert!(
+                CsvSchema::scan(out.to_str().unwrap()).is_ok(),
+                "the sorted file is accepted"
+            );
         }
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -459,7 +611,10 @@ mod tests {
         let s = CsvSchema::scan(p.to_str().unwrap()).unwrap();
         assert_eq!((s.rows, s.skipped_status), (2, 2));
         let v: Vec<Payment> = s.payments().unwrap().collect();
-        assert_eq!(v.iter().map(|q| q.amount).collect::<Vec<_>>(), vec![1000, 500]);
+        assert_eq!(
+            v.iter().map(|q| q.amount).collect::<Vec<_>>(),
+            vec![1000, 500]
+        );
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -476,9 +631,16 @@ mod tests {
         let b = payments_from_text(txt).unwrap();
         assert_eq!(a, b.payments);
         assert_eq!(b.skipped, 1);
-        let shuffled = "time,from,to,amount\n08:00:03,C,A,5.5\n08:00:00,A,B,10.00\n08:00:01,B,C,5\n";
+        let shuffled =
+            "time,from,to,amount\n08:00:03,C,A,5.5\n08:00:00,A,B,10.00\n08:00:01,B,C,5\n";
         let c = payments_from_text(shuffled).unwrap();
-        assert_eq!(c.payments.iter().map(|q| (q.t_arrival, q.amount)).collect::<Vec<_>>(), vec![(0, 1000), (1000, 500), (3000, 550)]);
+        assert_eq!(
+            c.payments
+                .iter()
+                .map(|q| (q.t_arrival, q.amount))
+                .collect::<Vec<_>>(),
+            vec![(0, 1000), (1000, 500), (3000, 550)]
+        );
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

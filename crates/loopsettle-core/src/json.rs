@@ -164,7 +164,14 @@ mod tests {
     use super::*;
     #[test]
     fn writes_nested() {
-        let j = Json::obj().set("a", 1i64).set("b", 0.5).set("c", "x\"y").set("d", &[1i64, 2][..]);
-        assert_eq!(j.to_string_compact(), r#"{"a":1,"b":0.5,"c":"x\"y","d":[1,2]}"#);
+        let j = Json::obj()
+            .set("a", 1i64)
+            .set("b", 0.5)
+            .set("c", "x\"y")
+            .set("d", &[1i64, 2][..]);
+        assert_eq!(
+            j.to_string_compact(),
+            r#"{"a":1,"b":0.5,"c":"x\"y","d":[1,2]}"#
+        );
     }
 }

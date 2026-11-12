@@ -44,6 +44,7 @@ golden:
 	$(PYTHON) -I scripts/golden.py
 
 lint:
+	$(CARGO) fmt --check
 	$(CARGO) clippy --workspace --all-targets -- -D warnings -A clippy::needless_range_loop -A clippy::neg_cmp_op_on_partial_ord
 
 verify: test lint

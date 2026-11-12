@@ -43,8 +43,18 @@ impl Mcf {
     /// Adds arc `a -> b` and its residual twin; returns the twin's index in `g[b]`.
     fn add(&mut self, a: usize, b: usize, cap: Cents, cost: i64) -> usize {
         let (ra, rb) = (self.g[b].len() as u32, self.g[a].len() as u32);
-        self.g[a].push(Arc { to: b as u32, cap, cost, rev: ra });
-        self.g[b].push(Arc { to: a as u32, cap: 0, cost: -cost, rev: rb });
+        self.g[a].push(Arc {
+            to: b as u32,
+            cap,
+            cost,
+            rev: ra,
+        });
+        self.g[b].push(Arc {
+            to: a as u32,
+            cap: 0,
+            cost: -cost,
+            rev: rb,
+        });
         ra as usize
     }
 
@@ -158,7 +168,9 @@ impl Mcf {
             phases += 1;
             // 2. blocking flows on the admissible arcs (residual, reduced cost 0) until t is
             // no longer reachable through them
-            let admissible = |a: &Arc, pot: &[i64], v: usize| a.cap > 0 && a.cost + pot[v] - pot[a.to as usize] == 0;
+            let admissible = |a: &Arc, pot: &[i64], v: usize| {
+                a.cap > 0 && a.cost + pot[v] - pot[a.to as usize] == 0
+            };
             loop {
                 level.iter_mut().for_each(|l| *l = u32::MAX);
                 level[s] = 0;
@@ -197,9 +209,15 @@ impl Mcf {
                         }
                         sent += f as i128;
                         // back up to the first saturated arc
-                        let k = path.iter().position(|&(u, i)| self.g[u][i].cap == 0).unwrap_or(0);
+                        let k = path
+                            .iter()
+                            .position(|&(u, i)| self.g[u][i].cap == 0)
+                            .unwrap_or(0);
                         path.truncate(k);
-                        v = path.last().map(|&(u, i)| self.g[u][i].to as usize).unwrap_or(s);
+                        v = path
+                            .last()
+                            .map(|&(u, i)| self.g[u][i].to as usize)
+                            .unwrap_or(s);
                         continue;
                     }
                     let mut advanced = false;
@@ -235,8 +253,14 @@ impl Mcf {
 pub fn cdfd_max(g: &FlowGraph) -> Cdfd {
     let n = g.n;
     let (s, t) = (n, n + 1);
-    let mut m = Mcf { g: (0..n + 2).map(|_| Vec::new()).collect() };
-    let handles: Vec<usize> = g.edges.iter().map(|e| m.add(e.from as usize, e.to as usize, e.flow, 1)).collect();
+    let mut m = Mcf {
+        g: (0..n + 2).map(|_| Vec::new()).collect(),
+    };
+    let handles: Vec<usize> = g
+        .edges
+        .iter()
+        .map(|e| m.add(e.from as usize, e.to as usize, e.flow, 1))
+        .collect();
     let net = g.net_positions(); // in - out
     let mut supply: i128 = 0;
     for (v, &x) in net.iter().enumerate() {
@@ -248,13 +272,32 @@ pub fn cdfd_max(g: &FlowGraph) -> Cdfd {
         }
     }
     let (sent, augmentations) = m.run(s, t, supply);
-    assert_eq!(sent, supply, "F itself is feasible, so the full supply must be routable");
+    assert_eq!(
+        sent, supply,
+        "F itself is feasible, so the full supply must be routable"
+    );
     // Flow on edge e = residual capacity of its reverse arc (stored in node `e.to`).
-    let directional: Vec<Cents> = g.edges.iter().zip(&handles).map(|(e, &rev)| m.g[e.to as usize][rev].cap).collect();
-    let circular: Vec<Cents> = g.edges.iter().zip(&directional).map(|(e, d)| e.flow - d).collect();
+    let directional: Vec<Cents> = g
+        .edges
+        .iter()
+        .zip(&handles)
+        .map(|(e, &rev)| m.g[e.to as usize][rev].cap)
+        .collect();
+    let circular: Vec<Cents> = g
+        .edges
+        .iter()
+        .zip(&directional)
+        .map(|(e, d)| e.flow - d)
+        .collect();
     let circular_total = circular.iter().map(|&c| c as i128).sum();
     let directional_total = directional.iter().map(|&c| c as i128).sum();
-    Cdfd { circular, directional, circular_total, directional_total, augmentations }
+    Cdfd {
+        circular,
+        directional,
+        circular_total,
+        directional_total,
+        augmentations,
+    }
 }
 
 #[cfg(test)]
@@ -271,12 +314,22 @@ mod tests {
         for _ in 0..400 {
             let n = 2 + rng.below(12) as usize;
             let m = rng.below(40) as usize;
-            let t: Vec<(u32, u32, i64)> = (0..m).map(|_| (rng.below(n as u64) as u32, rng.below(n as u64) as u32, 1 + rng.below(1_000) as i64)).collect();
+            let t: Vec<(u32, u32, i64)> = (0..m)
+                .map(|_| {
+                    (
+                        rng.below(n as u64) as u32,
+                        rng.below(n as u64) as u32,
+                        1 + rng.below(1_000) as i64,
+                    )
+                })
+                .collect();
             let g = FlowGraph::from_triples(n, &t);
             let fast = cdfd_max(&g);
             // reference
             let (s, tt) = (n, n + 1);
-            let mut mcf = Mcf { g: (0..n + 2).map(|_| Vec::new()).collect() };
+            let mut mcf = Mcf {
+                g: (0..n + 2).map(|_| Vec::new()).collect(),
+            };
             for e in &g.edges {
                 mcf.add(e.from as usize, e.to as usize, e.flow, 1);
             }
@@ -291,9 +344,18 @@ mod tests {
             }
             let (sent, _) = mcf.run_ssp(s, tt, supply);
             assert_eq!(sent, supply);
-            let cost: i128 = g.edges.iter().map(|e| e.flow as i128).sum::<i128>() - fast.circular_total;
+            let cost: i128 =
+                g.edges.iter().map(|e| e.flow as i128).sum::<i128>() - fast.circular_total;
             // the reference's cost = flow on original edges = directional total
-            let ref_dir: i128 = (0..n).flat_map(|v| mcf.g[v].iter().filter(|a| a.cost == -1).map(|a| a.cap as i128).collect::<Vec<_>>()).sum();
+            let ref_dir: i128 = (0..n)
+                .flat_map(|v| {
+                    mcf.g[v]
+                        .iter()
+                        .filter(|a| a.cost == -1)
+                        .map(|a| a.cap as i128)
+                        .collect::<Vec<_>>()
+                })
+                .sum();
             assert_eq!(cost, ref_dir, "same minimum directional total");
             assert_eq!(fast.directional_total, ref_dir);
         }

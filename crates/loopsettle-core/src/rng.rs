@@ -20,7 +20,14 @@ fn splitmix64(x: &mut u64) -> u64 {
 impl Rng {
     pub fn new(seed: u64) -> Self {
         let mut x = seed;
-        Rng { s: [splitmix64(&mut x), splitmix64(&mut x), splitmix64(&mut x), splitmix64(&mut x)] }
+        Rng {
+            s: [
+                splitmix64(&mut x),
+                splitmix64(&mut x),
+                splitmix64(&mut x),
+                splitmix64(&mut x),
+            ],
+        }
     }
 
     /// Independent sub-stream: same seed + same `stream` id -> same numbers.
@@ -92,7 +99,11 @@ impl AliasTable {
         let mut alias = vec![0u32; n];
         let (mut small, mut large): (Vec<usize>, Vec<usize>) = (Vec::new(), Vec::new());
         for (i, &p) in prob.iter().enumerate() {
-            if p < 1.0 { small.push(i) } else { large.push(i) }
+            if p < 1.0 {
+                small.push(i)
+            } else {
+                large.push(i)
+            }
         }
         while let (Some(s), Some(&l)) = (small.pop(), large.last()) {
             alias[s] = l as u32;
@@ -110,7 +121,11 @@ impl AliasTable {
 
     pub fn sample(&self, rng: &mut Rng) -> usize {
         let i = rng.below(self.prob.len() as u64) as usize;
-        if rng.f64() < self.prob[i] { i } else { self.alias[i] as usize }
+        if rng.f64() < self.prob[i] {
+            i
+        } else {
+            self.alias[i] as usize
+        }
     }
 
     pub fn len(&self) -> usize {

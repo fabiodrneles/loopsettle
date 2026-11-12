@@ -25,15 +25,29 @@ pub fn code_version() -> String {
     }
     // Last commit that touched anything outside results/ (committing results must not
     // change the version they record).
-    let git = Command::new("git").args(["log", "-1", "--format=%h", "--", ".", ":(exclude)results"]).output();
+    let git = Command::new("git")
+        .args(["log", "-1", "--format=%h", "--", ".", ":(exclude)results"])
+        .output();
     match git {
         Ok(o) if o.status.success() => {
             let dirty = Command::new("git")
-                .args(["status", "--porcelain", "--untracked-files=no", "--", ".", ":(exclude)results"])
+                .args([
+                    "status",
+                    "--porcelain",
+                    "--untracked-files=no",
+                    "--",
+                    ".",
+                    ":(exclude)results",
+                ])
                 .output()
                 .map(|s| !s.stdout.is_empty())
                 .unwrap_or(false);
-            format!("{}+git.{}{}", env!("CARGO_PKG_VERSION"), String::from_utf8_lossy(&o.stdout).trim(), if dirty { "-dirty" } else { "" })
+            format!(
+                "{}+git.{}{}",
+                env!("CARGO_PKG_VERSION"),
+                String::from_utf8_lossy(&o.stdout).trim(),
+                if dirty { "-dirty" } else { "" }
+            )
         }
         _ => env!("CARGO_PKG_VERSION").to_string(),
     }
@@ -44,14 +58,23 @@ pub fn code_version() -> String {
 pub const RESULT_SCHEMA: &str = "loopsettle.result/1";
 
 fn rustc_version() -> String {
-    std::process::Command::new("rustc").arg("-V").output().ok().filter(|o| o.status.success()).map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string()).unwrap_or_else(|| "unknown".into())
+    std::process::Command::new("rustc")
+        .arg("-V")
+        .output()
+        .ok()
+        .filter(|o| o.status.success())
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_else(|| "unknown".into())
 }
 
 /// FNV-1a (64 bit) of `Cargo.lock`, line endings normalised: identifies the exact dependency
 /// set without a hashing dependency. Not cryptographic.
 fn cargo_lock_hash() -> String {
     match std::fs::read("Cargo.lock") {
-        Ok(bytes) => format!("{:016x}", fnv1a64(bytes.iter().copied().filter(|&b| b != b'\r'))),
+        Ok(bytes) => format!(
+            "{:016x}",
+            fnv1a64(bytes.iter().copied().filter(|&b| b != b'\r'))
+        ),
         Err(_) => "unknown".into(),
     }
 }
@@ -73,7 +96,9 @@ pub fn golden() -> bool {
 
 /// Root of the results tree: `results/`, or `LOOPSETTLE_RESULTS_DIR` if set.
 pub fn results_root() -> PathBuf {
-    std::env::var_os("LOOPSETTLE_RESULTS_DIR").map(PathBuf::from).unwrap_or_else(|| PathBuf::from("results"))
+    std::env::var_os("LOOPSETTLE_RESULTS_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("results"))
 }
 
 impl Results {
@@ -86,12 +111,25 @@ impl Results {
             .set("seed", seed)
             .set("code_version", code_version())
             .set("config_file", config_file)
-            .set("command", format!("cargo run --release -p loopsettle-cli -- experiment {name}"));
+            .set(
+                "command",
+                format!("cargo run --release -p loopsettle-cli -- experiment {name}"),
+            );
         if !golden() {
             // Provenance. Left out of golden outputs, which must be identical on every platform.
-            summary = summary.set("platform", format!("{}-{}", std::env::consts::ARCH, std::env::consts::OS)).set("rustc", rustc_version()).set("cargo_lock_fnv1a64", cargo_lock_hash());
+            summary = summary
+                .set(
+                    "platform",
+                    format!("{}-{}", std::env::consts::ARCH, std::env::consts::OS),
+                )
+                .set("rustc", rustc_version())
+                .set("cargo_lock_fnv1a64", cargo_lock_hash());
         }
-        Results { dir, summary, run: Json::obj() }
+        Results {
+            dir,
+            summary,
+            run: Json::obj(),
+        }
     }
 
     pub fn csv(&self, file: &str, content: &str) {
@@ -118,7 +156,8 @@ impl Results {
     }
 
     pub fn finish(mut self) {
-        self.run.push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
+        self.run
+            .push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
         for (name, j) in [("summary.json", &self.summary), ("run.json", &self.run)] {
             if name == "run.json" && golden() {
                 continue;

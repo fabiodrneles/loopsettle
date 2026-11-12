@@ -35,20 +35,33 @@ pub struct PrefundClosedWindows {
 
 impl PrefundClosedWindows {
     pub fn new(closed: Vec<(TimeMs, TimeMs)>, prefund: Vec<Cents>) -> Self {
-        assert!(closed.iter().all(|w| w.0 < w.1) && closed.windows(2).all(|w| w[0].1 <= w[1].0), "closed windows must be sorted and disjoint");
+        assert!(
+            closed.iter().all(|w| w.0 < w.1) && closed.windows(2).all(|w| w[0].1 <= w[1].0),
+            "closed windows must be sorted and disjoint"
+        );
         assert!(prefund.iter().all(|&b| b >= 0));
-        PrefundClosedWindows { closed, prefund, next: 0 }
+        PrefundClosedWindows {
+            closed,
+            prefund,
+            next: 0,
+        }
     }
 }
 
 impl FundingPolicy for PrefundClosedWindows {
     fn next_instant(&self) -> Option<TimeMs> {
-        self.closed.get(self.next / 2).map(|w| if self.next % 2 == 0 { w.0 } else { w.1 })
+        self.closed
+            .get(self.next / 2)
+            .map(|w| if self.next % 2 == 0 { w.0 } else { w.1 })
     }
     fn apply(&mut self, ledger: &mut Ledger) {
         let closing = self.next % 2 == 0;
         for p in 0..ledger.len() as u32 {
-            let target = if closing { self.prefund[p as usize] } else { UNLIMITED };
+            let target = if closing {
+                self.prefund[p as usize]
+            } else {
+                UNLIMITED
+            };
             ledger.fund(p, target - ledger.balance(p));
         }
         self.next += 1;
@@ -74,9 +87,22 @@ pub struct TopUpToTarget {
 
 impl TopUpToTarget {
     pub fn new(open: Vec<(TimeMs, TimeMs)>, period_ms: TimeMs, target: Vec<Cents>) -> Self {
-        assert!(period_ms > 0 && open.iter().all(|w| w.0 < w.1) && open.windows(2).all(|w| w[0].1 <= w[1].0), "open windows must be sorted and disjoint");
+        assert!(
+            period_ms > 0
+                && open.iter().all(|w| w.0 < w.1)
+                && open.windows(2).all(|w| w[0].1 <= w[1].0),
+            "open windows must be sorted and disjoint"
+        );
         let at = open.first().map(|w| w.0).unwrap_or(0);
-        TopUpToTarget { open, period_ms, target, window: 0, at, top_ups: 0, topped_up: 0 }
+        TopUpToTarget {
+            open,
+            period_ms,
+            target,
+            window: 0,
+            at,
+            top_ups: 0,
+            topped_up: 0,
+        }
     }
 }
 

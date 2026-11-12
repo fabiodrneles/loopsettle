@@ -112,5 +112,11 @@ pub fn cycle_netting(g: &FlowGraph, record: bool) -> NettingResult {
 
     let cancelled: Vec<Cents> = g.edges.iter().zip(&res).map(|(e, r)| e.flow - r).collect();
     let cancelled_total = cancelled.iter().map(|&c| c as i128).sum();
-    NettingResult { residual: res, cancelled, cancelled_total, cycles, log }
+    NettingResult {
+        residual: res,
+        cancelled,
+        cancelled_total,
+        cycles,
+        log,
+    }
 }

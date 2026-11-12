@@ -71,7 +71,11 @@ impl PaymentStream {
             if i == j {
                 return 0.0;
             }
-            let same = if pop.class[i] == pop.class[j] { 1.0 + cfg.homophily } else { 1.0 };
+            let same = if pop.class[i] == pop.class[j] {
+                1.0 + cfg.homophily
+            } else {
+                1.0
+            };
             pop.activity[j].powf(cfg.payee_size_exp) * pop.receiver_bias[j] * same
         };
         let (payee, profiles) = if cfg.profile_strength > 0.0 {
@@ -79,7 +83,13 @@ impl PaymentStream {
             let in_mult = cfg.class_multipliers(false);
             let ci: Vec<usize> = pop.class.iter().map(|c| c.index()).collect();
             let payer_by_hour = (0..24)
-                .map(|h| AliasTable::new(&(0..n).map(|i| pop.activity[i] * out_mult[ci[i]][h]).collect::<Vec<_>>()))
+                .map(|h| {
+                    AliasTable::new(
+                        &(0..n)
+                            .map(|i| pop.activity[i] * out_mult[ci[i]][h])
+                            .collect::<Vec<_>>(),
+                    )
+                })
                 .collect();
             let mut members: [Vec<usize>; 4] = Default::default();
             for (j, &c) in ci.iter().enumerate() {
@@ -100,18 +110,36 @@ impl PaymentStream {
                 class_weight.push(cw);
                 within.push(wt);
             }
-            (Vec::new(), Some(Profiles { payer_by_hour, in_mult, members, class_weight, within }))
+            (
+                Vec::new(),
+                Some(Profiles {
+                    payer_by_hour,
+                    in_mult,
+                    members,
+                    class_weight,
+                    within,
+                }),
+            )
         } else {
-            let payee = (0..n).map(|i| AliasTable::new(&(0..n).map(|j| base(i, j)).collect::<Vec<_>>())).collect();
+            let payee = (0..n)
+                .map(|i| AliasTable::new(&(0..n).map(|j| base(i, j)).collect::<Vec<_>>()))
+                .collect();
             (payee, None)
         };
         assert_eq!(cfg.hourly.len(), 24, "hourly profile needs 24 weights");
         let hsum: f64 = cfg.hourly.iter().sum();
-        assert!((0.0..1.0).contains(&cfg.echo_share), "echo_share must be in [0, 1)");
+        assert!(
+            (0.0..1.0).contains(&cfg.echo_share),
+            "echo_share must be in [0, 1)"
+        );
         // Echoes are `echo_share` of all payments, so base arrivals are the rest: the expected
         // number of payments a day does not change.
         let base_per_day = cfg.payments_per_day * (1.0 - cfg.echo_share);
-        let rate = cfg.hourly.iter().map(|w| base_per_day * w / hsum / HOUR_MS).collect();
+        let rate = cfg
+            .hourly
+            .iter()
+            .map(|w| base_per_day * w / hsum / HOUR_MS)
+            .collect();
         PaymentStream {
             cfg: cfg.clone(),
             rng: Rng::derive(cfg.seed, 0x57AE),
@@ -155,7 +183,11 @@ impl PaymentStream {
             let boundary = ((self.t / HOUR_MS).floor() + 1.0) * HOUR_MS;
             let day = (self.t / (24.0 * HOUR_MS)) as usize;
             let r = self.rate[hour] * self.cfg.day_weights.get(day).copied().unwrap_or(1.0);
-            let gap = if r > 0.0 { self.rng.exp(r) } else { f64::INFINITY };
+            let gap = if r > 0.0 {
+                self.rng.exp(r)
+            } else {
+                f64::INFINITY
+            };
             if self.t + gap >= boundary {
                 self.t = boundary;
                 continue;
@@ -172,7 +204,13 @@ impl PaymentStream {
             let amount = self.cfg.amounts.sample_cents(&mut self.rng);
             let id = self.next_id;
             self.next_id += 1;
-            return Some(Payment { id, t_arrival: self.t as TimeMs, payer: a as u32, payee: b as u32, amount });
+            return Some(Payment {
+                id,
+                t_arrival: self.t as TimeMs,
+                payer: a as u32,
+                payee: b as u32,
+                amount,
+            });
         }
     }
 }
@@ -180,11 +218,18 @@ impl PaymentStream {
 impl PaymentStream {
     /// Payee of a payment sent by `a` in hour-of-day `hour`. An associated function (no
     /// `&self`) so the caller can pass either random stream while other fields are borrowed.
-    fn draw_payee(payee: &[AliasTable], profiles: &Option<Profiles>, a: usize, hour: usize, rng: &mut Rng) -> usize {
+    fn draw_payee(
+        payee: &[AliasTable],
+        profiles: &Option<Profiles>,
+        a: usize,
+        hour: usize,
+        rng: &mut Rng,
+    ) -> usize {
         match profiles {
             None => payee[a].sample(rng),
             Some(p) => {
-                let q: [f64; 4] = std::array::from_fn(|c| p.class_weight[a][c] * p.in_mult[c][hour]);
+                let q: [f64; 4] =
+                    std::array::from_fn(|c| p.class_weight[a][c] * p.in_mult[c][hour]);
                 let mut u = rng.f64() * q.iter().sum::<f64>();
                 let mut c = 0;
                 while c < 3 && (u >= q[c] || q[c] == 0.0) {
@@ -213,7 +258,11 @@ impl Iterator for PaymentStream {
             return self.next_base();
         }
         // Draw the next base payment ahead (this cannot borrow `self.echo` at the same time).
-        let need = self.echo.as_ref().map(|e| e.ahead.is_none() && !e.base_done).unwrap_or(false);
+        let need = self
+            .echo
+            .as_ref()
+            .map(|e| e.ahead.is_none() && !e.base_done)
+            .unwrap_or(false);
         if need {
             let p = self.next_base();
             let e = self.echo.as_mut().unwrap();
@@ -229,7 +278,13 @@ impl Iterator for PaymentStream {
         };
         let mut out = if echo_first {
             let std::cmp::Reverse((t, _, payer, payee, amount)) = e.due.pop().unwrap();
-            Payment { id: 0, t_arrival: t, payer, payee, amount }
+            Payment {
+                id: 0,
+                t_arrival: t,
+                payer,
+                payee,
+                amount,
+            }
         } else {
             let p = e.ahead.take()?;
             // Does the payee respond to this receipt?
@@ -244,7 +299,13 @@ impl Iterator for PaymentStream {
                         Self::draw_payee(&self.payee, &self.profiles, from, hour, &mut e.rng)
                     };
                     let amount = ((p.amount as f64 * e.amount_fraction).round() as i64).max(1);
-                    e.due.push(std::cmp::Reverse((t, e.seq, from as u32, to as u32, amount)));
+                    e.due.push(std::cmp::Reverse((
+                        t,
+                        e.seq,
+                        from as u32,
+                        to as u32,
+                        amount,
+                    )));
                     e.seq += 1;
                 }
             }

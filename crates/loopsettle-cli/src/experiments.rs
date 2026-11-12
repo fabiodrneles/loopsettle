@@ -6,24 +6,62 @@ use loopsettle_core::json::Json;
 use loopsettle_core::QueueMode;
 use loopsettle_sim::runner::MicroCycleSpec;
 use loopsettle_sim::toml_lite::Doc;
-use loopsettle_sim::{calibrate, run as run_engines, EngineResult, EngineSpec, Opening, RunOutput, ScenarioConfig};
+use loopsettle_sim::{
+    calibrate, run as run_engines, EngineResult, EngineSpec, Opening, RunOutput, ScenarioConfig,
+};
 
 pub const ALL: &[(&str, &str)] = &[
     ("calibration", "real vs simulated public Pix aggregates"),
-    ("microcycle-sweep", "liquidity saving x p95 delay of atomic micro-cycles"),
+    (
+        "microcycle-sweep",
+        "liquidity saving x p95 delay of atomic micro-cycles",
+    ),
     ("baseline", "UB, LB, circularity ladder and sensitivity"),
-    ("potential-vs-realizable", "potential vs realizable liquidity savings (central comparison)"),
-    ("stress", "a participant offline for 30 minutes: who and when"),
-    ("finland-replication", "fixed clearing cycles vs instant settlement"),
-    ("robustness", "seeds, scale, cycle length, delay bound and per-bank ratios"),
-    ("bias-calibration", "fit the receiver bias to the BCB WP 619 per-bank nettable ratios"),
-    ("heterogeneity", "class-specific intraday profiles x scale (kill criterion K1)"),
-    ("funding-windows", "prefunding for nights and weekends outside STR hours (W3)"),
+    (
+        "potential-vs-realizable",
+        "potential vs realizable liquidity savings (central comparison)",
+    ),
+    (
+        "stress",
+        "a participant offline for 30 minutes: who and when",
+    ),
+    (
+        "finland-replication",
+        "fixed clearing cycles vs instant settlement",
+    ),
+    (
+        "robustness",
+        "seeds, scale, cycle length, delay bound and per-bank ratios",
+    ),
+    (
+        "bias-calibration",
+        "fit the receiver bias to the BCB WP 619 per-bank nettable ratios",
+    ),
+    (
+        "heterogeneity",
+        "class-specific intraday profiles x scale (kill criterion K1)",
+    ),
+    (
+        "funding-windows",
+        "prefunding for nights and weekends outside STR hours (W3)",
+    ),
     ("regimes", "delay bound in retail vs large-value systems"),
-    ("echo-sweep", "echo payments: short-horizon circularity vs the bound and the saving"),
-    ("circularity-horizon", "value circulating within a window vs liquidity recoverable with that deadline"),
-    ("echo-scale", "echo payments returned to the payer, 1 to 30 million payments a day"),
-    ("liquidity-frontier", "rejection and delay vs liquidity held, per design (constrained liquidity)"),
+    (
+        "echo-sweep",
+        "echo payments: short-horizon circularity vs the bound and the saving",
+    ),
+    (
+        "circularity-horizon",
+        "value circulating within a window vs liquidity recoverable with that deadline",
+    ),
+    (
+        "echo-scale",
+        "echo payments returned to the payer, 1 to 30 million payments a day",
+    ),
+    (
+        "liquidity-frontier",
+        "rejection and delay vs liquidity held, per design (constrained liquidity)",
+    ),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -49,7 +87,9 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "circularity-horizon" => crate::experiments8::circularity_horizon(path, doc, &cfg),
         "echo-scale" => crate::experiments7::echo_scale(path, doc, &cfg),
         "liquidity-frontier" => crate::experiments6::liquidity_frontier(path, doc, &cfg),
-        _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
+        _ => Err(format!(
+            "unknown experiment '{name}' (see `loopsettle list`)"
+        )),
     }
 }
 
@@ -73,7 +113,9 @@ pub(crate) fn scenario_json(cfg: &ScenarioConfig) -> loopsettle_core::json::Json
 }
 
 fn calibration(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
-    let cal_path = doc.str("scenario.calibration").ok_or("calibration experiment needs scenario.calibration")?;
+    let cal_path = doc
+        .str("scenario.calibration")
+        .ok_or("calibration experiment needs scenario.calibration")?;
     let t = calibrate::Targets::load(cal_path)?;
     let rows = calibrate::report(cfg, &t);
     let mut r = Results::new("calibration", cfg.seed, path);
@@ -81,8 +123,21 @@ fn calibration(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String
     r.set("reference_month", t.month);
     r.set("scenario", scenario_json(cfg));
     r.set("rows", calibrate::rows_to_json(&rows));
-    let md: Vec<Vec<String>> = rows.iter().map(|x| vec![x.name.to_string(), f(x.real), f(x.sim), format!("{:+.2}%", 100.0 * x.rel_err())]).collect();
-    eprintln!("{}", table(&["aggregate", "real", "simulated", "rel_err"], &md));
+    let md: Vec<Vec<String>> = rows
+        .iter()
+        .map(|x| {
+            vec![
+                x.name.to_string(),
+                f(x.real),
+                f(x.sim),
+                format!("{:+.2}%", 100.0 * x.rel_err()),
+            ]
+        })
+        .collect();
+    eprintln!(
+        "{}",
+        table(&["aggregate", "real", "simulated", "rel_err"], &md)
+    );
     r.finish();
     Ok(())
 }
@@ -111,11 +166,16 @@ pub(crate) fn engine_row(r: &EngineResult, ub: i128, lb: i128) -> Vec<String> {
         r.name.clone(),
         f(r.liquidity as f64 / 100.0),
         f(100.0 * r.saving_vs(ub)),
-        f(if ub > lb { (ub - r.liquidity) as f64 / (ub - lb) as f64 } else { 0.0 }),
+        f(if ub > lb {
+            (ub - r.liquidity) as f64 / (ub - lb) as f64
+        } else {
+            0.0
+        }),
         r.delay_q(0.5).to_string(),
         r.delay_q(0.95).to_string(),
         r.delay_q(0.99).to_string(),
-        f(m.share_within_ms(2_800).unwrap_or_else(|| m.delay.fraction_at_most(2_800))),
+        f(m.share_within_ms(2_800)
+            .unwrap_or_else(|| m.delay.fraction_at_most(2_800))),
         f(m.value_by_kind[1] as f64 / total),
         f(m.rejected_value as f64 / total),
     ]
@@ -127,9 +187,22 @@ pub(crate) fn flow_json(o: &RunOutput) -> Json {
         .set("gross_value_brl", o.flow.gross_value as f64 / 100.0)
         .set("ub_brl", o.ub() as f64 / 100.0)
         .set("lb_brl", o.lb() as f64 / 100.0)
-        .set("lb_over_ub", if o.ub() == 0 { 0.0 } else { o.lb() as f64 / o.ub() as f64 })
-        .set("ub_over_gross", o.ub() as f64 / o.flow.gross_value.max(1) as f64)
-        .set("potential_offset_fraction", o.flow.potential_offset_fraction())
+        .set(
+            "lb_over_ub",
+            if o.ub() == 0 {
+                0.0
+            } else {
+                o.lb() as f64 / o.ub() as f64
+            },
+        )
+        .set(
+            "ub_over_gross",
+            o.ub() as f64 / o.flow.gross_value.max(1) as f64,
+        )
+        .set(
+            "potential_offset_fraction",
+            o.flow.potential_offset_fraction(),
+        )
 }
 
 pub(crate) fn f64_list(doc: &Doc, key: &str, default: &[f64]) -> Vec<f64> {
@@ -141,7 +214,11 @@ pub(crate) fn f64_list(doc: &Doc, key: &str, default: &[f64]) -> Vec<f64> {
 // ---------------------------------------------------------------------------------------
 
 fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String> {
-    let windows = f64_list(doc, "sweep.window_ms", &[500.0, 1000.0, 2000.0, 5000.0, 10000.0]);
+    let windows = f64_list(
+        doc,
+        "sweep.window_ms",
+        &[500.0, 1000.0, 2000.0, 5000.0, 10000.0],
+    );
     let delays = f64_list(doc, "sweep.max_delay_ms", &[2000.0, 5000.0, 10000.0]);
     let max_len = doc.i64("sweep.max_cycle_len").unwrap_or(6) as usize;
 
@@ -149,12 +226,24 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     let mut specs = vec![EngineSpec::Gross];
     for &d in &delays {
         for &w in &windows {
-            specs.push(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: w as u64, max_delay_ms: d as u64, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true, gridlock: false }));
+            specs.push(EngineSpec::Micro(MicroCycleSpec {
+                mode: QueueMode::QueueAll,
+                window_ms: w as u64,
+                max_delay_ms: d as u64,
+                max_cycle_len: max_len,
+                discipline: Default::default(),
+                search_cycles: true,
+                gridlock: false,
+            }));
         }
     }
     let t0 = std::time::Instant::now();
     let o = run_engines(cfg, &specs, &Opening::Unlimited, false, None);
-    eprintln!("  sweep pass: {} engines in {:.1} s", specs.len(), t0.elapsed().as_secs_f64());
+    eprintln!(
+        "  sweep pass: {} engines in {:.1} s",
+        specs.len(),
+        t0.elapsed().as_secs_f64()
+    );
     let (ub, lb) = (o.ub(), o.lb());
     let mut res = Results::new("microcycle-sweep", cfg.seed, path);
     let mut header = vec!["window_ms", "max_delay_ms"];
@@ -173,7 +262,11 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
                 }
             }
         }
-        series.push(Series { label: format!("max_delay {} s", d / 1000.0), points: pts, line: true });
+        series.push(Series {
+            label: format!("max_delay {} s", d / 1000.0),
+            points: pts,
+            line: true,
+        });
     }
     res.csv("sweep.csv", &table(&header, &rows));
     let chart = Chart {
@@ -186,7 +279,11 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     res.csv("fig_tradeoff.svg", &chart.render());
 
     // Pass 2..: constrained liquidity, gross vs QueueOnShortfall.
-    let fracs = f64_list(doc, "sweep.shortfall_liquidity_fraction", &[0.25, 0.5, 0.75]);
+    let fracs = f64_list(
+        doc,
+        "sweep.shortfall_liquidity_fraction",
+        &[0.25, 0.5, 0.75],
+    );
     let sw = doc.i64("sweep.shortfall_window_ms").unwrap_or(1000) as u64;
     let sd = doc.i64("sweep.shortfall_max_delay_ms").unwrap_or(10_000) as u64;
     let ubs = o.flow.ubs();
@@ -194,17 +291,40 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     let mut sjson = Vec::new();
     let cspecs = [
         EngineSpec::Gross,
-        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true, gridlock: false }),
-        EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueAll, window_ms: sw, max_delay_ms: sd, max_cycle_len: max_len, discipline: Default::default(), search_cycles: true, gridlock: false }),
+        EngineSpec::Micro(MicroCycleSpec {
+            mode: QueueMode::QueueOnShortfall,
+            window_ms: sw,
+            max_delay_ms: sd,
+            max_cycle_len: max_len,
+            discipline: Default::default(),
+            search_cycles: true,
+            gridlock: false,
+        }),
+        EngineSpec::Micro(MicroCycleSpec {
+            mode: QueueMode::QueueAll,
+            window_ms: sw,
+            max_delay_ms: sd,
+            max_cycle_len: max_len,
+            discipline: Default::default(),
+            search_cycles: true,
+            gridlock: false,
+        }),
     ];
     for &fr in &fracs {
-        let opening: Vec<i64> = ubs.iter().map(|&u| (u as f64 * fr).floor() as i64).collect();
+        let opening: Vec<i64> = ubs
+            .iter()
+            .map(|&u| (u as f64 * fr).floor() as i64)
+            .collect();
         let oc = run_engines(cfg, &cspecs, &Opening::Given(opening), false, None);
         for r in &oc.results {
             let mut row = vec![f(fr)];
             row.extend(engine_row(r, ub, lb));
             srows.push(row);
-            sjson.push(Json::obj().set("liquidity_fraction_of_ub", fr).set("result", r.to_json(ub, lb)));
+            sjson.push(
+                Json::obj()
+                    .set("liquidity_fraction_of_ub", fr)
+                    .set("result", r.to_json(ub, lb)),
+            );
         }
     }
     let mut sh = vec!["liquidity_fraction_of_ub"];
@@ -213,7 +333,10 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
 
     res.set("scenario", scenario_json(cfg));
     res.set("flow", flow_json(&o));
-    res.set("unlimited", Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()));
+    res.set(
+        "unlimited",
+        Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()),
+    );
     res.set("constrained", Json::Arr(sjson));
     eprintln!("{}", table(&header, &rows));
     eprintln!("{}", table(&sh, &srows));
@@ -228,7 +351,11 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
         }
         for &fr in &fracs {
             for sp in &cspecs {
-                names.push(format!("rejected_value_share_{}xUB_{}", f(fr), sp.build(1).name()));
+                names.push(format!(
+                    "rejected_value_share_{}xUB_{}",
+                    f(fr),
+                    sp.build(1).name()
+                ));
             }
         }
         crate::seeds::run_and_write(&mut res, doc, cfg, &names, |c| {
@@ -242,11 +369,17 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
             }
             let ubs = o.flow.ubs();
             for &fr in &fracs {
-                let opening: Vec<i64> = ubs.iter().map(|&u| (u as f64 * fr).floor() as i64).collect();
+                let opening: Vec<i64> = ubs
+                    .iter()
+                    .map(|&u| (u as f64 * fr).floor() as i64)
+                    .collect();
                 let oc = run_engines(c, &cspecs, &Opening::Given(opening), false, None);
                 for r in &oc.results {
                     let m = &r.metrics;
-                    v.push(m.rejected_value as f64 / (m.settled_value + m.rejected_value).max(1) as f64);
+                    v.push(
+                        m.rejected_value as f64
+                            / (m.settled_value + m.rejected_value).max(1) as f64,
+                    );
                 }
             }
             v

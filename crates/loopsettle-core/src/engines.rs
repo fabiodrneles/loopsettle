@@ -31,7 +31,13 @@ pub struct DeferredNet {
 impl DeferredNet {
     pub fn new(cycles_per_day: u32, participants: usize) -> Self {
         assert!(cycles_per_day >= 1);
-        let mut d = DeferredNet { cycles_per_day, next_index: 1, next_cycle: 0, deltas: vec![0; participants], pending: 0 };
+        let mut d = DeferredNet {
+            cycles_per_day,
+            next_index: 1,
+            next_cycle: 0,
+            deltas: vec![0; participants],
+            pending: 0,
+        };
         d.next_cycle = d.cycle_time(1);
         d
     }
@@ -99,9 +105,19 @@ pub struct HoldToDeadline {
 
 impl HoldToDeadline {
     pub fn new(delay_ms: TimeMs, only: Option<ParticipantId>) -> Self {
-        HoldToDeadline { delay_ms, only, held: VecDeque::new() }
+        HoldToDeadline {
+            delay_ms,
+            only,
+            held: VecDeque::new(),
+        }
     }
-    fn release(&mut self, until: TimeMs, inclusive: bool, ledger: &mut Ledger, sink: &mut dyn Sink) {
+    fn release(
+        &mut self,
+        until: TimeMs,
+        inclusive: bool,
+        ledger: &mut Ledger,
+        sink: &mut dyn Sink,
+    ) {
         while let Some(p) = self.held.front() {
             let due = p.t_arrival + self.delay_ms;
             if due > until || (due == until && !inclusive) {
@@ -200,7 +216,16 @@ pub struct MicroCycleConfig {
 
 impl MicroCycleConfig {
     pub fn new(window_ms: TimeMs, max_delay_ms: TimeMs, mode: QueueMode) -> Self {
-        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo, search_cycles: true, reference_retry: false, gridlock: false }
+        MicroCycleConfig {
+            window_ms,
+            max_delay_ms,
+            mode,
+            max_cycle_len: 6,
+            discipline: QueueDiscipline::BypassFifo,
+            search_cycles: true,
+            reference_retry: false,
+            gridlock: false,
+        }
     }
 }
 
@@ -257,7 +282,10 @@ impl AtomicMicroCycle {
     }
 
     fn enqueue(&mut self, p: Payment) {
-        self.out[p.payer as usize].entry(p.payee).or_default().push_back((self.next_seq, p));
+        self.out[p.payer as usize]
+            .entry(p.payee)
+            .or_default()
+            .push_back((self.next_seq, p));
         self.next_seq += 1;
         self.deadlines.push_back(p);
         self.queued += 1;
@@ -275,7 +303,11 @@ impl AtomicMicroCycle {
     /// `true` if `p` is still queued (it is then necessarily the head of its edge: payments
     /// leave an edge queue only from the front, and older ones expire first).
     fn is_head(&self, p: &Payment) -> bool {
-        self.out[p.payer as usize].get(&p.payee).and_then(|q| q.front()).map(|h| h.1.id == p.id).unwrap_or(false)
+        self.out[p.payer as usize]
+            .get(&p.payee)
+            .and_then(|q| q.front())
+            .map(|h| h.1.id == p.id)
+            .unwrap_or(false)
     }
 
     fn pop_head(&mut self, payer: ParticipantId, payee: ParticipantId) -> Payment {
@@ -309,7 +341,11 @@ impl AtomicMicroCycle {
             if color[root as usize] != 0 || self.out[root as usize].is_empty() {
                 continue;
             }
-            let mut stack = vec![Frame { v: root, after: None, truncated: false }];
+            let mut stack = vec![Frame {
+                v: root,
+                after: None,
+                truncated: false,
+            }];
             color[root as usize] = 1;
             path.clear();
             path.push(root);
@@ -342,7 +378,11 @@ impl AtomicMicroCycle {
                     Some(w) => {
                         color[w as usize] = 1;
                         path.push(w);
-                        stack.push(Frame { v: w, after: None, truncated: false });
+                        stack.push(Frame {
+                            v: w,
+                            after: None,
+                            truncated: false,
+                        });
                     }
                     None => {
                         let done = stack.pop().unwrap();
@@ -503,14 +543,22 @@ impl AtomicMicroCycle {
                 self.pending[x as usize] = false;
                 in_pass[x as usize] = true;
                 for (&payee, q) in &self.out[x as usize] {
-                    heap.push(Reverse((q.front().expect("edge queues are never empty").0, x, payee)));
+                    heap.push(Reverse((
+                        q.front().expect("edge queues are never empty").0,
+                        x,
+                        payee,
+                    )));
                 }
             }
             while let Some(Reverse((seq, x, payee))) = heap.pop() {
                 if strict && stuck[x as usize] {
                     continue;
                 }
-                let amount = self.out[x as usize][&payee].front().expect("heap entries are current edge heads").1.amount;
+                let amount = self.out[x as usize][&payee]
+                    .front()
+                    .expect("heap entries are current edge heads")
+                    .1
+                    .amount;
                 if !ledger.transfer(x, payee, amount) {
                     if strict {
                         stuck[x as usize] = true;
@@ -622,13 +670,25 @@ impl SettlementEngine for AtomicMicroCycle {
         };
         let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
         if self.cfg.gridlock {
-            return format!("gridlock_{}_w{}_d{}", if strict { "fifo" } else { "bypass" }, self.cfg.window_ms, self.cfg.max_delay_ms);
+            return format!(
+                "gridlock_{}_w{}_d{}",
+                if strict { "fifo" } else { "bypass" },
+                self.cfg.window_ms,
+                self.cfg.max_delay_ms
+            );
         }
         if !self.cfg.search_cycles && self.cfg.mode == QueueMode::QueueOnShortfall {
-            return format!("queue_{}_d{}", if strict { "fifo" } else { "bypass" }, self.cfg.max_delay_ms);
+            return format!(
+                "queue_{}_d{}",
+                if strict { "fifo" } else { "bypass" },
+                self.cfg.max_delay_ms
+            );
         }
         let f = if strict { "_fifo" } else { "" };
-        format!("micro_cycle_{m}_w{}_d{}{f}", self.cfg.window_ms, self.cfg.max_delay_ms)
+        format!(
+            "micro_cycle_{m}_w{}_d{}{f}",
+            self.cfg.window_ms, self.cfg.max_delay_ms
+        )
     }
 
     /// Fire window ticks and deadlines due at or before `t`, in time order (a tick before
@@ -643,7 +703,10 @@ impl SettlementEngine for AtomicMicroCycle {
                 }
                 self.deadlines.pop_front();
             }
-            let dl = self.deadlines.front().map(|p| p.t_arrival + self.cfg.max_delay_ms);
+            let dl = self
+                .deadlines
+                .front()
+                .map(|p| p.t_arrival + self.cfg.max_delay_ms);
             let tick = self.next_tick;
             match dl {
                 Some(d) if d <= t && d < tick => {
@@ -665,8 +728,12 @@ impl SettlementEngine for AtomicMicroCycle {
     }
 
     fn submit(&mut self, p: Payment, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        let behind_queue = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer && !self.out[p.payer as usize].is_empty();
-        if self.cfg.mode == QueueMode::QueueOnShortfall && !behind_queue && ledger.transfer(p.payer, p.payee, p.amount) {
+        let behind_queue = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer
+            && !self.out[p.payer as usize].is_empty();
+        if self.cfg.mode == QueueMode::QueueOnShortfall
+            && !behind_queue
+            && ledger.transfer(p.payer, p.payee, p.amount)
+        {
             sink.settled(&p, p.t_arrival, SettleKind::Gross);
             self.mark(p.payee);
             return;
@@ -686,10 +753,17 @@ impl SettlementEngine for AtomicMicroCycle {
 
     fn finish(&mut self, _t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
         // Keep the clock running until every queued payment has settled or expired.
-        if let Some(last) = self.deadlines.back().map(|p| p.t_arrival + self.cfg.max_delay_ms) {
+        if let Some(last) = self
+            .deadlines
+            .back()
+            .map(|p| p.t_arrival + self.cfg.max_delay_ms)
+        {
             self.advance_to(last, ledger, sink);
         }
-        assert_eq!(self.queued, 0, "every queued payment settles or expires by its deadline");
+        assert_eq!(
+            self.queued, 0,
+            "every queued payment settles or expires by its deadline"
+        );
     }
 
     fn queued(&self) -> usize {
@@ -707,6 +781,9 @@ impl SettlementEngine for AtomicMicroCycle {
     }
 
     fn stats(&self) -> Vec<(&'static str, f64)> {
-        vec![("cycles_settled", self.cycles_settled as f64), ("cycles_failed", self.cycles_failed as f64)]
+        vec![
+            ("cycles_settled", self.cycles_settled as f64),
+            ("cycles_failed", self.cycles_failed as f64),
+        ]
     }
 }

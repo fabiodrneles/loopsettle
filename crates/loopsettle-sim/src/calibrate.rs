@@ -32,7 +32,10 @@ pub struct Targets {
 
 impl Targets {
     pub fn from_doc(d: &Doc) -> Result<Self, String> {
-        let f = |k: &str| d.f64(k).ok_or_else(|| format!("missing {k} in calibration file"));
+        let f = |k: &str| {
+            d.f64(k)
+                .ok_or_else(|| format!("missing {k} in calibration file"))
+        };
         Ok(Targets {
             month: d.i64("source.month").ok_or("missing source.month")?,
             daily_count: f("transactions.daily_count")?,
@@ -40,7 +43,9 @@ impl Targets {
             ticket_mean_brl: f("transactions.ticket_mean_brl")?,
             b2b_count_share: f("transactions.share_count_B2B")?,
             b2b_value_share: f("transactions.share_value_B2B")?,
-            shares: d.f64_array("participants.shares").ok_or("missing participants.shares")?,
+            shares: d
+                .f64_array("participants.shares")
+                .ok_or("missing participants.shares")?,
             hhi: f("participants.hhi")?,
             top5: f("participants.top5_share")?,
             top10: f("participants.top10_share")?,
@@ -56,7 +61,15 @@ impl Targets {
 
 /// Mean of a Pareto(xm, alpha) truncated at m.
 fn trunc_pareto_mean(xm: f64, a: f64, m: f64) -> f64 {
-    AmountModel { body_median: 1.0, body_sigma: 0.0, tail_prob: 1.0, tail_xm: xm, tail_alpha: a, max_amount: m }.mean()
+    AmountModel {
+        body_median: 1.0,
+        body_sigma: 0.0,
+        tail_prob: 1.0,
+        tail_xm: xm,
+        tail_alpha: a,
+        max_amount: m,
+    }
+    .mean()
 }
 
 /// Solve `xm` so that the truncated Pareto has the given mean (bisection; mean is
@@ -65,7 +78,11 @@ fn solve_xm(mean: f64, a: f64, m: f64) -> f64 {
     let (mut lo, mut hi) = (1e-6, m * 0.999);
     for _ in 0..200 {
         let mid = (lo * hi).sqrt();
-        if trunc_pareto_mean(mid, a, m) < mean { lo = mid } else { hi = mid }
+        if trunc_pareto_mean(mid, a, m) < mean {
+            lo = mid
+        } else {
+            hi = mid
+        }
     }
     (lo * hi).sqrt()
 }
@@ -94,7 +111,11 @@ pub struct Row {
 
 impl Row {
     pub fn rel_err(&self) -> f64 {
-        if self.real == 0.0 { 0.0 } else { (self.sim - self.real) / self.real }
+        if self.real == 0.0 {
+            0.0
+        } else {
+            (self.sim - self.real) / self.real
+        }
     }
 }
 
@@ -110,7 +131,10 @@ pub fn report(cfg: &ScenarioConfig, t: &Targets) -> Vec<Row> {
         count_by_payer[p.payer as usize] += 1;
     }
     let days = cfg.days as f64;
-    let mut sh: Vec<f64> = count_by_payer.iter().map(|&c| c as f64 / count as f64).collect();
+    let mut sh: Vec<f64> = count_by_payer
+        .iter()
+        .map(|&c| c as f64 / count as f64)
+        .collect();
     sh.sort_by(|a, b| b.partial_cmp(a).unwrap());
     let top = |k: usize| sh.iter().take(k).sum::<f64>();
     // Tail share of value: Monte Carlo of the amount model with a tag per draw.
@@ -120,7 +144,10 @@ pub fn report(cfg: &ScenarioConfig, t: &Targets) -> Vec<Row> {
     let draws = 1_000_000;
     for _ in 0..draws {
         let is_tail = rng.f64() < m.tail_prob;
-        let am = AmountModel { tail_prob: if is_tail { 1.0 } else { 0.0 }, ..m.clone() };
+        let am = AmountModel {
+            tail_prob: if is_tail { 1.0 } else { 0.0 },
+            ..m.clone()
+        };
         let v = am.sample_cents(&mut rng) as f64;
         all_v += v;
         if is_tail {
@@ -131,24 +158,81 @@ pub fn report(cfg: &ScenarioConfig, t: &Targets) -> Vec<Row> {
     // Renormalised real top-k over the participants we simulate.
     let kept: f64 = t.shares.iter().take(n).sum();
     let real_top = |k: usize| t.shares.iter().take(k.min(n)).sum::<f64>() / kept;
-    let real_hhi: f64 = t.shares.iter().take(n).map(|s| (s / kept) * (s / kept)).sum();
+    let real_hhi: f64 = t
+        .shares
+        .iter()
+        .take(n)
+        .map(|s| (s / kept) * (s / kept))
+        .sum();
     vec![
-        Row { name: "daily_count (scaled)", real: t.daily_count, sim: count as f64 / days * cfg.scale_factor, note: "SOURCED; sim count x scale factor" },
-        Row { name: "daily_value_brl (scaled)", real: t.daily_value_brl, sim: value / days * cfg.scale_factor, note: "SOURCED; sim value x scale factor" },
-        Row { name: "ticket_mean_brl", real: t.ticket_mean_brl, sim: value / count as f64, note: "SOURCED target, matched via body/tail means" },
-        Row { name: "tail_count_share (B2B proxy)", real: t.b2b_count_share, sim: tail_n as f64 / draws as f64, note: "SOURCED proxy" },
-        Row { name: "tail_value_share (B2B proxy)", real: t.b2b_value_share, sim: tail_v / all_v, note: "CALIBRATED via tail_xm" },
-        Row { name: "top5_share", real: real_top(5), sim: top(5), note: "SOURCED (key shares, renormalised to simulated participants)" },
-        Row { name: "top10_share", real: real_top(10), sim: top(10), note: "SOURCED (key shares)" },
-        Row { name: "top20_share", real: real_top(20), sim: top(20), note: "SOURCED (key shares)" },
-        Row { name: "hhi", real: real_hhi, sim: sh.iter().map(|s| s * s).sum(), note: "SOURCED (key shares)" },
+        Row {
+            name: "daily_count (scaled)",
+            real: t.daily_count,
+            sim: count as f64 / days * cfg.scale_factor,
+            note: "SOURCED; sim count x scale factor",
+        },
+        Row {
+            name: "daily_value_brl (scaled)",
+            real: t.daily_value_brl,
+            sim: value / days * cfg.scale_factor,
+            note: "SOURCED; sim value x scale factor",
+        },
+        Row {
+            name: "ticket_mean_brl",
+            real: t.ticket_mean_brl,
+            sim: value / count as f64,
+            note: "SOURCED target, matched via body/tail means",
+        },
+        Row {
+            name: "tail_count_share (B2B proxy)",
+            real: t.b2b_count_share,
+            sim: tail_n as f64 / draws as f64,
+            note: "SOURCED proxy",
+        },
+        Row {
+            name: "tail_value_share (B2B proxy)",
+            real: t.b2b_value_share,
+            sim: tail_v / all_v,
+            note: "CALIBRATED via tail_xm",
+        },
+        Row {
+            name: "top5_share",
+            real: real_top(5),
+            sim: top(5),
+            note: "SOURCED (key shares, renormalised to simulated participants)",
+        },
+        Row {
+            name: "top10_share",
+            real: real_top(10),
+            sim: top(10),
+            note: "SOURCED (key shares)",
+        },
+        Row {
+            name: "top20_share",
+            real: real_top(20),
+            sim: top(20),
+            note: "SOURCED (key shares)",
+        },
+        Row {
+            name: "hhi",
+            real: real_hhi,
+            sim: sh.iter().map(|s| s * s).sum(),
+            note: "SOURCED (key shares)",
+        },
     ]
 }
 
 pub fn rows_to_csv(rows: &[Row]) -> String {
     let mut s = String::from("aggregate,real,simulated,relative_error,note\n");
     for r in rows {
-        s.push_str(&format!("{},{},{},{:.6},\"{}\"\n", r.name, r.real, r.sim, r.rel_err(), r.note));
+        s.push_str(&format!(
+            "{},{},{},{:.6},\"{}\"\n",
+            r.name,
+            r.real,
+            r.sim,
+            r.rel_err(),
+            r.note
+        ));
     }
     s
 }
@@ -156,7 +240,14 @@ pub fn rows_to_csv(rows: &[Row]) -> String {
 pub fn rows_to_json(rows: &[Row]) -> Json {
     Json::Arr(
         rows.iter()
-            .map(|r| Json::obj().set("aggregate", r.name).set("real", r.real).set("simulated", r.sim).set("relative_error", r.rel_err()).set("note", r.note))
+            .map(|r| {
+                Json::obj()
+                    .set("aggregate", r.name)
+                    .set("real", r.real)
+                    .set("simulated", r.sim)
+                    .set("relative_error", r.rel_err())
+                    .set("note", r.note)
+            })
             .collect(),
     )
 }

@@ -16,7 +16,13 @@ impl Sink for Rec {
 }
 
 fn pay(id: u64, t: TimeMs, a: u32, b: u32, v: Cents) -> Payment {
-    Payment { id, t_arrival: t, payer: a, payee: b, amount: v }
+    Payment {
+        id,
+        t_arrival: t,
+        payer: a,
+        payee: b,
+        amount: v,
+    }
 }
 
 fn run(eng: &mut dyn SettlementEngine, ledger: &mut Ledger, ps: &[Payment]) -> Rec {
@@ -32,14 +38,22 @@ fn run(eng: &mut dyn SettlementEngine, ledger: &mut Ledger, ps: &[Payment]) -> R
 }
 
 fn shortfall(window: TimeMs, delay: TimeMs) -> AtomicMicroCycle {
-    AtomicMicroCycle::new(MicroCycleConfig::new(window, delay, QueueMode::QueueOnShortfall), 3)
+    AtomicMicroCycle::new(
+        MicroCycleConfig::new(window, delay, QueueMode::QueueOnShortfall),
+        3,
+    )
 }
 
 /// C1a. A (no funds) queues three payments to B on the same edge, then receives 30 from C.
 /// All three must be released in the next window, not one per window.
 #[test]
 fn c1_same_edge_queue_is_released_in_one_window() {
-    let ps = [pay(0, 0, 0, 1, 10), pay(1, 1, 0, 1, 10), pay(2, 2, 0, 1, 10), pay(3, 100, 2, 0, 30)];
+    let ps = [
+        pay(0, 0, 0, 1, 10),
+        pay(1, 1, 0, 1, 10),
+        pay(2, 2, 0, 1, 10),
+        pay(3, 100, 2, 0, 30),
+    ];
     let mut ledger = Ledger::new(vec![0, 0, 30]);
     let rec = run(&mut shortfall(1_000, 10_000), &mut ledger, &ps);
     assert_eq!(rec.0[&3], (100, Some(SettleKind::Gross)));
@@ -52,7 +66,11 @@ fn c1_same_edge_queue_is_released_in_one_window() {
 /// in the same window (the retry runs to a fixed point).
 #[test]
 fn c1_chain_is_released_in_one_window() {
-    let ps = [pay(0, 0, 1, 2, 10), pay(1, 1, 0, 1, 10), pay(2, 2, 2, 0, 10)];
+    let ps = [
+        pay(0, 0, 1, 2, 10),
+        pay(1, 1, 0, 1, 10),
+        pay(2, 2, 2, 0, 10),
+    ];
     let mut ledger = Ledger::new(vec![0, 0, 10]);
     let rec = run(&mut shortfall(1_000, 10_000), &mut ledger, &ps);
     assert_eq!(rec.0[&2], (2, Some(SettleKind::Gross)));
@@ -69,16 +87,27 @@ fn c2_strict_fifo_does_not_let_new_payments_jump_the_queue() {
     let ps = [pay(0, 0, 0, 1, 10), pay(1, 10, 0, 2, 3)];
     let mut ledger = Ledger::new(vec![5, 0, 0]);
     let rec = run(&mut shortfall(500, 2_000), &mut ledger, &ps);
-    assert_eq!(rec.0[&1], (10, Some(SettleKind::Gross)), "bypass settles the small payment on arrival");
+    assert_eq!(
+        rec.0[&1],
+        (10, Some(SettleKind::Gross)),
+        "bypass settles the small payment on arrival"
+    );
 
     let mut cfg = MicroCycleConfig::new(500, 2_000, QueueMode::QueueOnShortfall);
     cfg.discipline = QueueDiscipline::StrictFifoPerPayer;
     let mut ledger = Ledger::new(vec![5, 0, 0]);
     let rec = run(&mut AtomicMicroCycle::new(cfg, 3), &mut ledger, &ps);
-    assert_eq!(rec.0[&0], (2_000, None), "the older payment expires unfunded");
+    assert_eq!(
+        rec.0[&0],
+        (2_000, None),
+        "the older payment expires unfunded"
+    );
     let (t, kind) = rec.0[&1];
     assert_eq!(kind, Some(SettleKind::Gross));
-    assert!(t >= 2_000, "strict FIFO: the newer payment cannot settle before the older one leaves (settled at {t})");
+    assert!(
+        t >= 2_000,
+        "strict FIFO: the newer payment cannot settle before the older one leaves (settled at {t})"
+    );
 }
 
 /// C3. With a cycle count that does not divide the day, the last cycle of each day must still
@@ -88,12 +117,20 @@ fn c3_deferred_cycles_end_exactly_at_the_end_of_each_day() {
     for day in 0..3u64 {
         let t = (day + 1) * MS_PER_DAY - 1;
         let mut ledger = Ledger::unlimited(2);
-        let rec = run(&mut DeferredNet::new(7, 2), &mut ledger, &[pay(0, t, 0, 1, 10)]);
+        let rec = run(
+            &mut DeferredNet::new(7, 2),
+            &mut ledger,
+            &[pay(0, t, 0, 1, 10)],
+        );
         assert_eq!(rec.0[&0].0, (day + 1) * MS_PER_DAY, "day {day}");
     }
     // first cycle of the day: floor(1 * day / 7)
     let mut ledger = Ledger::unlimited(2);
-    let rec = run(&mut DeferredNet::new(7, 2), &mut ledger, &[pay(0, 0, 0, 1, 10)]);
+    let rec = run(
+        &mut DeferredNet::new(7, 2),
+        &mut ledger,
+        &[pay(0, 0, 0, 1, 10)],
+    );
     assert_eq!(rec.0[&0].0, MS_PER_DAY / 7);
 }
 
@@ -107,7 +144,11 @@ fn c4_sla_share_is_exact() {
     assert_eq!(m.share_within_ms(2_800), Some(0.0));
     m.settled(&pay(100, 0, 0, 1, 10), 2_800, SettleKind::Gross);
     assert_eq!(m.share_within_ms(2_800), Some(1.0 / 101.0));
-    assert_eq!(m.share_within_ms(1_234), None, "only configured thresholds are exact");
+    assert_eq!(
+        m.share_within_ms(1_234),
+        None,
+        "only configured thresholds are exact"
+    );
     let (lo, hi) = m.delay.quantile_bounds(0.5);
     assert!(lo <= 2_810 && 2_810 <= hi && hi - lo <= 2_810 / 64 + 1);
 }
@@ -129,7 +170,10 @@ fn m3_gridlock_resolution_by_hand() {
     let mut ledger = Ledger::new(vec![0, 0, 0]);
     let rec = run(&mut gridlock(1_000, 3_000, 3), &mut ledger, &ps);
     for id in 0..3 {
-        assert_eq!(rec.0[&id].1, None, "payment {id} cannot settle without liquidity");
+        assert_eq!(
+            rec.0[&id].1, None,
+            "payment {id} cannot settle without liquidity"
+        );
     }
     let mut ledger = Ledger::new(vec![4, 0, 0]);
     let rec = run(&mut gridlock(1_000, 3_000, 3), &mut ledger, &ps);
@@ -148,5 +192,8 @@ fn m3_gridlock_keeps_the_payer_queue_order() {
     let mut ledger = Ledger::new(vec![5, 0, 0]);
     let rec = run(&mut gridlock(500, 2_000, 3), &mut ledger, &ps);
     assert_eq!(rec.0[&0], (2_000, None));
-    assert!(rec.0[&1].0 >= 2_000, "the second payment waits for the first to leave the queue");
+    assert!(
+        rec.0[&1].0 >= 2_000,
+        "the second payment waits for the first to leave the queue"
+    );
 }

@@ -56,12 +56,19 @@ fn main() {
                 _ => usage(),
             };
             let block = match args.iter().position(|a| a == "--block-rows") {
-                Some(i) => args.get(i + 1).and_then(|s| s.parse().ok()).unwrap_or_else(|| usage()),
+                Some(i) => args
+                    .get(i + 1)
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or_else(|| usage()),
                 None => 1_000_000,
             };
             let t0 = Instant::now();
             match loopsettle_sim::csvfile::sort_file(input, output, block) {
-                Ok(n) => eprintln!("sorted {n} rows into {output} in {:.1} s, peak RSS {:.0} MiB", t0.elapsed().as_secs_f64(), loopsettle_core::sys::peak_rss_mib()),
+                Ok(n) => eprintln!(
+                    "sorted {n} rows into {output} in {:.1} s, peak RSS {:.0} MiB",
+                    t0.elapsed().as_secs_f64(),
+                    loopsettle_core::sys::peak_rss_mib()
+                ),
                 Err(e) => {
                     eprintln!("error: {e}");
                     std::process::exit(1);
@@ -71,7 +78,10 @@ fn main() {
         Some("topology") => {
             let path = args.get(1).unwrap_or_else(|| usage());
             let shuffles = match args.iter().position(|a| a == "--nulls") {
-                Some(i) => args.get(i + 1).and_then(|s| s.parse().ok()).unwrap_or_else(|| usage()),
+                Some(i) => args
+                    .get(i + 1)
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or_else(|| usage()),
                 None => 20,
             };
             if let Err(e) = experiments2::topology_csv(path, shuffles) {

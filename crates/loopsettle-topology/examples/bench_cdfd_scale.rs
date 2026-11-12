@@ -26,9 +26,16 @@ fn graph(n: u32, m: usize, seed: u64) -> FlowGraph {
 }
 
 fn main() {
-    let max_edges: usize = std::env::args().nth(1).and_then(|s| s.parse().ok()).unwrap_or(1_000_000);
+    let max_edges: usize = std::env::args()
+        .nth(1)
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(1_000_000);
     println!("nodes,edges,seconds,augmentations,circular_share,peak_rss_mib");
-    for &(n, m) in &[(1_000u32, 10_000usize), (10_000, 100_000), (100_000, 1_000_000)] {
+    for &(n, m) in &[
+        (1_000u32, 10_000usize),
+        (10_000, 100_000),
+        (100_000, 1_000_000),
+    ] {
         if m > max_edges {
             break;
         }
@@ -36,7 +43,15 @@ fn main() {
         let t0 = Instant::now();
         let c = cdfd_max(&g);
         let s = t0.elapsed().as_secs_f64();
-        println!("{},{},{:.3},{},{:.6},{:.0}", g.n, g.edges.len(), s, c.augmentations, c.circular_total as f64 / g.total_flow() as f64, loopsettle_core::sys::peak_rss_mib());
+        println!(
+            "{},{},{:.3},{},{:.6},{:.0}",
+            g.n,
+            g.edges.len(),
+            s,
+            c.augmentations,
+            c.circular_total as f64 / g.total_flow() as f64,
+            loopsettle_core::sys::peak_rss_mib()
+        );
         if s > 60.0 {
             println!("stopped: more than 60 s");
             break;

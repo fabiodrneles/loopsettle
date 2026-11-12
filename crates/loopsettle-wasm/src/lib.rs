@@ -6,10 +6,13 @@
 
 use loopsettle_core::json::Json;
 use loopsettle_core::QueueMode;
-use loopsettle_sim::runner::MicroCycleSpec;
 use loopsettle_core::{Payment, TimeMs, MS_PER_DAY};
 use loopsettle_sim::bound::{delay_bounds_from, liquidity_floors_from};
-use loopsettle_sim::{calibrate, run, run_payments, toml_lite, EngineSpec, Opening, PaymentStream, Population, ScenarioConfig};
+use loopsettle_sim::runner::MicroCycleSpec;
+use loopsettle_sim::{
+    calibrate, run, run_payments, toml_lite, EngineSpec, Opening, PaymentStream, Population,
+    ScenarioConfig,
+};
 use loopsettle_topology::{analyze, cdfd_max, FlowGraph, HodgeConfig};
 use wasm_bindgen::prelude::*;
 
@@ -29,13 +32,21 @@ const FLOOR_DELAYS_MS: [TimeMs; 7] = [1_000, 2_000, 5_000, 10_000, 60_000, 900_0
 fn floor_curve(n: usize, ps: &[Payment], t_end: TimeMs) -> (Json, i128, i128, Vec<Json>) {
     let dd = FLOOR_DELAYS_MS;
     let mut specs = vec![EngineSpec::Gross];
-    specs.extend(dd.iter().map(|&d| EngineSpec::Deferred { cycles_per_day: (MS_PER_DAY / d) as u32 }));
+    specs.extend(dd.iter().map(|&d| EngineSpec::Deferred {
+        cycles_per_day: (MS_PER_DAY / d) as u32,
+    }));
     specs.push(EngineSpec::parse("micro:all:500:10000").expect("valid spec"));
     let o = run_payments(n, ps.iter().copied(), &specs, &Opening::Unlimited, t_end);
     let (ub, lb) = (o.ub(), o.lb());
     let floors = liquidity_floors_from(n, || ps.iter().copied(), &dd);
     let windows = delay_bounds_from(n, || ps.iter().copied(), &dd);
-    let pct = |x: i128| if ub == 0 { 0.0 } else { 100.0 * x as f64 / ub as f64 };
+    let pct = |x: i128| {
+        if ub == 0 {
+            0.0
+        } else {
+            100.0 * x as f64 / ub as f64
+        }
+    };
     let points: Vec<Json> = dd
         .iter()
         .enumerate()
@@ -49,7 +60,10 @@ fn floor_curve(n: usize, ps: &[Payment], t_end: TimeMs) -> (Json, i128, i128, Ve
                 .set("netting_saving_pct", 100.0 * o.results[k + 1].saving_vs(ub))
         })
         .collect();
-    let engines: Vec<Json> = [0, dd.len() + 1].iter().map(|&k| o.results[k].to_json(ub, lb)).collect();
+    let engines: Vec<Json> = [0, dd.len() + 1]
+        .iter()
+        .map(|&k| o.results[k].to_json(ub, lb))
+        .collect();
     (Json::Arr(points), ub, lb, engines)
 }
 
@@ -85,7 +99,15 @@ fn scenario(p: &Params) -> ScenarioConfig {
 }
 
 fn micro(mode: QueueMode, w: u64, d: u64) -> EngineSpec {
-    EngineSpec::Micro(MicroCycleSpec { mode, window_ms: w.max(1), max_delay_ms: d, max_cycle_len: 6, discipline: Default::default(), search_cycles: true, gridlock: false })
+    EngineSpec::Micro(MicroCycleSpec {
+        mode,
+        window_ms: w.max(1),
+        max_delay_ms: d,
+        max_cycle_len: 6,
+        discipline: Default::default(),
+        search_cycles: true,
+        gridlock: false,
+    })
 }
 
 pub fn simulate_json(p: &Params) -> Json {
@@ -95,14 +117,32 @@ pub fn simulate_json(p: &Params) -> Json {
 
     // Pass 1: unlimited liquidity: what each design needs.
     let sweep_windows = [500u64, 1_000, 2_000, 5_000, 10_000];
-    let mut specs = vec![EngineSpec::Gross, EngineSpec::Deferred { cycles_per_day: 1 }, EngineSpec::Deferred { cycles_per_day: 96 }, micro(QueueMode::QueueAll, w, d)];
-    specs.extend(sweep_windows.iter().map(|&sw| micro(QueueMode::QueueAll, sw, d)));
+    let mut specs = vec![
+        EngineSpec::Gross,
+        EngineSpec::Deferred { cycles_per_day: 1 },
+        EngineSpec::Deferred { cycles_per_day: 96 },
+        micro(QueueMode::QueueAll, w, d),
+    ];
+    specs.extend(
+        sweep_windows
+            .iter()
+            .map(|&sw| micro(QueueMode::QueueAll, sw, d)),
+    );
     let o = run(&cfg, &specs, &Opening::Unlimited, true, None);
     let (ub, lb) = (o.ub(), o.lb());
 
     // Pass 2: constrained liquidity (fraction of own UB).
-    let opening: Vec<i64> = o.flow.ubs().iter().map(|&u| (u as f64 * p.liquidity_fraction.clamp(0.0, 2.0)).floor() as i64).collect();
-    let cspecs = [EngineSpec::Gross, micro(QueueMode::QueueOnShortfall, w, d), micro(QueueMode::QueueAll, w, d)];
+    let opening: Vec<i64> = o
+        .flow
+        .ubs()
+        .iter()
+        .map(|&u| (u as f64 * p.liquidity_fraction.clamp(0.0, 2.0)).floor() as i64)
+        .collect();
+    let cspecs = [
+        EngineSpec::Gross,
+        micro(QueueMode::QueueOnShortfall, w, d),
+        micro(QueueMode::QueueAll, w, d),
+    ];
     let oc = run(&cfg, &cspecs, &Opening::Given(opening), false, None);
 
     // Topology and the circular component of every edge.
@@ -116,7 +156,12 @@ pub fn simulate_json(p: &Params) -> Json {
         .iter()
         .map(|&i| {
             let e = g.edges[i];
-            Json::Arr(vec![Json::Int(e.from as i128), Json::Int(e.to as i128), Json::Num(e.flow as f64 / 100.0), Json::Num(c.circular[i] as f64 / 100.0)])
+            Json::Arr(vec![
+                Json::Int(e.from as i128),
+                Json::Int(e.to as i128),
+                Json::Num(e.flow as f64 / 100.0),
+                Json::Num(c.circular[i] as f64 / 100.0),
+            ])
         })
         .collect();
     let pop = Population::build(&cfg);
@@ -159,19 +204,45 @@ pub fn simulate_json(p: &Params) -> Json {
     let (floor, _, _, _) = floor_curve(n, &stream, cfg.horizon_ms());
     let sweep: Vec<Json> = o.results[4..]
         .iter()
-        .map(|r| Json::obj().set("name", r.name.clone()).set("saving_pct", 100.0 * r.saving_vs(ub)).set("p95_ms", r.delay_q(0.95)).set("cycle_value_share", r.metrics.value_by_kind[1] as f64 / r.metrics.settled_value.max(1) as f64))
+        .map(|r| {
+            Json::obj()
+                .set("name", r.name.clone())
+                .set("saving_pct", 100.0 * r.saving_vs(ub))
+                .set("p95_ms", r.delay_q(0.95))
+                .set(
+                    "cycle_value_share",
+                    r.metrics.value_by_kind[1] as f64 / r.metrics.settled_value.max(1) as f64,
+                )
+        })
         .collect();
     let constrained: Vec<Json> = oc.results.iter().map(|r| r.to_json(ub, lb)).collect();
 
     Json::obj()
-        .set("params", Json::obj().set("seed", p.seed).set("participants", n).set("payments_per_day", cfg.payments_per_day).set("window_ms", w).set("max_delay_ms", d).set("receiver_bias_sigma", cfg.receiver_bias_sigma).set("liquidity_fraction", p.liquidity_fraction))
+        .set(
+            "params",
+            Json::obj()
+                .set("seed", p.seed)
+                .set("participants", n)
+                .set("payments_per_day", cfg.payments_per_day)
+                .set("window_ms", w)
+                .set("max_delay_ms", d)
+                .set("receiver_bias_sigma", cfg.receiver_bias_sigma)
+                .set("liquidity_fraction", p.liquidity_fraction),
+        )
         .set("scale_factor", cfg.scale_factor)
         .set("payments", o.flow.count)
         .set("gross_value_brl", o.flow.gross_value as f64 / 100.0)
         .set("ub_brl", ub as f64 / 100.0)
         .set("lb_brl", lb as f64 / 100.0)
         .set("potential_offset", o.flow.potential_offset_fraction())
-        .set("potential_liquidity_saving", if ub == 0 { 0.0 } else { (ub - lb) as f64 / ub as f64 })
+        .set(
+            "potential_liquidity_saving",
+            if ub == 0 {
+                0.0
+            } else {
+                (ub - lb) as f64 / ub as f64
+            },
+        )
         .set("topology", topo.to_json())
         .set("nodes", Json::Arr(nodes))
         .set("edges", Json::Arr(edges))
@@ -179,14 +250,28 @@ pub fn simulate_json(p: &Params) -> Json {
         .set("sweep", Json::Arr(sweep))
         .set("constrained", Json::Arr(constrained))
         .set("floor", floor)
-        .set("intraday_value_brl", Json::Arr(value.into_iter().map(Json::Num).collect()))
-        .set("intraday_net_debit_brl", Json::Arr(debit.into_iter().map(Json::Num).collect()))
+        .set(
+            "intraday_value_brl",
+            Json::Arr(value.into_iter().map(Json::Num).collect()),
+        )
+        .set(
+            "intraday_net_debit_brl",
+            Json::Arr(debit.into_iter().map(Json::Num).collect()),
+        )
 }
 
 /// Run a small calibrated simulation and return the results as JSON.
 /// `seed` is a JS number (integer part used) to avoid BigInt on the JS side.
 #[wasm_bindgen]
-pub fn simulate(seed: f64, participants: u32, payments: u32, window_ms: u32, max_delay_ms: u32, receiver_bias_sigma: f64, liquidity_fraction: f64) -> String {
+pub fn simulate(
+    seed: f64,
+    participants: u32,
+    payments: u32,
+    window_ms: u32,
+    max_delay_ms: u32,
+    receiver_bias_sigma: f64,
+    liquidity_fraction: f64,
+) -> String {
     let p = Params {
         seed: seed.max(0.0) as u64,
         participants,
@@ -243,27 +328,58 @@ mod tests {
 
     #[test]
     fn small_run_produces_consistent_json() {
-        let p = Params { seed: 7, participants: 20, payments: 20_000, window_ms: 1000, max_delay_ms: 5000, receiver_bias_sigma: 0.4, liquidity_fraction: 0.5 };
+        let p = Params {
+            seed: 7,
+            participants: 20,
+            payments: 20_000,
+            window_ms: 1000,
+            max_delay_ms: 5000,
+            receiver_bias_sigma: 0.4,
+            liquidity_fraction: 0.5,
+        };
         let a = simulate_json(&p).to_string_compact();
         let b = simulate_json(&p).to_string_compact();
         assert_eq!(a, b, "deterministic");
-        assert!(a.contains("\"engines\"") && a.contains("\"edges\"") && a.contains("\"sweep\"") && a.contains("\"floor\""));
+        assert!(
+            a.contains("\"engines\"")
+                && a.contains("\"edges\"")
+                && a.contains("\"sweep\"")
+                && a.contains("\"floor\"")
+        );
     }
 
     /// The file analysis agrees with the command-line bound on the same payments: the tight
     /// bound is never above the window bound, and realised netting never above the tight bound.
     #[test]
     fn analyze_file_is_consistent() {
-        let cfg = ScenarioConfig { seed: 3, participants: 15, payments_per_day: 20_000.0, n_big: 2, n_mid: 3, ..Default::default() };
+        let cfg = ScenarioConfig {
+            seed: 3,
+            participants: 15,
+            payments_per_day: 20_000.0,
+            n_big: 2,
+            n_mid: 3,
+            ..Default::default()
+        };
         let mut txt = String::from("t_ms,from,to,amount\n");
         for p in PaymentStream::new(&cfg) {
-            txt.push_str(&format!("{},b{},b{},{}.{:02}\n", p.t_arrival, p.payer, p.payee, p.amount / 100, p.amount % 100));
+            txt.push_str(&format!(
+                "{},b{},b{},{}.{:02}\n",
+                p.t_arrival,
+                p.payer,
+                p.payee,
+                p.amount / 100,
+                p.amount % 100
+            ));
         }
         let j = analyze_file_json(&txt).to_string_compact();
         assert!(!j.contains("\"error\""), "{j}");
         let r = analyze_file_json(&txt);
         let Json::Obj(kv) = r else { panic!() };
-        let floor = kv.iter().find(|(k, _)| k == "floor").map(|(_, v)| v.clone()).unwrap();
+        let floor = kv
+            .iter()
+            .find(|(k, _)| k == "floor")
+            .map(|(_, v)| v.clone())
+            .unwrap();
         let Json::Arr(points) = floor else { panic!() };
         assert_eq!(points.len(), FLOOR_DELAYS_MS.len());
         let num = |o: &Json, key: &str| -> f64 {
@@ -275,9 +391,18 @@ mod tests {
             }
         };
         for p in &points {
-            let (t, w, r) = (num(p, "tight_bound_pct"), num(p, "window_bound_pct"), num(p, "netting_saving_pct"));
-            assert!(r <= t + 1e-9 && t <= w + 1e-9, "realised {r} <= tight {t} <= window {w}");
+            let (t, w, r) = (
+                num(p, "tight_bound_pct"),
+                num(p, "window_bound_pct"),
+                num(p, "netting_saving_pct"),
+            );
+            assert!(
+                r <= t + 1e-9 && t <= w + 1e-9,
+                "realised {r} <= tight {t} <= window {w}"
+            );
         }
-        assert!(analyze_file_json("nonsense").to_string_compact().contains("error"));
+        assert!(analyze_file_json("nonsense")
+            .to_string_compact()
+            .contains("error"));
     }
 }

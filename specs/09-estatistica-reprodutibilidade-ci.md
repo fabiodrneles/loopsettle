@@ -4,7 +4,7 @@
 > - **E2 feito:** `stats::par_map`, idêntico com 1, 2 e 4 threads.
 > - **E3 feito:** resultados-ouro idênticos em Linux, Windows e macOS no CI; não foi preciso
 >   trocar a libm.
-> - **E4 feito**, menos `cargo fmt --check` (295 diferenças; decisão do dono) e o `MANIFEST.sha256`.
+> - **E4 feito**, inclusive `cargo fmt --check` (código formatado com o padrão do rustfmt em 12/11/2026, a pedido do dono) e o `MANIFEST.sha256`.
 > - **E6 feito:** esquema, plataforma, rustc e hash do `Cargo.lock` no `summary.json`.
 > - **12/11/2026:** a curva do limite (`regimes/bound_curve.csv`) passou a 10 sementes com IC;
 >   `liquidity-frontier`, `echo-sweep` e `echo-scale` já nasceram com várias sementes.
