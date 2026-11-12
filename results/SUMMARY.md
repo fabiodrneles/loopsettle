@@ -747,7 +747,7 @@ The same case at higher volume (experiment `echo-scale`, 4 seeds): the 10 s tigh
 | 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
 
 ## 15. Circularity by horizon: value that circulates vs liquidity that can be recovered
-_seed `20260930`, code `0.1.0+git.c483cf6-dirty`, command `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+_seed `20260930`, code `0.1.0+git.f4e389c`, command `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
 
 For each width w the day is cut into windows; inside each window the maximum circulation (CDFD) of the aggregated flows is computed. The sum is the value that *could be cancelled* by netting inside windows of width w. Next to it, for the same w as a deadline: the tight bound and what netting every w realises. Cancelled value is not saved liquidity. Means over 5 seeds.
 

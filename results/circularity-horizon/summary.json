@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "circularity-horizon",
   "seed": 20260930,
-  "code_version": "0.1.0+git.c483cf6-dirty",
+  "code_version": "0.1.0+git.f4e389c",
   "config_file": "experiments/circularity-horizon.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment circularity-horizon",
   "platform": "x86_64-linux",

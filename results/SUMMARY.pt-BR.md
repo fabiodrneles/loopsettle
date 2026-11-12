@@ -747,7 +747,7 @@ O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite ap
 | 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
 
 ## 15. Circularidade por horizonte: valor que circula × liquidez recuperável
-_seed `20260930`, código `0.1.0+git.c483cf6-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+_seed `20260930`, código `0.1.0+git.f4e389c`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
 
 Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.
 
