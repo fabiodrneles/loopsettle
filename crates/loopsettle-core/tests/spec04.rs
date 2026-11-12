@@ -111,3 +111,42 @@ fn c4_sla_share_is_exact() {
     let (lo, hi) = m.delay.quantile_bounds(0.5);
     assert!(lo <= 2_810 && 2_810 <= hi && hi - lo <= 2_810 / 64 + 1);
 }
+
+fn gridlock(window: TimeMs, delay: TimeMs, n: usize) -> AtomicMicroCycle {
+    let mut cfg = MicroCycleConfig::new(window, delay, QueueMode::QueueOnShortfall);
+    cfg.gridlock = true;
+    cfg.discipline = QueueDiscipline::StrictFifoPerPayer;
+    AtomicMicroCycle::new(cfg, n)
+}
+
+/// Gridlock by hand. Nobody has funds. A->B 10, B->C 10, C->A 6 queue up: a chain that is not
+/// a cycle of equal amounts. All three together would leave C at +4, B at 0 and A at -4, so the
+/// last payment of A's queue (its only one) is dropped; then B is short, then C: nothing can
+/// settle. Give A 4 and the whole batch settles at once in the next window.
+#[test]
+fn m3_gridlock_resolution_by_hand() {
+    let ps = [pay(0, 0, 0, 1, 10), pay(1, 1, 1, 2, 10), pay(2, 2, 2, 0, 6)];
+    let mut ledger = Ledger::new(vec![0, 0, 0]);
+    let rec = run(&mut gridlock(1_000, 3_000, 3), &mut ledger, &ps);
+    for id in 0..3 {
+        assert_eq!(rec.0[&id].1, None, "payment {id} cannot settle without liquidity");
+    }
+    let mut ledger = Ledger::new(vec![4, 0, 0]);
+    let rec = run(&mut gridlock(1_000, 3_000, 3), &mut ledger, &ps);
+    for id in 0..3 {
+        assert_eq!(rec.0[&id], (1_000, Some(SettleKind::Cycle)), "payment {id}");
+    }
+    assert_eq!(ledger.balances(), &[0, 0, 4]);
+}
+
+/// The batch respects each payer's queue order: A's second payment (small, it would fit) is
+/// not settled while its first (too large) is stuck; the cycle search with bypass would take it.
+#[test]
+fn m3_gridlock_keeps_the_payer_queue_order() {
+    // A has 5: A->B 50 (stuck), then A->C 3. B and C have nothing queued.
+    let ps = [pay(0, 0, 0, 1, 50), pay(1, 1, 0, 2, 3)];
+    let mut ledger = Ledger::new(vec![5, 0, 0]);
+    let rec = run(&mut gridlock(500, 2_000, 3), &mut ledger, &ps);
+    assert_eq!(rec.0[&0], (2_000, None));
+    assert!(rec.0[&1].0 >= 2_000, "the second payment waits for the first to leave the queue");
+}

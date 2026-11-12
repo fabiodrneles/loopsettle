@@ -192,11 +192,15 @@ pub struct MicroCycleConfig {
     /// pass) instead of the event-driven one. Same results by construction; kept so the two
     /// can be compared in tests. Leave `false`.
     pub reference_retry: bool,
+    /// Run a multilateral gridlock resolution at every window instead of the cycle search:
+    /// settle, simultaneously, the largest set of queued payments that respects each payer's
+    /// queue order and leaves no balance negative (see `run_gridlock`).
+    pub gridlock: bool,
 }
 
 impl MicroCycleConfig {
     pub fn new(window_ms: TimeMs, max_delay_ms: TimeMs, mode: QueueMode) -> Self {
-        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo, search_cycles: true, reference_retry: false }
+        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6, discipline: QueueDiscipline::BypassFifo, search_cycles: true, reference_retry: false, gridlock: false }
     }
 }
 
@@ -400,6 +404,69 @@ impl AtomicMicroCycle {
         }
     }
 
+    /// Multilateral gridlock resolution in the manner of Bech & Soramäki (2001).
+    ///
+    /// Each payer's queued payments are taken in arrival order. Start by assuming all of them
+    /// settle at once; while some participant would end below zero, drop the *last* payment
+    /// still included in that participant's queue; when nobody is below zero, settle what is
+    /// left simultaneously. The result is the largest set that is a prefix of every payer's
+    /// queue and feasible on a net basis (it does not depend on the order in which deficits
+    /// are fixed), and it can be empty.
+    ///
+    /// Unlike the cycle search it settles batches that are not cycles and uses the balances
+    /// that participants hold. Implemented from the description of the algorithm in secondary
+    /// sources; DECISIONS.md, D27.
+    fn run_gridlock(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        let n = self.out.len();
+        // per payer: queued payments in arrival order, as (sequence, payee, amount)
+        let mut q: Vec<Vec<(u64, ParticipantId, Cents)>> = vec![Vec::new(); n];
+        for (a, edges) in self.out.iter().enumerate() {
+            for (&b, dq) in edges {
+                q[a].extend(dq.iter().map(|(seq, p)| (*seq, b, p.amount)));
+            }
+            q[a].sort_unstable_by_key(|e| e.0);
+        }
+        let mut keep: Vec<usize> = q.iter().map(Vec::len).collect();
+        let mut pos: Vec<i128> = (0..n).map(|i| ledger.balance(i as u32) as i128).collect();
+        for (a, list) in q.iter().enumerate() {
+            for &(_, b, v) in list {
+                pos[a] -= v as i128;
+                pos[b as usize] += v as i128;
+            }
+        }
+        let mut work: Vec<usize> = (0..n).filter(|&i| pos[i] < 0).collect();
+        while let Some(i) = work.pop() {
+            // A deficit can only come from i's own included payments (balances are >= 0).
+            while pos[i] < 0 {
+                keep[i] -= 1;
+                let (_, b, v) = q[i][keep[i]];
+                pos[i] += v as i128;
+                pos[b as usize] -= v as i128;
+                if pos[b as usize] < 0 && pos[b as usize] + (v as i128) >= 0 {
+                    work.push(b as usize);
+                }
+            }
+        }
+        let mut legs: Vec<(u32, u32, Cents)> = Vec::new();
+        for (a, list) in q.iter().enumerate() {
+            legs.extend(list[..keep[a]].iter().map(|&(_, b, v)| (a as u32, b, v)));
+        }
+        if legs.is_empty() {
+            return;
+        }
+        let ok = ledger.try_batch(&legs, &mut self.scratch);
+        assert!(ok, "the gridlock solution is feasible by construction");
+        // Pop in each payer's arrival order: a prefix of a payer's queue is a prefix of each
+        // of its edges, so every popped payment is the head of its edge.
+        for (a, b, _) in legs {
+            let p = self.pop_head(a, b);
+            sink.settled(&p, t, SettleKind::Cycle);
+            self.mark(a);
+            self.mark(b);
+        }
+        self.cycles_settled += 1;
+    }
+
     /// QueueOnShortfall: retry queued payments gross in arrival order, to a fixed point.
     ///
     /// **What it computes** (the definition, implemented literally by
@@ -521,7 +588,9 @@ impl AtomicMicroCycle {
         if self.queued == 0 {
             return;
         }
-        if self.cfg.search_cycles {
+        if self.cfg.gridlock {
+            self.run_gridlock(t, ledger, sink);
+        } else if self.cfg.search_cycles {
             self.run_cycles(t, ledger, sink);
         }
         if self.cfg.mode == QueueMode::QueueOnShortfall && self.queued > 0 {
@@ -552,6 +621,9 @@ impl SettlementEngine for AtomicMicroCycle {
             QueueMode::QueueOnShortfall => "shortfall",
         };
         let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        if self.cfg.gridlock {
+            return format!("gridlock_{}_w{}_d{}", if strict { "fifo" } else { "bypass" }, self.cfg.window_ms, self.cfg.max_delay_ms);
+        }
         if !self.cfg.search_cycles && self.cfg.mode == QueueMode::QueueOnShortfall {
             return format!("queue_{}_d{}", if strict { "fifo" } else { "bypass" }, self.cfg.max_delay_ms);
         }

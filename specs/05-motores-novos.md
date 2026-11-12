@@ -41,7 +41,11 @@ instrumento: mostra que só atrasar, sem compensar, já muda a liquidez, e separ
 - **AC:** teste de igualdade `L_i = piso_i(d)` para o participante único que segura, em 5
   cenários. Isso fecha a prova de que o piso é atingível (spec 01).
 
-## M3 — Compensação parcial multilateral no estilo Bech-Soramäki
+## M3 — Compensação parcial multilateral no estilo Bech-Soramäki — **FEITO em 12/11/2026 (a conferir com o artigo)**
+
+> `gridlock:fifo|bypass:<janela>:<atraso>` (`engines.rs::run_gridlock`, D27). Testes:
+> `m3_gridlock_resolution_by_hand`, `m3_gridlock_keeps_the_payer_queue_order`,
+> `gridlock_invariants`. O exemplo do artigo não foi reproduzido porque o artigo não foi lido.
 
 O algoritmo do artigo de 2001 resolve gridlock achando o maior subconjunto de pagamentos na
 fila, respeitando FIFO por banco, que liquida simultaneamente sem saldo negativo: começa com
@@ -54,7 +58,10 @@ todos, e enquanto algum banco ficar negativo remove o último pagamento da fila 
 - Ler o artigo em `docs/references/` antes; a descrição acima é de memória e precisa ser
   conferida (`HIPÓTESE` quanto aos detalhes).
 
-## M4 — Compensação bilateral contínua (offsetting)
+## M4 — Compensação bilateral contínua (offsetting) — **FEITO como apelido em 12/11/2026**
+
+> `bilateral:<modo>:<janela>:<atraso>` = micro-ciclos com comprimento máximo 2. Por janela, não
+> por evento.
 
 Na chegada de `A→B`, procura na fila um `B→A` e liquida os dois pelo líquido. É o mecanismo de
 vários RTGS (por exemplo o T2). Caso particular dos micro-ciclos com `max_cycle_len = 2` e

@@ -282,3 +282,18 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Resultado:** o critério disparou para os ecos que voltam para quem pagou (ASSESSMENT,
   atualização 5).
 - **Reverter:** `echo_share = 0` (o padrão).
+
+## D27 — Resolução de gridlock no estilo de Bech & Soramäki, a partir de descrições secundárias
+- **Decisão:** `gridlock:fifo|bypass:<janela>:<atraso>` enfileira pagamentos quando falta saldo e,
+  a cada janela, liquida simultaneamente o maior conjunto de pagamentos na fila que é um prefixo
+  da fila de cada pagador e não deixa saldo negativo (começa com tudo; enquanto um participante
+  ficar abaixo de zero, tira o último pagamento ainda incluído da fila dele).
+  `bilateral:<modo>:<janela>:<atraso>` é o motor de micro-ciclos restrito a ciclos de dois.
+- **Alternativas:** as variantes exatas do algoritmo do artigo de 2001 (o artigo não está em
+  `docs/references/` e não foi lido); liquidação parcial; resolvedores por otimização.
+- **Por quê:** é o mecanismo clássico de economia de liquidez com que a literatura compara, e
+  liquida lotes que não são ciclos, o que a busca de micro-ciclos não consegue.
+- **Ressalva:** implementado a partir da descrição do algoritmo em fontes secundárias e da
+  propriedade de prefixo e viabilidade pela qual ele é conhecido; precisa ser conferido com o
+  artigo antes de o nome "Bech-Soramäki" ser usado numa publicação.
+- **Reverter:** não usar o motor `gridlock`; nada mais depende dele.

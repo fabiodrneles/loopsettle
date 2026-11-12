@@ -28,6 +28,8 @@ pub struct MicroCycleSpec {
     pub discipline: QueueDiscipline,
     /// `false` for the plain queue (`queue:fifo|bypass:<max_delay_ms>[:<retry_ms>]`)
     pub search_cycles: bool,
+    /// multilateral gridlock resolution at every window (`gridlock:fifo|bypass:<window>:<delay>`)
+    pub gridlock: bool,
 }
 
 impl EngineSpec {
@@ -55,7 +57,26 @@ impl EngineSpec {
                 if parts.len() > 4 || window_ms == 0 {
                     return Err(format!("engine '{s}': expected queue:fifo|bypass:<max_delay_ms>[:<retry_ms>]"));
                 }
-                Ok(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms, max_delay_ms: num(2)?, max_cycle_len: 2, discipline, search_cycles: false }))
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms, max_delay_ms: num(2)?, max_cycle_len: 2, discipline, search_cycles: false, gridlock: false }))
+            }
+            // Queue + multilateral gridlock resolution every window (Bech-Soramäki style).
+            "gridlock" => {
+                let discipline = match parts.get(1).copied() {
+                    Some("fifo") => QueueDiscipline::StrictFifoPerPayer,
+                    Some("bypass") => QueueDiscipline::BypassFifo,
+                    _ => return Err(format!("engine '{s}': expected gridlock:fifo|bypass:<window_ms>:<max_delay_ms>")),
+                };
+                if parts.len() != 4 || num(2)? == 0 {
+                    return Err(format!("engine '{s}': expected gridlock:fifo|bypass:<window_ms>:<max_delay_ms>"));
+                }
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode: QueueMode::QueueOnShortfall, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len: 2, discipline, search_cycles: false, gridlock: true }))
+            }
+            // Bilateral offsetting only: the micro-cycle engine restricted to cycles of two.
+            "bilateral" => {
+                if parts.len() != 4 {
+                    return Err(format!("engine '{s}': expected bilateral:all|shortfall:<window_ms>:<max_delay_ms>"));
+                }
+                Self::parse(&format!("micro:{}:{}:{}:2", parts[1], parts[2], parts[3]))
             }
             "micro" => {
                 let mode = match parts.get(1).copied() {
@@ -72,7 +93,7 @@ impl EngineSpec {
                 if parts.len() > 6 {
                     return Err(format!("engine '{s}': too many fields"));
                 }
-                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len, discipline, search_cycles: true }))
+                Ok(EngineSpec::Micro(MicroCycleSpec { mode, window_ms: num(2)?, max_delay_ms: num(3)?, max_cycle_len, discipline, search_cycles: true, gridlock: false }))
             }
             _ => Err(format!("unknown engine '{s}'")),
         }
@@ -88,6 +109,7 @@ impl EngineSpec {
                 c.max_cycle_len = m.max_cycle_len;
                 c.discipline = m.discipline;
                 c.search_cycles = m.search_cycles;
+                c.gridlock = m.gridlock;
                 Box::new(AtomicMicroCycle::new(c, n))
             }
         }
@@ -105,7 +127,7 @@ impl EngineSpec {
                 }
             }
             EngineSpec::Micro(m) => Json::obj()
-                .set("kind", if m.search_cycles { "micro" } else { "queue" })
+                .set("kind", if m.gridlock { "gridlock" } else if m.search_cycles { "micro" } else { "queue" })
                 .set("mode", if m.mode == QueueMode::QueueAll { "all" } else { "shortfall" })
                 .set("window_ms", m.window_ms)
                 .set("max_delay_ms", m.max_delay_ms)

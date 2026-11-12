@@ -220,6 +220,35 @@ proptest! {
     }
 }
 
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(300))]
+
+    /// Gridlock resolution: conservation, no negative balance, and one outcome per payment
+    /// within its deadline. (No dominance over the plain queue is claimed: only invariants.)
+    #[test]
+    fn gridlock_invariants(
+        ps in payments(6, 200),
+        opening in prop::collection::vec(0i64..6_000, 6),
+        window in 1u64..3_000,
+        max_delay in 1u64..30_000,
+        strict in any::<bool>(),
+    ) {
+        let mut cfg = MicroCycleConfig::new(window, max_delay, QueueMode::QueueOnShortfall);
+        cfg.gridlock = true;
+        cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
+        let mut eng = AtomicMicroCycle::new(cfg, 6);
+        let mut ledger = Ledger::new(opening);
+        let mut rec = Recorder::default();
+        drive_checked(&mut eng, &ps, &mut ledger, &mut rec, true)?;
+        prop_assert!(!rec.dup);
+        prop_assert_eq!(rec.ev.len(), ps.len());
+        for p in &ps {
+            let (t, _, _) = rec.ev[&p.id];
+            prop_assert!(t >= p.t_arrival && t <= p.t_arrival + max_delay);
+        }
+    }
+}
+
 #[test]
 fn bilateral_pair_offsets_without_liquidity() {
     // A->B 100 at t=0 and B->A 100 at t=10, zero balances: gross rejects both; the

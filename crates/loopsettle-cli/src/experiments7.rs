@@ -176,9 +176,7 @@ pub fn echo_scale(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
     let mut cases = Vec::new();
     for &ppd in &scales {
         // only with echoes: the same scales without them are in `robustness/scale.csv`
-        for echo in [true] {
-            cases.push((ppd, echo));
-        }
+        cases.push((ppd, true));
     }
     let mut jobs = Vec::new();
     for c in 0..cases.len() {
@@ -217,7 +215,8 @@ pub fn echo_scale(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
         }
     }
     // least-squares slopes in log-log
-    let slope = |ys: &dyn Fn(&(f64, f64, f64, f64)) -> f64| -> f64 {
+    type Pt = (f64, f64, f64, f64);
+    let slope = |ys: &dyn Fn(&Pt) -> f64| -> f64 {
         let n = pts.len() as f64;
         let (mx, my) = (pts.iter().map(|p| p.0).sum::<f64>() / n, pts.iter().map(ys).sum::<f64>() / n);
         let sxy: f64 = pts.iter().map(|p| (p.0 - mx) * (ys(p) - my)).sum();

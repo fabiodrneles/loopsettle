@@ -277,3 +277,18 @@ Each entry: what was decided, alternatives, why, and how to revert.
   netting could use, so it is the most adverse test of the claim that such netting saves nothing.
 - **Outcome:** the criterion fired for echoes that return to the payer (ASSESSMENT, update 5).
 - **Revert:** `echo_share = 0` (the default).
+
+## D27 — Gridlock resolution in the manner of Bech & Soramäki, from secondary descriptions
+- **Decision:** `gridlock:fifo|bypass:<window>:<delay>` queues payments on a shortfall and, every
+  window, settles simultaneously the largest set of queued payments that is a prefix of every
+  payer's queue and leaves no balance negative (start with everything; while a participant is
+  below zero, drop the last payment still included in its queue). `bilateral:<mode>:<window>:<delay>`
+  is the micro-cycle engine restricted to cycles of two.
+- **Alternatives:** the exact algorithm variants of the 2001 paper (the paper is not in
+  `docs/references/` and was not read); partial settlement; optimisation-based solvers.
+- **Why:** it is the classic liquidity-saving mechanism the literature compares against, and it
+  settles batches that are not cycles, which the micro-cycle search cannot.
+- **Caveat:** implemented from the description of the algorithm in secondary sources and from the
+  prefix/feasibility property it is known for; it must be checked against the paper before the
+  name "Bech-Soramäki" is used in a publication.
+- **Revert:** do not use the `gridlock` engine; nothing else depends on it.

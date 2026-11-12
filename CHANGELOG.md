@@ -18,6 +18,7 @@ whose results changed.
 - Offline optimum as a linear programme (test oracle) and the `optimality_gap` example: floors ≤
   optimum ≤ engines.
 - `liquidity-frontier` experiment: rejection, delay and equivalent liquidity under fixed balances.
+- `gridlock:fifo|bypass:<window>:<delay>` (multilateral gridlock resolution) and `bilateral:...` engines.
 - `hold:<delay>[:<participant>]` engine: with one holder it attains the liquidity floor exactly.
 - Plain queue engine (`queue:fifo|bypass:<delay>`); event-driven gross retry, tested identical to
   the literal one.
