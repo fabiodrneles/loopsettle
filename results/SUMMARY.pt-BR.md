@@ -6,7 +6,7 @@ Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à
 Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 pagamentos reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
 ## 1. Calibração (real vs simulado)
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
 
 | agregado | real | simulado | erro relativo |
 |---|---|---|---|
@@ -21,7 +21,7 @@ _seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -68,7 +68,7 @@ Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
@@ -104,7 +104,7 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -141,7 +141,7 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -193,7 +193,7 @@ Estresse redesenhado (REVIEW 39): quem cai e quando. Para cada caso, o efeito so
 | top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_all_w1000_d10000 | 0.0822% |
 
 ## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
 
 Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre sementes):
 
@@ -224,7 +224,7 @@ Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre semen
 Figura: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
 ## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
 
 R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):
 
@@ -295,7 +295,7 @@ R5 — razão por participante: liquidez instantânea / liquidez com N ciclos po
 Figura: [`robustness/fig_scale.svg`](robustness/fig_scale.svg)
 
 ## 8. Calibração do viés recebedor no BCB WP 619 (W2b)
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
 
 Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para cada σ e multiplicador das IPs, média de 3 sementes. Alvo, com dados reais do Pix: p25 18–45%, mediana 57–80%, p75 73–90%.
 
@@ -329,7 +329,7 @@ Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para c
 Melhor ajuste: σ = 1, multiplicador das IPs = 1.3 (p25 36.2%, mediana 61.1%, p75 83.3%).
 
 ## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
 Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:
 
@@ -411,7 +411,7 @@ Perfis intradiários por classe de instituição com intensidade λ (0 = um perf
 Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46% na forma de janela e 0.042% na forma apertada; disparou: não.
 
 ## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
-_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
 
@@ -512,7 +512,7 @@ Pré-financiamento abaixo da necessidade (camada de abastecimento, spec 05 M5): 
 | 1 | 1 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.1.0+git.1ca1280`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 
@@ -554,7 +554,7 @@ O limite apertado por participante (uma semente): quanto cada um poderia economi
 | 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
 
 ## 12. Liquidez restrita: rejeição, atraso e liquidez equivalente
-_seed `20260930`, código `0.1.0+git.e8b43f6`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
 
 Saldos de abertura fixos (regra `ub`: α × UB de cada participante; regra `outflow`: α × UB total, repartido pelo volume de saída) e o que acontece em cada desenho. Dois horizontes: espera de até 10 s (prazo de pagamento instantâneo) e de até 1 hora (regime dos mecanismos de economia de liquidez de alto valor). Pagamento rejeitado não é tentado de novo (ASSUMPTION). Médias de 10 sementes, 300 mil pagamentos por dia.
 
@@ -719,7 +719,7 @@ Sistema pequeno numa hora movimentada (20 participantes, cerca de 1.500 pagament
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)
-_seed `20260930`, código `0.1.0+git.ddf64a5`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.
 
@@ -810,7 +810,7 @@ O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite ap
 | 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
 
 ## 15. Circularidade por horizonte: valor que circula × liquidez recuperável
-_seed `20260930`, código `0.1.0+git.f4e389c`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
 
 Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.
 
