@@ -110,6 +110,8 @@ PT = {
     "ec_intro": "Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.",
     "c_ec": ["parcela de eco", "atraso do eco (s)", "retorno", "motor", "economia [IC 95%]", "limite apertado [IC 95%]", "valor em ciclos", "LB/UB"],
     "ec_kill": "Critério de morte ({}): pior caso {}; disparou: {}.",
+    "ec_scale": "O mesmo caso com mais volume (experimento `echo-scale`, {} sementes): o limite apertado de 10 s em % do UB cai com expoente {} no número de pagamentos; em valor, cresce com expoente {}.",
+    "c_escale": ["pagamentos/dia", "economia a cada 10 s [IC 95%]", "limite apertado [IC 95%]", "UB / volume"],
     "ec_sens": "Sensibilidade do caso que disparou o critério (20% de eco, 1 s, de volta a quem pagou), mudando uma coisa de cada vez; prazo de 10 s:",
     "c_sens": ["variante", "motor", "economia [IC 95%]", "limite apertado [IC 95%]"],
     "ec_diag": "Diagnóstico de ordem: só atrasar (hold, ordem de chegada mantida) contra motores que liquidam uns pagamentos antes e outros depois, com ecos adiante:",
@@ -195,6 +197,8 @@ EN = {
     "ec_intro": "A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.",
     "c_ec": ["echo share", "echo delay (s)", "return", "engine", "saving [95% CI]", "tight bound [95% CI]", "value in cycles", "LB/UB"],
     "ec_kill": "Kill criterion ({}): worst case {}; fired: {}.",
+    "ec_scale": "The same case at higher volume (experiment `echo-scale`, {} seeds): the 10 s tight bound in % of UB falls with exponent {} in the number of payments; in money it grows with exponent {}.",
+    "c_escale": ["payments/day", "saving of netting every 10 s [95% CI]", "tight bound [95% CI]", "UB / volume"],
     "ec_sens": "Sensitivity of the case that fired the criterion (20% echo share, 1 s, straight back), one change at a time; 10 s deadline:",
     "c_sens": ["variant", "engine", "saving [95% CI]", "tight bound [95% CI]"],
     "ec_diag": "Ordering diagnostic: delaying only (hold, arrival order kept) against engines that settle some payments earlier and others later, with onward echoes:",
@@ -400,6 +404,12 @@ def build(T):
     md.append(table(T["c_sens"], [[r["variant"], r["engine"], ci(r, "saving_pct"), ci(r, "tight_bound_pct")] for r in rows("echo-sweep", "sensitivity.csv")]))
     md += ["", T["ec_diag"], ""]
     md.append(table(T["c_diag"], [[r["case"], r["engine"], ci(r, "saving_pct")] for r in rows("echo-sweep", "order_diagnostic.csv")]))
+    es = load("echo-scale")
+    sl = es["loglog_slopes_with_echo"]
+    er = rows("echo-scale", "scale.csv")
+    md += ["", T["ec_scale"].format(er[0]["seeds"], f"{sl['tight_bound_pct_of_ub']:.2f}", f"{sl['tight_bound_in_money']:.2f}"), ""]
+    md.append(table(T["c_escale"], [[num(r["payments_per_day"], 0), f"{float(r['netting_10s_saving_pct_mean']):.3f}% [{float(r['saving_ci95_low']):.3f}; {float(r['saving_ci95_high']):.3f}]",
+                                      f"{float(r['tight_bound_10s_pct_mean']):.3f}% [{float(r['tight_ci95_low']):.3f}; {float(r['tight_ci95_high']):.3f}]", num(r["ub_over_gross_mean"], 4)] for r in er]))
     md.append("")
     return "\n".join(md) + "\n"
 

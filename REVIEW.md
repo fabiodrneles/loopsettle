@@ -326,3 +326,12 @@ the real laptop (i3, 4 GB).
     iterative simulation). UB and LB themselves go back to Koponen & Soramäki (1998), which the
     repository does not cite yet and I have not read. **This does not establish novelty**; the
     kill criterion K2 stays open for the new theorem.
+90. **Echo effect and volume (`echo-scale`), 12 Nov 2026.** Open item of point 88 run: with 20% of
+    payments returned to the payer in 1 s, the 10 s tight bound is 4.8%, 2.4%, 1.3% and 0.8% of UB
+    at 1, 3, 10 and 30 million payments a day (4 seeds; fitted exponent −0.52). In money the
+    bound grows with exponent 0.42 while UB grows with about 0.95: the recoverable amount behaves
+    like a fluctuation, the need like a drift. **Risks:** 4 seeds and wide CIs at 1 and 3 million
+    (the CI at 3 million includes zero); a fit over four points; no derivation. A naive
+    extrapolation to Pix volume (about 240 million a day) would give about 0.3%, and must not be
+    quoted as a result. Also new: the `gridlock` and `bilateral` engines (spec 05 M3, M4; D27),
+    with the caveat that the gridlock algorithm was not checked against the 2001 paper.

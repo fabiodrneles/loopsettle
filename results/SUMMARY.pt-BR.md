@@ -737,3 +737,12 @@ Diagnóstico de ordem: só atrasar (hold, ordem de chegada mantida) contra motor
 | 50% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -4.489% [-7.477; -1.502] |
 | 50% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -4.570% [-9.592; 0.452] |
 
+O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite apertado de 10 s em % do UB cai com expoente -0.52 no número de pagamentos; em valor, cresce com expoente 0.42.
+
+| pagamentos/dia | economia a cada 10 s [IC 95%] | limite apertado [IC 95%] | UB / volume |
+|---|---|---|---|
+| 1 000 000 | 4.614% [0.255; 8.973] | 4.800% [0.418; 9.182] | 0.1030 |
+| 3 000 000 | 2.119% [-1.580; 5.817] | 2.441% [-1.224; 6.106] | 0.0968 |
+| 10 000 000 | 1.119% [0.336; 1.903] | 1.287% [0.592; 1.983] | 0.0894 |
+| 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
+

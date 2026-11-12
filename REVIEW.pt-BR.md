@@ -339,3 +339,13 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     fim do dia, simulação iterativa). O UB e o LB em si vêm de Koponen & Soramäki (1998), que o
     repositório ainda não cita e que eu não li. **Isso não estabelece novidade**; o critério de
     morte K2 continua aberto para o teorema novo.
+90. **Efeito do eco e volume (`echo-scale`), 12/11/2026.** Item em aberto do ponto 88, rodado: com
+    20% dos pagamentos devolvidos a quem pagou em 1 s, o limite apertado de 10 s é 4,8%, 2,4%, 1,3%
+    e 0,8% do UB com 1, 3, 10 e 30 milhões de pagamentos por dia (4 sementes; expoente ajustado de
+    −0,52). Em valor, o limite cresce com expoente 0,42, enquanto o UB cresce com cerca de 0,95: o
+    valor recuperável se comporta como flutuação, a necessidade como deriva. **Riscos:** 4 sementes
+    e IC largos com 1 e 3 milhões (o IC com 3 milhões inclui zero); um ajuste em quatro pontos;
+    sem dedução. Uma extrapolação ingênua para o volume do Pix (cerca de 240 milhões por dia) daria
+    cerca de 0,3%, e não deve ser citada como resultado. Também novo: os motores `gridlock` e
+    `bilateral` (spec 05 M3, M4; D27), com a ressalva de que o algoritmo de gridlock não foi
+    conferido com o artigo de 2001.

@@ -737,3 +737,12 @@ Ordering diagnostic: delaying only (hold, arrival order kept) against engines th
 | 50% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -4.489% [-7.477; -1.502] |
 | 50% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -4.570% [-9.592; 0.452] |
 
+The same case at higher volume (experiment `echo-scale`, 4 seeds): the 10 s tight bound in % of UB falls with exponent -0.52 in the number of payments; in money it grows with exponent 0.42.
+
+| payments/day | saving of netting every 10 s [95% CI] | tight bound [95% CI] | UB / volume |
+|---|---|---|---|
+| 1 000 000 | 4.614% [0.255; 8.973] | 4.800% [0.418; 9.182] | 0.1030 |
+| 3 000 000 | 2.119% [-1.580; 5.817] | 2.441% [-1.224; 6.106] | 0.0968 |
+| 10 000 000 | 1.119% [0.336; 1.903] | 1.287% [0.592; 1.983] | 0.0894 |
+| 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
+
