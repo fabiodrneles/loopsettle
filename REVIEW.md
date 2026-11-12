@@ -366,3 +366,16 @@ the real laptop (i3, 4 GB).
     null changes each payee's total as well as the bilateral structure. (d) **T3:** the
     monotonicity of the circulating share in nested windows is now a test, with a one-line proof
     (superadditivity). (e) **T5 not run:** chain data providers answer 403 from this environment.
+94. **Spec 10, 12 Nov 2026.** (a) **R1:** `loopsettle sort` (external stable sort; 50 million rows,
+    1.27 GB, reversed, in 39 s with 105 MiB; UB and LB equal to those of the original order); an
+    optional `status` column (only settled rows count); `bound` on 50 million rows in 161 s with
+    13 MiB. The ISO 20022 mapping in `data/README.md` marks what was checked (`IntrBkSttlmAmt`,
+    `AccptncDtTm`, `ACSC`) and what was not (`DbtrAgt`/`CdtrAgt` identifiers, the settlement-time
+    field): the usage guides were outside the network. (b) **R4:** the web app shows the liquidity
+    floor curve and analyses a payment file chosen by the user entirely in the browser
+    (`analyze_file` in wasm; files up to 200 MB / 2 million payments). Checked in Chromium at 1440
+    and 375 px wide (no horizontal scroll, no page errors) and by `scripts/wasm-smoke.mjs`.
+    Screenshots in `docs/img/` were regenerated. Not done: publishing on GitHub Pages (only when the
+    owner asks; CLAUDE.md, optional step). (c) **R5:** README with a runnable example in
+    `loopsettle-core` and `loopsettle-sim` (compiled and run as doc tests; English only, as crate
+    documentation). The `testing` module behind a feature and the Python notebook were not done.

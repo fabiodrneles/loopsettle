@@ -29,6 +29,26 @@ export interface Ladder {
   cycle_netting: number;
 }
 
+export interface FloorPoint {
+  delay_s: number;
+  tight_bound_pct: number;
+  window_bound_pct: number;
+  netting_saving_pct: number;
+}
+
+export interface FileResult {
+  error?: string;
+  payments: number;
+  participants: number;
+  rows_skipped: number;
+  rows_skipped_status: number;
+  span_hours: number;
+  gross_value: number;
+  ub: number;
+  lb: number;
+  floor: FloorPoint[];
+}
+
 export interface SimResult {
   payments: number;
   gross_value_brl: number;
@@ -43,6 +63,7 @@ export interface SimResult {
   engines: EngineJson[];
   sweep: { name: string; saving_pct: number; p95_ms: number; cycle_value_share: number }[];
   constrained: EngineJson[];
+  floor: FloorPoint[];
   intraday_value_brl: number[];
   intraday_net_debit_brl: number[];
 }

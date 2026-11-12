@@ -59,6 +59,13 @@
   **Próximo passo exato:** spec 10 R1 (ordenação externa, mapeamento ISO 20022) e R4 (painel
   web); várias sementes em `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`,
   `heterogeneity`, `funding-windows`.
+- **12/11/2026 — spec 10 feita** (REVIEW 94). As onze specs têm agora os itens principais feitos.
+  **O que falta:** várias sementes em `baseline`, `potential-vs-realizable`, `microcycle-sweep`,
+  `stress`, `heterogeneity`, `funding-windows`; conferências que dependem de servidores bloqueados
+  aqui (o artigo de gridlock de 2001, Koponen & Soramäki 1998, guias ISO 20022, dados on-chain).
+  Para recompilar o wasm localmente sem wasm-pack: `cargo build --release --target
+  wasm32-unknown-unknown -p loopsettle-wasm` e depois `wasm-bindgen --target web --out-dir
+  web/src/wasm-pkg --no-typescript target/wasm32-unknown-unknown/release/loopsettle_wasm.wasm`.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

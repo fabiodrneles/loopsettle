@@ -7,6 +7,11 @@
 > recebimentos) e o compara com o piso de liquidez. R1 (contrato já descrito em `data/README.md`;
 > faltam ordenação externa e o mapeamento ISO 20022), R4 (interface web) e o resto do R5 a fazer.
 
+> **Estado em 12/11/2026 (REVIEW 94):** R1 feito (`loopsettle sort`, coluna `status`, 50 milhões de
+> linhas medidas; ISO 20022 parcialmente conferido), R2 e R3 feitos, R4 feito (painel do piso e
+> análise de arquivo no navegador; publicação no GitHub Pages só quando o dono pedir), R5 feito no
+> essencial (READMEs com exemplos testados, `custom_engine`); módulo `testing` e caderno não feitos.
+
 ## Contexto
 
 O W9 do `PAPER_READINESS` diz o que transforma o estudo em referência: outras pessoas usarem.

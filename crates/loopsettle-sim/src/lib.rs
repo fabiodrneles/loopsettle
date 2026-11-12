@@ -133,3 +133,8 @@ mod tests {
         assert!((share - 0.3).abs() < 0.03, "echo share {share}");
     }
 }
+
+/// The examples in this crate's README are compiled and run as tests.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;

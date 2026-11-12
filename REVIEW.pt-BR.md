@@ -383,3 +383,17 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     **T3:** a monotonicidade da parcela que circula em janelas aninhadas virou teste, com prova de
     uma linha (superaditividade). (e) **T5 não rodado:** os provedores de dados de blockchain
     respondem 403 neste ambiente.
+94. **Spec 10, 12/11/2026.** (a) **R1:** `loopsettle sort` (ordenação externa e estável; 50 milhões
+    de linhas, 1,27 GB, em ordem inversa, em 39 s com 105 MiB; UB e LB iguais aos da ordem
+    original); coluna `status` opcional (só as linhas liquidadas contam); `bound` em 50 milhões de
+    linhas em 161 s com 13 MiB. O mapeamento ISO 20022 em `data/README.md` marca o que foi conferido
+    (`IntrBkSttlmAmt`, `AccptncDtTm`, `ACSC`) e o que não foi (identificadores em
+    `DbtrAgt`/`CdtrAgt`, o campo de horário de liquidação): os guias de uso estavam fora da rede.
+    (b) **R4:** a interface web mostra a curva do piso de liquidez e analisa um arquivo de
+    pagamentos escolhido pelo usuário inteiramente no navegador (`analyze_file` no wasm; arquivos
+    de até 200 MB / 2 milhões de pagamentos). Conferido no Chromium com 1440 e 375 px de largura
+    (sem rolagem horizontal, sem erros na página) e pelo `scripts/wasm-smoke.mjs`. As capturas em
+    `docs/img/` foram regeneradas. Não feito: publicar no GitHub Pages (só quando o dono pedir;
+    CLAUDE.md, passo opcional). (c) **R5:** README com exemplo executável no `loopsettle-core` e no
+    `loopsettle-sim` (compilados e rodados como doc tests; só em inglês, como documentação de
+    crate). O módulo `testing` atrás de uma feature e o caderno em Python não foram feitos.

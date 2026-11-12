@@ -115,3 +115,11 @@ input[type="number"] { font: inherit; padding: 6px 8px; border: 1px solid var(--
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* legend key for a dashed line (the realised saving in the floor charts) */
+.key.dashed {
+  background: none;
+  border-top: 2px dashed var(--ink);
+  height: 0;
+  vertical-align: middle;
+}

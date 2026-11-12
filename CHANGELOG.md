@@ -26,6 +26,9 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- `loopsettle sort` (external sort) and an optional `status` column for payment files.
+- Web: the liquidity floor curve, and analysis of the user's own payment file in the browser.
+- READMEs with runnable examples in `loopsettle-core` and `loopsettle-sim`.
 - Proportional CDFD (BFF) in the ladder; null values in `topology` and `baseline` (`nulls.csv`).
 - Funding layer: top-ups from reserves, prefunding of closed windows, intraday credit lines;
   `funding-windows/prefunding.csv` (rejected value when prefunding is below the need).

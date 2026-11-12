@@ -78,3 +78,8 @@ where
         r.engine.finish(t_end, &mut r.ledger, &mut r.metrics);
     }
 }
+
+/// The examples in this crate's README are compiled and run as tests.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;

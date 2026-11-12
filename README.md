@@ -596,6 +596,7 @@ Nos exemplos abaixo, `loopsettle` significa um desses dois jeitos.
 | `loopsettle list` | lista os experimentos e o que cada um responde | terminal |
 | `loopsettle experiment <nome>` | roda um experimento com a semente fixa do seu TOML | `results/<nome>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <nome> --quick` | o mesmo com 10× menos pagamentos, para conferir rápido; **não** use para números publicados | `results/<nome>/` |
+| `loopsettle sort <entrada.csv> <saída.csv> [--block-rows 1000000]` | ordena um arquivo de pagamentos pelo horário, em blocos no disco (arquivos maiores que a memória) | o arquivo ordenado |
 | `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--report] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
 | `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--report] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
 | `loopsettle export <experimento> <saida.csv> [--payments N] [--participants N]` | grava os pagamentos sintéticos de um cenário num CSV no formato que `bound`/`settle` leem | o CSV |
@@ -1355,6 +1356,7 @@ In the examples below, `loopsettle` means either form.
 | `loopsettle list` | lists the experiments and the question each answers | terminal |
 | `loopsettle experiment <name>` | runs an experiment with the fixed seed in its TOML | `results/<name>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <name> --quick` | the same with 10× fewer payments, for a quick check; **not** for published numbers | `results/<name>/` |
+| `loopsettle sort <in.csv> <out.csv> [--block-rows 1000000]` | sorts a payment file by time, in blocks on disk (files larger than memory) | the sorted file |
 | `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--report] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
 | `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--report] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
 | `loopsettle export <experiment> <out.csv> [--payments N] [--participants N]` | writes a scenario's synthetic payments to a CSV in the format `bound`/`settle` read | the CSV |
