@@ -55,3 +55,8 @@
     intradiário) e, na regra `ub`, que o saldo de cada participante é proporcional ao seu próprio
     pico daquele dia. Os participantes ajustariam os saldos ao desenho em uso; o experimento mede a
     resposta de curto prazo com saldos dados. Usa 300 mil pagamentos por dia.
+18. **Estrutura temporal das respostas.** O gerador base sorteia as chegadas de forma independente,
+    então os recebimentos de um participante logo depois de ele pagar estão ali por acaso. O
+    `echo-sweep` mostra que o resultado central depende disso: devoluções bilaterais rápidas
+    fazem a compensação em segundos valer a pena. Parcela, atraso e direção do eco são hipóteses;
+    nenhum dado público os identifica.

@@ -23,7 +23,7 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPERIMENTS = ["calibration", "baseline", "potential-vs-realizable", "microcycle-sweep", "stress", "finland-replication",
-               "robustness", "bias-calibration", "heterogeneity", "funding-windows", "regimes", "liquidity-frontier"]
+               "robustness", "bias-calibration", "heterogeneity", "funding-windows", "regimes", "liquidity-frontier", "echo-sweep"]
 # (section, key) -> value, applied to every experiment file that has the section.
 OVERRIDES = {
     ("scenario", "participants"): "40",
@@ -36,6 +36,8 @@ OVERRIDES = {
     ("calibration", "seeds"): "[1, 2]",
     ("finland", "seeds"): "[1, 2]",
     ("frontier", "seeds"): "[1, 2, 3]",
+    ("echo", "seeds"): "[1, 2, 3]",
+    ("echo", "share"): "[0.2]",
     ("frontier", "wholesale_payments_per_day"): "2_000",
     ("frontier", "alphas"): "[0.5, 0.9, 1.0, 1.5]",
 }

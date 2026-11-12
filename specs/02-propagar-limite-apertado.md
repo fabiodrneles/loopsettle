@@ -21,8 +21,9 @@ forma de janela nas 120 combinações do `funding-windows`; no fim de semana com
 limite de 10 s é ≤ 0,03%. **FR4 feito** de outro modo: as tabelas das seções 7, 9, 10 e 11 do
 `SUMMARY` trazem obtido, apertado e janela lado a lado, e `scripts/summarize.py::check_sandwich`
 recusa escrever o resumo se alguma linha violar obtido ≤ apertado ≤ janela (AC2). **FR6 feito**
-(README, ASSESSMENT Atualização 4, NOVELTY, PAPER_OUTLINE, METHODOLOGY); o rascunho do JOSS não
-citava o argumento antigo. **Faltam FR5 (distribuição do piso por participante) e FR7 (interface
+(README, ASSESSMENT Atualização 4, NOVELTY, PAPER_OUTLINE, METHODOLOGY); o rascunho do JOSS **citava**
+sim o limite antigo e o argumento de alto valor (a busca não pegou por causa de uma quebra de
+linha); corrigido em 12/11/2026. **Faltam FR5 (distribuição do piso por participante) e FR7 (interface
 web).** A escala (R2) e a heterogeneidade continuam com uma
 semente por ponto.
 

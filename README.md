@@ -88,6 +88,10 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
 - **Micro-ciclos atômicos de até 10 s liquidam até 63% do valor dentro de ciclos, mas
   economizam cerca de 0,01% da liquidez** (0,0116%, IC 95% [0,008; 0,015]%), qualquer que seja
   o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
+- **Isso depende de como os pagamentos se respondem no tempo.** Se 20% dos pagamentos forem
+  devolvidos direto a quem pagou em cerca de um segundo, compensar a cada 10 s passa a economizar
+  3,9% da liquidez (teto de 4,2%); se a resposta seguir adiante para terceiros, nada muda
+  (`results/echo-sweep/`). Quanto disso existe no Pix real, os dados públicos não dizem.
 - **Há um teto demonstrável:** um mecanismo que segura cada pagamento por no máximo *d* nunca
   precisa de menos liquidez do que o **piso de liquidez** de cada participante: o maior valor de
   "tudo o que ele pagou até um instante, menos tudo o que recebeu até *d* depois". Para 10 s, em
@@ -684,6 +688,7 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `heterogeneity` | e se cada tipo de banco tiver seu próprio perfil ao longo do dia? | `results/heterogeneity/` |
 | `funding-windows` | quanto é preciso pré-financiar para as noites e o fim de semana, com o STR fechado? | `results/funding-windows/` |
 | `regimes` | o teto muda entre varejo e sistemas de alto valor? | `results/regimes/` |
+| `echo-sweep` | o resultado sobrevive a pagamentos que respondem a recebimentos em segundos? | `results/echo-sweep/` |
 | `liquidity-frontier` | com a liquidez que os participantes têm, quanto é rejeitado ou atrasa em cada desenho? | `results/liquidity-frontier/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
@@ -841,6 +846,10 @@ million payments per day):
 - **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save about
   0.01% of liquidity** (0.0116%, 95% CI [0.008; 0.015]%), whatever the maximum cycle length,
   and the saving goes to zero as volume grows.
+- **This depends on how payments respond to each other in time.** If 20% of payments are returned
+  straight to the payer within about a second, netting every 10 s saves 3.9% of liquidity (ceiling
+  4.2%); if the response goes onwards to third parties, nothing changes (`results/echo-sweep/`).
+  How much of this exists in real Pix is not known from public data.
 - **There is a provable ceiling:** a mechanism that holds each payment for at most *d* never
   needs less liquidity than each participant's **liquidity floor**: the largest value of
   "everything it has paid by some instant, minus everything it has received by *d* later". For
@@ -1433,6 +1442,7 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `heterogeneity` | what if each type of bank has its own intraday profile? | `results/heterogeneity/` |
 | `funding-windows` | how much must be prefunded for nights and the weekend, with the STR closed? | `results/funding-windows/` |
 | `regimes` | does the ceiling differ between retail and large-value systems? | `results/regimes/` |
+| `echo-sweep` | does the result survive payments that respond to receipts within seconds? | `results/echo-sweep/` |
 | `liquidity-frontier` | with the liquidity participants hold, how much is rejected or delayed under each design? | `results/liquidity-frontier/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every

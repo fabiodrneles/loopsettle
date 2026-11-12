@@ -54,3 +54,7 @@
     for rule `ub`, that each participant's balance is proportional to its own peak of that same
     day. Participants would adjust their balances to the design in use; the experiment measures
     the short-run response with given balances. It uses 300,000 payments a day.
+18. **Time structure of responses.** The base generator draws arrivals independently, so a
+    participant's receipts right after it pays are there by chance. `echo-sweep` shows that the
+    central result depends on this: fast bilateral returns make second-scale netting worthwhile.
+    Echo share, delay and direction are assumptions; no public data identify them.

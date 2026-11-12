@@ -20,6 +20,7 @@ pub const ALL: &[(&str, &str)] = &[
     ("heterogeneity", "class-specific intraday profiles x scale (kill criterion K1)"),
     ("funding-windows", "prefunding for nights and weekends outside STR hours (W3)"),
     ("regimes", "delay bound in retail vs large-value systems"),
+    ("echo-sweep", "echo payments: short-horizon circularity vs the bound and the saving"),
     ("liquidity-frontier", "rejection and delay vs liquidity held, per design (constrained liquidity)"),
 ];
 
@@ -42,6 +43,7 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "heterogeneity" => crate::experiments4::heterogeneity(path, doc, &cfg),
         "funding-windows" => crate::experiments5::funding_windows(path, doc, &cfg),
         "regimes" => crate::experiments5::regimes(path, doc, &cfg),
+        "echo-sweep" => crate::experiments7::echo_sweep(path, doc, &cfg),
         "liquidity-frontier" => crate::experiments6::liquidity_frontier(path, doc, &cfg),
         _ => Err(format!("unknown experiment '{name}' (see `loopsettle list`)")),
     }

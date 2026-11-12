@@ -16,7 +16,7 @@ use loopsettle_sim::toml_lite::Doc;
 use loopsettle_sim::{run as run_engines, EngineSpec, Opening, ScenarioConfig};
 
 /// Engines compared in R1/R2, each with its maximum settlement delay (for the bound).
-const ENGINES: &[(&str, u64)] = &[
+pub(crate) const ENGINES: &[(&str, u64)] = &[
     ("micro:all:500:2000", 2_000),
     ("micro:all:500:10000", 10_000),
     ("deferred:8640", 10_000),
@@ -25,18 +25,20 @@ const ENGINES: &[(&str, u64)] = &[
 ];
 
 #[derive(Clone)]
-struct Measure {
-    saving_pct: Vec<f64>,
-    bound_pct: Vec<f64>,
+pub(crate) struct Measure {
+    pub saving_pct: Vec<f64>,
+    pub bound_pct: Vec<f64>,
     /// tight bound: UB minus the sum of liquidity floors, % of UB (METHODOLOGY section 9b)
-    tight_pct: Vec<f64>,
-    ub: i128,
-    lb: i128,
-    gross: i128,
+    pub tight_pct: Vec<f64>,
+    pub ub: i128,
+    pub lb: i128,
+    pub gross: i128,
+    /// share of settled value that each engine settled inside cycles
+    pub cycle_share: Vec<f64>,
 }
 
 /// One scenario through gross + ENGINES, plus the delay bound for each engine.
-fn measure(cfg: &ScenarioConfig) -> Measure {
+pub(crate) fn measure(cfg: &ScenarioConfig) -> Measure {
     let mut specs = vec![EngineSpec::Gross];
     specs.extend(ENGINES.iter().map(|(s, _)| EngineSpec::parse(s).unwrap()));
     let o = run_engines(cfg, &specs, &Opening::Unlimited, false, None);
@@ -57,6 +59,7 @@ fn measure(cfg: &ScenarioConfig) -> Measure {
         ub,
         lb: o.lb(),
         gross: o.flow.gross_value,
+        cycle_share: o.results[1..].iter().map(|r| r.metrics.value_by_kind[1] as f64 / r.metrics.settled_value.max(1) as f64).collect(),
     }
 }
 

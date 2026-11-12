@@ -267,3 +267,18 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   menos de `--min-participants` participantes (padrão 5). O `--report` gera um relatório bilíngue
   só com agregados, que identifica a entrada por um hash FNV-1a. Não feito: suprimir linhas que
   revelariam um pagamento único (um participante cujo pico é um só pagamento).
+
+## D26 — Pagamentos em eco como teste de estresse, desligados por padrão, com critério de morte fixado antes
+- **Decisão:** o gerador pode fazer de uma parcela de todos os pagamentos uma resposta a um
+  recebimento (`echo_share`, `echo_delay_ms`, `echo_return_prob`): quem recebe paga o mesmo valor
+  depois de um atraso exponencial, adiante ou direto de volta. Os ecos usam um fluxo aleatório
+  próprio e a taxa base é reduzida para o volume esperado não mudar; com `echo_share = 0` o fluxo
+  é idêntico byte a byte ao de antes. O experimento fixou o critério antes de rodar: a afirmação
+  central é condicional se o limite apertado de 10 s passar de 2% do UB com parcela de até 20%.
+- **Alternativas:** chegadas de Hawkes; valores parciais; ecos de ecos; calibrar a parcela.
+- **Por quê:** é o mecanismo mais simples que cria a circularidade de curto prazo que a
+  compensação em segundos poderia usar, então é o teste mais adverso para a afirmação de que essa
+  compensação não economiza nada.
+- **Resultado:** o critério disparou para os ecos que voltam para quem pagou (ASSESSMENT,
+  atualização 5).
+- **Reverter:** `echo_share = 0` (o padrão).

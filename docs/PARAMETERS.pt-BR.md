@@ -39,6 +39,7 @@ Os valores **CALIBRATED/SOURCED** são preenchidos na Fase 4 a partir de
 | Regime de alto valor | 20 participantes, mediana R$ 1 mi, cauda α 1,3 | ASSUMPTION | Sistema estilizado só para o `regimes`. |
 | Liquidez restrita: novas tentativas | pagamentos rejeitados nunca são tentados de novo | ASSUMPTION | Só no `liquidity-frontier`. |
 | Liquidez restrita: saldos | `α × UB_i` ou `α × ΣUB × saída_i / Σsaída`, α de 0,5 a 2 | ASSUMPTION | Só no `liquidity-frontier`; a regra `ub` olha para trás. |
+| Pagamentos em eco | parcela 0 (desligado) por padrão; varredura de 5–50%, atraso de 1–60 s, adiante ou de volta | ASSUMPTION | Só no `echo-sweep`: teste de estresse da circularidade de curto prazo. |
 
 ## Processo de chegada
 

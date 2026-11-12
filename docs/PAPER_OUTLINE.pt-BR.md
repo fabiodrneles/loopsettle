@@ -43,6 +43,11 @@ instantâneos? Um limite de atraso e evidências de um simulador calibrado com o
 - 5.2 Estrutura bilateral calibrada e heterogeneidade intradiária — Tabela 7 (`heterogeneity/heterogeneity.csv`).
 - 5.3 Janelas de abastecimento: noites e fim de semana — Tabela 8 (`funding-windows/windows.csv`).
 - 5.4 Heterogeneidade por banco, comparada ao estudo finlandês — Tabela 9 (`robustness/participants_ratio.csv`).
+- 5.5 **Quando o resultado falha: devoluções bilaterais rápidas** — Tabela 10 (`echo-sweep/echo.csv`). É a
+  condição da afirmação central; entra no resumo.
+- 5.6 Liquidez restrita com serviço igual, 10 s × uma hora — Tabela 11 (`liquidity-frontier/equivalent_liquidity.csv`),
+  Figura 3 (`liquidity-frontier/fig_frontier.svg`).
+- 5.7 Pisos × ótimo offline — Tabela 12 (`optimality-gap/gap.csv`).
 
 ### 6. Discussão
 - Política: LSMs de segundos em sistemas instantâneos; onde a liquidez de fato restringe (fins de

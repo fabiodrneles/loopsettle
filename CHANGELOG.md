@@ -25,12 +25,16 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- Echo payments in the generator and the `echo-sweep` experiment.
+
 ### Fixed
 - `QueueOnShortfall` gross retry runs to a fixed point (it released one payment per edge per window).
 - `DeferredNet`: the last cycle of a day falls exactly at its end for any cycle count.
 - The share settled within 2.8 s is counted exactly.
 
 ### Changed
+- **The central claim is now conditional** (claim 1j): fast bilateral returns make second-scale
+  netting worthwhile; a pre-set kill criterion fired.
 - `--per-participant` writes labels `P001...` by default (`--keep-names` for the file's identifiers)
   and is refused for files with fewer than `--min-participants` (5) participants.
 - Strict per-payer FIFO as an option (`micro:shortfall:<w>:<d>:<len>:fifo`).

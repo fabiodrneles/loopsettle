@@ -6,7 +6,7 @@
 #   make golden     regenerate results-golden/ after an intended change of results
 CARGO ?= cargo
 PYTHON ?= python
-EXPERIMENTS = calibration baseline potential-vs-realizable microcycle-sweep stress finland-replication robustness bias-calibration heterogeneity funding-windows regimes liquidity-frontier
+EXPERIMENTS = calibration baseline potential-vs-realizable microcycle-sweep stress finland-replication robustness bias-calibration heterogeneity funding-windows regimes liquidity-frontier echo-sweep
 
 .PHONY: all rebuild test experiments summary web wasm data clean-results golden verify lint
 
@@ -37,7 +37,7 @@ data:
 	$(PYTHON) -I data/fetch_pix.py --month 202609 --keys-date 2026-09-30
 
 clean-results:
-	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/bias-calibration results/heterogeneity results/funding-windows results/regimes results/liquidity-frontier results/optimality-gap results/topology-triangle results/SUMMARY.md results/SUMMARY.pt-BR.md
+	rm -rf results/calibration results/baseline results/potential-vs-realizable results/microcycle-sweep results/stress results/finland-replication results/robustness results/bias-calibration results/heterogeneity results/funding-windows results/regimes results/liquidity-frontier results/echo-sweep results/optimality-gap results/topology-triangle results/SUMMARY.md results/SUMMARY.pt-BR.md
 
 # Small, fast run of every experiment, compared byte for byte in CI (specs/09).
 golden:

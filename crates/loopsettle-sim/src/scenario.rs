@@ -155,6 +155,16 @@ pub struct ScenarioConfig {
     pub profile_strength: f64,
     /// relative volume of each simulated day (empty = every day has `payments_per_day`)
     pub day_weights: Vec<f64>,
+    /// Echo payments (specs/07, G2): the share of all payments that are a *response* to a
+    /// receipt — the payee of an earlier payment pays the same amount onwards shortly after
+    /// receiving it. 0 = off (the default; the stream is then exactly the one without echoes).
+    /// ASSUMPTION: a stress test of short-horizon circularity, not a calibrated behaviour.
+    pub echo_share: f64,
+    /// mean of the exponential delay between a receipt and its echo
+    pub echo_delay_ms: f64,
+    /// probability that an echo goes straight back to the participant that paid (a two-payment
+    /// cycle); otherwise its payee is drawn like any other payment of the echoing participant
+    pub echo_return_prob: f64,
     pub amounts: AmountModel,
     /// how many real payments one simulated payment stands for (documentation only)
     pub scale_factor: f64,
@@ -180,6 +190,9 @@ impl Default for ScenarioConfig {
             hourly: DEFAULT_HOURLY.to_vec(),
             profile_strength: 0.0,
             day_weights: Vec::new(),
+            echo_share: 0.0,
+            echo_delay_ms: 5_000.0,
+            echo_return_prob: 0.0,
             amounts: AmountModel::default(),
             scale_factor: 1.0,
         }
@@ -305,6 +318,9 @@ impl ScenarioConfig {
         num!(c.receiver_bias_sigma, "receiver_bias_sigma", as_f64, f64);
         num!(c.pi_receiver_mult, "pi_receiver_mult", as_f64, f64);
         num!(c.profile_strength, "profile_strength", as_f64, f64);
+        num!(c.echo_share, "echo_share", as_f64, f64);
+        num!(c.echo_delay_ms, "echo_delay_ms", as_f64, f64);
+        num!(c.echo_return_prob, "echo_return_prob", as_f64, f64);
         num!(c.amounts.body_sigma, "body_sigma", as_f64, f64);
         num!(c.amounts.tail_alpha, "tail_alpha", as_f64, f64);
         num!(c.amounts.max_amount, "max_amount_brl", as_f64, f64);

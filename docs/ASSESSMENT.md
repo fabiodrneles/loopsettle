@@ -219,3 +219,30 @@ This file is a dated record; the text above is kept as written. What changed sin
 The verdict stays **PIVOT**, with a sharper central claim: *no mechanism with a 10 s deadline can
 save more than about 0.01–0.14% of the liquidity an instant system needs, and simple netting
 already realises about 40% of that ceiling.*
+
+## Update 5 — a kill criterion fired: the central claim is conditional (12 Nov 2026)
+
+`echo-sweep` (`results/echo-sweep/`) asked whether the result survives short-horizon
+circularity, with a criterion fixed beforehand: *the claim is conditional if the 10 s tight bound
+exceeds 2% of UB for an echo share of at most 20%.* It fired.
+
+- Echoes that go **onwards** (the payee pays a third party seconds later): bound ≤ 0.18% up to a
+  20% share. The claim holds; chains do not create recoverable liquidity.
+- Echoes that go **straight back** (the payee pays the payer back seconds later): at a 20% share
+  and 1 s delay the bound is 4.2% of UB and netting every 10 s realises 3.9%; at 5%, 1.2%.
+
+So the claim of Update 4 must carry its condition: *for flows without fast bilateral reciprocity,
+no mechanism with a 10 s deadline saves more than about 0.01–0.14% of the liquidity; with it, the
+saving is roughly the share of value reciprocated within the deadline.* This is a narrower claim
+and a more useful one: it names the single quantity that decides the answer, and `loopsettle
+bound` measures that quantity (through the liquidity floor) on a real payment file without the
+data leaving the institution. Whether real Pix flows have fast bilateral reciprocity (refunds,
+treasury operations between the same two institutions) is the question to put to a central bank.
+
+Also since Update 4: at equal service under constrained liquidity, 10 s designs save nothing
+measurable and one-hour queues save 1.1–1.4% in calibrated retail (`liquidity-frontier`); the
+per-participant floors equal the offline optimum of the whole system in 116 of 120 dense small
+instances (`optimality-gap`).
+
+The verdict stays **PIVOT**. The paper's title result is now the pair "a tight, attainable bound"
+plus "the condition under which it is small".

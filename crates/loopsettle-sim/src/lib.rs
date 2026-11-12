@@ -103,4 +103,33 @@ mod tests {
         assert!(p.class.contains(&Class::Fintech) && p.class.contains(&Class::PaymentInstitution));
         assert!(p.top_share(5) > 0.3);
     }
+    /// Echo payments: about `echo_share` of the stream, same expected volume, still sorted,
+    /// valid and deterministic; each echo repeats the amount of a payment its payer received
+    /// shortly before.
+    #[test]
+    fn echo_payments_keep_volume_and_order() {
+        let base = ScenarioConfig { seed: 11, participants: 30, payments_per_day: 60_000.0, n_big: 3, n_mid: 5, ..Default::default() };
+        let plain: Vec<_> = PaymentStream::new(&base).collect();
+        let cfg = ScenarioConfig { echo_share: 0.3, echo_delay_ms: 4_000.0, echo_return_prob: 0.5, ..base.clone() };
+        let a: Vec<_> = PaymentStream::new(&cfg).collect();
+        let b: Vec<_> = PaymentStream::new(&cfg).collect();
+        assert_eq!(a, b, "deterministic");
+        let ratio = a.len() as f64 / plain.len() as f64;
+        assert!((ratio - 1.0).abs() < 0.03, "expected volume is unchanged: {} vs {}", a.len(), plain.len());
+        let mut last = 0;
+        for (k, p) in a.iter().enumerate() {
+            assert!(p.t_arrival >= last && p.payer != p.payee && p.amount > 0 && p.id == k as u64);
+            last = p.t_arrival;
+        }
+        // An echo = a payment whose payer received the same amount in the previous 60 s.
+        let mut echoes = 0;
+        for (k, p) in a.iter().enumerate() {
+            let from = a[..k].iter().rev().take_while(|q| p.t_arrival - q.t_arrival <= 60_000);
+            if from.into_iter().any(|q| q.payee == p.payer && q.amount == p.amount) {
+                echoes += 1;
+            }
+        }
+        let share = echoes as f64 / a.len() as f64;
+        assert!((share - 0.3).abs() < 0.03, "echo share {share}");
+    }
 }

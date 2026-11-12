@@ -1,0 +1,22 @@
+# Echo payments (specs/07, G2): the hardest test of the central result. A share of all payments
+# is a *response* to a receipt: the payee pays the same amount onwards (or straight back) a few
+# seconds later. This builds exactly the short-horizon circularity that second-scale netting
+# could capture; stationary Poisson arrivals have none of it.
+# ASSUMPTION: the echo share and delay are a stress test, not a calibrated behaviour.
+[experiment]
+name = "echo-sweep"
+description = "Echo payments: does short-horizon circularity change the bound and the saving?"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[echo]
+seeds = [20260930, 1, 2, 3, 4, 5, 6, 7]
+share = [0.05, 0.2, 0.5]
+delay_ms = [1000, 10000, 60000]
+# 0: the echo goes to a payee drawn as usual; 1: straight back to the payer (a two-payment cycle)
+return_prob = [0.0, 1.0]

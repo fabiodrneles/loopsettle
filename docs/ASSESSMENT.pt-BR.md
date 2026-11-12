@@ -222,3 +222,31 @@ Este arquivo é um registro datado; o texto acima fica como foi escrito. O que m
 O veredito continua **PIVOTAR**, com uma afirmação central mais afiada: *nenhum mecanismo com
 prazo de 10 s consegue economizar mais do que cerca de 0,01–0,14% da liquidez que um sistema
 instantâneo precisa, e a compensação simples já obtém cerca de 40% desse teto.*
+
+## Atualização 5 — um critério de morte disparou: a afirmação central é condicional (12/11/2026)
+
+O `echo-sweep` (`results/echo-sweep/`) perguntou se o resultado sobrevive à circularidade de
+curto prazo, com um critério fixado antes: *a afirmação é condicional se o limite apertado de 10 s
+passar de 2% do UB com parcela de eco de até 20%.* Disparou.
+
+- Ecos que seguem **adiante** (quem recebe paga a um terceiro segundos depois): limite ≤ 0,18%
+  com parcela de até 20%. A afirmação vale; cadeias não criam liquidez recuperável.
+- Ecos que voltam **direto** (quem recebe paga de volta a quem pagou segundos depois): com 20% de
+  eco e atraso de 1 s, o limite é 4,2% do UB e a compensação a cada 10 s obtém 3,9%; com 5%, 1,2%.
+
+Então a afirmação da Atualização 4 precisa levar a sua condição: *para fluxos sem reciprocidade
+bilateral rápida, nenhum mecanismo com prazo de 10 s economiza mais do que cerca de 0,01–0,14% da
+liquidez; com ela, a economia é aproximadamente a parcela do valor retribuída dentro do prazo.* É
+uma afirmação mais estreita e mais útil: ela nomeia a única grandeza que decide a resposta, e o
+`loopsettle bound` mede essa grandeza (pelo piso de liquidez) num arquivo real de pagamentos sem
+que os dados saiam da instituição. Se os fluxos reais do Pix têm reciprocidade bilateral rápida
+(devoluções, operações de tesouraria entre as mesmas duas instituições) é a pergunta a levar a um
+banco central.
+
+Também desde a Atualização 4: com serviço igual e liquidez restrita, os desenhos de 10 s não
+economizam nada mensurável e as filas de uma hora economizam 1,1–1,4% no varejo calibrado
+(`liquidity-frontier`); os pisos por participante são iguais ao ótimo offline do sistema inteiro em
+116 de 120 instâncias pequenas e densas (`optimality-gap`).
+
+O veredito continua **PIVOTAR**. O resultado de título do artigo passa a ser o par "um limite
+apertado e atingível" mais "a condição em que ele é pequeno".

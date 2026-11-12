@@ -23,7 +23,13 @@ abaixo é um parâmetro com padrão desligado, para que os resultados atuais nã
   `burst_sigma` (teste estatístico com tolerância); `PARAMETERS*.md` marca os novos como
   `ASSUMPTION` até haver fonte.
 
-## G2 — Reciprocidade no tempo (resposta a recebimentos)
+## G2 — Reciprocidade no tempo (resposta a recebimentos) — **FEITO em 12/11/2026; o critério disparou**
+
+> `echo_share`, `echo_delay_ms`, `echo_return_prob` em `ScenarioConfig`; experimento `echo-sweep`.
+> Eco adiante: nada muda (limite ≤ 0,18% com 20% de eco). Eco de volta a quem pagou: limite de
+> 4,2% e economia obtida de 3,9% com 20% de eco a 1 s. A afirmação central virou condicional
+> (CLAIMS 1j, ASSESSMENT atualização 5, REVIEW 87). Em aberto: valores parciais, outras escalas e
+> σ, e por que os micro-ciclos pioram a liquidez com eco adiante.
 
 Parte dos pagamentos é consequência de um recebimento (o cliente recebe e paga em seguida).
 Parâmetro `echo_prob`: com essa probabilidade, um pagamento recebido por `j` gera um pagamento

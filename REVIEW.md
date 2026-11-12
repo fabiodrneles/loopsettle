@@ -296,3 +296,16 @@ the real laptop (i3, 4 GB).
     now takes 5 min 49 s on 4 cores with 2 threads, above the 5-minute target of spec 06 (it will
     be longer on the reference machine). Also new: `loopsettle bound/settle --report` and private
     per-participant output (spec 10, R2 and R3; D21 updated).
+87. **Echo payments (spec 07, G2): the kill criterion fired, 12 Nov 2026.** `stream.rs` (echo
+    mechanism), `experiments7.rs`, `results/echo-sweep/`, CLAIMS 1j and "cannot claim" 14, D26,
+    ASSESSMENT update 5. With echoes returned to the payer, 20% share and 1 s delay: 10 s tight
+    bound 4.2% of UB, realised 3.9%. With onward echoes: no change. **This is the most important
+    point for the reviewer:** every statement of the form "seconds recover nothing" in the README,
+    the JOSS draft and the paper outline must carry the condition. **Risks:** (a) echoes repeat the
+    exact amount, the most favourable case for netting; partial amounts would give less; (b) one
+    σ (0.4) and one scale (1 million); with more volume the stationary part shrinks but the echo
+    part should not; (c) wide CIs with 8 seeds (some cases have a few seeds dominating);
+    (d) micro-cycles needed up to 4.5% *more* liquidity than gross with 50% onward echoes at 1 s
+    (CI [−7.5; −1.5]): holding payments that would have been funded by their own trigger is
+    costly, and this deserves its own look; (e) whether real flows have fast bilateral returns is
+    unknown.

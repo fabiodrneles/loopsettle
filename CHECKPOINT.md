@@ -32,6 +32,12 @@
 - **11 Nov 2026, end of session — spec 03 executed.** Floors = offline optimum in 116 of 120
   instances (`results/optimality-gap/`, 55 s). **Exact next step:** spec 05 M2 and M3, spec 10
   (real-data report, web panel), then 07 and 08; open items of each spec are listed at its top.
+- **12 Nov 2026 — echo payments: a kill criterion fired.** The central claim is conditional on
+  the absence of fast bilateral returns (CLAIMS 1j, ASSESSMENT update 5, REVIEW 87). Also done:
+  `--report` and private per-participant output (spec 10 R2, R3), finer liquidity grid (REVIEW
+  86). **Exact next step:** carry the condition into `paper/paper.pt-BR.md` and
+  `docs/PAPER_OUTLINE*.md`; then the open items of REVIEW 87 (partial echo amounts, other scales).
+  Measured: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier` 349 s, 20 MiB.
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

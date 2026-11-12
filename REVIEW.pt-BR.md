@@ -308,3 +308,16 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     agora leva 5 min 49 s em 4 núcleos com 2 threads, acima da meta de 5 minutos da spec 06 (na
     máquina de referência será mais). Também novo: `loopsettle bound/settle --report` e saída por
     participante privada (spec 10, R2 e R3; D21 atualizada).
+87. **Pagamentos em eco (spec 07, G2): o critério de morte disparou, 12/11/2026.** `stream.rs`
+    (mecanismo de eco), `experiments7.rs`, `results/echo-sweep/`, CLAIMS 1j e "não pode afirmar" 14,
+    D26, ASSESSMENT atualização 5. Com ecos devolvidos a quem pagou, parcela de 20% e atraso de
+    1 s: limite apertado de 10 s de 4,2% do UB, obtido 3,9%. Com ecos adiante: nada muda. **Este é
+    o ponto mais importante para o revisor:** toda frase do tipo "segundos não recuperam nada" no
+    README, no rascunho do JOSS e no esqueleto do artigo precisa levar a condição. **Riscos:** (a)
+    os ecos repetem o valor exato, o caso mais favorável à compensação; valores parciais dariam
+    menos; (b) um só σ (0,4) e uma só escala (1 milhão); com mais volume a parte estacionária
+    encolhe, mas a parte do eco não deveria; (c) IC largos com 8 sementes (em alguns casos poucas
+    sementes dominam); (d) os micro-ciclos precisaram de até 4,5% *mais* liquidez que o bruto com
+    50% de eco adiante a 1 s (IC [−7,5; −1,5]): segurar pagamentos que seriam financiados pelo
+    próprio gatilho custa caro, e isso merece um olhar próprio; (e) não se sabe se os fluxos
+    reais têm devoluções bilaterais rápidas.

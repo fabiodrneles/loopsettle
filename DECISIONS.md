@@ -264,3 +264,16 @@ Each entry: what was decided, alternatives, why, and how to revert.
   `--min-participants` participants (default 5). `--report` writes a bilingual report with
   aggregates only, identifying the input by an FNV-1a hash. Not done: suppressing rows that would
   reveal a single payment (a participant whose peak is one payment).
+
+## D26 — Echo payments as a stress test, off by default, with a kill criterion fixed beforehand
+- **Decision:** the generator can make a share of all payments a response to a receipt
+  (`echo_share`, `echo_delay_ms`, `echo_return_prob`): the payee pays the same amount after an
+  exponential delay, onwards or straight back. Echoes use their own random stream and the base
+  rate is lowered so the expected volume is unchanged; with `echo_share = 0` the stream is
+  byte-identical to before. The experiment fixed its criterion before running: the central claim
+  is conditional if the 10 s tight bound exceeds 2% of UB for a share of at most 20%.
+- **Alternatives:** Hawkes arrivals; partial amounts; echoes of echoes; calibrating the share.
+- **Why:** it is the simplest mechanism that creates the short-horizon circularity second-scale
+  netting could use, so it is the most adverse test of the claim that such netting saves nothing.
+- **Outcome:** the criterion fired for echoes that return to the payer (ASSESSMENT, update 5).
+- **Revert:** `echo_share = 0` (the default).

@@ -1,0 +1,98 @@
+//! `echo-sweep` (specs/07, G2): does the central result survive short-horizon circularity?
+//!
+//! With stationary Poisson arrivals a participant's receipts in the seconds after it pays are
+//! there by chance only. Echo payments make them systematic: a share of all payments is a
+//! response to a receipt, a few seconds later, onwards or straight back. For every echo
+//! setting the experiment reports, over several seeds, the tight bound (UB minus the liquidity
+//! floors) and what the engines realise.
+
+use crate::experiments::{f64_list, scenario_json};
+use crate::experiments3::{measure, Measure, ENGINES};
+use crate::out::{f, table, Results};
+use crate::stats::{mean_ci95, par_map};
+use loopsettle_core::json::Json;
+use loopsettle_sim::toml_lite::Doc;
+use loopsettle_sim::ScenarioConfig;
+
+/// Kill criterion (docs/ASSESSMENT.md, update 5): the claim "second-scale mechanisms recover a
+/// negligible share" stops being unconditional if the 10 s tight bound passes this share of UB
+/// for an echo share of at most 20%.
+const KILL_PCT: f64 = 2.0;
+
+pub fn echo_sweep(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), String> {
+    let mut res = Results::new("echo-sweep", base.seed, path);
+    let seeds: Vec<u64> = f64_list(doc, "echo.seeds", &[20260930.0, 1.0, 2.0]).iter().map(|&s| s as u64).collect();
+    let shares = f64_list(doc, "echo.share", &[0.05, 0.2, 0.5]);
+    let delays = f64_list(doc, "echo.delay_ms", &[1_000.0, 10_000.0, 60_000.0]);
+    let returns = f64_list(doc, "echo.return_prob", &[0.0, 1.0]);
+    // (share, delay, return probability); the first case is "no echo"
+    let mut cases = vec![(0.0, 0.0, 0.0)];
+    for &s in &shares {
+        for &d in &delays {
+            for &r in &returns {
+                cases.push((s, d, r));
+            }
+        }
+    }
+    let mut jobs = Vec::new();
+    for c in 0..cases.len() {
+        for &seed in &seeds {
+            jobs.push((c, seed));
+        }
+    }
+    let t0 = std::time::Instant::now();
+    let done: Vec<Measure> = par_map(&jobs, |&(c, seed)| {
+        let (share, delay, ret) = cases[c];
+        measure(&ScenarioConfig { seed, echo_share: share, echo_delay_ms: delay.max(1.0), echo_return_prob: ret, ..base.clone() })
+    });
+    eprintln!("  {} runs done in {:.0} s", jobs.len(), t0.elapsed().as_secs_f64());
+    res.measure("simulation_seconds", t0.elapsed().as_secs_f64());
+
+    let mut rows = Vec::new();
+    let mut js = Vec::new();
+    let mut worst_kill: f64 = 0.0;
+    for (c, &(share, delay, ret)) in cases.iter().enumerate() {
+        let ms: Vec<&Measure> = jobs.iter().zip(&done).filter(|(j, _)| j.0 == c).map(|(_, m)| m).collect();
+        let lb_ub = mean_ci95(&ms.iter().map(|m| m.lb as f64 / m.ub.max(1) as f64).collect::<Vec<_>>()).0;
+        for (k, (name, d)) in ENGINES.iter().enumerate() {
+            let col = |g: &dyn Fn(&Measure) -> f64| -> Vec<f64> { ms.iter().map(|m| g(m)).collect() };
+            let (sv, slo, shi) = mean_ci95(&col(&|m| m.saving_pct[k]));
+            let (tb, tlo, thi) = mean_ci95(&col(&|m| m.tight_pct[k]));
+            let cyc = mean_ci95(&col(&|m| m.cycle_share[k])).0;
+            rows.push(vec![f(share), f(delay), f(ret), name.to_string(), d.to_string(), ms.len().to_string(), f(sv), f(slo), f(shi), f(tb), f(tlo), f(thi), f(if tb > 0.0 { sv / tb } else { 0.0 }), f(cyc), f(lb_ub)]);
+            if *d == 10_000 && name.starts_with("deferred") {
+                if share <= 0.2 + 1e-9 {
+                    worst_kill = worst_kill.max(thi);
+                }
+                js.push(
+                    Json::obj()
+                        .set("echo_share", share)
+                        .set("echo_delay_ms", delay)
+                        .set("echo_return_prob", ret)
+                        .set("tight_bound_10s_pct_mean", tb)
+                        .set("tight_bound_10s_pct_ci95_high", thi)
+                        .set("netting_every_10s_saving_pct_mean", sv)
+                        .set("lb_over_ub_mean", lb_ub),
+                );
+            }
+        }
+    }
+    let header = [
+        "echo_share", "echo_delay_ms", "echo_return_prob", "engine", "max_delay_ms", "seeds", "saving_pct_mean", "saving_pct_ci95_low", "saving_pct_ci95_high", "tight_bound_pct_mean",
+        "tight_bound_pct_ci95_low", "tight_bound_pct_ci95_high", "saving_over_tight_bound", "cycle_value_share_mean", "lb_over_ub_mean",
+    ];
+    res.csv("echo.csv", &table(&header, &rows));
+    res.set("scenario", scenario_json(base));
+    res.set("seeds", Json::Arr(seeds.iter().map(|&s| Json::from(s)).collect()));
+    res.set("cases_10s", Json::Arr(js));
+    res.set(
+        "kill_criterion",
+        Json::obj()
+            .set("rule", format!("the claim is conditional if the 10 s tight bound (upper end of its 95% CI) exceeds {KILL_PCT}% of UB for an echo share of at most 20%"))
+            .set("worst_ci95_high_pct", worst_kill)
+            .set("fires", worst_kill > KILL_PCT),
+    );
+    eprintln!("{}", table(&header, &rows));
+    res.finish();
+    Ok(())
+}

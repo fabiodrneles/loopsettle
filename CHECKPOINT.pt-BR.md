@@ -36,6 +36,13 @@
   instâncias (`results/optimality-gap/`, 55 s). **Próximo passo exato:** spec 05 M2 e M3, spec 10
   (relatório para dados reais, painel web), depois 07 e 08; os itens em aberto de cada spec estão
   no topo dela.
+- **12/11/2026 — pagamentos em eco: um critério de morte disparou.** A afirmação central é
+  condicional à ausência de devoluções bilaterais rápidas (CLAIMS 1j, ASSESSMENT atualização 5,
+  REVIEW 87). Também feito: `--report` e saída por participante privada (spec 10 R2, R3), grade de
+  liquidez mais fina (REVIEW 86). **Próximo passo exato:** levar a condição para
+  `paper/paper.pt-BR.md` e `docs/PAPER_OUTLINE*.md`; depois os itens em aberto do REVIEW 87 (ecos
+  com valor parcial, outras escalas). Medido: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier`
+  349 s, 20 MiB.
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de
