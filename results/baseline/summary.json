@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "baseline",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7f5724c",
+  "code_version": "0.1.0+git.ff2a85c-dirty",
   "config_file": "experiments/baseline.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
   "platform": "x86_64-linux",
@@ -492,6 +492,100 @@
         "cycles_settled": 198492,
         "cycles_failed": 0
       }
+    }
+  ],
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "seeds_summary": [
+    {
+      "metric": "ub_brl",
+      "seeds": 10,
+      "mean": 75488258.148,
+      "ci95_low": 66405766.373262,
+      "ci95_high": 84570749.922738
+    },
+    {
+      "metric": "lb_over_ub",
+      "seeds": 10,
+      "mean": 0.92196,
+      "ci95_low": 0.88898,
+      "ci95_high": 0.95494
+    },
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 10,
+      "mean": 0.845442,
+      "ci95_low": 0.822382,
+      "ci95_high": 0.868503
+    },
+    {
+      "metric": "saving_deferred_1x_pct",
+      "seeds": 10,
+      "mean": 7.803965,
+      "ci95_low": 4.50597,
+      "ci95_high": 11.10196
+    },
+    {
+      "metric": "saving_deferred_10x_pct",
+      "seeds": 10,
+      "mean": 2.586394,
+      "ci95_low": 1.514213,
+      "ci95_high": 3.658575
+    },
+    {
+      "metric": "gross_cdfd_max",
+      "seeds": 10,
+      "mean": 0.835851,
+      "ci95_low": 0.81257,
+      "ci95_high": 0.859133
+    },
+    {
+      "metric": "gross_cdfd_bff",
+      "seeds": 10,
+      "mean": 0.788288,
+      "ci95_low": 0.760226,
+      "ci95_high": 0.81635
+    },
+    {
+      "metric": "gross_cycle_netting",
+      "seeds": 10,
+      "mean": 0.781689,
+      "ci95_low": 0.745859,
+      "ci95_high": 0.817519
+    },
+    {
+      "metric": "net_cdfd_max",
+      "seeds": 10,
+      "mean": 0.19162,
+      "ci95_low": 0.143294,
+      "ci95_high": 0.239946
+    },
+    {
+      "metric": "net_cdfd_bff",
+      "seeds": 10,
+      "mean": 0.149553,
+      "ci95_low": 0.105777,
+      "ci95_high": 0.193328
+    },
+    {
+      "metric": "net_cycle_netting",
+      "seeds": 10,
+      "mean": 0.16046,
+      "ci95_low": 0.116423,
+      "ci95_high": 0.204497
+    },
+    {
+      "metric": "net_hodge_l2_curl",
+      "seeds": 10,
+      "mean": 0.974746,
+      "ci95_low": 0.96929,
+      "ci95_high": 0.980202
+    },
+    {
+      "metric": "bilateral_share",
+      "seeds": 10,
+      "mean": 0.746468,
+      "ci95_low": 0.72149,
+      "ci95_high": 0.771447
     }
   ]
 }

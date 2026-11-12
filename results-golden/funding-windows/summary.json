@@ -543,5 +543,176 @@
       "tight_bound_10s_pct": 0.102122,
       "tight_bound_15min_pct": 7.294929
     }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "prefunding_need_brl_sigma0.4_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 23935772.03,
+      "ci95_low": 13633538.08924,
+      "ci95_high": 34238005.97076
+    },
+    {
+      "metric": "netting_saving_pct_sigma0.4_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 12.250729,
+      "ci95_low": -24.14802,
+      "ci95_high": 48.649479
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 0.561428,
+      "ci95_low": -1.144978,
+      "ci95_high": 2.267834
+    },
+    {
+      "metric": "prefunding_need_brl_sigma0.4_lambda0_weekend",
+      "seeds": 2,
+      "mean": 131731553.23,
+      "ci95_low": 65516268.4606,
+      "ci95_high": 197946837.9994
+    },
+    {
+      "metric": "netting_saving_pct_sigma0.4_lambda0_weekend",
+      "seeds": 2,
+      "mean": 8.47197,
+      "ci95_low": 5.077766,
+      "ci95_high": 11.866174
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0_weekend",
+      "seeds": 2,
+      "mean": 0.119094,
+      "ci95_low": -0.43205,
+      "ci95_high": 0.670237
+    },
+    {
+      "metric": "prefunding_need_brl_sigma0.4_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 32204965.72,
+      "ci95_low": 24269265.82786,
+      "ci95_high": 40140665.61214
+    },
+    {
+      "metric": "netting_saving_pct_sigma0.4_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 9.168499,
+      "ci95_low": -56.412188,
+      "ci95_high": 74.749185
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 0.34419,
+      "ci95_low": -2.649795,
+      "ci95_high": 3.338174
+    },
+    {
+      "metric": "prefunding_need_brl_sigma0.4_lambda1_weekend",
+      "seeds": 2,
+      "mean": 142902731.98,
+      "ci95_low": -42354476.72276,
+      "ci95_high": 328159940.68276
+    },
+    {
+      "metric": "netting_saving_pct_sigma0.4_lambda1_weekend",
+      "seeds": 2,
+      "mean": 5.665198,
+      "ci95_low": 4.178333,
+      "ci95_high": 7.152064
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda1_weekend",
+      "seeds": 2,
+      "mean": 0.048469,
+      "ci95_low": -0.08804,
+      "ci95_high": 0.184979
+    },
+    {
+      "metric": "prefunding_need_brl_sigma1_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 46558691.875,
+      "ci95_low": 45436028.65889,
+      "ci95_high": 47681355.09111
+    },
+    {
+      "metric": "netting_saving_pct_sigma1_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 3.777986,
+      "ci95_low": 3.351336,
+      "ci95_high": 4.204637
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0_thu_night",
+      "seeds": 2,
+      "mean": 0.137267,
+      "ci95_low": -0.004086,
+      "ci95_high": 0.27862
+    },
+    {
+      "metric": "prefunding_need_brl_sigma1_lambda0_weekend",
+      "seeds": 2,
+      "mean": 283602451.275,
+      "ci95_low": 244119501.41081,
+      "ci95_high": 323085401.13919
+    },
+    {
+      "metric": "netting_saving_pct_sigma1_lambda0_weekend",
+      "seeds": 2,
+      "mean": 2.086115,
+      "ci95_low": 0.876014,
+      "ci95_high": 3.296216
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0_weekend",
+      "seeds": 2,
+      "mean": 0.054607,
+      "ci95_low": -0.237964,
+      "ci95_high": 0.347178
+    },
+    {
+      "metric": "prefunding_need_brl_sigma1_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 52607839.57,
+      "ci95_low": 31090820.54254,
+      "ci95_high": 74124858.59746
+    },
+    {
+      "metric": "netting_saving_pct_sigma1_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 3.223329,
+      "ci95_low": -17.155648,
+      "ci95_high": 23.602307
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda1_thu_night",
+      "seeds": 2,
+      "mean": 0.084193,
+      "ci95_low": -0.025338,
+      "ci95_high": 0.193723
+    },
+    {
+      "metric": "prefunding_need_brl_sigma1_lambda1_weekend",
+      "seeds": 2,
+      "mean": 293596702.525,
+      "ci95_low": 11852642.62433,
+      "ci95_high": 575340762.42567
+    },
+    {
+      "metric": "netting_saving_pct_sigma1_lambda1_weekend",
+      "seeds": 2,
+      "mean": 1.275819,
+      "ci95_low": -0.372638,
+      "ci95_high": 2.924275
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda1_weekend",
+      "seeds": 2,
+      "mean": 0.017777,
+      "ci95_low": -0.060951,
+      "ci95_high": 0.096505
+    }
   ]
 }

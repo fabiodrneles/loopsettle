@@ -832,5 +832,386 @@
         "cycles_failed": 67
       }
     }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d2000",
+      "seeds": 2,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d2000",
+      "seeds": 2,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d2000",
+      "seeds": 2,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d2000",
+      "seeds": 2,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d5000",
+      "seeds": 2,
+      "mean": 0.035889,
+      "ci95_low": -0.045727,
+      "ci95_high": 0.117506
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 0.032922,
+      "ci95_low": -0.046224,
+      "ci95_high": 0.112068
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d5000",
+      "seeds": 2,
+      "mean": 0.027925,
+      "ci95_low": -0.042914,
+      "ci95_high": 0.098764
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d5000",
+      "seeds": 2,
+      "mean": 0.013434,
+      "ci95_low": -0.019301,
+      "ci95_high": 0.046169
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d5000",
+      "seeds": 2,
+      "mean": 0.00624,
+      "ci95_low": -0.014472,
+      "ci95_high": 0.026953
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 0.060316,
+      "ci95_low": -0.045138,
+      "ci95_high": 0.16577
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.057583,
+      "ci95_low": -0.045837,
+      "ci95_high": 0.161003
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d10000",
+      "seeds": 2,
+      "mean": 0.052588,
+      "ci95_low": -0.04721,
+      "ci95_high": 0.152385
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d10000",
+      "seeds": 2,
+      "mean": 0.027083,
+      "ci95_low": -0.026683,
+      "ci95_high": 0.080849
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d10000",
+      "seeds": 2,
+      "mean": 0.013348,
+      "ci95_low": -0.012355,
+      "ci95_high": 0.039052
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_gross_real_time",
+      "seeds": 2,
+      "mean": 0.317986,
+      "ci95_low": 0.211071,
+      "ci95_high": 0.424901
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.316446,
+      "ci95_low": 0.221974,
+      "ci95_high": 0.410918
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.317523,
+      "ci95_low": 0.186619,
+      "ci95_high": 0.448427
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_gross_real_time",
+      "seeds": 2,
+      "mean": 0.190003,
+      "ci95_low": 0.093326,
+      "ci95_high": 0.286679
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.190499,
+      "ci95_low": 0.091502,
+      "ci95_high": 0.289497
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.189423,
+      "ci95_low": 0.101375,
+      "ci95_high": 0.277472
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_gross_real_time",
+      "seeds": 2,
+      "mean": 0.118971,
+      "ci95_low": 0.052087,
+      "ci95_high": 0.185854
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.118341,
+      "ci95_low": 0.03521,
+      "ci95_high": 0.201471
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.119326,
+      "ci95_low": 0.055664,
+      "ci95_high": 0.182988
+    }
   ]
 }

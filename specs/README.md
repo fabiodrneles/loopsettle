@@ -35,7 +35,7 @@ frentes decidem se o trabalho vira referência:
 | 06 | [Fronteira com liquidez restrita](06-liquidez-restrita.md) | ciência | **feito** (sem M3; ver REVIEW 84) | P1 |
 | 07 | [Gerador: rajadas, vários dias, modelos nulos](07-gerador.md) | modelo | **G2 feito: critério de morte disparou** (REVIEW 87); G1, G3–G5 a fazer | P2 |
 | 08 | [Topologia: BFF, escala, circularidade temporal](08-topologia.md) | ciência | **feito** T1–T4; T5 bloqueado (rede) | P2 |
-| 09 | [Estatística, reprodutibilidade e CI](09-estatistica-reprodutibilidade-ci.md) | qualidade | E2, E3, E4, E6 feitos; E1 e E5 parciais | P0 |
+| 09 | [Estatística, reprodutibilidade e CI](09-estatistica-reprodutibilidade-ci.md) | qualidade | E1–E4 e E6 feitos; E5 parcial | P0 |
 | 10 | [Dados reais, interoperabilidade e interface](10-dados-reais-e-interface.md) | adoção | **feito** R1–R4 e o essencial do R5 (REVIEW 94); falta mapear `DbtrAgt`/`CdtrAgt` em fonte primária e publicar a página (só a pedido) | P1 |
 
 Ordem sugerida: 04 → 09 → 02 → 06 → 03 → 05 → 10 → 07 → 08. A 04 e a 09 vêm antes porque

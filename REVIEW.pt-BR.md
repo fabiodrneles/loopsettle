@@ -397,3 +397,16 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     CLAUDE.md, passo opcional). (c) **R5:** README com exemplo executável no `loopsettle-core` e no
     `loopsettle-sim` (compilados e rodados como doc tests; só em inglês, como documentação de
     crate). O módulo `testing` atrás de uma feature e o caderno em Python não foram feitos.
+95. **Várias sementes nos seis experimentos de uma semente (spec 09, E1), 12/11/2026.** `seeds.rs`;
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity` e
+    `funding-windows` agora gravam `seeds.csv` e `seeds_summary.csv` (10 sementes por padrão,
+    `[experiment] seeds`), ao lado das tabelas de uma semente, que ficaram idênticas byte a byte.
+    SUMMARY §16. **Uma afirmação mudou:** no grafo bruto, a ordem entre o BFF e o netting guloso de
+    ciclos varia com a semente (BFF acima em 4 de 10), então a CLAIMS 4 não diz mais que o BFF fica
+    abaixo do netting guloso ali; no grafo líquido fica abaixo em 10 de 10. As demais afirmações de
+    uma semente se mantêm dentro dos intervalos (por exemplo, micro-ciclos de 5 s liquidam 43%
+    [41; 45] em até 2,8 s, abaixo da meta de 50%; os de 2 s, 100%). `heterogeneity` e
+    `funding-windows` usam só a menor escala nas sementes (as rodadas de 30 e 10 milhões levariam
+    dezenas de minutos); o limite apertado de 10 s no fim de semana com 1 milhão de pagamentos por
+    quinta fica em 0,03–0,07%, com IC até 0,096%. O `stress` nomeia o caso "antes do próprio pico
+    do alvo" pela posição, porque esse horário muda de uma semente para outra.

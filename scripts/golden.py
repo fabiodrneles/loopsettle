@@ -36,6 +36,7 @@ OVERRIDES = {
     ("calibration", "seeds"): "[1, 2]",
     ("finland", "seeds"): "[1, 2]",
     ("frontier", "seeds"): "[1, 2, 3]",
+    ("experiment", "seeds"): "[1, 2]",
     ("echo", "seeds"): "[1, 2, 3]",
     ("echo", "share"): "[0.2]",
     ("echo_scale", "seeds"): "[1, 2]",

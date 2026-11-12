@@ -60,6 +60,9 @@
   locally without wasm-pack: `cargo build --release --target wasm32-unknown-unknown -p
   loopsettle-wasm` then `wasm-bindgen --target web --out-dir web/src/wasm-pkg --no-typescript
   target/wasm32-unknown-unknown/release/loopsettle_wasm.wasm`.
+- **12 Nov 2026 — several seeds in every experiment** (REVIEW 95). What is left needs hosts that
+  are blocked here (gridlock paper, Koponen & Soramäki 1998, ISO 20022 guides, on-chain data) or a
+  decision by the owner (`cargo fmt`, publishing the page, tag v0.2.0).
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

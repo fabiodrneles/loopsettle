@@ -26,6 +26,8 @@ whose results changed.
 
 - `loopsettle bound/settle --report`: a shareable bilingual report with aggregates only.
 
+- Several seeds (`seeds.csv`, `seeds_summary.csv`) in `baseline`, `potential-vs-realizable`,
+  `microcycle-sweep`, `stress`, `heterogeneity` and `funding-windows`.
 - `loopsettle sort` (external sort) and an optional `status` column for payment files.
 - Web: the liquidity floor curve, and analysis of the user's own payment file in the browser.
 - READMEs with runnable examples in `loopsettle-core` and `loopsettle-sim`.

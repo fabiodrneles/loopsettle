@@ -179,6 +179,46 @@ pub fn funding_windows(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(
     res.set("source", "STR hours and day volumes: BCB, Relatório Anual do SPI 2024, pp. 12-15; hourly profile: Gráfico 12, p. 13");
     res.set("windows", Json::Arr(js));
     eprintln!("{}", table(&header, &rows));
+    // Several seeds (specs/09, E1), smallest scale: per case and closed window, the prefunding
+    // need (R$), the saving of one netting at the end of the window and the 10 s tight bound.
+    {
+        let mut names = Vec::new();
+        for &(sigma, lam) in &pcases {
+            for w in windows.iter().filter(|w| w.1 == "closed") {
+                let k = format!("sigma{}_lambda{}_{}", f(sigma), f(lam), w.0);
+                for m in ["prefunding_need_brl", "netting_saving_pct", "tight_bound_10s_pct"] {
+                    names.push(format!("{m}_{k}"));
+                }
+            }
+        }
+        let closed_idx: Vec<usize> = windows.iter().enumerate().filter(|(_, w)| w.1 == "closed").map(|(i, _)| i).collect();
+        crate::seeds::run_and_write(&mut res, doc, base, &names, |c| {
+            let mut v = Vec::new();
+            for &(sigma, lam) in &pcases {
+                let cfg = ScenarioConfig {
+                    seed: c.seed,
+                    days: 5,
+                    day_weights: day_weights.clone(),
+                    hourly: SPI_2024_HOURLY.to_vec(),
+                    payments_per_day: small,
+                    scale_factor: base.scale_factor * base.payments_per_day / small,
+                    receiver_bias_sigma: sigma,
+                    profile_strength: lam,
+                    ..base.clone()
+                };
+                let st = window_stats(cfg.participants, || PaymentStream::new(&cfg), &ws, &[]);
+                let fl = window_floors(cfg.participants, || PaymentStream::new(&cfg), &ws, &[10_000]);
+                for &k in &closed_idx {
+                    let need: i128 = st[k].need.iter().map(|&x| x as i128).sum();
+                    let net: i128 = st[k].net.iter().map(|&x| x as i128).sum();
+                    let floor: i128 = fl[k][0].iter().map(|&x| x as i128).sum();
+                    let pct = |x: i128| if need == 0 { 0.0 } else { 100.0 * x as f64 / need as f64 };
+                    v.extend([need as f64 / 100.0, 100.0 - pct(net), pct(need - floor)]);
+                }
+            }
+            v
+        });
+    }
     res.finish();
     Ok(())
 }

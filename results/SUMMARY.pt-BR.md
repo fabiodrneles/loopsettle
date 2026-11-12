@@ -21,7 +21,7 @@ _seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.7f5724c`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -68,7 +68,7 @@ Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
@@ -104,7 +104,7 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -141,7 +141,7 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.5d140a4`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -329,7 +329,7 @@ Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para c
 Melhor ajuste: σ = 1, multiplicador das IPs = 1.3 (p25 36.2%, mediana 61.1%, p75 83.3%).
 
 ## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)
-_seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
 Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:
 
@@ -411,7 +411,7 @@ Perfis intradiários por classe de instituição com intensidade λ (0 = um perf
 Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46% na forma de janela e 0.042% na forma apertada; disparou: não.
 
 ## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
-_seed `20260930`, código `0.1.0+git.73263f4`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
 
@@ -824,4 +824,32 @@ Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-
 | 86400 | 83.44% [80.81; 86.08] | 74.73% | 8.565% | 8.565% | 1.4554% | 57 |
 
 Figura: [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)
+
+## 16. Várias sementes nos experimentos de uma semente
+
+As tabelas das seções anteriores destes experimentos descrevem uma semente e ficam como ilustração. Aqui, as métricas principais em 10 sementes (média e IC 95%); todas as métricas estão em `<experimento>/seeds_summary.csv` e cada semente em `<experimento>/seeds.csv`. `heterogeneity` e `funding-windows` usam só a menor escala.
+
+| experimento | métrica | média [IC 95%] | mín.–máx. |
+|---|---|---|---|
+| baseline | ub_brl | 7.5488e+07 [6.6406e+07; 8.4571e+07] | 4.9914e+07–9.4706e+07 |
+| baseline | lb_over_ub | 0.92196 [0.88898; 0.95494] | 0.83267–0.9657 |
+| baseline | potential_offset_fraction | 0.84544 [0.82238; 0.8685] | 0.79953–0.91049 |
+| baseline | saving_deferred_1x_pct | 7.804 [4.506; 11.102] | 3.4299–16.733 |
+| baseline | net_cdfd_max | 0.19162 [0.14329; 0.23995] | 0.11711–0.36472 |
+| baseline | net_cdfd_bff | 0.14955 [0.10578; 0.19333] | 0.08589–0.30896 |
+| baseline | net_cycle_netting | 0.16046 [0.11642; 0.2045] | 0.095059–0.31903 |
+| potential-vs-realizable | saving_pct_deferred_net_96x | 0.50209 [0.37794; 0.62623] | 0.32484–0.88205 |
+| potential-vs-realizable | saving_pct_deferred_net_8640x | 0.018546 [0.012892; 0.0242] | 0.006802–0.030585 |
+| potential-vs-realizable | saving_pct_micro_cycle_all_w1000_d10000 | 0.012013 [0.007952; 0.016075] | 0.000544–0.018596 |
+| microcycle-sweep | saving_pct_micro_cycle_all_w500_d10000 | 0.011559 [0.007914; 0.015205] | 0.00099–0.01808 |
+| microcycle-sweep | share_within_2800ms_micro_cycle_all_w1000_d2000 | 1 [1; 1] | 1–1 |
+| microcycle-sweep | share_within_2800ms_micro_cycle_all_w1000_d5000 | 0.43038 [0.41131; 0.44944] | 0.37885–0.46617 |
+| microcycle-sweep | rejected_value_share_0.5xUB_gross_real_time | 0.15657 [0.13414; 0.17899] | 0.12702–0.21387 |
+| microcycle-sweep | rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000 | 0.15213 [0.1317; 0.17255] | 0.12464–0.20144 |
+| stress | others_ub_net_change_pct_largest_t0 | 0.031768 [-0.027372; 0.090909] | -2.5e-05–0.26647 |
+| stress | rejected_value_share_largest_t0_gross_real_time | 0.000172 [-2.3e-05; 0.000368] | 0–0.000863 |
+| heterogeneity | tight_bound_10s_pct_sigma1_lambda1 | 0.015886 [0.008837; 0.022935] | 0.003413–0.029974 |
+| heterogeneity | netting_daily_saving_pct_sigma1_lambda1 | 4.7974 [2.2325; 7.3624] | 0.91361–12.413 |
+| funding-windows | netting_saving_pct_sigma1_lambda1_weekend | 1.9634 [0.55737; 3.3695] | 0.40024–7.2361 |
+| funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.027931 [0.016851; 0.03901] | 0.009182–0.058955 |
 

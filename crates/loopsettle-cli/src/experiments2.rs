@@ -156,6 +156,36 @@ pub fn baseline(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), Strin
     res.set("sensitivity", Json::Arr(sjson));
     eprintln!("{}", table(LADDER_HEADER, &ladder_rows(&topo)));
     eprintln!("{}", table(&sh, &srows));
+    // Several seeds (specs/09, E1): the headline numbers with confidence intervals.
+    {
+        let names: Vec<String> = [
+            "ub_brl", "lb_over_ub", "potential_offset_fraction", "saving_deferred_1x_pct", "saving_deferred_10x_pct", "gross_cdfd_max", "gross_cdfd_bff", "gross_cycle_netting",
+            "net_cdfd_max", "net_cdfd_bff", "net_cycle_netting", "net_hodge_l2_curl", "bilateral_share",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
+        crate::seeds::run_and_write(&mut res, doc, cfg, &names, |c| {
+            let o = run_engines(c, &specs, &Opening::Unlimited, true, None);
+            let (t, _) = topology(&o, doc);
+            let ub = o.ub();
+            vec![
+                ub as f64 / 100.0,
+                o.lb() as f64 / ub.max(1) as f64,
+                o.flow.potential_offset_fraction(),
+                100.0 * o.results[1].saving_vs(ub),
+                100.0 * o.results[2].saving_vs(ub),
+                t.gross.cdfd_max,
+                t.gross.cdfd_bff,
+                t.gross.cycles,
+                t.net.cdfd_max,
+                t.net.cdfd_bff,
+                t.net.cycles,
+                t.net.hodge_curl_l2,
+                t.bilateral_share,
+            ]
+        });
+    }
     res.finish();
     Ok(())
 }
@@ -251,6 +281,20 @@ pub fn potential_vs_realizable(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> R
     res.set("engines", Json::Arr(o.results.iter().map(|r| r.to_json(ub, lb)).collect()));
     eprintln!("{}", table(&chead, &crow));
     eprintln!("{}", table(&header, &rows));
+    // Several seeds (specs/09, E1): the saving of every design, with confidence intervals.
+    {
+        let mut names = vec!["potential_offset_fraction".to_string(), "eod_saving_pct".to_string()];
+        names.extend(o.results[1..].iter().map(|r| format!("saving_pct_{}", r.name)));
+        names.extend(o.results[1..].iter().map(|r| format!("p95_delay_ms_{}", r.name)));
+        crate::seeds::run_and_write(&mut res, doc, cfg, &names, |c| {
+            let o = run_engines(c, &specs, &Opening::Unlimited, false, None);
+            let ub = o.ub();
+            let mut v = vec![o.flow.potential_offset_fraction(), if ub == 0 { 0.0 } else { 100.0 * (ub - o.lb()) as f64 / ub as f64 }];
+            v.extend(o.results[1..].iter().map(|r| 100.0 * r.saving_vs(ub)));
+            v.extend(o.results[1..].iter().map(|r| r.delay_q(0.95) as f64));
+            v
+        });
+    }
     res.finish();
     Ok(())
 }
@@ -318,6 +362,56 @@ pub fn stress(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), String>
     res.csv("cases.csv", &table(CASE_HEADER, &crows));
     res.set("cases", Json::Arr(cjson));
     eprintln!("{}", table(CASE_HEADER, &crows));
+    // Several seeds (specs/09, E1) for the redesigned cases: spillover on the others' liquidity
+    // need and rejected value, per case. A case is named by its target and the position of its
+    // start time in the list (the "before its own peak" time differs from seed to seed).
+    {
+        let probe = stress_cases(doc, cfg, &base, o_spec.duration_ms)?.0;
+        let mut names = Vec::new();
+        let case_key = |r: &Vec<String>, k: usize| format!("{}_t{}", r[0], k);
+        let mut seen: Vec<(String, String)> = Vec::new();
+        for r in &probe {
+            if !seen.iter().any(|(t, st)| *t == r[0] && *st == r[3]) {
+                seen.push((r[0].clone(), r[3].clone()));
+            }
+        }
+        let pos = |r: &Vec<String>, seen: &Vec<(String, String)>| seen.iter().filter(|(t, _)| *t == r[0]).position(|(_, st)| *st == r[3]).unwrap_or(0);
+        let mut last = String::new();
+        for r in &probe {
+            let key = case_key(r, pos(r, &seen));
+            if key != last {
+                names.push(format!("others_ub_net_change_pct_{key}"));
+                last = key.clone();
+            }
+            names.push(format!("rejected_value_share_{key}_{}", r[14]));
+        }
+        let n_names = names.len();
+        crate::seeds::run_and_write(&mut res, doc, cfg, &names, |c| {
+            let b = run_engines(c, &specs, &Opening::Unlimited, false, None);
+            let rows = match stress_cases(doc, c, &b, o_spec.duration_ms) {
+                Ok((rows, _)) => rows,
+                Err(_) => return vec![f64::NAN; n_names],
+            };
+            let mut seen_c: Vec<(String, String)> = Vec::new();
+            for r in &rows {
+                if !seen_c.iter().any(|(t, st)| *t == r[0] && *st == r[3]) {
+                    seen_c.push((r[0].clone(), r[3].clone()));
+                }
+            }
+            let mut v = Vec::with_capacity(n_names);
+            let mut last = String::new();
+            for r in &rows {
+                let key = format!("{}_t{}", r[0], seen_c.iter().filter(|(t, _)| *t == r[0]).position(|(_, st)| *st == r[3]).unwrap_or(0));
+                if key != last {
+                    v.push(r[10].parse().unwrap_or(f64::NAN));
+                    last = key;
+                }
+                v.push(r[15].parse().unwrap_or(f64::NAN));
+            }
+            v.resize(n_names, f64::NAN);
+            v
+        });
+    }
     res.finish();
     Ok(())
 }

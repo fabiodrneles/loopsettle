@@ -16,6 +16,7 @@ mod experiments7;
 mod experiments8;
 mod out;
 mod realdata;
+mod seeds;
 mod stats;
 mod svg;
 

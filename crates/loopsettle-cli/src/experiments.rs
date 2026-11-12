@@ -217,6 +217,41 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
     res.set("constrained", Json::Arr(sjson));
     eprintln!("{}", table(&header, &rows));
     eprintln!("{}", table(&sh, &srows));
+    // Several seeds (specs/09, E1): saving, p95 delay and the 2.8 s share of every configuration,
+    // and the rejected value of the constrained runs.
+    {
+        let mut names: Vec<String> = Vec::new();
+        for r in &o.results[1..] {
+            names.push(format!("saving_pct_{}", r.name));
+            names.push(format!("p95_delay_ms_{}", r.name));
+            names.push(format!("share_within_2800ms_{}", r.name));
+        }
+        for &fr in &fracs {
+            for sp in &cspecs {
+                names.push(format!("rejected_value_share_{}xUB_{}", f(fr), sp.build(1).name()));
+            }
+        }
+        crate::seeds::run_and_write(&mut res, doc, cfg, &names, |c| {
+            let o = run_engines(c, &specs, &Opening::Unlimited, false, None);
+            let ub = o.ub();
+            let mut v = Vec::new();
+            for r in &o.results[1..] {
+                v.push(100.0 * r.saving_vs(ub));
+                v.push(r.delay_q(0.95) as f64);
+                v.push(r.metrics.share_within_ms(2_800).unwrap_or(f64::NAN));
+            }
+            let ubs = o.flow.ubs();
+            for &fr in &fracs {
+                let opening: Vec<i64> = ubs.iter().map(|&u| (u as f64 * fr).floor() as i64).collect();
+                let oc = run_engines(c, &cspecs, &Opening::Given(opening), false, None);
+                for r in &oc.results {
+                    let m = &r.metrics;
+                    v.push(m.rejected_value as f64 / (m.settled_value + m.rejected_value).max(1) as f64);
+                }
+            }
+            v
+        });
+    }
     res.finish();
     Ok(())
 }

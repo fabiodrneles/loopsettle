@@ -379,3 +379,15 @@ the real laptop (i3, 4 GB).
     owner asks; CLAUDE.md, optional step). (c) **R5:** README with a runnable example in
     `loopsettle-core` and `loopsettle-sim` (compiled and run as doc tests; English only, as crate
     documentation). The `testing` module behind a feature and the Python notebook were not done.
+95. **Several seeds in the six one-seed experiments (spec 09, E1), 12 Nov 2026.** `seeds.rs`;
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity` and
+    `funding-windows` now write `seeds.csv` and `seeds_summary.csv` (10 seeds by default,
+    `[experiment] seeds`), next to their one-seed tables, which are byte-identical. SUMMARY §16.
+    **One claim changed:** on the gross graph the order of BFF and greedy cycle netting varies by
+    seed (BFF higher in 4 of 10), so CLAIMS 4 no longer says BFF is below greedy netting there; on
+    the net graph it is below in 10 of 10. Other one-seed statements hold within their intervals
+    (for example, 5 s micro-cycles settle 43% [41; 45] within 2.8 s, under the 50% target; 2 s
+    ones 100%). `heterogeneity` and `funding-windows` use only the smallest scale for the seeds
+    (the 30-million and 10-million runs would take tens of minutes); the weekend 10 s tight bound
+    at 1 million payments per Thursday is 0.03–0.07%, with CIs up to 0.096%. `stress` names its
+    "before the target's own peak" case by position, because that time differs between seeds.

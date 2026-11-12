@@ -113,6 +113,9 @@ PT = {
     "h15": "## 15. Circularidade por horizonte: valor que circula × liquidez recuperável",
     "ch_intro": "Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.",
     "c_ch": ["janela / prazo (s)", "valor que circula (% do bruto) [IC 95%]", "só bilateral (% do bruto)", "limite apertado (% do UB)", "obtido a cada w (% do UB)", "limite apertado (% do bruto)", "circula / recuperável"],
+    "h16": "## 16. Várias sementes nos experimentos de uma semente",
+    "sd_intro": "As tabelas das seções anteriores destes experimentos descrevem uma semente e ficam como ilustração. Aqui, as métricas principais em 10 sementes (média e IC 95%); todas as métricas estão em `<experimento>/seeds_summary.csv` e cada semente em `<experimento>/seeds.csv`. `heterogeneity` e `funding-windows` usam só a menor escala.",
+    "c_sd": ["experimento", "métrica", "média [IC 95%]", "mín.–máx."],
     "h14": "## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)",
     "ec_intro": "Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.",
     "c_ec": ["parcela de eco", "atraso do eco (s)", "retorno", "motor", "economia [IC 95%]", "limite apertado [IC 95%]", "valor em ciclos", "LB/UB"],
@@ -207,6 +210,9 @@ EN = {
     "h15": "## 15. Circularity by horizon: value that circulates vs liquidity that can be recovered",
     "ch_intro": "For each width w the day is cut into windows; inside each window the maximum circulation (CDFD) of the aggregated flows is computed. The sum is the value that *could be cancelled* by netting inside windows of width w. Next to it, for the same w as a deadline: the tight bound and what netting every w realises. Cancelled value is not saved liquidity. Means over 5 seeds.",
     "c_ch": ["window / deadline (s)", "circulating value (% of gross) [95% CI]", "bilateral only (% of gross)", "tight bound (% of UB)", "realised every w (% of UB)", "tight bound (% of gross)", "circulating / recoverable"],
+    "h16": "## 16. Several seeds in the one-seed experiments",
+    "sd_intro": "The tables of the earlier sections for these experiments describe one seed and stay as illustrations. Here, the headline metrics over 10 seeds (mean and 95% CI); every metric is in `<experiment>/seeds_summary.csv` and every seed in `<experiment>/seeds.csv`. `heterogeneity` and `funding-windows` use the smallest scale only.",
+    "c_sd": ["experiment", "metric", "mean [95% CI]", "min–max"],
     "h14": "## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)",
     "ec_intro": "A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.",
     "c_ec": ["echo share", "echo delay (s)", "return", "engine", "saving [95% CI]", "tight bound [95% CI]", "value in cycles", "LB/UB"],
@@ -441,6 +447,26 @@ def build(T):
                                   f"{float(r['bilateral_offset_pct_of_gross']):.2f}%", f"{float(r['tight_bound_pct_of_ub']):.3f}%", f"{float(r['netting_every_w_saving_pct_of_ub']):.3f}%",
                                   f"{float(r['tight_bound_pct_of_gross']):.4f}%", num(r["circulating_over_recoverable"], 0)] for r in rows("circularity-horizon", "horizon.csv")]))
     md += ["", T["fig"] + " [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)", ""]
+    # --- several seeds (specs/09, E1)
+    md += [T["h16"], "", T["sd_intro"], ""]
+    pick = {
+        "baseline": ["ub_brl", "lb_over_ub", "potential_offset_fraction", "saving_deferred_1x_pct", "net_cdfd_max", "net_cdfd_bff", "net_cycle_netting"],
+        "potential-vs-realizable": ["saving_pct_deferred_net_96x", "saving_pct_deferred_net_8640x", "saving_pct_micro_cycle_all_w1000_d10000"],
+        "microcycle-sweep": ["saving_pct_micro_cycle_all_w500_d10000", "share_within_2800ms_micro_cycle_all_w1000_d2000", "share_within_2800ms_micro_cycle_all_w1000_d5000",
+                             "rejected_value_share_0.5xUB_gross_real_time", "rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000"],
+        "stress": ["others_ub_net_change_pct_largest_t0", "rejected_value_share_largest_t0_gross_real_time"],
+        "heterogeneity": ["tight_bound_10s_pct_sigma1_lambda1", "netting_daily_saving_pct_sigma1_lambda1"],
+        "funding-windows": ["netting_saving_pct_sigma1_lambda1_weekend", "tight_bound_10s_pct_sigma1_lambda1_weekend"],
+    }
+    srows = []
+    for exp, keys in pick.items():
+        got = {r["metric"]: r for r in rows(exp, "seeds_summary.csv")}
+        for k in keys:
+            if k in got:
+                r = got[k]
+                srows.append([exp, k, f"{float(r['mean']):.5g} [{float(r['ci95_low']):.5g}; {float(r['ci95_high']):.5g}]", f"{float(r['min']):.5g}–{float(r['max']):.5g}"])
+    md.append(table(T["c_sd"], srows))
+    md.append("")
     return "\n".join(md) + "\n"
 
 

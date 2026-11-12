@@ -66,6 +66,9 @@
   Para recompilar o wasm localmente sem wasm-pack: `cargo build --release --target
   wasm32-unknown-unknown -p loopsettle-wasm` e depois `wasm-bindgen --target web --out-dir
   web/src/wasm-pkg --no-typescript target/wasm32-unknown-unknown/release/loopsettle_wasm.wasm`.
+- **12/11/2026 — várias sementes em todos os experimentos** (REVIEW 95). O que falta depende de
+  servidores bloqueados aqui (artigo de gridlock, Koponen & Soramäki 1998, guias ISO 20022, dados
+  on-chain) ou de decisão do dono (`cargo fmt`, publicar a página, tag v0.2.0).
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

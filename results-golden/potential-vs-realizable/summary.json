@@ -510,5 +510,204 @@
       "cycles_settled": 190,
       "cycles_failed": 0
     }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 2,
+      "mean": 0.818402,
+      "ci95_low": 0.761835,
+      "ci95_high": 0.874969
+    },
+    {
+      "metric": "eod_saving_pct",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_pct_deferred_net_1x",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_pct_deferred_net_2x",
+      "seeds": 2,
+      "mean": 16.644406,
+      "ci95_low": -16.559153,
+      "ci95_high": 49.847965
+    },
+    {
+      "metric": "saving_pct_deferred_net_4x",
+      "seeds": 2,
+      "mean": 12.821844,
+      "ci95_low": 3.471056,
+      "ci95_high": 22.172633
+    },
+    {
+      "metric": "saving_pct_deferred_net_10x",
+      "seeds": 2,
+      "mean": 8.478627,
+      "ci95_low": -27.734945,
+      "ci95_high": 44.692199
+    },
+    {
+      "metric": "saving_pct_deferred_net_24x",
+      "seeds": 2,
+      "mean": 3.431644,
+      "ci95_low": -0.338718,
+      "ci95_high": 7.202006
+    },
+    {
+      "metric": "saving_pct_deferred_net_96x",
+      "seeds": 2,
+      "mean": 0.944373,
+      "ci95_low": -4.184355,
+      "ci95_high": 6.073102
+    },
+    {
+      "metric": "saving_pct_deferred_net_288x",
+      "seeds": 2,
+      "mean": 0.434994,
+      "ci95_low": -3.081978,
+      "ci95_high": 3.951966
+    },
+    {
+      "metric": "saving_pct_deferred_net_1440x",
+      "seeds": 2,
+      "mean": 0.084815,
+      "ci95_low": -0.366263,
+      "ci95_high": 0.535893
+    },
+    {
+      "metric": "saving_pct_deferred_net_8640x",
+      "seeds": 2,
+      "mean": 0.003599,
+      "ci95_low": -0.026633,
+      "ci95_high": 0.033832
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1x",
+      "seeds": 2,
+      "mean": 60293120,
+      "ci95_low": 60293120,
+      "ci95_high": 60293120
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_2x",
+      "seeds": 2,
+      "mean": 40894464,
+      "ci95_low": 40894464,
+      "ci95_high": 40894464
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_4x",
+      "seeds": 2,
+      "mean": 20447232,
+      "ci95_low": 20447232,
+      "ci95_high": 20447232
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_10x",
+      "seeds": 2,
+      "mean": 8192000,
+      "ci95_low": 8192000,
+      "ci95_high": 8192000
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_24x",
+      "seeds": 2,
+      "mean": 3407872,
+      "ci95_low": 3407872,
+      "ci95_high": 3407872
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_96x",
+      "seeds": 2,
+      "mean": 851968,
+      "ci95_low": 851968,
+      "ci95_high": 851968
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_288x",
+      "seeds": 2,
+      "mean": 282624,
+      "ci95_low": 282624,
+      "ci95_high": 282624
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1440x",
+      "seeds": 2,
+      "mean": 56832,
+      "ci95_low": 56832,
+      "ci95_high": 56832
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_8640x",
+      "seeds": 2,
+      "mean": 9472,
+      "ci95_low": 9472,
+      "ci95_high": 9472
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    }
   ]
 }

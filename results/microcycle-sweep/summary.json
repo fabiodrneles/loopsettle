@@ -2,12 +2,12 @@
   "schema": "loopsettle.result/1",
   "experiment": "microcycle-sweep",
   "seed": 20260930,
-  "code_version": "0.1.0+git.5d140a4",
+  "code_version": "0.1.0+git.ff2a85c-dirty",
   "config_file": "experiments/microcycle-sweep.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment microcycle-sweep",
   "platform": "x86_64-linux",
   "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
-  "cargo_lock_fnv1a64": "92bf92e6a3855b5d",
+  "cargo_lock_fnv1a64": "a8becf0327cae9fe",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -834,6 +834,387 @@
         "cycles_settled": 229169,
         "cycles_failed": 8704
       }
+    }
+  ],
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "seeds_summary": [
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d2000",
+      "seeds": 10,
+      "mean": 0.000627,
+      "ci95_low": 0.000003,
+      "ci95_high": 0.001251
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d2000",
+      "seeds": 10,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d2000",
+      "seeds": 10,
+      "mean": 0.001049,
+      "ci95_low": -0.000036,
+      "ci95_high": 0.002135
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d2000",
+      "seeds": 10,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d2000",
+      "seeds": 10,
+      "mean": 0.000295,
+      "ci95_low": -0.000828,
+      "ci95_high": 0.001417
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d2000",
+      "seeds": 10,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d2000",
+      "seeds": 10,
+      "mean": 0.000157,
+      "ci95_low": 0.000024,
+      "ci95_high": 0.000289
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d2000",
+      "seeds": 10,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d2000",
+      "seeds": 10,
+      "mean": 0.000055,
+      "ci95_low": -0.000028,
+      "ci95_high": 0.000138
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d2000",
+      "seeds": 10,
+      "mean": 1,
+      "ci95_low": 1,
+      "ci95_high": 1
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d5000",
+      "seeds": 10,
+      "mean": 0.00378,
+      "ci95_low": -0.000622,
+      "ci95_high": 0.008183
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d5000",
+      "seeds": 10,
+      "mean": 0.445504,
+      "ci95_low": 0.425825,
+      "ci95_high": 0.465183
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d5000",
+      "seeds": 10,
+      "mean": 0.003508,
+      "ci95_low": -0.001045,
+      "ci95_high": 0.00806
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d5000",
+      "seeds": 10,
+      "mean": 0.430378,
+      "ci95_low": 0.411313,
+      "ci95_high": 0.449444
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d5000",
+      "seeds": 10,
+      "mean": 0.003514,
+      "ci95_low": -0.000516,
+      "ci95_high": 0.007543
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d5000",
+      "seeds": 10,
+      "mean": 0.395418,
+      "ci95_low": 0.377855,
+      "ci95_high": 0.412981
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d5000",
+      "seeds": 10,
+      "mean": 0.002856,
+      "ci95_low": 0.000163,
+      "ci95_high": 0.00555
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d5000",
+      "seeds": 10,
+      "mean": 0.228629,
+      "ci95_low": 0.219759,
+      "ci95_high": 0.237499
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d5000",
+      "seeds": 10,
+      "mean": 0.000966,
+      "ci95_low": -0.001522,
+      "ci95_high": 0.003454
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d5000",
+      "seeds": 10,
+      "mean": 0.114419,
+      "ci95_low": 0.109963,
+      "ci95_high": 0.118875
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d10000",
+      "seeds": 10,
+      "mean": 0.011559,
+      "ci95_low": 0.007914,
+      "ci95_high": 0.015205
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w500_d10000",
+      "seeds": 10,
+      "mean": 0.439098,
+      "ci95_low": 0.417267,
+      "ci95_high": 0.46093
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.012013,
+      "ci95_low": 0.007952,
+      "ci95_high": 0.016075
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.430133,
+      "ci95_low": 0.408839,
+      "ci95_high": 0.451428
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w2000_d10000",
+      "seeds": 10,
+      "mean": 0.011471,
+      "ci95_low": 0.006899,
+      "ci95_high": 0.016044
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w2000_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w2000_d10000",
+      "seeds": 10,
+      "mean": 0.409863,
+      "ci95_low": 0.390009,
+      "ci95_high": 0.429717
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w5000_d10000",
+      "seeds": 10,
+      "mean": 0.009847,
+      "ci95_low": 0.004957,
+      "ci95_high": 0.014737
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w5000_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w5000_d10000",
+      "seeds": 10,
+      "mean": 0.247724,
+      "ci95_low": 0.236597,
+      "ci95_high": 0.258851
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w10000_d10000",
+      "seeds": 10,
+      "mean": 0.005841,
+      "ci95_low": 0.001553,
+      "ci95_high": 0.010129
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w10000_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "share_within_2800ms_micro_cycle_all_w10000_d10000",
+      "seeds": 10,
+      "mean": 0.137942,
+      "ci95_low": 0.132705,
+      "ci95_high": 0.14318
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_gross_real_time",
+      "seeds": 10,
+      "mean": 0.26066,
+      "ci95_low": 0.222306,
+      "ci95_high": 0.299014
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.258282,
+      "ci95_low": 0.222,
+      "ci95_high": 0.294564
+    },
+    {
+      "metric": "rejected_value_share_0.25xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.250054,
+      "ci95_low": 0.216591,
+      "ci95_high": 0.283516
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_gross_real_time",
+      "seeds": 10,
+      "mean": 0.156566,
+      "ci95_low": 0.134141,
+      "ci95_high": 0.178992
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.155314,
+      "ci95_low": 0.133344,
+      "ci95_high": 0.177283
+    },
+    {
+      "metric": "rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.152127,
+      "ci95_low": 0.1317,
+      "ci95_high": 0.172555
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_gross_real_time",
+      "seeds": 10,
+      "mean": 0.081873,
+      "ci95_low": 0.067099,
+      "ci95_high": 0.096646
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.081533,
+      "ci95_low": 0.067003,
+      "ci95_high": 0.096064
+    },
+    {
+      "metric": "rejected_value_share_0.75xUB_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.079948,
+      "ci95_low": 0.066457,
+      "ci95_high": 0.093438
     }
   ]
 }

@@ -490,5 +490,99 @@
         "cycles_failed": 0
       }
     }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "ub_brl",
+      "seeds": 2,
+      "mean": 2828882.93,
+      "ci95_low": 2108576.10526,
+      "ci95_high": 3549189.75474
+    },
+    {
+      "metric": "lb_over_ub",
+      "seeds": 2,
+      "mean": 0.802376,
+      "ci95_low": 0.58118,
+      "ci95_high": 1.023572
+    },
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 2,
+      "mean": 0.818402,
+      "ci95_low": 0.761835,
+      "ci95_high": 0.874969
+    },
+    {
+      "metric": "saving_deferred_1x_pct",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_deferred_10x_pct",
+      "seeds": 2,
+      "mean": 8.478627,
+      "ci95_low": -27.734945,
+      "ci95_high": 44.692199
+    },
+    {
+      "metric": "gross_cdfd_max",
+      "seeds": 2,
+      "mean": 0.799961,
+      "ci95_low": 0.648245,
+      "ci95_high": 0.951677
+    },
+    {
+      "metric": "gross_cdfd_bff",
+      "seeds": 2,
+      "mean": 0.74032,
+      "ci95_low": 0.531178,
+      "ci95_high": 0.949461
+    },
+    {
+      "metric": "gross_cycle_netting",
+      "seeds": 2,
+      "mean": 0.738523,
+      "ci95_low": 0.716973,
+      "ci95_high": 0.760073
+    },
+    {
+      "metric": "net_cdfd_max",
+      "seeds": 2,
+      "mean": 0.263044,
+      "ci95_low": 0.032735,
+      "ci95_high": 0.493353
+    },
+    {
+      "metric": "net_cdfd_bff",
+      "seeds": 2,
+      "mean": 0.20389,
+      "ci95_low": -0.059101,
+      "ci95_high": 0.466881
+    },
+    {
+      "metric": "net_cycle_netting",
+      "seeds": 2,
+      "mean": 0.215998,
+      "ci95_low": -0.035922,
+      "ci95_high": 0.467918
+    },
+    {
+      "metric": "net_hodge_l2_curl",
+      "seeds": 2,
+      "mean": 0.918476,
+      "ci95_low": 0.751024,
+      "ci95_high": 1.085928
+    },
+    {
+      "metric": "bilateral_share",
+      "seeds": 2,
+      "mean": 0.650574,
+      "ci95_low": 0.44309,
+      "ci95_high": 0.858059
+    }
   ]
 }

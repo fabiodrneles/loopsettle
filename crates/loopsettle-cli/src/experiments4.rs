@@ -160,6 +160,34 @@ pub fn heterogeneity(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(),
     res.set("scenario", scenario_json(base));
     res.set("kill_criterion_k1", Json::obj().set("rule", "stop if the 10 s delay bound exceeds 2% of UB at 30M payments/day").set("cases", Json::Arr(k1)));
     eprintln!("{}", table(&header, &rows));
+    // Several seeds (specs/09, E1), at the smallest scale only (each 30-million run takes about a
+    // minute): for each receiver bias and profile strength, the 10 s tight bound, what netting
+    // every 10 s and once a day save, and LB/UB.
+    {
+        let small = scales.first().copied().unwrap_or(1e6);
+        let mut names = Vec::new();
+        for &sigma in &sigmas {
+            for &lam in &lambdas {
+                let k = format!("sigma{}_lambda{}", f(sigma), f(lam));
+                for m in ["tight_bound_10s_pct", "netting_10s_saving_pct", "netting_daily_saving_pct", "lb_over_ub"] {
+                    names.push(format!("{m}_{k}"));
+                }
+            }
+        }
+        let base_small = ScenarioConfig { payments_per_day: small, scale_factor: base.scale_factor * base.payments_per_day / small, ..base.clone() };
+        let k10 = crate::experiments3::ENGINES.iter().position(|(n, _)| *n == "deferred:8640").expect("in ENGINES");
+        let k1 = crate::experiments3::ENGINES.iter().position(|(n, _)| *n == "deferred:1").expect("in ENGINES");
+        crate::seeds::run_and_write(&mut res, doc, &base_small, &names, |c| {
+            let mut v = Vec::new();
+            for &sigma in &sigmas {
+                for &lam in &lambdas {
+                    let m = crate::experiments3::measure(&ScenarioConfig { receiver_bias_sigma: sigma, profile_strength: lam, ..c.clone() });
+                    v.extend([m.tight_pct[k10], m.saving_pct[k10], m.saving_pct[k1], m.lb as f64 / m.ub.max(1) as f64]);
+                }
+            }
+            v
+        });
+    }
     res.finish();
     Ok(())
 }

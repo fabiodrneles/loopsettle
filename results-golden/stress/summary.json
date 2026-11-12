@@ -687,5 +687,260 @@
         }
       ]
     }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "others_ub_net_change_pct_largest_t0",
+      "seeds": 2,
+      "mean": 0.099588,
+      "ci95_low": -1.165777,
+      "ci95_high": 1.364953
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_gross_real_time",
+      "seeds": 2,
+      "mean": 0.001423,
+      "ci95_low": -0.016658,
+      "ci95_high": 0.019504
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.001423,
+      "ci95_low": -0.016658,
+      "ci95_high": 0.019504
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.001423,
+      "ci95_low": -0.016658,
+      "ci95_high": 0.019504
+    },
+    {
+      "metric": "others_ub_net_change_pct_largest_t1",
+      "seeds": 2,
+      "mean": 0.437387,
+      "ci95_low": -5.120058,
+      "ci95_high": 5.994833
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_gross_real_time",
+      "seeds": 2,
+      "mean": 0.002689,
+      "ci95_low": -0.031477,
+      "ci95_high": 0.036855
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.002435,
+      "ci95_low": -0.028498,
+      "ci95_high": 0.033367
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.002435,
+      "ci95_low": -0.028498,
+      "ci95_high": 0.033367
+    },
+    {
+      "metric": "others_ub_net_change_pct_largest_t2",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_gross_real_time",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.009951,
+      "ci95_low": -0.116486,
+      "ci95_high": 0.136388
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t0",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_gross_real_time",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t1",
+      "seeds": 2,
+      "mean": 0.437387,
+      "ci95_low": -5.120058,
+      "ci95_high": 5.994833
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_gross_real_time",
+      "seeds": 2,
+      "mean": 0.002689,
+      "ci95_low": -0.031477,
+      "ci95_high": 0.036855
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.002435,
+      "ci95_low": -0.028498,
+      "ci95_high": 0.033367
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.002522,
+      "ci95_low": -0.027299,
+      "ci95_high": 0.032343
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t2",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_gross_real_time",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t0",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_gross_real_time",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t1",
+      "seeds": 2,
+      "mean": 0.020115,
+      "ci95_low": -0.235466,
+      "ci95_high": 0.275696
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_gross_real_time",
+      "seeds": 2,
+      "mean": 0.000268,
+      "ci95_low": -0.003137,
+      "ci95_high": 0.003673
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000268,
+      "ci95_low": -0.003137,
+      "ci95_high": 0.003673
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000268,
+      "ci95_low": -0.003137,
+      "ci95_high": 0.003673
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t2",
+      "seeds": 2,
+      "mean": 0.000552,
+      "ci95_low": -0.006456,
+      "ci95_high": 0.007559
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_gross_real_time",
+      "seeds": 2,
+      "mean": 0.000191,
+      "ci95_low": -0.002242,
+      "ci95_high": 0.002625
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000017,
+      "ci95_low": -0.000205,
+      "ci95_high": 0.00024
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000291,
+      "ci95_low": -0.000878,
+      "ci95_high": 0.00146
+    }
   ]
 }
