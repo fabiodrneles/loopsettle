@@ -21,7 +21,7 @@ _seed `20260930`, code `0.1.0+git.222730f`, command `cargo run --release -p loop
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidity and circularity ladder
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | measure | value |
 |---|---|
@@ -68,7 +68,7 @@ Sensitivity to receiver bias (the main ASSUMPTION of the bilateral structure):
 Figure: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potential vs realizable (central comparison)
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | measure | value | meaning | status |
 |---|---|---|---|
@@ -104,7 +104,7 @@ By settlement design (unlimited liquidity; maximum wait in seconds):
 Figure: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-cycles: saving × delay
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | window (ms) | max delay (ms) | saving vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2.8 s | value in cycles |
 |---|---|---|---|---|---|---|---|
@@ -141,7 +141,7 @@ Constrained liquidity (opening balance = a fraction of each participant's UB):
 Figure: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Stress: a participant offline for 30 minutes
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participant 0 offline from 10.0h for 30 min: 11692 payments (R$ 5 866 760) delayed, on average 903 s.
 
@@ -329,7 +329,7 @@ Quartiles of the per-bank nettable ratio (WP 619, eq. 3.2) for each σ and payme
 Best fit: σ = 1, payment-institution multiplier = 1.3 (p25 36.2%, median 61.1%, p75 83.3%).
 
 ## 9. Intraday heterogeneity and scale (W2, kill criterion K1)
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
 Class-specific intraday profiles with strength λ (0 = one profile for everyone, 1 = full profiles), at σ = 0.4 and at the calibrated σ:
 
@@ -411,7 +411,7 @@ Class-specific intraday profiles with strength λ (0 = one profile for everyone,
 Kill criterion K1 (stop if the 10 s bound exceeds 2% of UB at 30 million payments): worst case 0.46% in the window form and 0.042% in the tight form; fired: no.
 
 ## 10. Conta PI funding windows: nights and the weekend (W3)
-_seed `20260930`, code `0.1.0+git.ff2a85c-dirty`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, code `0.1.0+git.2730bc4`, command `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 The Conta PI can be topped up from reserves only while the STR is open (6:30–18:30 on business days, plus 30 minutes). Thursday to Monday, hourly profile and day volumes from the SPI annual report 2024. Need = largest drawdown from the start of the window; netting = one net settlement at the end of the window.
 

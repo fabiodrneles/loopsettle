@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "potential-vs-realizable",
   "seed": 20260930,
-  "code_version": "0.1.0+git.ff2a85c-dirty",
+  "code_version": "0.1.0+git.2730bc4",
   "config_file": "experiments/potential-vs-realizable.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable",
   "platform": "x86_64-linux",

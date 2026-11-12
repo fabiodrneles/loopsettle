@@ -21,7 +21,7 @@ _seed `20260930`, código `0.1.0+git.222730f`, comando `cargo run --release -p l
 | hhi | 0.0860 | 0.0859 | -0.09% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
@@ -68,7 +68,7 @@ Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
@@ -104,7 +104,7 @@ Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
@@ -141,7 +141,7 @@ Liquidez restrita (saldo inicial = fração do UB de cada participante):
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
 Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
 
@@ -329,7 +329,7 @@ Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para c
 Melhor ajuste: σ = 1, multiplicador das IPs = 1.3 (p25 36.2%, mediana 61.1%, p75 83.3%).
 
 ## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
 Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:
 
@@ -411,7 +411,7 @@ Perfis intradiários por classe de instituição com intensidade λ (0 = um perf
 Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46% na forma de janela e 0.042% na forma apertada; disparou: não.
 
 ## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
-_seed `20260930`, código `0.1.0+git.ff2a85c-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, código `0.1.0+git.2730bc4`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
 
