@@ -121,7 +121,7 @@ netting at the end of the period gives `LB_i = max(0, CO_i(T) − CI_i(T))`, the
 floor_i(d) = max(0, max_{s ∈ [0, T]} [CO_i(s) − CI_i(min(s + d, T))]).
 ```
 
-**Theorem 1 (bound).** For every mechanism delay-bounded by *d* and every participant *i*,
+**Theorem 1 (Liquidity Floor).** For every mechanism delay-bounded by *d* and every participant *i*,
 `L_i ≥ floor_i(d)`.
 
 *Proof.* Fix *s*. At time `s + d` (or *T*), every payment of *i* that arrived by *s* has settled, so
