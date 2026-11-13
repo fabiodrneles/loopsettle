@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="70" y="24" font-size="15" font-weight="bold">Rejected value vs liquidity held (retail, calibrated bias; balances = alpha x UB)</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
+<text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
+<line x1="70" y1="272.5" x2="540.0" y2="272.5" stroke="#e5e5e5"/>
+<text x="64.0" y="276.5" text-anchor="end" fill="#444">10</text>
+<line x1="70" y1="159.9" x2="540.0" y2="159.9" stroke="#e5e5e5"/>
+<text x="64.0" y="163.9" text-anchor="end" fill="#444">20</text>
+<line x1="70" y1="47.4" x2="540.0" y2="47.4" stroke="#e5e5e5"/>
+<text x="64.0" y="51.4" text-anchor="end" fill="#444">30</text>
+<line x1="134.1" y1="40" x2="134.1" y2="385.0" stroke="#f0f0f0"/>
+<text x="134.1" y="401.0" text-anchor="middle" fill="#444">0.60</text>
+<line x1="219.5" y1="40" x2="219.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="219.5" y="401.0" text-anchor="middle" fill="#444">0.80</text>
+<line x1="305.0" y1="40" x2="305.0" y2="385.0" stroke="#f0f0f0"/>
+<text x="305.0" y="401.0" text-anchor="middle" fill="#444">1</text>
+<line x1="390.5" y1="40" x2="390.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="390.5" y="401.0" text-anchor="middle" fill="#444">1.20</text>
+<line x1="475.9" y1="40" x2="475.9" y2="385.0" stroke="#f0f0f0"/>
+<text x="475.9" y="401.0" text-anchor="middle" fill="#444">1.40</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#333"/>
+<line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
+<text x="305.0" y="426.0" text-anchor="middle">liquidity held, as a multiple of each participant's UB</text>
+<text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">rejected value (% of gross value)</text>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,56.8 219.5,221.8 262.3,273.6 283.6,299.1 292.2,310.7 296.5,323.9 300.7,332.7 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="56.8" r="3.5" fill="#0072B2"/>
+<circle cx="219.5" cy="221.8" r="3.5" fill="#0072B2"/>
+<circle cx="262.3" cy="273.6" r="3.5" fill="#0072B2"/>
+<circle cx="283.6" cy="299.1" r="3.5" fill="#0072B2"/>
+<circle cx="292.2" cy="310.7" r="3.5" fill="#0072B2"/>
+<circle cx="296.5" cy="323.9" r="3.5" fill="#0072B2"/>
+<circle cx="300.7" cy="332.7" r="3.5" fill="#0072B2"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#0072B2"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#0072B2"/>
+<rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
+<text x="570.0" y="50.0">gross_real_time</text>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,56.6 219.5,221.9 262.3,273.6 283.6,299.1 292.2,310.7 296.5,324.0 300.7,333.0 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="56.6" r="3.5" fill="#D55E00"/>
+<circle cx="219.5" cy="221.9" r="3.5" fill="#D55E00"/>
+<circle cx="262.3" cy="273.6" r="3.5" fill="#D55E00"/>
+<circle cx="283.6" cy="299.1" r="3.5" fill="#D55E00"/>
+<circle cx="292.2" cy="310.7" r="3.5" fill="#D55E00"/>
+<circle cx="296.5" cy="324.0" r="3.5" fill="#D55E00"/>
+<circle cx="300.7" cy="333.0" r="3.5" fill="#D55E00"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#D55E00"/>
+<rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
+<text x="570.0" y="68.0">queue_bypass_d10000</text>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,56.4 219.5,221.9 262.3,273.6 283.6,299.2 292.2,310.7 296.5,324.0 300.7,333.0 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="56.4" r="3.5" fill="#009E73"/>
+<circle cx="219.5" cy="221.9" r="3.5" fill="#009E73"/>
+<circle cx="262.3" cy="273.6" r="3.5" fill="#009E73"/>
+<circle cx="283.6" cy="299.2" r="3.5" fill="#009E73"/>
+<circle cx="292.2" cy="310.7" r="3.5" fill="#009E73"/>
+<circle cx="296.5" cy="324.0" r="3.5" fill="#009E73"/>
+<circle cx="300.7" cy="333.0" r="3.5" fill="#009E73"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">micro_cycle_shortfall_w500_d10000</text>
+<polyline fill="none" stroke="#CC79A7" stroke-width="2" points="91.4,59.6 219.5,221.9 262.3,273.7 283.6,299.1 292.2,310.7 296.5,323.8 300.7,332.8 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="59.6" r="3.5" fill="#CC79A7"/>
+<circle cx="219.5" cy="221.9" r="3.5" fill="#CC79A7"/>
+<circle cx="262.3" cy="273.7" r="3.5" fill="#CC79A7"/>
+<circle cx="283.6" cy="299.1" r="3.5" fill="#CC79A7"/>
+<circle cx="292.2" cy="310.7" r="3.5" fill="#CC79A7"/>
+<circle cx="296.5" cy="323.8" r="3.5" fill="#CC79A7"/>
+<circle cx="300.7" cy="332.8" r="3.5" fill="#CC79A7"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#CC79A7"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#CC79A7"/>
+<rect x="552.0" y="94.0" width="12" height="12" fill="#CC79A7"/>
+<text x="570.0" y="104.0">micro_cycle_all_w500_d10000</text>
+<polyline fill="none" stroke="#E69F00" stroke-width="2" points="91.4,72.5 219.5,241.2 262.3,297.7 283.6,325.8 292.2,337.0 296.5,349.9 300.7,361.8 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="72.5" r="3.5" fill="#E69F00"/>
+<circle cx="219.5" cy="241.2" r="3.5" fill="#E69F00"/>
+<circle cx="262.3" cy="297.7" r="3.5" fill="#E69F00"/>
+<circle cx="283.6" cy="325.8" r="3.5" fill="#E69F00"/>
+<circle cx="292.2" cy="337.0" r="3.5" fill="#E69F00"/>
+<circle cx="296.5" cy="349.9" r="3.5" fill="#E69F00"/>
+<circle cx="300.7" cy="361.8" r="3.5" fill="#E69F00"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#E69F00"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#E69F00"/>
+<rect x="552.0" y="112.0" width="12" height="12" fill="#E69F00"/>
+<text x="570.0" y="122.0">queue_bypass_d3600000</text>
+<polyline fill="none" stroke="#56B4E9" stroke-width="2" points="91.4,82.2 219.5,242.7 262.3,300.6 283.6,327.0 292.2,339.7 296.5,354.0 300.7,363.6 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="82.2" r="3.5" fill="#56B4E9"/>
+<circle cx="219.5" cy="242.7" r="3.5" fill="#56B4E9"/>
+<circle cx="262.3" cy="300.6" r="3.5" fill="#56B4E9"/>
+<circle cx="283.6" cy="327.0" r="3.5" fill="#56B4E9"/>
+<circle cx="292.2" cy="339.7" r="3.5" fill="#56B4E9"/>
+<circle cx="296.5" cy="354.0" r="3.5" fill="#56B4E9"/>
+<circle cx="300.7" cy="363.6" r="3.5" fill="#56B4E9"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#56B4E9"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#56B4E9"/>
+<rect x="552.0" y="130.0" width="12" height="12" fill="#56B4E9"/>
+<text x="570.0" y="140.0">queue_fifo_d3600000</text>
+<polyline fill="none" stroke="#F0E442" stroke-width="2" points="91.4,80.1 219.5,242.5 262.3,298.2 283.6,325.6 292.2,337.1 296.5,349.9 300.7,361.8 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="80.1" r="3.5" fill="#F0E442"/>
+<circle cx="219.5" cy="242.5" r="3.5" fill="#F0E442"/>
+<circle cx="262.3" cy="298.2" r="3.5" fill="#F0E442"/>
+<circle cx="283.6" cy="325.6" r="3.5" fill="#F0E442"/>
+<circle cx="292.2" cy="337.1" r="3.5" fill="#F0E442"/>
+<circle cx="296.5" cy="349.9" r="3.5" fill="#F0E442"/>
+<circle cx="300.7" cy="361.8" r="3.5" fill="#F0E442"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#F0E442"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#F0E442"/>
+<rect x="552.0" y="148.0" width="12" height="12" fill="#F0E442"/>
+<text x="570.0" y="158.0">micro_cycle_shortfall_w1000_d3600000</text>
+<polyline fill="none" stroke="#000000" stroke-width="2" points="91.4,96.2 219.5,245.2 262.3,302.5 283.6,328.4 292.2,339.6 296.5,354.4 300.7,364.1 305.0,385.0 518.6,385.0"/>
+<circle cx="91.4" cy="96.2" r="3.5" fill="#000000"/>
+<circle cx="219.5" cy="245.2" r="3.5" fill="#000000"/>
+<circle cx="262.3" cy="302.5" r="3.5" fill="#000000"/>
+<circle cx="283.6" cy="328.4" r="3.5" fill="#000000"/>
+<circle cx="292.2" cy="339.6" r="3.5" fill="#000000"/>
+<circle cx="296.5" cy="354.4" r="3.5" fill="#000000"/>
+<circle cx="300.7" cy="364.1" r="3.5" fill="#000000"/>
+<circle cx="305.0" cy="385.0" r="3.5" fill="#000000"/>
+<circle cx="518.6" cy="385.0" r="3.5" fill="#000000"/>
+<rect x="552.0" y="166.0" width="12" height="12" fill="#000000"/>
+<text x="570.0" y="176.0">micro_cycle_shortfall_w1000_d3600000_fifo</text>
+</svg>
