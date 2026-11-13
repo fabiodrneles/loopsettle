@@ -392,7 +392,17 @@ impl ScenarioConfig {
             c.day_weights = w;
         }
         if let Some(path) = d.str("scenario.calibration") {
-            let t = crate::calibrate::Targets::load(path)?;
+            let mut t = crate::calibrate::Targets::load(path)?;
+            match d.str("scenario.amounts_fit") {
+                None | Some("percentiles") => {}
+                // the calibration before D30: tail count share = B2B count share
+                Some("mean") => t.percentiles = None,
+                Some(other) => {
+                    return Err(format!(
+                        "unknown amounts_fit '{other}' (use percentiles or mean)"
+                    ))
+                }
+            }
             crate::calibrate::apply(&mut c, &t);
         }
         // Explicit amount overrides win over calibration.

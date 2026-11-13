@@ -10,10 +10,10 @@
     "days": 1,
     "payments_per_day": 30000,
     "scale_factor": 7966.360437,
-    "body_median_brl": 84.57946,
-    "body_sigma": 1.4,
-    "tail_prob": 0.042962,
-    "tail_xm_brl": 1375.25637,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
     "tail_alpha": 1.3,
     "max_amount_brl": 5000000,
     "analytic_mean_ticket_brl": 449.8282,
@@ -30,170 +30,170 @@
     {
       "metric": "tight_bound_10s_pct_sigma0.4_lambda0",
       "seeds": 2,
-      "mean": 0.014761,
-      "ci95_low": -0.064524,
-      "ci95_high": 0.094046
+      "mean": 0.015707,
+      "ci95_low": -0.138554,
+      "ci95_high": 0.169969
     },
     {
       "metric": "netting_10s_saving_pct_sigma0.4_lambda0",
       "seeds": 2,
-      "mean": 0.003599,
-      "ci95_low": -0.026633,
-      "ci95_high": 0.033832
+      "mean": 0.006295,
+      "ci95_low": -0.07264,
+      "ci95_high": 0.08523
     },
     {
       "metric": "netting_daily_saving_pct_sigma0.4_lambda0",
       "seeds": 2,
-      "mean": 19.762417,
-      "ci95_low": -2.357177,
-      "ci95_high": 41.882011
+      "mean": 26.901399,
+      "ci95_low": -2.069579,
+      "ci95_high": 55.872376
     },
     {
       "metric": "lb_over_ub_sigma0.4_lambda0",
       "seeds": 2,
-      "mean": 0.802376,
-      "ci95_low": 0.58118,
-      "ci95_high": 1.023572
+      "mean": 0.730986,
+      "ci95_low": 0.441276,
+      "ci95_high": 1.020696
     },
     {
       "metric": "tight_bound_10s_pct_sigma0.4_lambda0.5",
       "seeds": 2,
-      "mean": 0.018196,
-      "ci95_low": -0.187498,
-      "ci95_high": 0.22389
+      "mean": 0.023498,
+      "ci95_low": -0.198149,
+      "ci95_high": 0.245145
     },
     {
       "metric": "netting_10s_saving_pct_sigma0.4_lambda0.5",
       "seeds": 2,
-      "mean": 0.011476,
-      "ci95_low": -0.108836,
-      "ci95_high": 0.131789
+      "mean": 0.015652,
+      "ci95_low": -0.106696,
+      "ci95_high": 0.138001
     },
     {
       "metric": "netting_daily_saving_pct_sigma0.4_lambda0.5",
       "seeds": 2,
-      "mean": 14.036305,
-      "ci95_low": 10.705075,
-      "ci95_high": 17.367534
+      "mean": 23.580773,
+      "ci95_low": -109.744018,
+      "ci95_high": 156.905564
     },
     {
       "metric": "lb_over_ub_sigma0.4_lambda0.5",
       "seeds": 2,
-      "mean": 0.859637,
-      "ci95_low": 0.826325,
-      "ci95_high": 0.892949
+      "mean": 0.764192,
+      "ci95_low": -0.569056,
+      "ci95_high": 2.09744
     },
     {
       "metric": "tight_bound_10s_pct_sigma0.4_lambda1",
       "seeds": 2,
-      "mean": 0.015971,
-      "ci95_low": -0.022432,
-      "ci95_high": 0.054374
+      "mean": 0.006656,
+      "ci95_low": -0.069798,
+      "ci95_high": 0.083109
     },
     {
       "metric": "netting_10s_saving_pct_sigma0.4_lambda1",
       "seeds": 2,
-      "mean": 0.004182,
-      "ci95_low": -0.012092,
-      "ci95_high": 0.020455
+      "mean": 0.005754,
+      "ci95_low": -0.067361,
+      "ci95_high": 0.07887
     },
     {
       "metric": "netting_daily_saving_pct_sigma0.4_lambda1",
       "seeds": 2,
-      "mean": 18.018512,
-      "ci95_low": -17.826699,
-      "ci95_high": 53.863722
+      "mean": 21.594266,
+      "ci95_low": -98.814088,
+      "ci95_high": 142.00262
     },
     {
       "metric": "lb_over_ub_sigma0.4_lambda1",
       "seeds": 2,
-      "mean": 0.819815,
-      "ci95_low": 0.461363,
-      "ci95_high": 1.178267
+      "mean": 0.784057,
+      "ci95_low": -0.420026,
+      "ci95_high": 1.988141
     },
     {
       "metric": "tight_bound_10s_pct_sigma1_lambda0",
       "seeds": 2,
-      "mean": 0.009551,
-      "ci95_low": -0.062232,
-      "ci95_high": 0.081334
+      "mean": 0.002861,
+      "ci95_low": -0.012089,
+      "ci95_high": 0.01781
     },
     {
       "metric": "netting_10s_saving_pct_sigma1_lambda0",
       "seeds": 2,
-      "mean": 0.00859,
-      "ci95_low": -0.075396,
-      "ci95_high": 0.092577
+      "mean": 0.002167,
+      "ci95_low": -0.021495,
+      "ci95_high": 0.02583
     },
     {
       "metric": "netting_daily_saving_pct_sigma1_lambda0",
       "seeds": 2,
-      "mean": 9.938633,
-      "ci95_low": 0.437595,
-      "ci95_high": 19.439671
+      "mean": 9.892691,
+      "ci95_low": -8.400721,
+      "ci95_high": 28.186104
     },
     {
       "metric": "lb_over_ub_sigma1_lambda0",
       "seeds": 2,
-      "mean": 0.900614,
-      "ci95_low": 0.805603,
-      "ci95_high": 0.995624
+      "mean": 0.901073,
+      "ci95_low": 0.718139,
+      "ci95_high": 1.084007
     },
     {
       "metric": "tight_bound_10s_pct_sigma1_lambda0.5",
       "seeds": 2,
-      "mean": 0.00656,
-      "ci95_low": -0.06285,
-      "ci95_high": 0.075971
+      "mean": 0.001922,
+      "ci95_low": -0.009158,
+      "ci95_high": 0.013001
     },
     {
       "metric": "netting_10s_saving_pct_sigma1_lambda0.5",
       "seeds": 2,
-      "mean": 0.000374,
-      "ci95_low": -0.004374,
-      "ci95_high": 0.005121
+      "mean": 0.000281,
+      "ci95_low": -0.00088,
+      "ci95_high": 0.001441
     },
     {
       "metric": "netting_daily_saving_pct_sigma1_lambda0.5",
       "seeds": 2,
-      "mean": 6.939074,
-      "ci95_low": -5.563363,
-      "ci95_high": 19.44151
+      "mean": 16.192993,
+      "ci95_low": -101.002191,
+      "ci95_high": 133.388177
     },
     {
       "metric": "lb_over_ub_sigma1_lambda0.5",
       "seeds": 2,
-      "mean": 0.930609,
-      "ci95_low": 0.805585,
-      "ci95_high": 1.055634
+      "mean": 0.83807,
+      "ci95_low": -0.333882,
+      "ci95_high": 2.010022
     },
     {
       "metric": "tight_bound_10s_pct_sigma1_lambda1",
       "seeds": 2,
-      "mean": 0.013304,
-      "ci95_low": -0.127597,
-      "ci95_high": 0.154205
+      "mean": 0.002878,
+      "ci95_low": -0.023971,
+      "ci95_high": 0.029726
     },
     {
       "metric": "netting_10s_saving_pct_sigma1_lambda1",
       "seeds": 2,
-      "mean": 0.007087,
-      "ci95_low": -0.062754,
-      "ci95_high": 0.076928
+      "mean": 0.000115,
+      "ci95_low": -0.000215,
+      "ci95_high": 0.000446
     },
     {
       "metric": "netting_daily_saving_pct_sigma1_lambda1",
       "seeds": 2,
-      "mean": 7.242925,
-      "ci95_low": -24.533199,
-      "ci95_high": 39.019049
+      "mean": 15.611895,
+      "ci95_low": -102.472208,
+      "ci95_high": 133.695997
     },
     {
       "metric": "lb_over_ub_sigma1_lambda1",
       "seeds": 2,
-      "mean": 0.927571,
-      "ci95_low": 0.60981,
-      "ci95_high": 1.245332
+      "mean": 0.843881,
+      "ci95_low": -0.33696,
+      "ci95_high": 2.024722
     }
   ]
 }

@@ -1,13 +1,13 @@
 variant,engine,seeds,saving_pct_mean,saving_pct_ci95_low,saving_pct_ci95_high,tight_bound_pct_mean,tight_bound_pct_ci95_low,tight_bound_pct_ci95_high
-as in the sweep (same amount; base bias and scale),micro:all:500:10000,3,5.063188,-9.408402,19.534779,5.181187,-9.646421,20.008796
-as in the sweep (same amount; base bias and scale),deferred:8640,3,5.100273,-9.829403,20.029949,5.181187,-9.646421,20.008796
-echo passes on half of the amount,micro:all:500:10000,3,2.411121,-6.310163,11.132405,2.522902,-6.448667,11.494471
-echo passes on half of the amount,deferred:8640,3,2.478622,-6.558062,11.515305,2.522902,-6.448667,11.494471
-echo passes on a quarter of the amount,micro:all:500:10000,3,0.984117,-2.693717,4.661952,1.02371,-2.582482,4.629903
-echo passes on a quarter of the amount,deferred:8640,3,0.988885,-2.681198,4.658967,1.02371,-2.582482,4.629903
-calibrated receiver bias (sigma 1.0),micro:all:500:10000,3,4.329699,-8.289185,16.948583,4.344456,-8.278657,16.967569
-calibrated receiver bias (sigma 1.0),deferred:8640,3,4.2037,-8.281607,16.689008,4.344456,-8.278657,16.967569
-3x the payments,micro:all:500:10000,3,3.352619,-1.214079,7.919318,3.448699,-1.345805,8.243203
-3x the payments,deferred:8640,3,3.385054,-1.434074,8.204182,3.448699,-1.345805,8.243203
-10x the payments,micro:all:500:10000,3,5.899869,-9.330722,21.130459,6.303882,-8.05646,20.664225
-10x the payments,deferred:8640,3,6.159146,-8.504757,20.823049,6.303882,-8.05646,20.664225
+as in the sweep (same amount; base bias and scale),micro:all:500:10000,3,11.17835,-1.161292,23.517991,11.180711,-1.160037,23.52146
+as in the sweep (same amount; base bias and scale),deferred:8640,3,9.42157,2.809805,16.033335,11.180711,-1.160037,23.52146
+echo passes on half of the amount,micro:all:500:10000,3,4.643832,-1.483924,10.771588,4.645404,-1.483778,10.774587
+echo passes on half of the amount,deferred:8640,3,3.719827,-0.367139,7.806794,4.645404,-1.483778,10.774587
+echo passes on a quarter of the amount,micro:all:500:10000,3,1.965607,-0.160969,4.092184,1.968118,-0.160274,4.09651
+echo passes on a quarter of the amount,deferred:8640,3,1.455521,-0.426331,3.337372,1.968118,-0.160274,4.09651
+calibrated receiver bias (sigma 1.0),micro:all:500:10000,3,7.184438,-5.507822,19.876698,7.2109,-5.410169,19.831969
+calibrated receiver bias (sigma 1.0),deferred:8640,3,5.985122,-1.567283,13.537527,7.2109,-5.410169,19.831969
+3x the payments,micro:all:500:10000,3,4.324933,-0.45145,9.101316,9.481104,0.835906,18.126301
+3x the payments,deferred:8640,3,8.864981,-1.779351,19.509313,9.481104,0.835906,18.126301
+10x the payments,micro:all:500:10000,3,6.305332,2.633672,9.976991,9.350237,-5.272351,23.972825
+10x the payments,deferred:8640,3,9.257551,-5.331151,23.846254,9.350237,-5.272351,23.972825
