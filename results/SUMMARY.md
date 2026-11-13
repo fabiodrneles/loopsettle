@@ -854,7 +854,7 @@ The tables of the earlier sections for these experiments describe one seed and s
 | funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.027931 [0.016851; 0.03901] | 0.009182–0.058955 |
 
 ## 17. Replication of the Bank of Finland design (Koponen & Soramäki 1998; Bech & Soramäki 2001)
-_seed `20260930`, code `0.2.0+git.5abb74e-dirty`, command `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
+_seed `20260930`, code `0.2.0+git.43bcc8b`, command `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
 
 Each participant holds LB + level × (UB − LB) (1998 equation 4); payments wait in the queue until the end of the day; ρ = delay (eq. 5), π = liquidity usage (eq. 6). Reference queue: FIFO per payer, retried every 1 s. The netting designs (1998 complete, 2001 prefix, micro-cycles) use the same retry. Means over 10 seeds. Δρ = paired difference with the plain queue.
 

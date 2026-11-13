@@ -854,7 +854,7 @@ As tabelas das seções anteriores destes experimentos descrevem uma semente e f
 | funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.027931 [0.016851; 0.03901] | 0.009182–0.058955 |
 
 ## 17. Replicação do desenho do Banco da Finlândia (Koponen & Soramäki 1998; Bech & Soramäki 2001)
-_seed `20260930`, código `0.2.0+git.5abb74e-dirty`, comando `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
+_seed `20260930`, código `0.2.0+git.43bcc8b`, comando `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
 
 Cada participante tem LB + nível × (UB − LB) (equação 4 de 1998); pagamentos esperam na fila até o fim do dia; ρ = atraso (eq. 5), π = uso de liquidez (eq. 6). Fila de referência: FIFO por pagador, nova tentativa a cada 1 s. As compensações (completa de 1998, prefixo de 2001, micro-ciclos) usam a mesma nova tentativa. Médias de 10 sementes. Δρ = diferença pareada com a fila simples.
 

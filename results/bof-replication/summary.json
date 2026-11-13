@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "bof-replication",
   "seed": 20260930,
-  "code_version": "0.2.0+git.5abb74e-dirty",
+  "code_version": "0.2.0+git.43bcc8b",
   "config_file": "experiments/bof-replication.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment bof-replication",
   "platform": "x86_64-linux",
