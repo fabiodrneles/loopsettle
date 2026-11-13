@@ -6,7 +6,9 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
   <img alt="Rust" src="https://img.shields.io/badge/core-Rust-b7410e.svg">
   <img alt="WebAssembly" src="https://img.shields.io/badge/browser-WebAssembly-654ff0.svg">
-  <img alt="Reproducible" src="https://img.shields.io/badge/results-bit--for--bit%20reproducible-2ea44f.svg">
+  <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-blue.svg">
+  <a href="https://github.com/fabiodrneles/loopsettle/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/fabiodrneles/loopsettle/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="Reproducible" src="https://img.shields.io/badge/results-bit--for--bit%20on%20Linux%20%7C%20Windows%20%7C%20macOS-2ea44f.svg">
   <img alt="Property tests" src="https://img.shields.io/badge/invariants-8%20property%20tests-2ea44f.svg">
   <img alt="Data" src="https://img.shields.io/badge/data-public%20%2B%20synthetic-555.svg">
   <img alt="Docs" src="https://img.shields.io/badge/docs-PT%20%7C%20EN-555.svg">
@@ -19,6 +21,7 @@
 
 <p align="center">
   <b><a href="#português">Português</a></b> ·
+  <a href="#o-que-há-de-novo-na-versão-020">Novidades 0.2.0</a> ·
   <a href="results/SUMMARY.pt-BR.md">Resultados</a> ·
   <a href="#instalação-do-zero">Instalação</a> ·
   <a href="docs/METHODOLOGY.pt-BR.md">Metodologia</a> ·
@@ -26,6 +29,7 @@
   <a href="docs/REFERENCES.pt-BR.md">Referências</a>
   <br>
   <b><a href="#english">English</a></b> ·
+  <a href="#whats-new-in-version-020">What's new in 0.2.0</a> ·
   <a href="results/SUMMARY.md">Results</a> ·
   <a href="#installation-from-scratch">Installation</a> ·
   <a href="docs/METHODOLOGY.md">Methodology</a> ·
@@ -50,6 +54,69 @@ transferência. Parte desse dinheiro só "dá voltas" (A paga B, B paga C, C pag
 mede quanto é essa parte,
 quanto dela daria para compensar e, principalmente, **quanto dessa compensação vira liquidez
 economizada de verdade** quando se respeita a ordem em que os pagamentos acontecem.
+
+### O que há de novo na versão 0.2.0
+
+A versão 0.2.0 ([CHANGELOG](CHANGELOG.md)) executou o roteiro de [`specs/`](specs/README.md): uma
+auditoria do código e dez especificações. O que mudou, em resumo:
+
+**Resultados novos**
+
+- **Piso de liquidez: um teto apertado e atingível.** Para um prazo *d*, o piso de cada
+  participante é o maior valor de "tudo o que pagou até um instante, menos tudo o que recebeu até
+  *d* depois". Nenhum mecanismo com esse prazo precisa de menos liquidez, e um participante
+  sozinho atinge exatamente o piso. Para 10 s, o teto de economia cai de 0,76% (forma antiga) para
+  0,041% [0,025; 0,056] do UB, e compensar a cada 10 s obtém 48% dele
+  ([metodologia §9b](docs/METHODOLOGY.pt-BR.md#9-o-limite-de-atraso)).
+- **O piso é, na prática, o ótimo do sistema.** Um otimizador que conhece o futuro e pode liquidar
+  lotes arbitrários (programa linear, usado só como oráculo de teste) precisa exatamente da soma
+  dos pisos em 116 de 120 instâncias densas; os motores obtêm 44–61% desse ótimo
+  (`results/optimality-gap/`).
+- **A afirmação central virou condicional.** Um critério de morte fixado antes do teste disparou:
+  se uma parcela relevante dos pagamentos volta direto para quem pagou em segundos, compensar em
+  segundos passa a economizar liquidez (`results/echo-sweep/`, `results/echo-scale/`). O efeito
+  cai com o volume (expoente −0,52).
+- **Liquidez restrita, com serviço igual.** Com saldos fixos, desenhos de 10 s não reduzem o valor
+  rejeitado; filas de até 1 hora economizam 1,1–1,4% da liquidez no varejo calibrado e 3,7–5,3% num
+  sistema de alto valor estilizado (`results/liquidity-frontier/`).
+- **Valor que circula × liquidez recuperável.** Em janelas de 10 s, 25% do valor poderia ser
+  cancelado, mas só 0,006% do valor é liquidez recuperável: cerca de 4.300 para 1
+  (`results/circularity-horizon/`).
+
+**Motores e modelo**
+
+- Motores novos: fila FIFO (`queue`), espera fixa (`hold`), resolução de gridlock multilateral no
+  estilo Bech-Soramäki (`gridlock`) e compensação só bilateral (`bilateral`).
+- Camada de abastecimento: aportes vindos das reservas, pré-financiamento das janelas com o STR
+  fechado e linhas de crédito intradiário (`funding-windows/prefunding.csv`).
+- Pagamentos "em eco" no gerador (respostas a recebimentos), desligados por padrão.
+- Topologia: CDFD proporcional (BFF, do artigo da CDFD), circulação máxima cerca de 750 vezes mais
+  rápida (1 milhão de arestas em 8 s) e valores nulos ao lado de cada medida.
+
+**Confiabilidade**
+
+- Defeitos corrigidos nos motores, cada um com um teste que falhava antes; a meta de 2,8 s passou a
+  ser contada de forma exata.
+- Resultados idênticos byte a byte em Linux, Windows e macOS, conferidos no CI a cada envio, com
+  qualquer número de threads; nenhum número muda sem um commit que o assuma (`results-golden/`).
+- Dez sementes com intervalo de confiança em todos os experimentos; testes metamórficos; leitores
+  de arquivo testados contra entradas de lixo; código formatado e com lint no CI.
+- Duas afirmações antigas foram corrigidas porque os resultados novos as contradisseram
+  ([`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md)).
+
+**Dados reais e interface**
+
+- `loopsettle bound/settle --report` gera um relatório para compartilhar, só com agregados; a saída
+  por participante é anônima por padrão.
+- `loopsettle sort` ordena arquivos maiores que a memória (50 milhões de linhas em 39 s, 105 MiB);
+  uma coluna `status` opcional deixa de fora os pagamentos não liquidados.
+- A interface mostra a curva do piso de liquidez e analisa um arquivo seu **no próprio navegador**,
+  sem enviar nada.
+- Exemplo para pesquisadores: [`custom_engine`](crates/loopsettle-sim/examples/custom_engine.rs)
+  mostra como testar o seu próprio mecanismo contra o piso.
+
+O detalhe de cada ponto, com os riscos, está nos pontos 79 a 95 de
+[`REVIEW.pt-BR.md`](REVIEW.pt-BR.md).
 
 ### O problema
 
@@ -88,10 +155,18 @@ No cenário sintético calibrado com dados públicos do Pix (200 participantes; 
 - **Micro-ciclos atômicos de até 10 s liquidam até 63% do valor dentro de ciclos, mas
   economizam cerca de 0,01% da liquidez** (0,0116%, IC 95% [0,008; 0,015]%), qualquer que seja
   o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
-- **Há um teto demonstrável:** nenhum mecanismo que segure cada pagamento por no máximo *d*
-  consegue economizar mais do que o valor pago nos *d* segundos antes do pico de cada
-  participante. Para 10 s, esse teto vai de 0,06% a 3,3% da liquidez nas configurações testadas
-  (até 1,5% com a estrutura calibrada ao WP 619), e a economia obtida nunca passa de 0,02%.
+- **Isso depende de como os pagamentos se respondem no tempo.** Se 20% dos pagamentos forem
+  devolvidos direto a quem pagou em cerca de um segundo, compensar a cada 10 s passa a economizar
+  3,9% da liquidez (teto de 4,2%); se a resposta seguir adiante para terceiros, nada muda
+  (`results/echo-sweep/`). O efeito encolhe com o volume (teto de 4,2%, 2,1% e 1,2% com 1, 3 e 10
+  milhões de pagamentos por dia). Quanto disso existe no Pix real, os dados públicos não dizem.
+- **Há um teto demonstrável:** um mecanismo que segura cada pagamento por no máximo *d* nunca
+  precisa de menos liquidez do que o **piso de liquidez** de cada participante: o maior valor de
+  "tudo o que ele pagou até um instante, menos tudo o que recebeu até *d* depois". Para 10 s, em
+  10 sementes, esse teto de economia vai de 0,014% da liquidez (estrutura calibrada ao WP 619) a
+  0,14% (sem viés recebedor), e a compensação a cada 10 s obtém de 38% a 46% dele. Uma forma
+  mais simples e mais folgada do mesmo limite (o valor pago nos *d* segundos antes do pico) dá
+  0,7% a 3,3%.
 - Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
   com 1 milhão de pagamentos), **mas esse "potencial" encolhe com o volume**. Com a estrutura
   bilateral calibrada em dados reais do Pix (BCB WP 619) e 30 milhões de pagamentos por dia, uma
@@ -588,8 +663,9 @@ Nos exemplos abaixo, `loopsettle` significa um desses dois jeitos.
 | `loopsettle list` | lista os experimentos e o que cada um responde | terminal |
 | `loopsettle experiment <nome>` | roda um experimento com a semente fixa do seu TOML | `results/<nome>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <nome> --quick` | o mesmo com 10× menos pagamentos, para conferir rápido; **não** use para números publicados | `results/<nome>/` |
-| `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
-| `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
+| `loopsettle sort <entrada.csv> <saída.csv> [--block-rows 1000000]` | ordena um arquivo de pagamentos pelo horário, em blocos no disco (arquivos maiores que a memória) | o arquivo ordenado |
+| `loopsettle bound <arquivo.csv> [--delays 1,10,60] [--out PASTA] [--report] [--per-participant]` | UB, LB e o teto de economia de qualquer mecanismo com atraso máximo d (segundos) nos seus pagamentos | `loopsettle-out/<arquivo>/` |
+| `loopsettle settle <arquivo.csv> [--engines ...] [--delays ...] [--out PASTA] [--report] [--per-participant]` | o mesmo, mais a liquidação em cada desenho | `loopsettle-out/<arquivo>/` |
 | `loopsettle export <experimento> <saida.csv> [--payments N] [--participants N]` | grava os pagamentos sintéticos de um cenário num CSV no formato que `bound`/`settle` leem | o CSV |
 | `loopsettle topology <transferencias.csv>` | escada de circularidade (Hodge, CDFD, ciclos) de qualquer lista `from,to,amount` | `results/topology-<arquivo>/` |
 | `python3 -I scripts/summarize.py` | gera os resumos a partir de `results/` | `results/SUMMARY.md` e `SUMMARY.pt-BR.md` |
@@ -655,11 +731,16 @@ os dados saiam da máquina: o arquivo é lido em streaming e a saída tem só ag
 ```bash
 cargo run --release -p loopsettle-cli -- bound  pagamentos.csv   # UB, LB e o teto de qualquer mecanismo com atraso d
 cargo run --release -p loopsettle-cli -- settle pagamentos.csv   # + economia de cada desenho (bruto, micro-ciclos, compensação)
+cargo run --release -p loopsettle-cli -- bound  pagamentos.csv --report   # + relatório para compartilhar (report.md, report.pt-BR.md)
+cargo run --release -p loopsettle-cli -- sort   bruto.csv pagamentos.csv  # ordena por horário arquivos maiores que a memória
 ```
 
 O arquivo é um CSV com as colunas `time` (segundos, `HH:MM:SS` ou `t_ms` em milissegundos),
 `from`, `to` e `amount` (em unidades da moeda, convertidas em centavos sem ponto flutuante),
-ordenado pelo horário. Para testar sem dados reais: `loopsettle export baseline exemplo.csv`, ou o
+ordenado pelo horário (ou ordenado antes com `loopsettle sort`). Uma coluna `status` opcional deixa
+de fora os pagamentos não liquidados. A saída por participante (`--per-participant`) é anônima por
+padrão. Também dá para analisar um arquivo **na interface web, sem enviá-lo**: o painel "Analisar
+o seu arquivo de pagamentos" roda tudo no navegador. Para testar sem dados reais: `loopsettle export baseline exemplo.csv`, ou o
 arquivo pronto [`data/samples/payments_example.csv`](data/samples/payments_example.csv). Detalhes em
 [`data/README.md`](data/README.md#português).
 
@@ -681,6 +762,12 @@ Cada número publicado vem de um comando com semente fixa. Rodar de novo reprodu
 | `heterogeneity` | e se cada tipo de banco tiver seu próprio perfil ao longo do dia? | `results/heterogeneity/` |
 | `funding-windows` | quanto é preciso pré-financiar para as noites e o fim de semana, com o STR fechado? | `results/funding-windows/` |
 | `regimes` | o teto muda entre varejo e sistemas de alto valor? | `results/regimes/` |
+| `echo-sweep` | o resultado sobrevive a pagamentos que respondem a recebimentos em segundos? | `results/echo-sweep/` |
+| *(exemplo)* `cargo run --release -p loopsettle-sim --example custom_engine` | como testar o seu próprio mecanismo de liquidação contra o piso de liquidez | saída no terminal |
+| `circularity-horizon` | quanto valor circula numa janela e quanta liquidez dá para recuperar com esse prazo? | `results/circularity-horizon/` |
+| `echo-scale` | o efeito das devoluções rápidas cai com o volume? | `results/echo-scale/` |
+| `liquidity-frontier` | com a liquidez que os participantes têm, quanto é rejeitado ou atrasa em cada desenho? | `results/liquidity-frontier/` |
+| *(exemplo)* `cargo run --release -p loopsettle-sim --example optimality_gap` | o piso de liquidez é o ótimo do sistema inteiro? | `results/optimality-gap/` |
 
 **Oito invariantes testadas por propriedades** (`proptest`, milhares de casos aleatórios a cada
 execução): conservação do dinheiro; preservação da posição líquida de cada participante;
@@ -692,9 +779,9 @@ Hodge; determinismo total; e o caso fixo do triângulo.
 
 | Componente | Conteúdo |
 |---|---|
-| [`loopsettle-core`](crates/loopsettle-core) | ledger em centavos (`i64`, nunca ponto flutuante), motores de liquidação, métricas em streaming |
-| [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (gradiente conjugado implementado à mão), CDFD exata, netting por ciclos |
-| [`loopsettle-sim`](crates/loopsettle-sim) | gerador sintético calibrado, em streaming |
+| [`loopsettle-core`](crates/loopsettle-core) | ledger em centavos (`i64`, nunca ponto flutuante), motores de liquidação (bruto, compensação diferida, micro-ciclos, fila, espera fixa, gridlock), camada de abastecimento, métricas em streaming |
+| [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (gradiente conjugado implementado à mão), CDFD máxima exata (fluxo de custo mínimo primal-dual) e proporcional (BFF), netting por ciclos, valores nulos |
+| [`loopsettle-sim`](crates/loopsettle-sim) | gerador sintético calibrado, em streaming; leitura de arquivos reais; piso de liquidez e demais limites |
 | [`loopsettle-cli`](crates/loopsettle-cli) | experimentos reprodutíveis, saída em CSV, JSON e SVG |
 | [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | interface Vite + React + Canvas 2D, simulação num Web Worker, português e inglês |
 | [`data/`](data) | download dos agregados públicos do Pix (API Olinda do BCB) |
@@ -768,7 +855,7 @@ os PDFs estão em [`docs/references/`](docs/references/README.pt-BR.md).
 @software{dorneles_loopsettle,
   author  = {Dorneles, Fabio D.},
   title   = {LoopSettle: an open simulator of circular liquidity in instant payment systems},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/fabiodrneles/loopsettle},
   license = {Apache-2.0}
 }
@@ -801,6 +888,68 @@ NPP (Australia) — every bank must hold cash before every transfer. Part of tha
 around in loops (A pays B, B pays C, C pays A). LoopSettle measures how large that part is, how much of
 it could be netted and, above all, **how much of that netting turns into liquidity actually
 saved** once the order in which payments arrive is respected.
+
+### What's new in version 0.2.0
+
+Version 0.2.0 ([CHANGELOG](CHANGELOG.md)) carried out the roadmap in [`specs/`](specs/README.md): an
+audit of the code and ten specifications. What changed, in short:
+
+**New results**
+
+- **The liquidity floor: a tight, attainable ceiling.** For a deadline *d*, each participant's
+  floor is the largest value of "everything it has paid by some instant, minus everything it has
+  received by *d* later". No mechanism with that deadline needs less liquidity, and one
+  participant alone attains the floor exactly. For 10 s the ceiling on the saving falls from 0.76%
+  (old form) to 0.041% [0.025; 0.056] of UB, and netting every 10 s realises 48% of it
+  ([methodology §9b](docs/METHODOLOGY.md#9-the-delay-bound)).
+- **The floor is, in practice, the system optimum.** An optimiser that knows the future and may
+  settle arbitrary batches (a linear programme, used only as a test oracle) needs exactly the sum
+  of the floors in 116 of 120 dense instances; the engines realise 44–61% of that optimum
+  (`results/optimality-gap/`).
+- **The central claim is now conditional.** A kill criterion fixed before the test fired: if a
+  sizeable share of payments goes straight back to the payer within seconds, second-scale netting
+  does save liquidity (`results/echo-sweep/`, `results/echo-scale/`). The effect falls with volume
+  (exponent −0.52).
+- **Constrained liquidity, at equal service.** With fixed balances, 10 s designs do not reduce the
+  value rejected; queues of up to one hour save 1.1–1.4% of liquidity in calibrated retail and
+  3.7–5.3% in a stylised large-value system (`results/liquidity-frontier/`).
+- **Value that circulates vs liquidity that can be recovered.** Within 10 s windows, 25% of the
+  value could be cancelled, but only 0.006% of the value is recoverable liquidity: about 4,300 to 1
+  (`results/circularity-horizon/`).
+
+**Engines and model**
+
+- New engines: FIFO queue (`queue`), fixed hold (`hold`), Bech-Soramäki-style multilateral gridlock
+  resolution (`gridlock`) and bilateral-only offsetting (`bilateral`).
+- A funding layer: top-ups from reserves, prefunding of the windows when STR is closed, and
+  intraday credit lines (`funding-windows/prefunding.csv`).
+- "Echo" payments in the generator (responses to receipts), off by default.
+- Topology: proportional CDFD (BFF, from the CDFD paper), maximum circulation about 750 times
+  faster (1 million edges in 8 s), and null values next to every measure.
+
+**Reliability**
+
+- Engine defects fixed, each with a test that failed before; the 2.8 s target is now counted
+  exactly.
+- Results byte-identical on Linux, Windows and macOS, checked in CI on every push, with any number
+  of threads; no number changes without a commit that owns it (`results-golden/`).
+- Ten seeds with confidence intervals in every experiment; metamorphic tests; file readers tested
+  against garbage input; formatting and lints checked in CI.
+- Two earlier claims were corrected because the new results contradicted them
+  ([`docs/CLAIMS.md`](docs/CLAIMS.md)).
+
+**Real data and interface**
+
+- `loopsettle bound/settle --report` writes a report to share, with aggregates only;
+  per-participant output is anonymised by default.
+- `loopsettle sort` sorts files larger than memory (50 million rows in 39 s, 105 MiB); an optional
+  `status` column leaves out payments that did not settle.
+- The interface shows the liquidity floor curve and analyses your own file **in the browser**,
+  without uploading anything.
+- An example for researchers: [`custom_engine`](crates/loopsettle-sim/examples/custom_engine.rs)
+  shows how to test your own mechanism against the floor.
+
+Each point, with its risks, is in points 79 to 95 of [`REVIEW.md`](REVIEW.md).
 
 ### The problem
 
@@ -837,10 +986,18 @@ million payments per day):
 - **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save about
   0.01% of liquidity** (0.0116%, 95% CI [0.008; 0.015]%), whatever the maximum cycle length,
   and the saving goes to zero as volume grows.
-- **There is a provable ceiling:** no mechanism that holds each payment for at most *d* can save
-  more than the value paid in the *d* seconds before each participant's peak. For 10 s that
-  ceiling ranges from 0.06% to 3.3% of the liquidity across the configurations tested (at most
-  1.5% with the structure calibrated to WP 619), and the realised saving never exceeds 0.02%.
+- **This depends on how payments respond to each other in time.** If 20% of payments are returned
+  straight to the payer within about a second, netting every 10 s saves 3.9% of liquidity (ceiling
+  4.2%); if the response goes onwards to third parties, nothing changes (`results/echo-sweep/`).
+  The effect shrinks with volume (ceiling 4.2%, 2.1% and 1.2% at 1, 3 and 10 million payments a day).
+  How much of this exists in real Pix is not known from public data.
+- **There is a provable ceiling:** a mechanism that holds each payment for at most *d* never
+  needs less liquidity than each participant's **liquidity floor**: the largest value of
+  "everything it has paid by some instant, minus everything it has received by *d* later". For
+  10 s, over 10 seeds, that ceiling on the saving ranges from 0.014% of the liquidity (structure
+  calibrated to WP 619) to 0.14% (no receiver bias), and netting every 10 s realises 38% to 46%
+  of it. A simpler, looser form of the same bound (the value paid in the *d* seconds before the
+  peak) gives 0.7% to 3.3%.
 - Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
   payments), **but that "potential" shrinks with volume**. With the bilateral structure calibrated
   to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between
@@ -1334,8 +1491,9 @@ In the examples below, `loopsettle` means either form.
 | `loopsettle list` | lists the experiments and the question each answers | terminal |
 | `loopsettle experiment <name>` | runs an experiment with the fixed seed in its TOML | `results/<name>/` (CSV, `summary.json`, `run.json`, SVG) |
 | `loopsettle experiment <name> --quick` | the same with 10× fewer payments, for a quick check; **not** for published numbers | `results/<name>/` |
-| `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
-| `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
+| `loopsettle sort <in.csv> <out.csv> [--block-rows 1000000]` | sorts a payment file by time, in blocks on disk (files larger than memory) | the sorted file |
+| `loopsettle bound <file.csv> [--delays 1,10,60] [--out DIR] [--report] [--per-participant]` | UB, LB and the saving ceiling of any mechanism with maximum delay d (seconds) on your payments | `loopsettle-out/<file>/` |
+| `loopsettle settle <file.csv> [--engines ...] [--delays ...] [--out DIR] [--report] [--per-participant]` | the same, plus settlement under each design | `loopsettle-out/<file>/` |
 | `loopsettle export <experiment> <out.csv> [--payments N] [--participants N]` | writes a scenario's synthetic payments to a CSV in the format `bound`/`settle` read | the CSV |
 | `loopsettle topology <transfers.csv>` | circularity ladder (Hodge, CDFD, cycles) of any `from,to,amount` list | `results/topology-<file>/` |
 | `python3 -I scripts/summarize.py` | builds the summaries from `results/` | `results/SUMMARY.md` and `SUMMARY.pt-BR.md` |
@@ -1400,11 +1558,16 @@ leaving the machine: the file is streamed and the output contains aggregates onl
 ```bash
 cargo run --release -p loopsettle-cli -- bound  payments.csv   # UB, LB and the ceiling for any mechanism with delay d
 cargo run --release -p loopsettle-cli -- settle payments.csv   # + the saving of each design (gross, micro-cycles, netting)
+cargo run --release -p loopsettle-cli -- bound  payments.csv --report   # + a report to share (report.md, report.pt-BR.md)
+cargo run --release -p loopsettle-cli -- sort   raw.csv payments.csv    # sorts files larger than memory by time
 ```
 
 The file is a CSV with columns `time` (seconds, `HH:MM:SS`, or `t_ms` in milliseconds), `from`,
-`to` and `amount` (in currency units, converted to cents without floating point), sorted by time.
-To try it without real data: `loopsettle export baseline example.csv`, or the ready-made
+`to` and `amount` (in currency units, converted to cents without floating point), sorted by time
+(or sorted first with `loopsettle sort`). An optional `status` column leaves out payments that did
+not settle. Per-participant output (`--per-participant`) is anonymised by default. You can also
+analyse a file **in the web interface without uploading it**: the "Analyse your own payment file"
+panel runs entirely in the browser. To try it without real data: `loopsettle export baseline example.csv`, or the ready-made
 [`data/samples/payments_example.csv`](data/samples/payments_example.csv). Details in
 [`data/README.md`](data/README.md#english).
 
@@ -1426,6 +1589,12 @@ Every published number comes from a command with a fixed seed. Re-running reprod
 | `heterogeneity` | what if each type of bank has its own intraday profile? | `results/heterogeneity/` |
 | `funding-windows` | how much must be prefunded for nights and the weekend, with the STR closed? | `results/funding-windows/` |
 | `regimes` | does the ceiling differ between retail and large-value systems? | `results/regimes/` |
+| `echo-sweep` | does the result survive payments that respond to receipts within seconds? | `results/echo-sweep/` |
+| *(example)* `cargo run --release -p loopsettle-sim --example custom_engine` | how to test your own settlement mechanism against the liquidity floor | terminal output |
+| `circularity-horizon` | how much value circulates in a window, and how much liquidity can be recovered with that deadline? | `results/circularity-horizon/` |
+| `echo-scale` | does the effect of fast returns fall with volume? | `results/echo-scale/` |
+| `liquidity-frontier` | with the liquidity participants hold, how much is rejected or delayed under each design? | `results/liquidity-frontier/` |
+| *(example)* `cargo run --release -p loopsettle-sim --example optimality_gap` | is the liquidity floor the optimum of the whole system? | `results/optimality-gap/` |
 
 **Eight invariants checked by property tests** (`proptest`, thousands of random cases on every
 run): conservation of money; each participant's net position preserved; no negative balances;
@@ -1436,9 +1605,9 @@ smallest payment; Hodge consistency; full determinism; and the fixed triangle ca
 
 | Component | Contents |
 |---|---|
-| [`loopsettle-core`](crates/loopsettle-core) | ledger in cents (`i64`, never floating point), settlement engines, streaming metrics |
-| [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (hand-written conjugate gradient), exact CDFD, cycle netting |
-| [`loopsettle-sim`](crates/loopsettle-sim) | calibrated streaming synthetic generator |
+| [`loopsettle-core`](crates/loopsettle-core) | ledger in cents (`i64`, never floating point), settlement engines (gross, deferred netting, micro-cycles, queue, fixed hold, gridlock), funding layer, streaming metrics |
+| [`loopsettle-topology`](crates/loopsettle-topology) | Hodge (hand-written conjugate gradient), exact maximum CDFD (primal-dual min-cost flow) and proportional CDFD (BFF), cycle netting, null values |
+| [`loopsettle-sim`](crates/loopsettle-sim) | calibrated streaming synthetic generator; real payment files; the liquidity floor and the other bounds |
 | [`loopsettle-cli`](crates/loopsettle-cli) | reproducible experiments, CSV/JSON/SVG output |
 | [`loopsettle-wasm`](crates/loopsettle-wasm) + [`web/`](web) | Vite + React + Canvas 2D UI, simulation in a Web Worker, Portuguese and English |
 | [`data/`](data) | download of public Pix aggregates (BCB Olinda API) |
@@ -1510,7 +1679,7 @@ in [`docs/references/`](docs/references/README.md).
 @software{dorneles_loopsettle,
   author  = {Dorneles, Fabio D.},
   title   = {LoopSettle: an open simulator of circular liquidity in instant payment systems},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/fabiodrneles/loopsettle},
   license = {Apache-2.0}
 }

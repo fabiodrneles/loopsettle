@@ -19,33 +19,117 @@ pub struct Results {
 /// change the version recorded by the next experiment of the same `make all`).
 pub fn code_version() -> String {
     use std::process::Command;
+    if golden() {
+        // Golden outputs are compared byte for byte in CI, so they cannot name a commit.
+        return "golden".into();
+    }
     // Last commit that touched anything outside results/ (committing results must not
     // change the version they record).
-    let git = Command::new("git").args(["log", "-1", "--format=%h", "--", ".", ":(exclude)results"]).output();
+    let git = Command::new("git")
+        .args(["log", "-1", "--format=%h", "--", ".", ":(exclude)results"])
+        .output();
     match git {
         Ok(o) if o.status.success() => {
             let dirty = Command::new("git")
-                .args(["status", "--porcelain", "--untracked-files=no", "--", ".", ":(exclude)results"])
+                .args([
+                    "status",
+                    "--porcelain",
+                    "--untracked-files=no",
+                    "--",
+                    ".",
+                    ":(exclude)results",
+                ])
                 .output()
                 .map(|s| !s.stdout.is_empty())
                 .unwrap_or(false);
-            format!("{}+git.{}{}", env!("CARGO_PKG_VERSION"), String::from_utf8_lossy(&o.stdout).trim(), if dirty { "-dirty" } else { "" })
+            format!(
+                "{}+git.{}{}",
+                env!("CARGO_PKG_VERSION"),
+                String::from_utf8_lossy(&o.stdout).trim(),
+                if dirty { "-dirty" } else { "" }
+            )
         }
         _ => env!("CARGO_PKG_VERSION").to_string(),
     }
 }
 
+/// Version of the layout of `summary.json`, so other tools can read it safely. Bump the number
+/// when a key is renamed or removed (adding keys does not need a bump).
+pub const RESULT_SCHEMA: &str = "loopsettle.result/1";
+
+fn rustc_version() -> String {
+    std::process::Command::new("rustc")
+        .arg("-V")
+        .output()
+        .ok()
+        .filter(|o| o.status.success())
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+        .unwrap_or_else(|| "unknown".into())
+}
+
+/// FNV-1a (64 bit) of `Cargo.lock`, line endings normalised: identifies the exact dependency
+/// set without a hashing dependency. Not cryptographic.
+fn cargo_lock_hash() -> String {
+    match std::fs::read("Cargo.lock") {
+        Ok(bytes) => format!(
+            "{:016x}",
+            fnv1a64(bytes.iter().copied().filter(|&b| b != b'\r'))
+        ),
+        Err(_) => "unknown".into(),
+    }
+}
+
+/// FNV-1a, 64 bit. Identifies a file without a hashing dependency; not cryptographic.
+pub fn fnv1a64(bytes: impl Iterator<Item = u8>) -> u64 {
+    let mut h: u64 = 0xcbf29ce484222325;
+    for b in bytes {
+        h = (h ^ b as u64).wrapping_mul(0x100000001b3);
+    }
+    h
+}
+
+/// `LOOPSETTLE_GOLDEN=1`: regression-test mode (`scripts/golden.py`). Results record no code
+/// version and no machine measurements, so two runs of the same code are byte-identical.
+pub fn golden() -> bool {
+    std::env::var_os("LOOPSETTLE_GOLDEN").is_some_and(|v| v == "1")
+}
+
+/// Root of the results tree: `results/`, or `LOOPSETTLE_RESULTS_DIR` if set.
+pub fn results_root() -> PathBuf {
+    std::env::var_os("LOOPSETTLE_RESULTS_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("results"))
+}
+
 impl Results {
     pub fn new(name: &str, seed: u64, config_file: &str) -> Self {
-        let dir = PathBuf::from("results").join(name);
+        let dir = results_root().join(name);
         fs::create_dir_all(&dir).expect("cannot create results directory");
-        let summary = Json::obj()
+        let mut summary = Json::obj()
+            .set("schema", RESULT_SCHEMA)
             .set("experiment", name)
             .set("seed", seed)
             .set("code_version", code_version())
             .set("config_file", config_file)
-            .set("command", format!("cargo run --release -p loopsettle-cli -- experiment {name}"));
-        Results { dir, summary, run: Json::obj() }
+            .set(
+                "command",
+                format!("cargo run --release -p loopsettle-cli -- experiment {name}"),
+            );
+        if !golden() {
+            // Provenance. Left out of golden outputs, which must be identical on every platform.
+            summary = summary
+                .set(
+                    "platform",
+                    format!("{}-{}", std::env::consts::ARCH, std::env::consts::OS),
+                )
+                .set("rustc", rustc_version())
+                .set("cargo_lock_fnv1a64", cargo_lock_hash());
+        }
+        Results {
+            dir,
+            summary,
+            run: Json::obj(),
+        }
     }
 
     pub fn csv(&self, file: &str, content: &str) {
@@ -72,8 +156,12 @@ impl Results {
     }
 
     pub fn finish(mut self) {
-        self.run.push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
+        self.run
+            .push("peak_rss_mib", loopsettle_core::sys::peak_rss_mib().round());
         for (name, j) in [("summary.json", &self.summary), ("run.json", &self.run)] {
+            if name == "run.json" && golden() {
+                continue;
+            }
             let p = self.dir.join(name);
             let mut s = j.to_string_pretty();
             s.push('\n');

@@ -10,6 +10,59 @@
 
 ## Current state
 
+- **11 Nov 2026 — audit, liquidity floor, specs.** New result: the liquidity floor
+  (`bound.rs::liquidity_floors`, METHODOLOGY §9b) is a tight per-participant form of the delay
+  bound; for 10 s it is 0.054% of UB instead of 0.76%. Claim 1f was revised because of it. The
+  roadmap now lives in [`specs/`](specs/README.md): 11 specifications with evidence, acceptance
+  criteria and validation steps. **Exact next step:** specs 04 (engine fixes) → 09 (seeds, CI) →
+  02 (propagate the tight bound and fix the documents that still carry the old 1f argument).
+  Measured here (Linux, 4 cores): `cargo test --workspace` passes; `experiment regimes` 3.2 s,
+  7 MiB; CSVs of baseline, microcycle-sweep, robustness and regimes reproduce byte for byte.
+- **11 Nov 2026, later — specs 04 and 09 executed.** Engine fixes with regression tests
+  (`tests/spec04.rs`), golden results checked in CI on three platforms, parallel seeds. **Exact
+  next step:** spec 02 FR3–FR7 (funding windows with the tight bound, the sandwich table, and the
+  documents that still carry the old claim 1f), then spec 06. Before changing any engine or the
+  generator run `make verify`; to accept a change of results run `make golden` and commit it.
+  Measured (Linux, 4 cores, 2 worker threads): `robustness` 75 s, `heterogeneity` 127 s,
+  `funding-windows` 36 s, all others under 8 s; peak RSS at most 16 MiB; golden check 50 s.
+- **11 Nov 2026, later still — specs 02 (FR1–FR6) and 06 executed; spec 05 M1.** New experiment
+  `liquidity-frontier` (4 min 46 s, 20 MiB). **Exact next step:** spec 03 (offline optimum on
+  small instances), then spec 05 M2 (`HoldToDeadline`, which proves the floor is attained) and M3;
+  spec 02 FR7 and spec 10 for the web interface. Open from REVIEW 84: a finer α grid near 1.
+- **11 Nov 2026, end of session — spec 03 executed.** Floors = offline optimum in 116 of 120
+  instances (`results/optimality-gap/`, 55 s). **Exact next step:** spec 05 M2 and M3, spec 10
+  (real-data report, web panel), then 07 and 08; open items of each spec are listed at its top.
+- **12 Nov 2026 — echo payments: a kill criterion fired.** The central claim is conditional on
+  the absence of fast bilateral returns (CLAIMS 1j, ASSESSMENT update 5, REVIEW 87). Also done:
+  `--report` and private per-participant output (spec 10 R2, R3), finer liquidity grid (REVIEW
+  86). **Exact next step:** carry the condition into `paper/paper.pt-BR.md` and
+  `docs/PAPER_OUTLINE*.md`; then the open items of REVIEW 87 (partial echo amounts, other scales).
+  Measured: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier` 349 s, 20 MiB.
+- **12 Nov 2026, end of session.** Done since the last entry: `echo-scale` (the echo effect falls
+  with exponent −0.52 in volume), `gridlock` and `bilateral` engines (spec 05 M3, M4; D27),
+  10-seed bound curve, `circularity-horizon` (spec 08 T3), `custom_engine` example (spec 10 R5),
+  literature search (REFERENCES §8). **Not done, in the owner's order:** spec 05 M5 (funding
+  policy); spec 08 T1 (BFF), T2 (scale of the min-cost flow), T4, T5; spec 10 R1 (external sort,
+  ISO 20022 mapping), R4 (web panel); several seeds in `baseline`, `potential-vs-realizable`,
+  `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`. **Exact next step:** spec 05
+  M5, then those in that order. Always run `make verify` before committing.
+- **12 Nov 2026 — spec 05 complete** (M5 funding layer; M3 still unchecked against the 2001 paper,
+  whose hosts are blocked here). **Exact next step:** spec 08 T1, T2, T4, T5; spec 10 R1, R4;
+  several seeds in the six older experiments.
+- **12 Nov 2026 — spec 08 done except T5** (on-chain data blocked by the network here).
+  **Exact next step:** spec 10 R1 (external sort, ISO 20022 mapping) and R4 (web panel); several
+  seeds in `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`,
+  `funding-windows`.
+- **12 Nov 2026 — spec 10 done** (REVIEW 94). All eleven specs now have their main items done.
+  **What is left:** several seeds in `baseline`, `potential-vs-realizable`, `microcycle-sweep`,
+  `stress`, `heterogeneity`, `funding-windows`; checks that need hosts blocked here (the 2001
+  gridlock paper, Koponen & Soramäki 1998, ISO 20022 guides, on-chain data). To rebuild the wasm
+  locally without wasm-pack: `cargo build --release --target wasm32-unknown-unknown -p
+  loopsettle-wasm` then `wasm-bindgen --target web --out-dir web/src/wasm-pkg --no-typescript
+  target/wasm32-unknown-unknown/release/loopsettle_wasm.wasm`.
+- **12 Nov 2026 — several seeds in every experiment** (REVIEW 95). What is left needs hosts that
+  are blocked here (gridlock paper, Koponen & Soramäki 1998, ISO 20022 guides, on-chain data) or a
+  decision by the owner (`cargo fmt`, publishing the page, tag v0.2.0).
 - **Current phase:** build complete (Phases 0–10). Phase 8 partial (on-chain pending).
 - **Exact next step:** human review guided by [`REVIEW.md`](REVIEW.md) (69 points; 62–69 come from
   the README review of 5 Nov 2026). Suggestions for further work are in points 13, 14, 36, 39

@@ -37,6 +37,9 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 | `day_weights` | (option) | SOURCED | Day-type volumes 2024 (Mon 157.61 M … Fri 179.60 M, Sat 157.72 M, Sun 113.54 M), same report, Graph 11, p. 12 (`SPI_2024_WEEKDAY`); used by `funding-windows`. |
 | STR window | 6:30–19:00 business days | SOURCED | 6:30–18:30 plus the 30-minute top-up window (same report, p. 15); `funding-windows`. |
 | Large-value regime | 20 participants, median R$ 1 M, tail α 1.3 | ASSUMPTION | Stylised system for `regimes` only. |
+| Constrained liquidity: retries | rejected payments are never retried | ASSUMPTION | `liquidity-frontier` only. |
+| Constrained liquidity: balances | `α × UB_i` or `α × ΣUB × out_i / Σout`, α from 0.5 to 2 | ASSUMPTION | `liquidity-frontier` only; rule `ub` has hindsight. |
+| Echo payments | share 0 (off) by default; sweep 5–50%, delay 1–60 s, onwards or straight back | ASSUMPTION | `echo-sweep` only: a stress test of short-horizon circularity. |
 
 ## Arrival process
 

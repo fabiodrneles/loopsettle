@@ -78,7 +78,7 @@ checksum = "5d15f86d12da44cd8d4ec3c73984537eb7f4cadcb9776a575a0a8a05ca11005c"
 
 [[package]]
 name = "loopsettle-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "loopsettle-core",
  "loopsettle-sim",
@@ -87,21 +87,22 @@ dependencies = [
 
 [[package]]
 name = "loopsettle-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "proptest",
 ]
 
 [[package]]
 name = "loopsettle-sim"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "loopsettle-core",
+ "minilp",
 ]
 
 [[package]]
 name = "loopsettle-topology"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "loopsettle-core",
  "minilp",
@@ -110,7 +111,7 @@ dependencies = [
 
 [[package]]
 name = "loopsettle-wasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "loopsettle-core",
  "loopsettle-sim",

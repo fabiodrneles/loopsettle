@@ -5,6 +5,7 @@
 
 pub mod engine;
 pub mod engines;
+pub mod funding;
 pub mod json;
 pub mod ledger;
 pub mod metrics;
@@ -13,9 +14,12 @@ pub mod sys;
 pub mod types;
 
 pub use engine::{GrossRealTime, SettlementEngine, Sink};
-pub use engines::{AtomicMicroCycle, DeferredNet, MicroCycleConfig, QueueMode};
+pub use engines::{
+    AtomicMicroCycle, DeferredNet, HoldToDeadline, MicroCycleConfig, QueueDiscipline, QueueMode,
+};
+pub use funding::{FundingPolicy, PrefundClosedWindows, TopUpToTarget};
 pub use ledger::{Ledger, UNLIMITED};
-pub use metrics::{FlowStats, LogHistogram, RunMetrics};
+pub use metrics::{FlowStats, LogHistogram, RunMetrics, SLA_PIX_MS};
 pub use types::*;
 
 /// One engine together with its own ledger and metrics.
@@ -23,12 +27,45 @@ pub struct EngineRun {
     pub engine: Box<dyn SettlementEngine>,
     pub ledger: Ledger,
     pub metrics: RunMetrics,
+    /// what participants do with their accounts over time (top-ups, prefunding); `None` = nothing
+    pub funding: Option<Box<dyn FundingPolicy>>,
 }
 
 impl EngineRun {
     pub fn new(engine: Box<dyn SettlementEngine>, ledger: Ledger) -> Self {
         let n = ledger.len();
-        EngineRun { engine, ledger, metrics: RunMetrics::new(n) }
+        EngineRun {
+            engine,
+            ledger,
+            metrics: RunMetrics::new(n),
+            funding: None,
+        }
+    }
+
+    pub fn with_funding(mut self, policy: Box<dyn FundingPolicy>) -> Self {
+        self.funding = Some(policy);
+        self
+    }
+
+    /// Bring the run to time `t`: every funding instant due by `t` is applied in time order,
+    /// each after the engine has processed its own events up to that instant.
+    fn advance_to(&mut self, t: TimeMs) {
+        while let Some(f) = self
+            .funding
+            .as_ref()
+            .and_then(|p| p.next_instant())
+            .filter(|&f| f <= t)
+        {
+            self.engine
+                .advance_to(f, &mut self.ledger, &mut self.metrics);
+            self.funding
+                .as_mut()
+                .expect("checked above")
+                .apply(&mut self.ledger);
+            self.engine.funded();
+        }
+        self.engine
+            .advance_to(t, &mut self.ledger, &mut self.metrics);
     }
 }
 
@@ -48,13 +85,18 @@ where
         last = p.t_arrival;
         flow.observe(&p);
         for r in runs.iter_mut() {
-            r.engine.advance_to(p.t_arrival, &mut r.ledger, &mut r.metrics);
+            r.advance_to(p.t_arrival);
             r.engine.submit(p, &mut r.ledger, &mut r.metrics);
         }
     }
     let t_end = t_end.max(last);
     for r in runs.iter_mut() {
-        r.engine.advance_to(t_end, &mut r.ledger, &mut r.metrics);
+        r.advance_to(t_end);
         r.engine.finish(t_end, &mut r.ledger, &mut r.metrics);
     }
 }
+
+/// The examples in this crate's README are compiled and run as tests.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;

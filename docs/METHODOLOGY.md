@@ -146,8 +146,50 @@ The bound covers atomic micro-cycles with `max_delay_ms = d`, deferred netting e
 any optimal gridlock solver with the same deadline. It is computed in two streaming passes
 (`loopsettle_sim::bound::delay_bounds`) and tested participant by participant against the
 engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate: in the
-calibrated scenario the realised 10 s saving is about 1.5% of it
+calibrated scenario the realised 10 s saving is about 1.5% of it (about 28% of the tight form of §9b; netting every 10 s realises about 46%)
 (`results/robustness/seeds_summary.csv`).
+
+**9b. The liquidity floor (tight form of the bound).** The argument above uses one instant,
+`t*`. Using every instant gives a stronger statement. Let `CO_i(s)` be the value `i` has paid by
+time `s` and `CI_i(s)` the value it has been paid by `s` (arrival times, inclusive). In any
+engine with maximum delay `d`, at time `s + d` every payment that arrived by `s` has settled, and
+no incoming payment settles before it arrives, so
+
+```text
+−y_i(s + d) ≥ CO_i(s) − CI_i(s + d)      for every s
+floor_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = floor_i(0).
+```
+
+`UB_i − floor_i(d)` is never larger than the window bound (take `s = t* − d`), and `floor_i` is
+attained for one participant alone by "hold my payments for exactly `d`, receive everything at
+once", so it is the best bound that uses only `i`'s own flows (test `a_single_holder_needs_exactly_its_floor`, with the `hold:<d>:<i>` engine: equality to the cent). It is computed in streaming with
+one lagging and one leading pass (`loopsettle_sim::bound::liquidity_floors`), tested against the
+engines in the same test, and reported by `loopsettle bound` (`liquidity_floor`, `tight_bound`).
+In the calibrated retail scenario (`results/regimes/bound_curve.csv`, 10 seeds) the tight bound
+for 10 s is 0.041% of UB (95% CI [0.025; 0.056]) against 0.80% for the window form, and netting
+every 10 s realises 48% of it (CI [40; 55]); the share realised is 25% at 15 minutes and 58% at
+six hours; for a one-day delay it equals UB − LB exactly. In the stylised large-value system the
+window bound is large only because it counts the payment that makes the peak; the tight bound
+there is ≤ 0.004%.
+
+**9c. The offline optimum and the sandwich.** The floor is a bound for one participant at a time;
+the sum over participants need not be attainable, because one participant's delayed payment is
+another's delayed receipt. The exact question is a linear programme: given all payments in
+advance and a deadline `d`, choose the share of each payment settled at each instant of
+`[arrival, arrival + d]` so that `Σ_i L_i` is smallest, with `L_i ≥ −y_i(τ)` at every instant and
+simultaneous settlements counted by their net effect. Its value sits between the two:
+
+```text
+Σ_i floor_i(d)  ≤  LP(d)  ≤  optimum with whole payments  ≤  L(any engine with deadline d)
+```
+
+`LP(0) = UB` and `LP(∞) = LB`. The programme is solved only as a test oracle
+(`crates/loopsettle-sim/tests/optimum.rs`: two hand examples and 300 random instances) and in the
+`optimality_gap` example. On dense small systems (20 participants, about 1,500 payments in an
+hour, 20 seeds, deadlines of 2, 10 and 60 s) the optimum equals the sum of the floors in 116 of
+120 instances and is within 0.3% of it in the other four, while the best engine realises 44–61%
+of it (`results/optimality-gap/gap.csv`). So the slack between engines and the bound is in the
+engines, not in the bound.
 
 **Hodge null value.** For random flows on a connected graph with `m` edges and `n` nodes, the
 expected share of the squared norm outside the gradient space is `(m − n + 1)/m`. On the net
@@ -171,7 +213,52 @@ The delay bound of section 9 applies inside the window with `t*` the window's mi
 by `loopsettle_sim::bound::window_stats`; experiment `funding-windows` (Thursday to Monday, sourced
 hourly profile and day volumes).
 
-## 11. Running on real data
+**The liquidity floor inside a window.** The tight form of section 9b carries over with one extra
+term. An engine's need in the window is `y_i(a) − min_{a≤t<b} y_i(t)`. Receipts of the last `d`
+before the window may still be unsettled when it opens, so `y_i(a) ≥ x_i(a) − I_i[a − d, a)`, and
+the floor argument gives `−y_i(t) ≥ CO_i(t − d) − CI_i(t)`. Together:
+
+```text
+need_i ≥ max_{s ≥ a, s + d < b} [(CO_i(s) − CO_i(a)) − (CI_i(s + d) − CI_i(a))] − I_i[a − d, a)
+```
+
+floored at zero; with `d = 0` it is the gross need above. Computed by
+`loopsettle_sim::bound::window_floors` and tested against the engines by rebuilding each engine's
+position from its settlement events (`engines_never_need_less_than_the_window_floor`).
+
+**Funding as a layer.** `loopsettle_core::funding` lets a policy move money between a
+participant's reserves, outside the system, and its settlement account at instants it chooses
+(`Ledger::fund`); conservation then holds for accounts plus reserves. `PrefundClosedWindows`
+leaves each participant with a fixed balance when a closed window opens and unlimited liquidity
+when it ends; `TopUpToTarget` tops balances up to a target every period inside open windows;
+`Ledger::with_credit_limits` gives intraday credit lines. With every participant prefunded
+exactly its largest window need, gross settlement rejects nothing (test
+`prefunding_policy_reproduces_the_window_need`); `funding-windows/prefunding.csv` reports what is
+rejected below that.
+
+## 11. Constrained liquidity
+
+Sections 2 to 10 ask how much liquidity a design *needs* when balances are unlimited. An operator
+asks the reverse: with the liquidity participants hold, how much is rejected or delayed? The
+`liquidity-frontier` experiment fixes the opening balances and runs every design on the same
+payments.
+
+- **Balances.** Rule `ub`: `α × UB_i` (it uses each participant's own peak of the day, so it has
+  hindsight). Rule `outflow`: `α × ΣUB × out_i / Σout` (no knowledge of when the peak falls).
+- **Designs.** Gross (reject on arrival); a plain queue (`queue:fifo|bypass:<deadline>`: wait for
+  incoming funds, reject at the deadline); micro-cycles. Each with a 10 s deadline and with a
+  one-hour deadline. A rejected payment is not retried (`ASSUMPTION`).
+- **Equivalent liquidity.** For a target share of rejected value (0.01%, 0.1%, 1%), the smallest
+  `α` at which a design meets it, interpolated linearly on the `α` grid for each seed. The saving
+  of a design is the paired difference with gross, `(α_gross − α_design) / α_gross`, averaged over
+  seeds. This is liquidity saved *at equal service*, the comparison the liquidity-saving-mechanism
+  literature makes; the saving of sections 5 and 9 is the special case of a target of exactly zero.
+
+The gross retry inside the queue is defined as repeated passes over the queue in arrival order
+until a pass settles nothing; the implementation visits only participants that were credited
+since their last retry and is tested to give identical settlements (`event_driven_retry_equals_the_reference`).
+
+## 12. Running on real data
 
 `loopsettle bound <file.csv>` computes UB, LB and the delay bound for several `d`;
 `loopsettle settle <file.csv>` also runs the settlement engines. The file is streamed twice (the

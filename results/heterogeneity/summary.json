@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "heterogeneity",
   "seed": 20260930,
-  "code_version": "0.1.0+git.6eeca1c",
+  "code_version": "0.2.0+git.12485e1",
   "config_file": "experiments/heterogeneity.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment heterogeneity",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -27,38 +31,215 @@
         "receiver_bias_sigma": 0.4,
         "profile_strength": 0,
         "bound_10s_pct_of_ub": 0.271434,
+        "tight_bound_10s_pct_of_ub": 0.024215,
         "k1_fires": false
       },
       {
         "receiver_bias_sigma": 0.4,
         "profile_strength": 0.5,
         "bound_10s_pct_of_ub": 0.463817,
+        "tight_bound_10s_pct_of_ub": 0.040146,
         "k1_fires": false
       },
       {
         "receiver_bias_sigma": 0.4,
         "profile_strength": 1,
         "bound_10s_pct_of_ub": 0.375501,
+        "tight_bound_10s_pct_of_ub": 0.041736,
         "k1_fires": false
       },
       {
         "receiver_bias_sigma": 1,
         "profile_strength": 0,
         "bound_10s_pct_of_ub": 0.061963,
+        "tight_bound_10s_pct_of_ub": 0.009199,
         "k1_fires": false
       },
       {
         "receiver_bias_sigma": 1,
         "profile_strength": 0.5,
         "bound_10s_pct_of_ub": 0.083998,
+        "tight_bound_10s_pct_of_ub": 0.021708,
         "k1_fires": false
       },
       {
         "receiver_bias_sigma": 1,
         "profile_strength": 1,
         "bound_10s_pct_of_ub": 0.064554,
+        "tight_bound_10s_pct_of_ub": 0.024992,
         "k1_fires": false
       }
     ]
-  }
+  },
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "seeds_summary": [
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0",
+      "seeds": 10,
+      "mean": 0.040614,
+      "ci95_low": 0.024922,
+      "ci95_high": 0.056306
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda0",
+      "seeds": 10,
+      "mean": 0.018546,
+      "ci95_low": 0.012892,
+      "ci95_high": 0.0242
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda0",
+      "seeds": 10,
+      "mean": 7.803965,
+      "ci95_low": 4.50597,
+      "ci95_high": 11.10196
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda0",
+      "seeds": 10,
+      "mean": 0.92196,
+      "ci95_low": 0.88898,
+      "ci95_high": 0.95494
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0.5",
+      "seeds": 10,
+      "mean": 0.039996,
+      "ci95_low": 0.028766,
+      "ci95_high": 0.051226
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda0.5",
+      "seeds": 10,
+      "mean": 0.016224,
+      "ci95_low": 0.010536,
+      "ci95_high": 0.021912
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda0.5",
+      "seeds": 10,
+      "mean": 10.687874,
+      "ci95_low": 7.125527,
+      "ci95_high": 14.25022
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda0.5",
+      "seeds": 10,
+      "mean": 0.893121,
+      "ci95_low": 0.857498,
+      "ci95_high": 0.928745
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda1",
+      "seeds": 10,
+      "mean": 0.042954,
+      "ci95_low": 0.032471,
+      "ci95_high": 0.053437
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda1",
+      "seeds": 10,
+      "mean": 0.01704,
+      "ci95_low": 0.011873,
+      "ci95_high": 0.022208
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda1",
+      "seeds": 10,
+      "mean": 14.033257,
+      "ci95_low": 9.466391,
+      "ci95_high": 18.600123
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda1",
+      "seeds": 10,
+      "mean": 0.859667,
+      "ci95_low": 0.813999,
+      "ci95_high": 0.905336
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0",
+      "seeds": 10,
+      "mean": 0.014457,
+      "ci95_low": 0.00745,
+      "ci95_high": 0.021463
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda0",
+      "seeds": 10,
+      "mean": 0.005493,
+      "ci95_low": 0.003228,
+      "ci95_high": 0.007758
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda0",
+      "seeds": 10,
+      "mean": 2.337093,
+      "ci95_low": 1.115817,
+      "ci95_high": 3.558368
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda0",
+      "seeds": 10,
+      "mean": 0.976629,
+      "ci95_low": 0.964416,
+      "ci95_high": 0.988842
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0.5",
+      "seeds": 10,
+      "mean": 0.013667,
+      "ci95_low": 0.007277,
+      "ci95_high": 0.020057
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda0.5",
+      "seeds": 10,
+      "mean": 0.004807,
+      "ci95_low": 0.002236,
+      "ci95_high": 0.007379
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda0.5",
+      "seeds": 10,
+      "mean": 3.558184,
+      "ci95_low": 1.721073,
+      "ci95_high": 5.395295
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda0.5",
+      "seeds": 10,
+      "mean": 0.964418,
+      "ci95_low": 0.946047,
+      "ci95_high": 0.982789
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda1",
+      "seeds": 10,
+      "mean": 0.015886,
+      "ci95_low": 0.008837,
+      "ci95_high": 0.022935
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda1",
+      "seeds": 10,
+      "mean": 0.006141,
+      "ci95_low": 0.003409,
+      "ci95_high": 0.008873
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda1",
+      "seeds": 10,
+      "mean": 4.797415,
+      "ci95_low": 2.232474,
+      "ci95_high": 7.362356
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda1",
+      "seeds": 10,
+      "mean": 0.952026,
+      "ci95_low": 0.926376,
+      "ci95_high": 0.977675
+    }
+  ]
 }

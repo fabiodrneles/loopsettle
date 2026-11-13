@@ -1,0 +1,18 @@
+# Circularity by horizon (specs/08, T3): how much value circulates inside windows of width w, and
+# how much liquidity can a mechanism with deadline w recover? The first is the static ladder
+# (maximum circulation, CDFD) computed window by window; the second is the tight bound. The gap
+# between the two is the study in one figure: much value circulates, little liquidity is recovered.
+[experiment]
+name = "circularity-horizon"
+description = "Value that circulates within a window vs liquidity recoverable with that deadline"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[horizon]
+seeds = [20260930, 1, 2, 3, 4]
+window_s = [10, 60, 900, 3600, 21600, 86400]

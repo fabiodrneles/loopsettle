@@ -1,0 +1,588 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "baseline",
+  "seed": 20260930,
+  "code_version": "golden",
+  "config_file": "target/golden-config/baseline.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment baseline",
+  "nulls": {
+    "hodge_analytic_null": 0.935961,
+    "payee_shuffle": [
+      {
+        "measure": "cdfd_max_gross",
+        "observed": 0.7444,
+        "null_mean": 0.36109,
+        "null_sd": 0.043534
+      },
+      {
+        "measure": "cdfd_bff_gross",
+        "observed": 0.709586,
+        "null_mean": 0.310264,
+        "null_sd": 0.043466
+      },
+      {
+        "measure": "cycle_netting_gross",
+        "observed": 0.712531,
+        "null_mean": 0.331573,
+        "null_sd": 0.045344
+      }
+    ],
+    "shuffles": 20
+  },
+  "scenario": {
+    "participants": 40,
+    "days": 1,
+    "payments_per_day": 30000,
+    "scale_factor": 7966.360437,
+    "body_median_brl": 84.57946,
+    "body_sigma": 1.4,
+    "tail_prob": 0.042962,
+    "tail_xm_brl": 1375.25637,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "flow": {
+    "payments": 30092,
+    "gross_value_brl": 13026515.7,
+    "ub_brl": 3280489.56,
+    "lb_brl": 3009201.89,
+    "lb_over_ub": 0.917303,
+    "ub_over_gross": 0.251832,
+    "potential_offset_fraction": 0.768994
+  },
+  "topology": {
+    "gross": {
+      "nodes": 40,
+      "edges": 1062,
+      "total_flow_cents": 1302651570,
+      "hodge_l1_cyclic": 1.163908,
+      "hodge_l2_curl": 0.939013,
+      "hodge_l2_cyclic": 0.939013,
+      "hodge_triangles": 5254,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.7444,
+      "cdfd_bff": 0.709586,
+      "cycle_netting": 0.712531,
+      "cycles_found": 628
+    },
+    "net": {
+      "nodes": 40,
+      "edges": 609,
+      "total_flow_cents": 506230064,
+      "hodge_l1_cyclic": 1.421775,
+      "hodge_l2_curl": 0.939013,
+      "hodge_l2_cyclic": 0.939013,
+      "hodge_triangles": 5254,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.284154,
+      "cdfd_bff": 0.232699,
+      "cycle_netting": 0.245513,
+      "cycles_found": 246
+    },
+    "bilateral_share": 0.611385,
+    "hodge_potential_vs_net_position_corr": 0.997737,
+    "cg_gradient_iterations": 14,
+    "cg_gradient_rel_residual": 0,
+    "cg_curl_iterations": 15,
+    "cg_curl_rel_residual": 0
+  },
+  "engines": [
+    {
+      "name": "gross_real_time",
+      "spec": {
+        "kind": "gross"
+      },
+      "liquidity_needed_brl": 3280489.56,
+      "liquidity_saving_vs_ub_brl": 0,
+      "liquidity_saving_vs_ub_pct": 0,
+      "share_of_ub_minus_lb_recovered": 0,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 13026515.7,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 0,
+      "delay_p95_ms": 0,
+      "delay_p99_ms": 0,
+      "delay_max_ms": 0,
+      "delay_mean_ms": 0,
+      "delay_value_weighted_mean_ms": 0,
+      "share_settled_within_2800ms": 1
+    },
+    {
+      "name": "deferred_net_1x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 1
+      },
+      "liquidity_needed_brl": 3009201.89,
+      "liquidity_saving_vs_ub_brl": 271287.67,
+      "liquidity_saving_vs_ub_pct": 8.269731,
+      "share_of_ub_minus_lb_recovered": 1,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 31719424,
+      "delay_p95_ms": 60817408,
+      "delay_p99_ms": 82837504,
+      "delay_max_ms": 86393306,
+      "delay_mean_ms": 32808368.666556,
+      "delay_value_weighted_mean_ms": 33007837.212513,
+      "share_settled_within_2800ms": 0
+    },
+    {
+      "name": "deferred_net_10x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 10
+      },
+      "liquidity_needed_brl": 3175003.36,
+      "liquidity_saving_vs_ub_brl": 105486.2,
+      "liquidity_saving_vs_ub_pct": 3.215563,
+      "share_of_ub_minus_lb_recovered": 0.388835,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 4325376,
+      "delay_p95_ms": 8192000,
+      "delay_p99_ms": 8519680,
+      "delay_max_ms": 8639611,
+      "delay_mean_ms": 4337024.787784,
+      "delay_value_weighted_mean_ms": 4299919.000062,
+      "share_settled_within_2800ms": 0.000432
+    }
+  ],
+  "sensitivity": [
+    {
+      "receiver_bias_sigma": 0,
+      "flow": {
+        "payments": 30092,
+        "gross_value_brl": 13026515.7,
+        "ub_brl": 2120308.51,
+        "lb_brl": 1215589.99,
+        "lb_over_ub": 0.573308,
+        "ub_over_gross": 0.162769,
+        "potential_offset_fraction": 0.906683
+      },
+      "topology": {
+        "gross": {
+          "nodes": 40,
+          "edges": 1049,
+          "total_flow_cents": 1302651570,
+          "hodge_l1_cyclic": 1.076763,
+          "hodge_l2_curl": 0.98513,
+          "hodge_l2_cyclic": 0.98513,
+          "hodge_triangles": 4995,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.886454,
+          "cdfd_bff": 0.860557,
+          "cycle_netting": 0.856581,
+          "cycles_found": 654
+        },
+        "net": {
+          "nodes": 40,
+          "edges": 596,
+          "total_flow_cents": 367275174,
+          "hodge_l1_cyclic": 1.272264,
+          "hodge_l2_curl": 0.98513,
+          "hodge_l2_cyclic": 0.98513,
+          "hodge_triangles": 4995,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.528099,
+          "cdfd_bff": 0.467148,
+          "cycle_netting": 0.446272,
+          "cycles_found": 292
+        },
+        "bilateral_share": 0.718056,
+        "hodge_potential_vs_net_position_corr": 0.987712,
+        "cg_gradient_iterations": 14,
+        "cg_gradient_rel_residual": 0,
+        "cg_curl_iterations": 16,
+        "cg_curl_rel_residual": 0
+      },
+      "micro": {
+        "name": "micro_cycle_all_w1000_d10000",
+        "spec": {
+          "kind": "micro",
+          "mode": "all",
+          "window_ms": 1000,
+          "max_delay_ms": 10000,
+          "max_cycle_len": 6,
+          "discipline": "bypass"
+        },
+        "liquidity_needed_brl": 2120308.51,
+        "liquidity_saving_vs_ub_brl": 0,
+        "liquidity_saving_vs_ub_pct": 0,
+        "share_of_ub_minus_lb_recovered": 0,
+        "settled_count": 30092,
+        "settled_value_brl": 13026515.7,
+        "settled_gross_value_brl": 11544355.67,
+        "settled_cycle_value_brl": 1482160.03,
+        "settled_deferred_value_brl": 0,
+        "settled_cycle_count": 2900,
+        "rejected_count": 0,
+        "rejected_value_brl": 0,
+        "delay_p50_ms": 9984,
+        "delay_p95_ms": 9984,
+        "delay_p99_ms": 9984,
+        "delay_max_ms": 10000,
+        "delay_mean_ms": 9331.873289,
+        "delay_value_weighted_mean_ms": 9153.938729,
+        "share_settled_within_2800ms": 0.056493,
+        "cycles_settled": 1289,
+        "cycles_failed": 0
+      }
+    },
+    {
+      "receiver_bias_sigma": 0.2,
+      "flow": {
+        "payments": 30092,
+        "gross_value_brl": 13026515.7,
+        "ub_brl": 2323783.05,
+        "lb_brl": 1852622.47,
+        "lb_over_ub": 0.797244,
+        "ub_over_gross": 0.178389,
+        "potential_offset_fraction": 0.857781
+      },
+      "topology": {
+        "gross": {
+          "nodes": 40,
+          "edges": 1057,
+          "total_flow_cents": 1302651570,
+          "hodge_l1_cyclic": 1.115352,
+          "hodge_l2_curl": 0.971132,
+          "hodge_l2_cyclic": 0.971132,
+          "hodge_triangles": 5150,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.832359,
+          "cdfd_bff": 0.793167,
+          "cycle_netting": 0.797611,
+          "cycles_found": 660
+        },
+        "net": {
+          "nodes": 40,
+          "edges": 604,
+          "total_flow_cents": 441765338,
+          "hodge_l1_cyclic": 1.340143,
+          "hodge_l2_curl": 0.971132,
+          "hodge_l2_cyclic": 0.971132,
+          "hodge_triangles": 5150,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.413545,
+          "cdfd_bff": 0.350582,
+          "cycle_netting": 0.35602,
+          "cycles_found": 289
+        },
+        "bilateral_share": 0.660872,
+        "hodge_potential_vs_net_position_corr": 0.995175,
+        "cg_gradient_iterations": 14,
+        "cg_gradient_rel_residual": 0,
+        "cg_curl_iterations": 16,
+        "cg_curl_rel_residual": 0
+      },
+      "micro": {
+        "name": "micro_cycle_all_w1000_d10000",
+        "spec": {
+          "kind": "micro",
+          "mode": "all",
+          "window_ms": 1000,
+          "max_delay_ms": 10000,
+          "max_cycle_len": 6,
+          "discipline": "bypass"
+        },
+        "liquidity_needed_brl": 2323563.17,
+        "liquidity_saving_vs_ub_brl": 219.88,
+        "liquidity_saving_vs_ub_pct": 0.009462,
+        "share_of_ub_minus_lb_recovered": 0.000467,
+        "settled_count": 30092,
+        "settled_value_brl": 13026515.7,
+        "settled_gross_value_brl": 11886039.82,
+        "settled_cycle_value_brl": 1140475.88,
+        "settled_deferred_value_brl": 0,
+        "settled_cycle_count": 2778,
+        "rejected_count": 0,
+        "rejected_value_brl": 0,
+        "delay_p50_ms": 9984,
+        "delay_p95_ms": 9984,
+        "delay_p99_ms": 9984,
+        "delay_max_ms": 10000,
+        "delay_mean_ms": 9356.769939,
+        "delay_value_weighted_mean_ms": 9381.343186,
+        "share_settled_within_2800ms": 0.054599,
+        "cycles_settled": 1240,
+        "cycles_failed": 0
+      }
+    },
+    {
+      "receiver_bias_sigma": 0.4,
+      "flow": {
+        "payments": 30092,
+        "gross_value_brl": 13026515.7,
+        "ub_brl": 3280489.56,
+        "lb_brl": 3009201.89,
+        "lb_over_ub": 0.917303,
+        "ub_over_gross": 0.251832,
+        "potential_offset_fraction": 0.768994
+      },
+      "topology": {
+        "gross": {
+          "nodes": 40,
+          "edges": 1062,
+          "total_flow_cents": 1302651570,
+          "hodge_l1_cyclic": 1.163908,
+          "hodge_l2_curl": 0.939013,
+          "hodge_l2_cyclic": 0.939013,
+          "hodge_triangles": 5254,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.7444,
+          "cdfd_bff": 0.709586,
+          "cycle_netting": 0.712531,
+          "cycles_found": 628
+        },
+        "net": {
+          "nodes": 40,
+          "edges": 609,
+          "total_flow_cents": 506230064,
+          "hodge_l1_cyclic": 1.421775,
+          "hodge_l2_curl": 0.939013,
+          "hodge_l2_cyclic": 0.939013,
+          "hodge_triangles": 5254,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.284154,
+          "cdfd_bff": 0.232699,
+          "cycle_netting": 0.245513,
+          "cycles_found": 246
+        },
+        "bilateral_share": 0.611385,
+        "hodge_potential_vs_net_position_corr": 0.997737,
+        "cg_gradient_iterations": 14,
+        "cg_gradient_rel_residual": 0,
+        "cg_curl_iterations": 15,
+        "cg_curl_rel_residual": 0
+      },
+      "micro": {
+        "name": "micro_cycle_all_w1000_d10000",
+        "spec": {
+          "kind": "micro",
+          "mode": "all",
+          "window_ms": 1000,
+          "max_delay_ms": 10000,
+          "max_cycle_len": 6,
+          "discipline": "bypass"
+        },
+        "liquidity_needed_brl": 3280097.1,
+        "liquidity_saving_vs_ub_brl": 392.46,
+        "liquidity_saving_vs_ub_pct": 0.011963,
+        "share_of_ub_minus_lb_recovered": 0.001447,
+        "settled_count": 30092,
+        "settled_value_brl": 13026515.7,
+        "settled_gross_value_brl": 11865827.48,
+        "settled_cycle_value_brl": 1160688.22,
+        "settled_deferred_value_brl": 0,
+        "settled_cycle_count": 2485,
+        "rejected_count": 0,
+        "rejected_value_brl": 0,
+        "delay_p50_ms": 9984,
+        "delay_p95_ms": 9984,
+        "delay_p99_ms": 9984,
+        "delay_max_ms": 10000,
+        "delay_mean_ms": 9429.930513,
+        "delay_value_weighted_mean_ms": 9365.442177,
+        "share_settled_within_2800ms": 0.048584,
+        "cycles_settled": 1110,
+        "cycles_failed": 0
+      }
+    },
+    {
+      "receiver_bias_sigma": 0.8,
+      "flow": {
+        "payments": 30092,
+        "gross_value_brl": 13026515.7,
+        "ub_brl": 4197999.25,
+        "lb_brl": 3982175.35,
+        "lb_over_ub": 0.948589,
+        "ub_over_gross": 0.322266,
+        "potential_offset_fraction": 0.694302
+      },
+      "topology": {
+        "gross": {
+          "nodes": 40,
+          "edges": 1029,
+          "total_flow_cents": 1302651570,
+          "hodge_l1_cyclic": 1.187127,
+          "hodge_l2_curl": 0.922477,
+          "hodge_l2_cyclic": 0.922477,
+          "hodge_triangles": 5211,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.635095,
+          "cdfd_bff": 0.590527,
+          "cycle_netting": 0.591655,
+          "cycles_found": 533
+        },
+        "net": {
+          "nodes": 40,
+          "edges": 607,
+          "total_flow_cents": 623876292,
+          "hodge_l1_cyclic": 1.39072,
+          "hodge_l2_curl": 0.922477,
+          "hodge_l2_cyclic": 0.922477,
+          "hodge_triangles": 5211,
+          "hodge_triangles_capped": false,
+          "cdfd_max": 0.14137,
+          "cdfd_bff": 0.116223,
+          "cycle_netting": 0.115525,
+          "cycles_found": 174
+        },
+        "bilateral_share": 0.521072,
+        "hodge_potential_vs_net_position_corr": 0.997241,
+        "cg_gradient_iterations": 13,
+        "cg_gradient_rel_residual": 0,
+        "cg_curl_iterations": 15,
+        "cg_curl_rel_residual": 0
+      },
+      "micro": {
+        "name": "micro_cycle_all_w1000_d10000",
+        "spec": {
+          "kind": "micro",
+          "mode": "all",
+          "window_ms": 1000,
+          "max_delay_ms": 10000,
+          "max_cycle_len": 6,
+          "discipline": "bypass"
+        },
+        "liquidity_needed_brl": 4197999.25,
+        "liquidity_saving_vs_ub_brl": 0,
+        "liquidity_saving_vs_ub_pct": 0,
+        "share_of_ub_minus_lb_recovered": 0,
+        "settled_count": 30092,
+        "settled_value_brl": 13026515.7,
+        "settled_gross_value_brl": 11898901.79,
+        "settled_cycle_value_brl": 1127613.91,
+        "settled_deferred_value_brl": 0,
+        "settled_cycle_count": 2247,
+        "rejected_count": 0,
+        "rejected_value_brl": 0,
+        "delay_p50_ms": 9984,
+        "delay_p95_ms": 9984,
+        "delay_p99_ms": 9984,
+        "delay_max_ms": 10000,
+        "delay_mean_ms": 9485.852984,
+        "delay_value_weighted_mean_ms": 9375.670349,
+        "share_settled_within_2800ms": 0.042968,
+        "cycles_settled": 1026,
+        "cycles_failed": 0
+      }
+    }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "ub_brl",
+      "seeds": 2,
+      "mean": 2828882.93,
+      "ci95_low": 2108576.10526,
+      "ci95_high": 3549189.75474
+    },
+    {
+      "metric": "lb_over_ub",
+      "seeds": 2,
+      "mean": 0.802376,
+      "ci95_low": 0.58118,
+      "ci95_high": 1.023572
+    },
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 2,
+      "mean": 0.818402,
+      "ci95_low": 0.761835,
+      "ci95_high": 0.874969
+    },
+    {
+      "metric": "saving_deferred_1x_pct",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_deferred_10x_pct",
+      "seeds": 2,
+      "mean": 8.478627,
+      "ci95_low": -27.734945,
+      "ci95_high": 44.692199
+    },
+    {
+      "metric": "gross_cdfd_max",
+      "seeds": 2,
+      "mean": 0.799961,
+      "ci95_low": 0.648245,
+      "ci95_high": 0.951677
+    },
+    {
+      "metric": "gross_cdfd_bff",
+      "seeds": 2,
+      "mean": 0.74032,
+      "ci95_low": 0.531178,
+      "ci95_high": 0.949461
+    },
+    {
+      "metric": "gross_cycle_netting",
+      "seeds": 2,
+      "mean": 0.738523,
+      "ci95_low": 0.716973,
+      "ci95_high": 0.760073
+    },
+    {
+      "metric": "net_cdfd_max",
+      "seeds": 2,
+      "mean": 0.263044,
+      "ci95_low": 0.032735,
+      "ci95_high": 0.493353
+    },
+    {
+      "metric": "net_cdfd_bff",
+      "seeds": 2,
+      "mean": 0.20389,
+      "ci95_low": -0.059101,
+      "ci95_high": 0.466881
+    },
+    {
+      "metric": "net_cycle_netting",
+      "seeds": 2,
+      "mean": 0.215998,
+      "ci95_low": -0.035922,
+      "ci95_high": 0.467918
+    },
+    {
+      "metric": "net_hodge_l2_curl",
+      "seeds": 2,
+      "mean": 0.918476,
+      "ci95_low": 0.751024,
+      "ci95_high": 1.085928
+    },
+    {
+      "metric": "bilateral_share",
+      "seeds": 2,
+      "mean": 0.650574,
+      "ci95_low": 0.44309,
+      "ci95_high": 0.858059
+    }
+  ]
+}

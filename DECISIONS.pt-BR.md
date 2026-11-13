@@ -61,7 +61,7 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   Bellman-Ford. Validado contra `minilp` em 1.000 grafos aleatórios.
 - **Reverter:** substituir `cdfd::cdfd_max`; o teste de oráculo continua valendo.
 
-## D6 — Variante proporcional/local da CDFD (BFF) adiada
+## D6 — (feito em 12/11/2026: `cdfd_bff.rs`, Algoritmo 2 do artigo, coluna `cdfd_bff` da escada) — Variante proporcional/local da CDFD (BFF) adiada
 - **Decisão:** não implementada nesta versão.
 - **Por quê:** a especificação exata do algoritmo local precisa ser conferida no artigo
   (arXiv 2506.12546) antes de implementar; implementar "de memória" arriscaria publicar uma
@@ -136,6 +136,11 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Por quê:** é o comportamento mais favorável à liquidação imediata do Pix. Efeito
   observado: com liquidez restrita, o bypass pode **aumentar** levemente a rejeição em valor
   (pagamentos novos consomem o saldo que liberaria os antigos). Documentado nos resultados.
+- **Atualização, 11/11/2026:** o FIFO estrito por pagador agora é opção
+  (`QueueDiscipline::StrictFifoPerPayer`, motor `micro:shortfall:<janela>:<atraso>:<len>:fifo`);
+  o bypass continua padrão. A nova tentativa bruta agora vai até o ponto fixo em cada janela:
+  antes, liberava no máximo um pagamento por aresta por janela (REVIEW 82).
+- **Reverter:** omitir o sexto campo do motor (ou passar `bypass`).
 
 ## D14 — Pagamentos vencidos vão para bruto; se faltar saldo, rejeitados
 - **Decisão:** no prazo `chegada + max_delay_ms` (exato, não arredondado à janela), o
@@ -210,3 +215,99 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   participante e escrevem agregados; linhas por participante só com `--per-participant`. A saída vai
   para `loopsettle-out/` (ignorado pelo git), nunca para `results/`.
 - **Por quê:** uma instituição precisa poder rodar em dados confidenciais e compartilhar a saída.
+
+## D22 — Specs são documentos de trabalho, só em português
+- **Decisão:** `specs/` guarda o roteiro pós-v0.1.0 em especificações curtas (contexto e
+  evidência, requisitos, critérios de aceite, como validar). Ficam só em português; tudo o que o
+  usuário lê (README, docs, resultados) continua bilíngue.
+- **Alternativas:** arquivo gêmeo para cada spec.
+- **Por quê:** specs são instruções para quem continua a construção e mudam muito; um gêmeo para
+  cada dobra o custo sem leitor para ele. O CLAUDE.md pede documentação em português.
+- **Reverter:** traduzir `specs/*.md` para `*.md` + `*.pt-BR.md`, como na D17.
+
+## D23 — O limite de atraso é informado em duas formas; a apertada é o resultado
+- **Decisão:** o piso de liquidez `max_s [CO_i(s) − CI_i(s+d)]` (`UB − piso` = limite apertado)
+  é o limite que o estudo informa; a forma de janela `O_i[t* − d, t*]` fica como corolário e em
+  todas as colunas de CSV que já existiam, para os resultados anteriores seguirem comparáveis.
+- **Alternativas:** trocar a forma de janela em todo lugar; manter só a forma de janela.
+- **Por quê:** o limite apertado é 14× menor para 10 s no cenário calibrado e é atingido por um
+  participante sozinho, então é a afirmação mais forte e mais honesta; ele também mostrou que a
+  afirmação 1f (o limite de janela explica varejo × alto valor) era artefato da forma de janela.
+- **Reverter:** ignorar as colunas `tight_*` e `liquidity_floor`.
+
+## D24 — Liquidez restrita: saldos fixos, duas regras, sem novas tentativas, comparação com serviço igual
+- **Decisão:** o `liquidity-frontier` fixa os saldos de abertura por duas regras (`ub`:
+  `α × UB_i`; `outflow`: `α × ΣUB × saída_i / Σsaída`), nunca tenta de novo um pagamento rejeitado
+  e compara os desenhos pela *liquidez equivalente*: o menor `α` em que o valor rejeitado fica no
+  máximo num alvo (0,01%, 0,1%, 1%), com interpolação linear na grade, por semente. Os desenhos
+  rodam com prazo de 10 s e com prazo de uma hora. A fila simples (`queue:fifo|bypass`) é o motor
+  de micro-ciclos no modo de falta de saldo com a busca de ciclos desligada, com nova tentativa a
+  cada 100 ms (1 s nas rodadas de uma hora).
+- **Alternativas:** saldos vindos de um modelo de comportamento; novas tentativas com alguma
+  probabilidade; filas sem prazo liquidadas no fim do dia (a convenção do alto valor); liberação
+  por evento em vez de um relógio de novas tentativas.
+- **Por quê:** é o menor desenho que torna o LoopSettle comparável com a literatura de economia
+  de liquidez (fila com liquidez restrita) mantendo o prazo de pagamento instantâneo como caso
+  principal; toda escolha é um parâmetro de `experiments/liquidity-frontier.toml`.
+- **Reverter:** o experimento é aditivo; nenhum resultado anterior depende dele.
+
+## D25 — O ótimo offline é um exemplo com resolvedor só de teste, não um experimento do CLI
+- **Decisão:** o programa linear do ótimo offline fica em
+  `crates/loopsettle-sim/tests/common/optimum.rs` e é resolvido com o `minilp`, dependência só de
+  desenvolvimento do `loopsettle-sim`. Os resultados saem de
+  `cargo run --release -p loopsettle-sim --example optimality_gap` (que o `make all` também roda),
+  não de `loopsettle experiment`.
+- **Alternativas:** uma feature opcional `oracle` no CLI; um simplex escrito à mão.
+- **Por quê:** o CLAUDE.md só permite resolvedor de PL como oráculo de teste, nunca no caminho
+  principal; exemplos podem usar dependências de desenvolvimento, então a biblioteca e o CLI
+  continuam sem dependências e todo número ainda sai de um comando.
+- **Reverter:** apagar o exemplo e `results/optimality-gap/`; nada mais depende deles.
+- **Atualização da D21, 12/11/2026:** o `--per-participant` agora grava rótulos `P001...` no lugar
+  dos identificadores do arquivo (`--keep-names` os traz de volta) e é recusado para arquivos com
+  menos de `--min-participants` participantes (padrão 5). O `--report` gera um relatório bilíngue
+  só com agregados, que identifica a entrada por um hash FNV-1a. Não feito: suprimir linhas que
+  revelariam um pagamento único (um participante cujo pico é um só pagamento).
+
+## D26 — Pagamentos em eco como teste de estresse, desligados por padrão, com critério de morte fixado antes
+- **Decisão:** o gerador pode fazer de uma parcela de todos os pagamentos uma resposta a um
+  recebimento (`echo_share`, `echo_delay_ms`, `echo_return_prob`): quem recebe paga o mesmo valor
+  depois de um atraso exponencial, adiante ou direto de volta. Os ecos usam um fluxo aleatório
+  próprio e a taxa base é reduzida para o volume esperado não mudar; com `echo_share = 0` o fluxo
+  é idêntico byte a byte ao de antes. O experimento fixou o critério antes de rodar: a afirmação
+  central é condicional se o limite apertado de 10 s passar de 2% do UB com parcela de até 20%.
+- **Alternativas:** chegadas de Hawkes; valores parciais; ecos de ecos; calibrar a parcela.
+- **Por quê:** é o mecanismo mais simples que cria a circularidade de curto prazo que a
+  compensação em segundos poderia usar, então é o teste mais adverso para a afirmação de que essa
+  compensação não economiza nada.
+- **Resultado:** o critério disparou para os ecos que voltam para quem pagou (ASSESSMENT,
+  atualização 5).
+- **Reverter:** `echo_share = 0` (o padrão).
+
+## D27 — Resolução de gridlock no estilo de Bech & Soramäki, a partir de descrições secundárias
+- **Decisão:** `gridlock:fifo|bypass:<janela>:<atraso>` enfileira pagamentos quando falta saldo e,
+  a cada janela, liquida simultaneamente o maior conjunto de pagamentos na fila que é um prefixo
+  da fila de cada pagador e não deixa saldo negativo (começa com tudo; enquanto um participante
+  ficar abaixo de zero, tira o último pagamento ainda incluído da fila dele).
+  `bilateral:<modo>:<janela>:<atraso>` é o motor de micro-ciclos restrito a ciclos de dois.
+- **Alternativas:** as variantes exatas do algoritmo do artigo de 2001 (o artigo não está em
+  `docs/references/` e não foi lido); liquidação parcial; resolvedores por otimização.
+- **Por quê:** é o mecanismo clássico de economia de liquidez com que a literatura compara, e
+  liquida lotes que não são ciclos, o que a busca de micro-ciclos não consegue.
+- **Ressalva:** implementado a partir da descrição do algoritmo em fontes secundárias e da
+  propriedade de prefixo e viabilidade pela qual ele é conhecido; precisa ser conferido com o
+  artigo antes de o nome "Bech-Soramäki" ser usado numa publicação.
+- **Reverter:** não usar o motor `gridlock`; nada mais depende dele.
+
+## D28 — Abastecimento como camada fora dos motores, com reservas fora do sistema
+- **Decisão:** uma `FundingPolicy` age entre eventos dos motores, nos instantes que escolhe; o
+  dinheiro que ela move vem de reservas fora do sistema (`Ledger::fund`), então a invariante 1
+  passa a ser "contas mais reservas são constantes". Os motores são avisados quando saldos mudam
+  de fora (`SettlementEngine::funded`), para que os pagamentos na fila sejam tentados de novo.
+  Crédito intradiário é um limite inferior por conta (`with_credit_limits`). A remuneração dos
+  saldos e o custo de oportunidade do pré-financiamento não são modelados (sem fonte).
+- **Alternativas:** abastecimento dentro de cada motor; crédito como conta separada; um modelo de
+  custo.
+- **Por quê:** é a menor mudança que representa o que a D20 descreve (aportes só com o STR aberto)
+  para todos os motores de uma vez, e mantém os resultados anteriores idênticos byte a byte (sem
+  política, nada muda).
+- **Reverter:** rodar sem política (o padrão).

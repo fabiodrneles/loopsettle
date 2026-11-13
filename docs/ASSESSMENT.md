@@ -194,3 +194,63 @@ stress experiment was redesigned (W6, `results/stress/cases.csv`); what remains 
 revised outline is in [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md). What must stay out of the text until
 real per-participant data exist: any number for the potential saving in real Pix beyond the
 0.2–3% band, and any claim about other countries' systems.
+
+## Update 4 — the liquidity floor (11 Nov 2026)
+
+This file is a dated record; the text above is kept as written. What changed since:
+
+- **Weakness D.6 ("the delay bound is loose") is resolved.** The liquidity floor
+  ([`METHODOLOGY.md`](METHODOLOGY.md) §9b) is a tighter form of the same bound. For 10 s, over 10
+  seeds, the ceiling on the saving is 0.014% of UB (σ = 1.0) to 0.138% (σ = 0), instead of
+  0.7–3.3%, and netting every 10 s realises 38–46% of it (`results/robustness/seeds_summary.csv`).
+  Read every "0.06–3.3%" above as the window form.
+- **The reconciliation with McMahon et al. in Update 3 is withdrawn.** It rested on the window
+  bound being large (13.7%) in the stylised large-value system. The tight bound there is ≤ 0.004%
+  (`results/regimes/regimes.csv`): against real-time gross settlement with unlimited liquidity,
+  second-scale mechanisms save ≈ 0 in both regimes. Their 14–30% is measured against a FIFO queue
+  under constrained liquidity. LoopSettle does not simulate that baseline yet (`specs/06`), so
+  the honest statement today is "different question, not yet compared".
+- **K1 with the tight bound:** at most 0.042% of UB at 30 million payments a day with class
+  profiles (`results/heterogeneity/heterogeneity.csv`), against the 2% threshold.
+- **K2 applies to the new theorem too.** The floor is simple enough that it may already be in the
+  literature (network calculus, RTGS liquidity-delay trade-off). Not checked yet.
+- **Reproducibility:** results are identical byte for byte on Linux, Windows and macOS (CI).
+
+The verdict stays **PIVOT**, with a sharper central claim: *no mechanism with a 10 s deadline can
+save more than about 0.01–0.14% of the liquidity an instant system needs, and simple netting
+already realises about 40% of that ceiling.*
+
+## Update 5 — a kill criterion fired: the central claim is conditional (12 Nov 2026)
+
+`echo-sweep` (`results/echo-sweep/`) asked whether the result survives short-horizon
+circularity, with a criterion fixed beforehand: *the claim is conditional if the 10 s tight bound
+exceeds 2% of UB for an echo share of at most 20%.* It fired.
+
+- Echoes that go **onwards** (the payee pays a third party seconds later): bound ≤ 0.18% up to a
+  20% share. The claim holds; chains do not create recoverable liquidity.
+- Echoes that go **straight back** (the payee pays the payer back seconds later): at a 20% share
+  and 1 s delay the bound is 4.2% of UB and netting every 10 s realises 3.9%; at 5%, 1.2%.
+
+So the claim of Update 4 must carry its condition: *for flows without fast bilateral reciprocity,
+no mechanism with a 10 s deadline saves more than about 0.01–0.14% of the liquidity; with it, the
+saving is roughly the share of value reciprocated within the deadline.* This is a narrower claim
+and a more useful one: it names the single quantity that decides the answer, and `loopsettle
+bound` measures that quantity (through the liquidity floor) on a real payment file without the
+data leaving the institution. Whether real Pix flows have fast bilateral reciprocity (refunds,
+treasury operations between the same two institutions) is the question to put to a central bank.
+
+Also since Update 4: at equal service under constrained liquidity, 10 s designs save nothing
+measurable and one-hour queues save 1.1–1.4% in calibrated retail (`liquidity-frontier`); the
+per-participant floors equal the offline optimum of the whole system in 116 of 120 dense small
+instances (`optimality-gap`).
+
+The verdict stays **PIVOT**. The paper's title result is now the pair "a tight, attainable bound"
+plus "the condition under which it is small".
+
+**Addendum to update 5 (same day).** The fired case was rerun with one change at a time
+(`results/echo-sweep/sensitivity.csv`). The 10 s tight bound falls with volume: 4.2%, 2.1% and
+1.2% of UB at 1, 3 and 10 million payments a day, close to 1/√volume; it is 1.7% when the echo
+passes on half the amount and 1.8% with the calibrated receiver bias. At 10 million the bound is
+below the 2% threshold. The condition stands (the effect is 30 to 100 times the no-echo level and
+engines realise almost all of it), but its weight at real scale is probably small. This needs a
+run at 30 million or more before it is written as a result.

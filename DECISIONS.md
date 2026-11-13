@@ -61,7 +61,11 @@ Each entry: what was decided, alternatives, why, and how to revert.
   Bellman-Ford. Validated against `minilp` on 1,000 random graphs.
 - **Revert:** replace `cdfd::cdfd_max`; the oracle test still applies.
 
-## D6 — Proportional/local CDFD variant (BFF) postponed
+## D6 — Proportional/local CDFD variant (BFF) postponed — **done 12 Nov 2026**
+- **Update:** implemented in `crates/loopsettle-topology/src/cdfd_bff.rs` from the paper's
+  Algorithm 2 (section 5.2 and Appendix F.2, read in the HTML version), in `f64`; column `cdfd_bff`
+  of the ladder. Checked by properties on 1,000 random graphs and two hand examples; the paper's
+  own example (Figure 1) has no per-edge values.
 - **Decision:** not implemented in this version.
 - **Why:** the exact specification of the local algorithm must be checked in the paper
   (arXiv 2506.12546) before implementing; implementing it "from memory" would risk publishing a
@@ -134,6 +138,11 @@ Each entry: what was decided, alternatives, why, and how to revert.
 - **Why:** it is the behaviour most favourable to Pix's immediate settlement. Observed effect:
   with constrained liquidity, the bypass can slightly **increase** rejection by value (new
   payments consume the balance that would release the old ones). Documented in the results.
+- **Update, 11 Nov 2026:** strict per-payer FIFO is now an option
+  (`QueueDiscipline::StrictFifoPerPayer`, engine spec `micro:shortfall:<window>:<delay>:<len>:fifo`);
+  bypass stays the default. The gross retry now runs to a fixed point in each window: before, it
+  released at most one payment per edge per window (REVIEW 82).
+- **Revert:** omit the sixth field of the engine spec (or pass `bypass`).
 
 ## D14 — Expired payments go gross; if funds are short, they are rejected
 - **Decision:** at the deadline `arrival + max_delay_ms` (exact, not rounded to the window), the
@@ -208,3 +217,95 @@ Each entry: what was decided, alternatives, why, and how to revert.
   write aggregates; per-participant rows only with `--per-participant`. Output goes to
   `loopsettle-out/` (git-ignored), never to `results/`.
 - **Why:** an institution must be able to run it on confidential data and share the output.
+
+## D22 — Specs are working documents, in Portuguese only
+- **Decision:** `specs/` holds the post-v0.1.0 roadmap as short specifications (context and
+  evidence, requirements, acceptance criteria, how to validate). They are written in Portuguese
+  only; everything a user reads (README, docs, results) stays bilingual.
+- **Alternatives:** twin files for every spec.
+- **Why:** specs are instructions for whoever continues the build and change often; a twin for
+  each doubles the cost without a reader for it. CLAUDE.md asks for documentation in Portuguese.
+- **Revert:** translate `specs/*.md` to `*.md` + `*.pt-BR.md` as in D17.
+
+## D23 — The delay bound is reported in two forms; the tight one is the result
+- **Decision:** the liquidity floor `max_s [CO_i(s) − CI_i(s+d)]` (`UB − floor` = tight bound)
+  is the bound the study reports; the window form `O_i[t* − d, t*]` is kept as a corollary and in
+  every existing CSV column so earlier results stay comparable.
+- **Alternatives:** replace the window form everywhere; keep only the window form.
+- **Why:** the tight bound is 14× smaller for 10 s in the calibrated scenario and is attained by
+  a single participant, so it is the stronger and more honest statement; it also showed that
+  claim 1f (window bound explains retail vs large-value) was an artefact of the window form.
+- **Revert:** ignore the `tight_*` and `liquidity_floor` columns.
+
+## D24 — Constrained liquidity: fixed balances, two rules, no retries, equal-service comparison
+- **Decision:** `liquidity-frontier` fixes opening balances by two rules (`ub`: `α × UB_i`;
+  `outflow`: `α × ΣUB × out_i / Σout`), never retries a rejected payment, and compares designs by
+  *equivalent liquidity*: the smallest `α` at which the rejected value is at most a target (0.01%,
+  0.1%, 1%), interpolated linearly on the grid, per seed. Designs are run with a 10 s deadline and
+  with a one-hour deadline. The plain queue (`queue:fifo|bypass`) is the micro-cycle engine in
+  shortfall mode with the cycle search off, retried every 100 ms (1 s for the one-hour runs).
+- **Alternatives:** balances from a behavioural model; retries with some probability; unbounded
+  queues settled at the end of the day (the large-value convention); event-driven release instead
+  of a retry tick.
+- **Why:** it is the smallest design that makes LoopSettle comparable with the liquidity-saving
+  literature (queue under constrained liquidity) while keeping an instant-payment deadline as the
+  main case; every choice is a parameter of `experiments/liquidity-frontier.toml`.
+- **Revert:** the experiment is additive; no earlier result depends on it.
+
+## D25 — The offline optimum is an example with a test-only solver, not a CLI experiment
+- **Decision:** the linear programme of the offline optimum lives in
+  `crates/loopsettle-sim/tests/common/optimum.rs` and is solved with `minilp`, a dev-dependency of
+  `loopsettle-sim`. Its results are generated by
+  `cargo run --release -p loopsettle-sim --example optimality_gap` (also run by `make all`), not
+  by `loopsettle experiment`.
+- **Alternatives:** an optional `oracle` feature of the CLI; a hand-written simplex.
+- **Why:** CLAUDE.md allows an LP solver only as a test oracle, never in the main path; examples
+  can use dev-dependencies, so the library and the CLI stay dependency-free while every number
+  still comes from one command.
+- **Revert:** delete the example and `results/optimality-gap/`; nothing else depends on them.
+- **Update to D21, 12 Nov 2026:** `--per-participant` now writes labels `P001...` instead of the
+  file's identifiers (`--keep-names` restores them) and is refused for files with fewer than
+  `--min-participants` participants (default 5). `--report` writes a bilingual report with
+  aggregates only, identifying the input by an FNV-1a hash. Not done: suppressing rows that would
+  reveal a single payment (a participant whose peak is one payment).
+
+## D26 — Echo payments as a stress test, off by default, with a kill criterion fixed beforehand
+- **Decision:** the generator can make a share of all payments a response to a receipt
+  (`echo_share`, `echo_delay_ms`, `echo_return_prob`): the payee pays the same amount after an
+  exponential delay, onwards or straight back. Echoes use their own random stream and the base
+  rate is lowered so the expected volume is unchanged; with `echo_share = 0` the stream is
+  byte-identical to before. The experiment fixed its criterion before running: the central claim
+  is conditional if the 10 s tight bound exceeds 2% of UB for a share of at most 20%.
+- **Alternatives:** Hawkes arrivals; partial amounts; echoes of echoes; calibrating the share.
+- **Why:** it is the simplest mechanism that creates the short-horizon circularity second-scale
+  netting could use, so it is the most adverse test of the claim that such netting saves nothing.
+- **Outcome:** the criterion fired for echoes that return to the payer (ASSESSMENT, update 5).
+- **Revert:** `echo_share = 0` (the default).
+
+## D27 — Gridlock resolution in the manner of Bech & Soramäki, from secondary descriptions
+- **Decision:** `gridlock:fifo|bypass:<window>:<delay>` queues payments on a shortfall and, every
+  window, settles simultaneously the largest set of queued payments that is a prefix of every
+  payer's queue and leaves no balance negative (start with everything; while a participant is
+  below zero, drop the last payment still included in its queue). `bilateral:<mode>:<window>:<delay>`
+  is the micro-cycle engine restricted to cycles of two.
+- **Alternatives:** the exact algorithm variants of the 2001 paper (the paper is not in
+  `docs/references/` and was not read); partial settlement; optimisation-based solvers.
+- **Why:** it is the classic liquidity-saving mechanism the literature compares against, and it
+  settles batches that are not cycles, which the micro-cycle search cannot.
+- **Caveat:** implemented from the description of the algorithm in secondary sources and from the
+  prefix/feasibility property it is known for; it must be checked against the paper before the
+  name "Bech-Soramäki" is used in a publication.
+- **Revert:** do not use the `gridlock` engine; nothing else depends on it.
+
+## D28 — Funding as a layer outside the engines, with reserves outside the system
+- **Decision:** a `FundingPolicy` acts between engine events at instants it chooses; money it
+  moves comes from reserves outside the system (`Ledger::fund`), so invariant 1 becomes
+  "accounts plus reserves are constant". Engines are told when balances changed from outside
+  (`SettlementEngine::funded`) so queued payments are retried. Intraday credit is a per-account
+  lower limit (`with_credit_limits`). Remuneration of balances and the opportunity cost of
+  prefunding are not modelled (no source).
+- **Alternatives:** funding inside each engine; credit as a separate account; a cost model.
+- **Why:** it is the smallest change that represents what D20 describes (top-ups only while STR is
+  open) for every engine at once, and it keeps earlier results byte-identical (no policy = no
+  change).
+- **Revert:** run without a policy (the default).

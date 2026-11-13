@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "topology-triangle",
   "seed": 0,
-  "code_version": "0.1.0+git.0bb0473",
+  "code_version": "0.2.0+git.12485e1",
   "config_file": "data/samples/triangle.csv",
   "command": "cargo run --release -p loopsettle-cli -- topology data/samples/triangle.csv",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
   "rows": 3,
   "rows_skipped": 0,
   "nodes": 3,
@@ -18,6 +22,7 @@
       "hodge_triangles": 1,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.75,
+      "cdfd_bff": 0.75,
       "cycle_netting": 0.75,
       "cycles_found": 1
     },
@@ -31,6 +36,7 @@
       "hodge_triangles": 1,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.75,
+      "cdfd_bff": 0.75,
       "cycle_netting": 0.75,
       "cycles_found": 1
     },
@@ -40,5 +46,29 @@
     "cg_gradient_rel_residual": 0,
     "cg_curl_iterations": 1,
     "cg_curl_rel_residual": 0
+  },
+  "nulls": {
+    "hodge_analytic_null": 0.333333,
+    "payee_shuffle": [
+      {
+        "measure": "cdfd_max_gross",
+        "observed": 0.75,
+        "null_mean": 0.6375,
+        "null_sd": 0.290285
+      },
+      {
+        "measure": "cdfd_bff_gross",
+        "observed": 0.75,
+        "null_mean": 0.6375,
+        "null_sd": 0.290285
+      },
+      {
+        "measure": "cycle_netting_gross",
+        "observed": 0.75,
+        "null_mean": 0.6375,
+        "null_sd": 0.290285
+      }
+    ],
+    "shuffles": 20
   }
 }

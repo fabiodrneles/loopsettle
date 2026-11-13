@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.1.0+git.66c1d3f",
+  "code_version": "0.2.0+git.12485e1",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -79,7 +83,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71262596.16,
       "liquidity_saving_vs_ub_brl": 8531.38,
@@ -99,7 +104,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5314.523575,
       "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.421159,
+      "share_settled_within_2800ms": 0.420409,
       "cycles_settled": 230099,
       "cycles_failed": 0
     },
@@ -110,7 +115,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71271127.54,
       "liquidity_saving_vs_ub_brl": 0,
@@ -158,7 +164,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4317013.516122,
       "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "outage_unlimited": [
@@ -194,7 +200,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71265014.54,
       "liquidity_saving_vs_ub_brl": 9766.33,
@@ -214,7 +221,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5302.091393,
       "delay_value_weighted_mean_ms": 5279.755117,
-      "share_settled_within_2800ms": 0.423721,
+      "share_settled_within_2800ms": 0.422982,
       "cycles_settled": 231404,
       "cycles_failed": 0
     },
@@ -225,7 +232,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71274780.87,
       "liquidity_saving_vs_ub_brl": 0,
@@ -273,7 +281,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4306453.294323,
       "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "outage_constrained": [
@@ -309,7 +317,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71258820.63,
       "liquidity_saving_vs_ub_brl": 12306.91,
@@ -329,7 +338,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5302.088502,
       "delay_value_weighted_mean_ms": 5279.821607,
-      "share_settled_within_2800ms": 0.423719,
+      "share_settled_within_2800ms": 0.422981,
       "cycles_settled": 231403,
       "cycles_failed": 10
     },
@@ -340,7 +349,8 @@
         "mode": "shortfall",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71263981.05,
       "liquidity_saving_vs_ub_brl": 7146.49,
@@ -388,7 +398,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4306453.294323,
       "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     }
   ],
   "cases": [
@@ -679,6 +689,261 @@
           "payers_with_rejections": 5
         }
       ]
+    }
+  ],
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "seeds_summary": [
+    {
+      "metric": "others_ub_net_change_pct_largest_t0",
+      "seeds": 10,
+      "mean": 0.031768,
+      "ci95_low": -0.027372,
+      "ci95_high": 0.090909
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000172,
+      "ci95_low": -0.000023,
+      "ci95_high": 0.000368
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000151,
+      "ci95_low": -0.00005,
+      "ci95_high": 0.000351
+    },
+    {
+      "metric": "rejected_value_share_largest_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000179,
+      "ci95_low": -0.000025,
+      "ci95_high": 0.000382
+    },
+    {
+      "metric": "others_ub_net_change_pct_largest_t1",
+      "seeds": 10,
+      "mean": 0.028221,
+      "ci95_low": -0.034672,
+      "ci95_high": 0.091115
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000084,
+      "ci95_low": -0.000016,
+      "ci95_high": 0.000184
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000049,
+      "ci95_low": -0.000026,
+      "ci95_high": 0.000124
+    },
+    {
+      "metric": "rejected_value_share_largest_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.00011,
+      "ci95_low": -0.000006,
+      "ci95_high": 0.000225
+    },
+    {
+      "metric": "others_ub_net_change_pct_largest_t2",
+      "seeds": 10,
+      "mean": 0.023762,
+      "ci95_low": -0.040035,
+      "ci95_high": 0.087558
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_gross_real_time",
+      "seeds": 10,
+      "mean": 0.00013,
+      "ci95_low": 0.000019,
+      "ci95_high": 0.000241
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000107,
+      "ci95_low": -0.000003,
+      "ci95_high": 0.000216
+    },
+    {
+      "metric": "rejected_value_share_largest_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000167,
+      "ci95_low": 0.000055,
+      "ci95_high": 0.000279
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t0",
+      "seeds": 10,
+      "mean": 0.030025,
+      "ci95_low": -0.029571,
+      "ci95_high": 0.08962
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000164,
+      "ci95_low": -0.000036,
+      "ci95_high": 0.000363
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000144,
+      "ci95_low": -0.000059,
+      "ci95_high": 0.000347
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000173,
+      "ci95_low": -0.000034,
+      "ci95_high": 0.000379
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t1",
+      "seeds": 10,
+      "mean": 0.032312,
+      "ci95_low": -0.032681,
+      "ci95_high": 0.097304
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000111,
+      "ci95_low": -0.000061,
+      "ci95_high": 0.000283
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000078,
+      "ci95_low": -0.000064,
+      "ci95_high": 0.000221
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000122,
+      "ci95_low": -0.000029,
+      "ci95_high": 0.000273
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_payer_t2",
+      "seeds": 10,
+      "mean": 0.03302,
+      "ci95_low": -0.031188,
+      "ci95_high": 0.097228
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000117,
+      "ci95_low": 0.000036,
+      "ci95_high": 0.000198
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000093,
+      "ci95_low": 0.00002,
+      "ci95_high": 0.000166
+    },
+    {
+      "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000133,
+      "ci95_low": 0.000034,
+      "ci95_high": 0.000233
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t0",
+      "seeds": 10,
+      "mean": -0.002034,
+      "ci95_low": -0.004038,
+      "ci95_high": -0.000031
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000001,
+      "ci95_low": -0.000001,
+      "ci95_high": 0.000003
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000001,
+      "ci95_low": -0.000001,
+      "ci95_high": 0.000002
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000023,
+      "ci95_low": -0.000017,
+      "ci95_high": 0.000064
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t1",
+      "seeds": 10,
+      "mean": -0.00839,
+      "ci95_low": -0.020798,
+      "ci95_high": 0.004018
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000003,
+      "ci95_low": -0.000002,
+      "ci95_high": 0.000008
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000002,
+      "ci95_low": -0.000001,
+      "ci95_high": 0.000004
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000025,
+      "ci95_low": -0.000015,
+      "ci95_high": 0.000064
+    },
+    {
+      "metric": "others_ub_net_change_pct_top_net_receiver_t2",
+      "seeds": 10,
+      "mean": -0.005627,
+      "ci95_low": -0.013565,
+      "ci95_high": 0.002311
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_gross_real_time",
+      "seeds": 10,
+      "mean": 0.000029,
+      "ci95_low": -0.000016,
+      "ci95_high": 0.000074
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_shortfall_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000024,
+      "ci95_low": -0.000022,
+      "ci95_high": 0.000069
+    },
+    {
+      "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.000152,
+      "ci95_low": -0.000036,
+      "ci95_high": 0.000339
     }
   ]
 }

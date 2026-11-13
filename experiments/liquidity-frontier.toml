@@ -1,0 +1,33 @@
+# Constrained liquidity (specs/06): with the liquidity participants actually hold, how much value
+# is rejected or delayed under each design, and how much liquidity does a mechanism save at equal
+# service? This is the baseline of the LSM literature (queue under constrained liquidity).
+#
+# Scale: 300,000 payments a day (the other experiments use 1,000,000) so that 10 seeds x 3
+# scenarios x 2 rules x 9 liquidity levels x 8 engines fit the time budget of the reference
+# machine. ASSUMPTION: rejected payments are not retried by the payer.
+[experiment]
+name = "liquidity-frontier"
+description = "Rejection and delay vs liquidity held, per settlement design (constrained liquidity)"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 300_000
+calibration = "data/calibration/pix.toml"
+
+[frontier]
+# The grid is finer just below 1, where rejection falls fast: the equivalent liquidity for small
+# targets is interpolated there.
+# Two horizons: designs that hold a payment for at most 10 s (an instant-payment deadline) and for
+# at most one hour (the regime of large-value liquidity-saving mechanisms).
+seeds = [20260930, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+receiver_bias_sigma = [0.4, 1.0]
+wholesale_payments_per_day = 20_000
+# opening balance of participant i:  "ub": alpha x UB_i (uses the day's own peak: hindsight);
+# "outflow": alpha x UB_total x (outflow_i / total outflow) (no hindsight about the peak's timing)
+rules = ["ub", "outflow"]
+alphas = [0.5, 0.8, 0.9, 0.95, 0.97, 0.98, 0.99, 1.0, 1.5]
+engines = ["gross", "queue:bypass:10000", "micro:shortfall:500:10000", "micro:all:500:10000", "queue:bypass:3600000:1000", "queue:fifo:3600000:1000", "micro:shortfall:1000:3600000", "micro:shortfall:1000:3600000:6:fifo"]
+# rejected value, in % of gross value, at which designs are compared ("equal service")
+targets_pct = [0.01, 0.1, 1.0]

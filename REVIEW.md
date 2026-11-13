@@ -208,3 +208,186 @@ the real laptop (i3, 4 GB).
     with an index and `references.bib`. Each is redistributed as published by its
     author or institution, with the original link; the reviewer should confirm that each
     licence allows it before the repository is promoted (removal on request is stated).
+79. **Liquidity floor (tight delay bound), 11 Nov 2026.** `bound.rs::liquidity_floors`,
+    METHODOLOGY §9b, CLAIMS 1g, D23. For 10 s the bound drops from 0.76% to 0.054% of UB and
+    netting every 10 s realises 51% of it (`results/regimes/bound_curve.csv`). With 10 seeds
+    (`robustness/seeds_summary.csv`): 0.014% (σ = 1.0) to 0.138% (σ = 0). **Risks:** heterogeneity
+    and funding-window runs still use the window form (spec 02); the theorem is simple
+    enough that it may already exist in the literature (spec 01, open question 1) — check before
+    claiming novelty; the floor is per participant and the sum is not attainable (spec 03).
+80. **Claim 1f revised.** With the tight bound the stylised large-value system also shows ≈ 0
+    (≤ 0.004%), so the window bound does not reconcile LoopSettle with McMahon et al.; the
+    baseline (FIFO queue under constrained liquidity) does, and that is not yet simulated
+    (spec 06). ASSESSMENT "Update 3", README, NOVELTY, PAPER_OUTLINE and the JOSS draft still
+    carry the old argument (spec 02, FR6). **This must be fixed before any text is submitted.**
+81. **Audit of 11 Nov 2026 and the spec set.** `specs/00-auditoria.md` lists what was read, what
+    was not, and 14 findings with evidence labels. Read-but-untested defects: `retry_gross`
+    releases one payment per edge per window (affects constrained-liquidity results only),
+    `fraction_at_most(2800)` counts delays up to 2,815 ms, `DeferredNet` truncates the interval
+    for cycle counts that do not divide the day (no published result affected). Cross-platform
+    bit-for-bit reproducibility is unverified (spec 09 E3).
+82. **Engine and metric fixes (spec 04), 11 Nov 2026.** Tests in
+    `crates/loopsettle-core/tests/spec04.rs`, each failing before its fix. (a) `retry_gross`
+    released one payment per edge per window and did not revisit payers funded later in the same
+    pass; now it runs to a fixed point. (b) `DeferredNet` cycle `k` is at `floor(k·day/c)`, so the
+    last cycle of a day is exactly at its end. (c) The share settled within 2.8 s is counted
+    exactly (the histogram counted delays up to 2,815 ms). (d) Strict per-payer FIFO as an
+    option. (e) Checked sums in the ledger. **Effect on results:** with unlimited liquidity every
+    CSV is identical except the column `share_within_2800ms` (changes below 0.001, e.g. 0.4252 →
+    0.4245; claim 7 is unaffected); `microcycle-sweep/shortfall.csv` changed in the
+    `micro_cycle_shortfall` rows (rejected value at 25% of UB 23.2275% → 23.2270%; p95 delay
+    920 → 1,216 ms). The defect was real but its effect on the published numbers is negligible.
+    **Not done:** the incremental cycle search (C5). Measured cost of the micro-cycle engine:
+    about 0.6 s per million payments (10 million payments: 26.1 s against 19.8 s for gross, CSV
+    parsing included), so it is not the bottleneck; the rewrite must keep the exact cycle order
+    and is left for when scale runs need it.
+83. **Reproducibility, statistics and CI (spec 09), 11 Nov 2026.** (a) `results-golden/` and
+    `scripts/golden.py`: a small run of every experiment, compared byte for byte in CI on Linux,
+    Windows and macOS, and with 1 and 2 threads. First run: identical on the three platforms
+    ([run 43061345632](https://github.com/fabiodrneles/loopsettle/actions/runs/43061345632)), so
+    the cross-platform doubt of the audit (A11) is settled for the golden scenarios. The check was
+    confirmed to fail on a changed file. (b) CI also runs clippy with `-D warnings`, the wasm build
+    and smoke test, and the bilingual-document check (`scripts/check_twins.py`). (c)
+    `crates/loopsettle-sim/tests/metamorphic.rs`: scaling amounts, relabelling participants,
+    shifting time, and 2,000 garbage inputs to the TOML and CSV readers (no panic found). (d)
+    Seeds and cases run in parallel (`stats::par_map`, 2 threads by default,
+    `LOOPSETTLE_THREADS`); output order is fixed, results identical with 1, 2 and 4 threads;
+    `robustness` went from 118 s to 75 s on 4 cores. (e) `summary.json` records a schema version,
+    platform, rustc and a hash of `Cargo.lock`. **Not done:** `cargo fmt --check` (the code is
+    not rustfmt-formatted: 295 diffs with the default width; reformatting is a separate, noisy
+    commit to be decided by the owner); several seeds in `baseline`, `potential-vs-realizable`,
+    `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows` and `regimes` (the helper
+    exists, each experiment's tables still need their CI columns); the naive reference simulator
+    for differential tests; `results/MANIFEST.sha256`.
+84. **Constrained liquidity (spec 06) and the queue engine (spec 05, M1), 11 Nov 2026.**
+    `experiments6.rs`, `results/liquidity-frontier/`, CLAIMS 1h, D24, METHODOLOGY §11. Result at
+    equal service (1% of value rejected, rule `ub`, 10 seeds): 10 s designs save 0.01% of
+    liquidity (CIs include zero) in every scenario; one-hour designs save 0.4–0.6% (retail,
+    σ = 1.0), 1.1–2.3% (retail, σ = 0.4) and 2.8–4.8% (stylised large-value). **Risks:** (a) the
+    equivalent `α` near 1 is interpolated between 0.95 and 1.0, where gross rejection falls from
+    about 4% to exactly 0: a finer grid there would make the 1% target more precise; (b) rule
+    `ub` gives every participant exactly its own peak, so α = 1 is a knife edge; rule `outflow`
+    is reported in `frontier.csv` but not in the summary's equivalent-liquidity table (few seeds
+    reach low targets within α ≤ 2); (c) no retries; (d) the large-value system is not
+    calibrated, so the 2.8–4.8% is a direction, not an estimate, and is far from the 14–30% of
+    McMahon et al.; (e) a wrong assumption of mine was caught by a test: a 10 s queue does *not*
+    reject less than gross (it rejects 0.08% more value in the small test scenario), which is the
+    same mechanism as the main result. **Performance:** the gross retry was rewritten to visit
+    only credited participants (it took more than 10 minutes with one-hour deadlines; now the
+    whole experiment takes 4 min 46 s); the literal version stays as `reference_retry` and the two
+    give identical settlements in 30,000 random cases. This replaces item C5 of spec 04 for the
+    retry; the cycle search itself is unchanged.
+85. **Offline optimum and the sandwich (spec 03), 11 Nov 2026.** `tests/common/optimum.rs`,
+    `tests/optimum.rs`, example `optimality_gap`, CLAIMS 1i, D25, METHODOLOGY §9c. The LP optimum
+    equals the sum of the floors in 116 of 120 dense small instances; the best engine realises
+    44–61% of it. **Risks:** (a) the LP lets payments be split and batches be arbitrary, so it
+    bounds the whole-payment optimum from below; the brute-force integer check of the spec (FR2)
+    was not written; (b) instances are small (20 participants, 1,500 payments) and not
+    calibrated; a 300 s deadline did not finish within 9 minutes, so the claim covers deadlines up
+    to 60 s; (c) "floors = optimum" is an empirical regularity, not a theorem: a random test finds
+    strict gaps in 4% of tiny instances. A proof of when equality holds would be a contribution;
+    (d) `results/optimality-gap/` is not part of the golden check (LP solutions in floating point
+    are not guaranteed identical across platforms; the files keep 2 to 4 decimals).
+86. **Liquidity frontier rerun with a finer grid, 12 Nov 2026.** Risk (a) of point 84 was real: with
+    steps of 0.01 between 0.97 and 1 the one-hour savings at 1% rejected are 1.1–1.4% (retail,
+    σ = 1.0), 2.2–3.2% (σ = 0.4) and 3.7–5.3% (large-value), up to twice the first run's values.
+    The 10 s result did not move (CIs include zero). The numbers of point 84 are superseded;
+    CLAIMS 1h carries the new ones and says the measure is grid-sensitive. Cost: the experiment
+    now takes 5 min 49 s on 4 cores with 2 threads, above the 5-minute target of spec 06 (it will
+    be longer on the reference machine). Also new: `loopsettle bound/settle --report` and private
+    per-participant output (spec 10, R2 and R3; D21 updated).
+87. **Echo payments (spec 07, G2): the kill criterion fired, 12 Nov 2026.** `stream.rs` (echo
+    mechanism), `experiments7.rs`, `results/echo-sweep/`, CLAIMS 1j and "cannot claim" 14, D26,
+    ASSESSMENT update 5. With echoes returned to the payer, 20% share and 1 s delay: 10 s tight
+    bound 4.2% of UB, realised 3.9%. With onward echoes: no change. **This is the most important
+    point for the reviewer:** every statement of the form "seconds recover nothing" in the README,
+    the JOSS draft and the paper outline must carry the condition. **Risks:** (a) echoes repeat the
+    exact amount, the most favourable case for netting; partial amounts would give less; (b) one
+    σ (0.4) and one scale (1 million); with more volume the stationary part shrinks but the echo
+    part should not; (c) wide CIs with 8 seeds (some cases have a few seeds dominating);
+    (d) micro-cycles needed up to 4.5% *more* liquidity than gross with 50% onward echoes at 1 s
+    (CI [−7.5; −1.5]): holding payments that would have been funded by their own trigger is
+    costly, and this deserves its own look; (e) whether real flows have fast bilateral returns is
+    unknown.
+88. **Echo follow-up, 12 Nov 2026.** `echo-sweep/sensitivity.csv` and `order_diagnostic.csv`,
+    CLAIMS 1j (extended) and 1k. (a) The conditional result holds in direction under every
+    variation tried, with smaller size: 10 s tight bound 1.7% (half the amount), 0.6% (a quarter),
+    1.8% (σ = 1.0), 2.1% (three times the payments), against 4.2% in the sweep. The fall with
+    volume is real: 4.2%, 2.1%, 1.2% at 1, 3 and 10 million (CI at 10 million [0.6; 1.7]), close
+    to 1/√volume. I do not have a derivation for it; a 30 million run and an argument are needed
+    before it is stated as a law. The experiment now takes 4 min 42 s. (b) Risk (d) of point 87 has an explanation:
+    the hold engine (delay only, order kept) saves exactly 0.000% in every case, so the loss of
+    micro-cycles with onward echoes comes from settling out of arrival order. "Exactly zero" has a
+    one-line proof: holding every payment for the same delay, in arrival order, makes each
+    position curve the gross curve shifted in time, so its lowest point is the same.
+89. **Literature check for the liquidity floor, 12 Nov 2026.** `docs/REFERENCES.md` §8. Four web
+    searches and one full-text check found no prior statement of the floor; the closest lead
+    (Bank of Canada SDP 2020-9) was read and is a different thing (delay to the end of the day,
+    iterative simulation). UB and LB themselves go back to Koponen & Soramäki (1998), which the
+    repository does not cite yet and I have not read. **This does not establish novelty**; the
+    kill criterion K2 stays open for the new theorem.
+90. **Echo effect and volume (`echo-scale`), 12 Nov 2026.** Open item of point 88 run: with 20% of
+    payments returned to the payer in 1 s, the 10 s tight bound is 4.8%, 2.4%, 1.3% and 0.8% of UB
+    at 1, 3, 10 and 30 million payments a day (4 seeds; fitted exponent −0.52). In money the
+    bound grows with exponent 0.42 while UB grows with about 0.95: the recoverable amount behaves
+    like a fluctuation, the need like a drift. **Risks:** 4 seeds and wide CIs at 1 and 3 million
+    (the CI at 3 million includes zero); a fit over four points; no derivation. A naive
+    extrapolation to Pix volume (about 240 million a day) would give about 0.3%, and must not be
+    quoted as a result. Also new: the `gridlock` and `bilateral` engines (spec 05 M3, M4; D27),
+    with the caveat that the gridlock algorithm was not checked against the 2001 paper.
+91. **Circularity by horizon (spec 08, T3), 12 Nov 2026.** `experiments8.rs`,
+    `results/circularity-horizon/`, CLAIMS 2b. Circulating value per window against the tight
+    bound for the same deadline: 25% against 0.006% of gross value at 10 s. **Risks:** the
+    circulating share counts each edge of a cycle (a triangle of 5 counts 15), as the ladder does,
+    so it is a share of gross value, not a liquidity amount; the two columns have different
+    natures and the ratio is an illustration, not a law; 5 seeds, one scale, no echoes; the spec's
+    monotonicity check (the share does not fall when windows are nested) was observed in the
+    table but not written as a test. Also: the bound curve of `regimes` now has 10 seeds (10 s:
+    tight bound 0.041% [0.025; 0.056], netting realises 48% of it [40; 55]).
+92. **Funding layer (spec 05, M5), 12 Nov 2026.** `crates/loopsettle-core/src/funding.rs`,
+    `Ledger::fund` and `with_credit_limits`, `tests/funding.rs` (three hand examples and a property
+    test: accounts plus reserves conserved, no balance below minus its credit line, one outcome
+    per payment), regression test in `bound.rs`, `funding-windows/prefunding.csv`, CLAIMS 1e2,
+    D28. `windows.csv` is byte-identical. **Found while testing:** the event-driven retry of
+    point 84 did not know about top-ups, so a funded payer waited one extra window; engines now get
+    a `funded` notice. **Risks:** one seed; prefunding proportional to hindsight need; credit lines
+    are tested but no experiment uses them yet. **Spec 05 is complete except** that the gridlock
+    engine (M3) is still not checked against Bech & Soramäki (2001): EconStor,
+    publications.bof.fi and nationalbanken.dk are outside this session's network.
+93. **Spec 08, 12 Nov 2026.** (a) **T2:** the maximum circulation now uses a primal-dual min-cost
+    flow (blocking flows on zero-reduced-cost arcs): 100,000 edges from 150 s to 0.2 s, 1 million
+    edges in 7.7 s and 117 MiB (`examples/bench_cdfd_scale.rs`); same optimum as the old solver
+    and the LP oracle; no published number changed. (b) **T1:** BFF, the proportional CDFD, from
+    the paper's Algorithm 2 (read in the arXiv HTML; the PDF was unreadable and part of Appendix F
+    was only summarised); column `cdfd_bff`: 0.79 gross, 0.13 net, below greedy cycles. The local
+    dynamics are not implemented, and there is no per-edge example in the paper to reproduce.
+    (c) **T4:** `topology` and `baseline` write `nulls.csv` (analytic Hodge null; payee shuffle,
+    20 draws). The ladder is about 4 times its shuffle null; Hodge sits at its null. The shuffle
+    null changes each payee's total as well as the bilateral structure. (d) **T3:** the
+    monotonicity of the circulating share in nested windows is now a test, with a one-line proof
+    (superadditivity). (e) **T5 not run:** chain data providers answer 403 from this environment.
+94. **Spec 10, 12 Nov 2026.** (a) **R1:** `loopsettle sort` (external stable sort; 50 million rows,
+    1.27 GB, reversed, in 39 s with 105 MiB; UB and LB equal to those of the original order); an
+    optional `status` column (only settled rows count); `bound` on 50 million rows in 161 s with
+    13 MiB. The ISO 20022 mapping in `data/README.md` marks what was checked (`IntrBkSttlmAmt`,
+    `AccptncDtTm`, `ACSC`) and what was not (`DbtrAgt`/`CdtrAgt` identifiers, the settlement-time
+    field): the usage guides were outside the network. (b) **R4:** the web app shows the liquidity
+    floor curve and analyses a payment file chosen by the user entirely in the browser
+    (`analyze_file` in wasm; files up to 200 MB / 2 million payments). Checked in Chromium at 1440
+    and 375 px wide (no horizontal scroll, no page errors) and by `scripts/wasm-smoke.mjs`.
+    Screenshots in `docs/img/` were regenerated. Not done: publishing on GitHub Pages (only when the
+    owner asks; CLAUDE.md, optional step). (c) **R5:** README with a runnable example in
+    `loopsettle-core` and `loopsettle-sim` (compiled and run as doc tests; English only, as crate
+    documentation). The `testing` module behind a feature and the Python notebook were not done.
+95. **Several seeds in the six one-seed experiments (spec 09, E1), 12 Nov 2026.** `seeds.rs`;
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity` and
+    `funding-windows` now write `seeds.csv` and `seeds_summary.csv` (10 seeds by default,
+    `[experiment] seeds`), next to their one-seed tables, which are byte-identical. SUMMARY §16.
+    **One claim changed:** on the gross graph the order of BFF and greedy cycle netting varies by
+    seed (BFF higher in 4 of 10), so CLAIMS 4 no longer says BFF is below greedy netting there; on
+    the net graph it is below in 10 of 10. Other one-seed statements hold within their intervals
+    (for example, 5 s micro-cycles settle 43% [41; 45] within 2.8 s, under the 50% target; 2 s
+    ones 100%). `heterogeneity` and `funding-windows` use only the smallest scale for the seeds
+    (the 30-million and 10-million runs would take tens of minutes); the weekend 10 s tight bound
+    at 1 million payments per Thursday is 0.03–0.07%, with CIs up to 0.096%. `stress` names its
+    "before the target's own peak" case by position, because that time differs between seeds.

@@ -99,3 +99,24 @@ funcionalidades antes de usá-los na tabela de novidade do artigo.
 | BCB, *Relatório Anual do SPI 2024* | Perfil horário (Gráfico 12, p. 13) e volumes por tipo de dia (Gráfico 11, p. 12) — agora SOURCED no LoopSettle; aportes na Conta PI via STR só das 6h30 às 18h30 nos dias úteis, mais 30 min (p. 15); aportes acima de R$ 87 bi por dia, maiores às sextas por causa do fim de semana; redesconto do SPI residual (R$ 169 mi em 2024 contra R$ 13,68 tri de aportes); saldos da Conta PI remunerados pela Selic, dentro de limites (Res. BCB 195/2022, 412/2024). | lido |
 | BCB, *Relatório de Gestão do Pix 2023* | Fora do horário do STR, as únicas fontes de liquidez são o saldo de moeda eletrônica, o compulsório sobre depósitos à vista e a linha de liquidez do SPI, com custo — as duas últimas só para instituições financeiras; instituições de pagamento e bancos pequenos tinham custo de oportunidade maior, daí a remuneração da Conta PI desde ago/2022 (p. 16 do PDF). | lido |
 | Outras palestras do seminário de 2024 (Heijmans & van der Woerd sobre participantes que falham em LVPS; Mattern & Meyer sobre a criticidade de participantes em LBTR; Drott sobre plataformas DLT transfronteiriças; Polo, Fritz & Rodloff sobre análises do T2; Vacirca sobre margem inicial; Brown sobre adoção de pagamentos de varejo; Lubbersen & Bolt sobre descontos de bandeiras de cartão) | Não tratam de economia de liquidez em pagamentos instantâneos; Heijmans & van der Woerd e Mattern & Meyer servem para um futuro experimento de estresse mais forte. | lidas por alto |
+
+## 8. Busca por enunciados anteriores do piso de liquidez (12/11/2026)
+
+Pergunta: alguém já enunciou o limite `max_s [CO_i(s) − CI_i(s + d)]` (a menor liquidez de qualquer
+mecanismo com atraso máximo `d`), ou a igualdade entre os pisos por participante e o ótimo offline?
+Quatro buscas na web (limites de liquidez intradiária com parâmetro de atraso; troca entre liquidez
+e atraso; cálculo de redes aplicado a sistemas de pagamento; liquidez mínima com restrição de
+atraso máximo) e uma conferência em texto integral.
+
+| O que foi achado | Situação |
+|---|---|
+| Os dois limites sem parâmetro de atraso — o superior (liquidação bruta imediata = maior posição devedora líquida acumulada) e o inferior (uma compensação no fim do dia) — são padrão e atribuídos a Koponen & Soramäki (1998, Bank of Finland Studies E:14, seções "Theoretical bounds" e "Real bounds") e a Bech & Soramäki (2001/2002). O UB e o LB do LoopSettle são esses. | só resumos de busca; o estudo de 1998 **não foi lido**. Precisa ser lido e citado como origem do UB/LB. |
+| Rivadeneyra & Zhang (Bank of Canada SDP 2020-9, em `docs/references/pdf/`) calculam "a liquidez mínima necessária para um conjunto de pagamentos permitindo o atraso máximo". | **lido** (p. 10, nota 13, e seção 4.1): "atraso máximo" ali é adiar os pagamentos que falham até o fim do dia, e o mínimo é achado por simulação iterativa. Sem prazo `d`, sem fórmula fechada. Não é o piso. |
+| Troca entre liquidez e atraso por simulação: Leinonen & Soramäki (1999), Enge & Øverli (2006), Arjani (2006), Galbiati & Soramäki (2007), DNB WP 682 (2020), ECB WP 1291 (2011). | só resumos de busca; nenhum é descrito como enunciando um limite parametrizado por um prazo. |
+| Cálculo de redes (curvas de chegada, limites de fila e de atraso). | nenhuma fonte achada que o aplique à liquidez de sistemas de pagamento; o piso é o análogo de um limite de fila em que saídas e entradas atrasadas fazem o papel de chegadas e serviço. |
+
+**Conclusão para usar no artigo:** nenhum enunciado anterior foi achado, numa busca limitada. Isso
+não é evidência de novidade. Antes de afirmá-la: ler Koponen & Soramäki (1998) e Bech & Soramäki
+(2002), buscar nos anais do seminário do simulador do Banco da Finlândia e no *Journal of Financial
+Market Infrastructures*, e perguntar a um especialista. Até lá, a redação segura é "até onde
+sabemos".

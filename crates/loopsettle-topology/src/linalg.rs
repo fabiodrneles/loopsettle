@@ -32,7 +32,13 @@ impl Csr {
         for i in 0..rows {
             indptr[i + 1] += indptr[i];
         }
-        Csr { rows, cols, indptr, indices, values }
+        Csr {
+            rows,
+            cols,
+            indptr,
+            indices,
+            values,
+        }
     }
 
     /// `y = A x`
@@ -88,12 +94,22 @@ pub struct CgReport {
 /// systems built as `B^T B x = B^T f`), CG converges to the minimum-norm solution even though
 /// `A` is singular. The closure parameter (`impl FnMut`) lets callers pass a matrix-free
 /// operator such as `B^T (B x)` without building `B^T B`.
-pub fn cg(mut apply: impl FnMut(&[f64], &mut [f64]), b: &[f64], x: &mut [f64], tol: f64, max_iter: usize) -> CgReport {
+pub fn cg(
+    mut apply: impl FnMut(&[f64], &mut [f64]),
+    b: &[f64],
+    x: &mut [f64],
+    tol: f64,
+    max_iter: usize,
+) -> CgReport {
     let n = b.len();
     x.iter_mut().for_each(|v| *v = 0.0);
     let bnorm = norm2(b);
     if bnorm == 0.0 {
-        return CgReport { iterations: 0, rel_residual: 0.0, converged: true };
+        return CgReport {
+            iterations: 0,
+            rel_residual: 0.0,
+            converged: true,
+        };
     }
     let mut r = b.to_vec();
     let mut p = r.clone();
@@ -104,7 +120,11 @@ pub fn cg(mut apply: impl FnMut(&[f64], &mut [f64]), b: &[f64], x: &mut [f64], t
         let pap = dot(&p, &ap);
         if pap <= 0.0 {
             // Direction in the null space: residual cannot be reduced further.
-            return CgReport { iterations: it, rel_residual: rr.sqrt() / bnorm, converged: rr.sqrt() / bnorm <= tol };
+            return CgReport {
+                iterations: it,
+                rel_residual: rr.sqrt() / bnorm,
+                converged: rr.sqrt() / bnorm <= tol,
+            };
         }
         let alpha = rr / pap;
         for i in 0..n {
@@ -113,7 +133,11 @@ pub fn cg(mut apply: impl FnMut(&[f64], &mut [f64]), b: &[f64], x: &mut [f64], t
         }
         let rr_new = dot(&r, &r);
         if rr_new.sqrt() / bnorm <= tol {
-            return CgReport { iterations: it + 1, rel_residual: rr_new.sqrt() / bnorm, converged: true };
+            return CgReport {
+                iterations: it + 1,
+                rel_residual: rr_new.sqrt() / bnorm,
+                converged: true,
+            };
         }
         let beta = rr_new / rr;
         for i in 0..n {
@@ -121,7 +145,11 @@ pub fn cg(mut apply: impl FnMut(&[f64], &mut [f64]), b: &[f64], x: &mut [f64], t
         }
         rr = rr_new;
     }
-    CgReport { iterations: max_iter, rel_residual: rr.sqrt() / bnorm, converged: false }
+    CgReport {
+        iterations: max_iter,
+        rel_residual: rr.sqrt() / bnorm,
+        converged: false,
+    }
 }
 
 #[cfg(test)]
@@ -131,7 +159,11 @@ mod tests {
     #[test]
     fn cg_solves_spd() {
         // [[4,1],[1,3]] x = [1,2]  ->  x = [1/11, 7/11]
-        let a = Csr::from_triplets(2, 2, vec![(0, 0, 4.0), (0, 1, 1.0), (1, 0, 1.0), (1, 1, 3.0)]);
+        let a = Csr::from_triplets(
+            2,
+            2,
+            vec![(0, 0, 4.0), (0, 1, 1.0), (1, 0, 1.0), (1, 1, 3.0)],
+        );
         let mut x = vec![0.0; 2];
         let rep = cg(|v, y| a.mul(v, y), &[1.0, 2.0], &mut x, 1e-12, 50);
         assert!(rep.converged);

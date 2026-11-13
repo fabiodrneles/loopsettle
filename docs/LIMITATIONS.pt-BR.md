@@ -23,7 +23,10 @@
    mais.
 8. **Atraso medido é só o atraso adicionado pelo motor.** O tempo de processamento real do
    SPI/PSPs (que entra na meta de 2,8 s do Manual de Tempos) não é modelado.
-9. **CDFD proporcional não implementada** (D6); a escada usa só a CDFD máxima.
+9. **CDFD proporcional na forma não local.** O BFF (D6) foi implementado com o Algoritmo 2 do artigo
+   (distribuições estacionárias por componente fortemente conexa), que o artigo diz dar a mesma
+   decomposição que a dinâmica local; a dinâmica local em si não foi implementada, e o artigo não
+   traz exemplo com valores por aresta para reproduzir, então a conferência é só por propriedades.
 10. **Validação externa incompleta.** O comando `topology <csv>` está pronto, mas a amostra
     on-chain de stablecoins não foi baixada (Fase 8).
 11. **Hodge em grafos densos.** A fração rotacional de Hodge no grafo líquido (≈0,98) é
@@ -50,3 +53,13 @@
     considerados ilimitados.
 16. **Regime de alto valor estilizado.** O `regimes` usa um sistema de alto valor suposto para mostrar
     como o limite depende do tamanho dos pagamentos; não está calibrado no T2, no Lynx nem no STR.
+17. **Rodadas com liquidez restrita.** O `liquidity-frontier` supõe que um pagamento rejeitado não é
+    tentado de novo pelo pagador, que os saldos ficam fixos no dia (sem aportes, sem crédito
+    intradiário) e, na regra `ub`, que o saldo de cada participante é proporcional ao seu próprio
+    pico daquele dia. Os participantes ajustariam os saldos ao desenho em uso; o experimento mede a
+    resposta de curto prazo com saldos dados. Usa 300 mil pagamentos por dia.
+18. **Estrutura temporal das respostas.** O gerador base sorteia as chegadas de forma independente,
+    então os recebimentos de um participante logo depois de ele pagar estão ali por acaso. O
+    `echo-sweep` mostra que o resultado central depende disso: devoluções bilaterais rápidas
+    fazem a compensação em segundos valer a pena. Parcela, atraso e direção do eco são hipóteses;
+    nenhum dado público os identifica.

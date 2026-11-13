@@ -1,0 +1,10 @@
+measure,value,meaning,status
+potential_offset_fraction_bcb_style,0.768994,"share of gross outflows fundable by same-day inflows, order ignored","measured, no time"
+potential_liquidity_saving_end_of_day,0.082697,"(UB - LB) / UB: saving of one end-of-day net settlement","measured"
+static_ceiling_cdfd_max_gross,0.7444,"max circulation respecting edge bounds / gross flow","measured, aggregated, no time"
+static_greedy_cycle_netting_gross,0.712531,"greedy cycle cancellation / gross flow","measured, aggregated, no time"
+hodge_l1_cyclic_gross,1.163908,"diagnostic; can exceed 1","measured, aggregated, no time"
+realizable_liquidity_saving_micro_cycle_all_w1000_d10000,0.00012,"best atomic micro-cycle config: 1 - liquidity / UB","measured in time"
+realizable_value_in_cycles_micro_cycle_all_w1000_d10000,0.089102,"value settled inside atomic cycles / settled value","measured in time"
+realizable_liquidity_saving_deferred_net_96x,0.013138,"deferred net settlement at this frequency","measured in time"
+realizable_liquidity_saving_deferred_net_8640x,0.002846,"deferred net settlement at this frequency","measured in time"

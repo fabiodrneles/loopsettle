@@ -44,5 +44,12 @@
 <circle cx="380.6" cy="265.5" r="3.5" fill="#CC79A7"/>
 <circle cx="518.6" cy="267.4" r="3.5" fill="#CC79A7"/>
 <rect x="552.0" y="94.0" width="12" height="12" fill="#CC79A7"/>
-<text x="570.0" y="104.0">delay bound, 10 s</text>
+<text x="570.0" y="104.0">window bound, 10 s</text>
+<polyline fill="none" stroke="#E69F00" stroke-width="2" points="91.4,361.0 229.4,367.2 380.6,375.6 518.6,373.9"/>
+<circle cx="91.4" cy="361.0" r="3.5" fill="#E69F00"/>
+<circle cx="229.4" cy="367.2" r="3.5" fill="#E69F00"/>
+<circle cx="380.6" cy="375.6" r="3.5" fill="#E69F00"/>
+<circle cx="518.6" cy="373.9" r="3.5" fill="#E69F00"/>
+<rect x="552.0" y="112.0" width="12" height="12" fill="#E69F00"/>
+<text x="570.0" y="122.0">tight bound, 10 s</text>
 </svg>

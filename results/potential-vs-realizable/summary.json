@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "potential-vs-realizable",
   "seed": 20260930,
-  "code_version": "0.1.0+git.7329107",
+  "code_version": "0.2.0+git.12485e1",
   "config_file": "experiments/potential-vs-realizable.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -40,6 +44,7 @@
       "hodge_triangles": 113417,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.831464,
+      "cdfd_bff": 0.788185,
       "cycle_netting": 0.795486,
       "cycles_found": 5756
     },
@@ -53,6 +58,7 @@
       "hodge_triangles": 113417,
       "hodge_triangles_capped": false,
       "cdfd_max": 0.174206,
+      "cdfd_bff": 0.134649,
       "cycle_netting": 0.14433,
       "cycles_found": 2638
     },
@@ -195,7 +201,7 @@
       "delay_max_ms": 43199947,
       "delay_mean_ms": 20040403.76417,
       "delay_value_weighted_mean_ms": 19866424.77544,
-      "share_settled_within_2800ms": 0.000068
+      "share_settled_within_2800ms": 0.000067
     },
     {
       "name": "deferred_net_4x",
@@ -221,7 +227,7 @@
       "delay_max_ms": 21599963,
       "delay_mean_ms": 10775366.222053,
       "delay_value_weighted_mean_ms": 10716082.725065,
-      "share_settled_within_2800ms": 0.000125
+      "share_settled_within_2800ms": 0.000124
     },
     {
       "name": "deferred_net_10x",
@@ -247,7 +253,7 @@
       "delay_max_ms": 8639972,
       "delay_mean_ms": 4317013.516122,
       "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000332
+      "share_settled_within_2800ms": 0.000329
     },
     {
       "name": "deferred_net_24x",
@@ -273,7 +279,7 @@
       "delay_max_ms": 3599996,
       "delay_mean_ms": 1799697.112566,
       "delay_value_weighted_mean_ms": 1797656.14978,
-      "share_settled_within_2800ms": 0.000786
+      "share_settled_within_2800ms": 0.000782
     },
     {
       "name": "deferred_net_96x",
@@ -299,7 +305,7 @@
       "delay_max_ms": 900000,
       "delay_mean_ms": 450032.742084,
       "delay_value_weighted_mean_ms": 450233.202163,
-      "share_settled_within_2800ms": 0.003227
+      "share_settled_within_2800ms": 0.003215
     },
     {
       "name": "deferred_net_288x",
@@ -325,7 +331,7 @@
       "delay_max_ms": 300000,
       "delay_mean_ms": 150002.148509,
       "delay_value_weighted_mean_ms": 150592.034671,
-      "share_settled_within_2800ms": 0.009596
+      "share_settled_within_2800ms": 0.00955
     },
     {
       "name": "deferred_net_1440x",
@@ -351,7 +357,7 @@
       "delay_max_ms": 60000,
       "delay_mean_ms": 30015.765649,
       "delay_value_weighted_mean_ms": 30232.027518,
-      "share_settled_within_2800ms": 0.046993
+      "share_settled_within_2800ms": 0.046753
     },
     {
       "name": "deferred_net_8640x",
@@ -377,7 +383,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5004.42803,
       "delay_value_weighted_mean_ms": 4969.673645,
-      "share_settled_within_2800ms": 0.28105
+      "share_settled_within_2800ms": 0.279558
     },
     {
       "name": "micro_cycle_all_w500_d10000",
@@ -386,7 +392,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71260662.37,
       "liquidity_saving_vs_ub_brl": 10465.17,
@@ -406,7 +413,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5176.013004,
       "delay_value_weighted_mean_ms": 5150.695768,
-      "share_settled_within_2800ms": 0.430589,
+      "share_settled_within_2800ms": 0.429913,
       "cycles_settled": 233794,
       "cycles_failed": 0
     },
@@ -417,7 +424,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 10000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71262596.16,
       "liquidity_saving_vs_ub_brl": 8531.38,
@@ -437,7 +445,7 @@
       "delay_max_ms": 10000,
       "delay_mean_ms": 5314.523575,
       "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.421159,
+      "share_settled_within_2800ms": 0.420409,
       "cycles_settled": 230099,
       "cycles_failed": 0
     },
@@ -448,7 +456,8 @@
         "mode": "all",
         "window_ms": 1000,
         "max_delay_ms": 5000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71268146.99,
       "liquidity_saving_vs_ub_brl": 2980.55,
@@ -468,7 +477,7 @@
       "delay_max_ms": 5000,
       "delay_mean_ms": 3184.209599,
       "delay_value_weighted_mean_ms": 3177.201896,
-      "share_settled_within_2800ms": 0.416195,
+      "share_settled_within_2800ms": 0.415257,
       "cycles_settled": 195095,
       "cycles_failed": 0
     },
@@ -479,7 +488,8 @@
         "mode": "all",
         "window_ms": 500,
         "max_delay_ms": 2000,
-        "max_cycle_len": 6
+        "max_cycle_len": 6,
+        "discipline": "bypass"
       },
       "liquidity_needed_brl": 71269961.4,
       "liquidity_saving_vs_ub_brl": 1166.14,
@@ -502,6 +512,205 @@
       "share_settled_within_2800ms": 1,
       "cycles_settled": 138106,
       "cycles_failed": 0
+    }
+  ],
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "seeds_summary": [
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 10,
+      "mean": 0.845442,
+      "ci95_low": 0.822382,
+      "ci95_high": 0.868503
+    },
+    {
+      "metric": "eod_saving_pct",
+      "seeds": 10,
+      "mean": 7.803965,
+      "ci95_low": 4.50597,
+      "ci95_high": 11.10196
+    },
+    {
+      "metric": "saving_pct_deferred_net_1x",
+      "seeds": 10,
+      "mean": 7.803965,
+      "ci95_low": 4.50597,
+      "ci95_high": 11.10196
+    },
+    {
+      "metric": "saving_pct_deferred_net_2x",
+      "seeds": 10,
+      "mean": 5.745818,
+      "ci95_low": 3.446979,
+      "ci95_high": 8.044658
+    },
+    {
+      "metric": "saving_pct_deferred_net_4x",
+      "seeds": 10,
+      "mean": 3.998505,
+      "ci95_low": 2.664853,
+      "ci95_high": 5.332156
+    },
+    {
+      "metric": "saving_pct_deferred_net_10x",
+      "seeds": 10,
+      "mean": 2.586394,
+      "ci95_low": 1.514213,
+      "ci95_high": 3.658575
+    },
+    {
+      "metric": "saving_pct_deferred_net_24x",
+      "seeds": 10,
+      "mean": 1.895239,
+      "ci95_low": 0.924816,
+      "ci95_high": 2.865661
+    },
+    {
+      "metric": "saving_pct_deferred_net_96x",
+      "seeds": 10,
+      "mean": 0.502088,
+      "ci95_low": 0.377943,
+      "ci95_high": 0.626232
+    },
+    {
+      "metric": "saving_pct_deferred_net_288x",
+      "seeds": 10,
+      "mean": 0.250091,
+      "ci95_low": 0.139782,
+      "ci95_high": 0.360401
+    },
+    {
+      "metric": "saving_pct_deferred_net_1440x",
+      "seeds": 10,
+      "mean": 0.069023,
+      "ci95_low": 0.04881,
+      "ci95_high": 0.089235
+    },
+    {
+      "metric": "saving_pct_deferred_net_8640x",
+      "seeds": 10,
+      "mean": 0.018546,
+      "ci95_low": 0.012892,
+      "ci95_high": 0.0242
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d10000",
+      "seeds": 10,
+      "mean": 0.011559,
+      "ci95_low": 0.007914,
+      "ci95_high": 0.015205
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 0.012013,
+      "ci95_low": 0.007952,
+      "ci95_high": 0.016075
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d5000",
+      "seeds": 10,
+      "mean": 0.003508,
+      "ci95_low": -0.001045,
+      "ci95_high": 0.00806
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d2000",
+      "seeds": 10,
+      "mean": 0.000627,
+      "ci95_low": 0.000003,
+      "ci95_high": 0.001251
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1x",
+      "seeds": 10,
+      "mean": 60293120,
+      "ci95_low": 60293120,
+      "ci95_high": 60293120
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_2x",
+      "seeds": 10,
+      "mean": 40894464,
+      "ci95_low": 40894464,
+      "ci95_high": 40894464
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_4x",
+      "seeds": 10,
+      "mean": 20447232,
+      "ci95_low": 20447232,
+      "ci95_high": 20447232
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_10x",
+      "seeds": 10,
+      "mean": 8192000,
+      "ci95_low": 8192000,
+      "ci95_high": 8192000
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_24x",
+      "seeds": 10,
+      "mean": 3407872,
+      "ci95_low": 3407872,
+      "ci95_high": 3407872
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_96x",
+      "seeds": 10,
+      "mean": 851968,
+      "ci95_low": 851968,
+      "ci95_high": 851968
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_288x",
+      "seeds": 10,
+      "mean": 282624,
+      "ci95_low": 282624,
+      "ci95_high": 282624
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1440x",
+      "seeds": 10,
+      "mean": 56832,
+      "ci95_low": 56832,
+      "ci95_high": 56832
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_8640x",
+      "seeds": 10,
+      "mean": 9472,
+      "ci95_low": 9472,
+      "ci95_high": 9472
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d10000",
+      "seeds": 10,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d5000",
+      "seeds": 10,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d2000",
+      "seeds": 10,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
     }
   ]
 }

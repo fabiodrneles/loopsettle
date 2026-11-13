@@ -216,3 +216,197 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     `references.bib`. Cada um é redistribuído como publicado pelo autor ou
     instituição, com o link original; o revisor deve confirmar que a licença de cada um permite
     isso antes de divulgar o repositório (a remoção a pedido está declarada).
+79. **Piso de liquidez (limite de atraso apertado), 11/11/2026.** `bound.rs::liquidity_floors`,
+    METHODOLOGY §9b, CLAIMS 1g, D23. Para 10 s o limite cai de 0,76% para 0,054% do UB e a
+    compensação a cada 10 s obtém 51% dele (`results/regimes/bound_curve.csv`). Com 10 sementes
+    (`robustness/seeds_summary.csv`): de 0,014% (σ = 1,0) a 0,138% (σ = 0). **Riscos:** as rodadas
+    de heterogeneidade e de janelas de abastecimento ainda usam a forma de janela (spec 02); o teorema é simples o
+    bastante para já existir na literatura (spec 01, pergunta em aberto 1) — conferir antes de
+    afirmar novidade; o piso é por participante e a soma não é atingível (spec 03).
+80. **Afirmação 1f revista.** Com o limite apertado, o sistema de alto valor estilizado também dá
+    ≈ 0 (≤ 0,004%), então o limite de janela não reconcilia o LoopSettle com McMahon et al.; a
+    base de comparação (fila FIFO com liquidez restrita) reconcilia, e ela ainda não é simulada
+    (spec 06). A "Atualização 3" do ASSESSMENT, o README, o NOVELTY, o PAPER_OUTLINE e o rascunho
+    do JOSS ainda trazem o argumento antigo (spec 02, FR6). **Corrigir antes de submeter
+    qualquer texto.**
+81. **Auditoria de 11/11/2026 e o conjunto de specs.** `specs/00-auditoria.md` lista o que foi
+    lido, o que não foi e 14 achados com rótulo de evidência. Defeitos lidos e ainda sem teste:
+    `retry_gross` libera um pagamento por aresta por janela (só afeta resultados com liquidez
+    restrita), `fraction_at_most(2800)` conta atrasos até 2.815 ms, `DeferredNet` trunca o
+    intervalo quando o número de ciclos não divide o dia (nenhum resultado publicado afetado). A
+    reprodutibilidade bit a bit entre plataformas não foi verificada (spec 09 E3).
+82. **Correções nos motores e nas métricas (spec 04), 11/11/2026.** Testes em
+    `crates/loopsettle-core/tests/spec04.rs`, cada um falhava antes da correção. (a) `retry_gross`
+    liberava um pagamento por aresta por janela e não revisitava pagadores que recebiam saldo
+    depois, na mesma passada; agora vai até o ponto fixo. (b) O ciclo `k` do `DeferredNet` fica em
+    `floor(k·dia/c)`, então o último ciclo do dia cai exatamente no fim dele. (c) A parcela
+    liquidada em até 2,8 s é contada de forma exata (o histograma contava atrasos até 2.815 ms).
+    (d) FIFO estrito por pagador como opção. (e) Somas com checagem no ledger. **Efeito nos
+    resultados:** com liquidez ilimitada, todos os CSVs ficam idênticos, exceto a coluna
+    `share_within_2800ms` (mudanças abaixo de 0,001, por exemplo 0,4252 → 0,4245; a afirmação 7
+    não é afetada); o `microcycle-sweep/shortfall.csv` mudou nas linhas `micro_cycle_shortfall`
+    (valor rejeitado com 25% do UB de 23,2275% para 23,2270%; atraso p95 de 920 para 1.216 ms). O
+    defeito era real, mas o efeito nos números publicados é desprezível. **Não feito:** a busca
+    incremental de ciclos (C5). Custo medido do motor de micro-ciclos: cerca de 0,6 s por milhão
+    de pagamentos (10 milhões: 26,1 s contra 19,8 s do bruto, com a leitura do CSV incluída), então
+    não é o gargalo; a reescrita precisa manter exatamente a ordem dos ciclos e fica para quando
+    as rodadas em escala precisarem.
+83. **Reprodutibilidade, estatística e CI (spec 09), 11/11/2026.** (a) `results-golden/` e
+    `scripts/golden.py`: uma rodada pequena de cada experimento, comparada byte a byte no CI em
+    Linux, Windows e macOS, e com 1 e 2 threads. Primeira rodada: idêntica nas três plataformas
+    ([run 43061345632](https://github.com/fabiodrneles/loopsettle/actions/runs/43061345632)); a
+    dúvida da auditoria sobre plataformas (A11) fica resolvida para os cenários-ouro. Foi
+    confirmado que a checagem falha quando um arquivo muda. (b) O CI também roda o clippy com
+    `-D warnings`, o build e o teste de fumaça do wasm e a checagem de documentos bilíngues
+    (`scripts/check_twins.py`). (c) `crates/loopsettle-sim/tests/metamorphic.rs`: multiplicar
+    valores, renomear participantes, deslocar horários, e 2.000 entradas de lixo nos leitores de
+    TOML e CSV (nenhum pânico). (d) Sementes e casos rodam em paralelo (`stats::par_map`, 2 threads
+    por padrão, `LOOPSETTLE_THREADS`); a ordem da saída é fixa e os resultados são idênticos com
+    1, 2 e 4 threads; o `robustness` caiu de 118 s para 75 s em 4 núcleos. (e) O `summary.json`
+    registra versão do esquema, plataforma, rustc e um hash do `Cargo.lock`. **Não feito:**
+    `cargo fmt --check` (o código não está no formato do rustfmt: 295 diferenças com a largura
+    padrão; reformatar é um commit separado e ruidoso, a decidir pelo dono); várias sementes em
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`,
+    `funding-windows` e `regimes` (a função de apoio existe, falta dar a cada tabela as colunas
+    de IC); o simulador ingênuo de referência para testes diferenciais; `results/MANIFEST.sha256`.
+84. **Liquidez restrita (spec 06) e o motor de fila (spec 05, M1), 11/11/2026.**
+    `experiments6.rs`, `results/liquidity-frontier/`, CLAIMS 1h, D24, METHODOLOGY §11. Resultado
+    com serviço igual (1% do valor rejeitado, regra `ub`, 10 sementes): os desenhos de 10 s
+    economizam 0,01% de liquidez (IC incluem zero) em todos os cenários; os de uma hora economizam
+    0,4–0,6% (varejo, σ = 1,0), 1,1–2,3% (varejo, σ = 0,4) e 2,8–4,8% (alto valor estilizado).
+    **Riscos:** (a) o `α` equivalente perto de 1 é interpolado entre 0,95 e 1,0, onde a rejeição
+    do bruto cai de cerca de 4% para exatamente 0: uma grade mais fina ali deixaria o alvo de 1%
+    mais preciso; (b) a regra `ub` dá a cada participante exatamente o próprio pico, então α = 1 é
+    um fio de navalha; a regra `outflow` está no `frontier.csv`, mas não na tabela de liquidez
+    equivalente do resumo (poucas sementes atingem alvos baixos com α ≤ 2); (c) sem novas
+    tentativas; (d) o sistema de alto valor não é calibrado, então os 2,8–4,8% são uma direção, não
+    uma estimativa, e ficam longe dos 14–30% de McMahon et al.; (e) uma hipótese minha errada foi
+    pega por um teste: uma fila de 10 s *não* rejeita menos que o bruto (rejeita 0,08% a mais em
+    valor no cenário pequeno de teste), que é o mesmo mecanismo do resultado principal.
+    **Desempenho:** a nova tentativa bruta foi reescrita para visitar só os participantes que
+    receberam crédito (levava mais de 10 minutos com prazos de uma hora; agora o experimento
+    inteiro leva 4 min 46 s); a versão literal fica como `reference_retry` e as duas dão
+    liquidações idênticas em 30.000 casos aleatórios. Isso substitui o item C5 da spec 04 para a
+    nova tentativa; a busca de ciclos em si não mudou.
+85. **Ótimo offline e o sanduíche (spec 03), 11/11/2026.** `tests/common/optimum.rs`,
+    `tests/optimum.rs`, exemplo `optimality_gap`, CLAIMS 1i, D25, METHODOLOGY §9c. O ótimo da PL é
+    igual à soma dos pisos em 116 de 120 instâncias pequenas e densas; o melhor motor obtém 44–61%
+    dele. **Riscos:** (a) a PL permite fracionar pagamentos e lotes arbitrários, então limita por
+    baixo o ótimo com pagamentos inteiros; a checagem inteira por força bruta da spec (FR2) não foi
+    escrita; (b) as instâncias são pequenas (20 participantes, 1.500 pagamentos) e não calibradas;
+    um prazo de 300 s não terminou em 9 minutos, então a afirmação cobre prazos de até 60 s; (c)
+    "pisos = ótimo" é uma regularidade empírica, não um teorema: um teste aleatório acha folga
+    estrita em 4% de instâncias minúsculas. Uma prova de quando vale a igualdade seria uma
+    contribuição; (d) `results/optimality-gap/` não entra na checagem-ouro (soluções de PL em
+    ponto flutuante não têm garantia de serem idênticas entre plataformas; os arquivos guardam de
+    2 a 4 casas).
+86. **Fronteira de liquidez refeita com grade mais fina, 12/11/2026.** O risco (a) do ponto 84 era
+    real: com passos de 0,01 entre 0,97 e 1, as economias de uma hora com 1% rejeitado são 1,1–1,4%
+    (varejo, σ = 1,0), 2,2–3,2% (σ = 0,4) e 3,7–5,3% (alto valor), até o dobro dos valores da
+    primeira rodada. O resultado de 10 s não mudou (IC incluem zero). Os números do ponto 84 estão
+    superados; a CLAIMS 1h traz os novos e diz que a medida é sensível à grade. Custo: o experimento
+    agora leva 5 min 49 s em 4 núcleos com 2 threads, acima da meta de 5 minutos da spec 06 (na
+    máquina de referência será mais). Também novo: `loopsettle bound/settle --report` e saída por
+    participante privada (spec 10, R2 e R3; D21 atualizada).
+87. **Pagamentos em eco (spec 07, G2): o critério de morte disparou, 12/11/2026.** `stream.rs`
+    (mecanismo de eco), `experiments7.rs`, `results/echo-sweep/`, CLAIMS 1j e "não pode afirmar" 14,
+    D26, ASSESSMENT atualização 5. Com ecos devolvidos a quem pagou, parcela de 20% e atraso de
+    1 s: limite apertado de 10 s de 4,2% do UB, obtido 3,9%. Com ecos adiante: nada muda. **Este é
+    o ponto mais importante para o revisor:** toda frase do tipo "segundos não recuperam nada" no
+    README, no rascunho do JOSS e no esqueleto do artigo precisa levar a condição. **Riscos:** (a)
+    os ecos repetem o valor exato, o caso mais favorável à compensação; valores parciais dariam
+    menos; (b) um só σ (0,4) e uma só escala (1 milhão); com mais volume a parte estacionária
+    encolhe, mas a parte do eco não deveria; (c) IC largos com 8 sementes (em alguns casos poucas
+    sementes dominam); (d) os micro-ciclos precisaram de até 4,5% *mais* liquidez que o bruto com
+    50% de eco adiante a 1 s (IC [−7,5; −1,5]): segurar pagamentos que seriam financiados pelo
+    próprio gatilho custa caro, e isso merece um olhar próprio; (e) não se sabe se os fluxos
+    reais têm devoluções bilaterais rápidas.
+88. **Continuação do teste de eco, 12/11/2026.** `echo-sweep/sensitivity.csv` e
+    `order_diagnostic.csv`, CLAIMS 1j (ampliada) e 1k. (a) O resultado condicional vale na direção
+    em todas as variações testadas, com tamanho menor: limite apertado de 10 s de 1,7% (metade do
+    valor), 0,6% (um quarto), 1,8% (σ = 1,0), 2,1% (três vezes mais pagamentos), contra 4,2% na
+    varredura. A queda com o volume é real: 4,2%, 2,1%, 1,2% com 1, 3 e 10 milhões (IC com 10 milhões
+    [0,6; 1,7]), perto de 1/√volume. Não tenho uma dedução para ela; faltam uma rodada com 30
+    milhões e um argumento antes de enunciá-la como lei. O experimento agora leva 4 min 42 s. (b) O risco (d) do ponto
+    87 tem explicação: o motor de espera (só atraso, ordem mantida) economiza exatamente 0,000% em
+    todos os casos, então a perda dos micro-ciclos com eco adiante vem de liquidar fora da ordem de
+    chegada. "Exatamente zero" tem prova de uma linha: segurar todo pagamento pelo mesmo atraso, na
+    ordem de chegada, faz de cada curva de posição a curva do bruto deslocada no tempo, então o
+    ponto mais baixo é o mesmo.
+89. **Conferência de literatura para o piso de liquidez, 12/11/2026.** `docs/REFERENCES.pt-BR.md`
+    §8. Quatro buscas na web e uma conferência em texto integral não acharam enunciado anterior do
+    piso; a pista mais próxima (Bank of Canada SDP 2020-9) foi lida e é outra coisa (atraso até o
+    fim do dia, simulação iterativa). O UB e o LB em si vêm de Koponen & Soramäki (1998), que o
+    repositório ainda não cita e que eu não li. **Isso não estabelece novidade**; o critério de
+    morte K2 continua aberto para o teorema novo.
+90. **Efeito do eco e volume (`echo-scale`), 12/11/2026.** Item em aberto do ponto 88, rodado: com
+    20% dos pagamentos devolvidos a quem pagou em 1 s, o limite apertado de 10 s é 4,8%, 2,4%, 1,3%
+    e 0,8% do UB com 1, 3, 10 e 30 milhões de pagamentos por dia (4 sementes; expoente ajustado de
+    −0,52). Em valor, o limite cresce com expoente 0,42, enquanto o UB cresce com cerca de 0,95: o
+    valor recuperável se comporta como flutuação, a necessidade como deriva. **Riscos:** 4 sementes
+    e IC largos com 1 e 3 milhões (o IC com 3 milhões inclui zero); um ajuste em quatro pontos;
+    sem dedução. Uma extrapolação ingênua para o volume do Pix (cerca de 240 milhões por dia) daria
+    cerca de 0,3%, e não deve ser citada como resultado. Também novo: os motores `gridlock` e
+    `bilateral` (spec 05 M3, M4; D27), com a ressalva de que o algoritmo de gridlock não foi
+    conferido com o artigo de 2001.
+91. **Circularidade por horizonte (spec 08, T3), 12/11/2026.** `experiments8.rs`,
+    `results/circularity-horizon/`, CLAIMS 2b. Valor que circula por janela contra o limite
+    apertado para o mesmo prazo: 25% contra 0,006% do valor bruto com 10 s. **Riscos:** a parcela
+    que circula conta cada aresta de um ciclo (um triângulo de 5 conta 15), como a escada faz,
+    então é uma parcela do valor bruto, não um montante de liquidez; as duas colunas têm naturezas
+    diferentes e a razão é uma ilustração, não uma lei; 5 sementes, uma escala, sem eco; a checagem
+    de monotonicidade da spec (a parcela não cai quando as janelas são aninhadas) foi observada na
+    tabela, mas não virou teste. Também: a curva do limite do `regimes` agora tem 10 sementes
+    (10 s: limite apertado de 0,041% [0,025; 0,056], a compensação obtém 48% dele [40; 55]).
+92. **Camada de abastecimento (spec 05, M5), 12/11/2026.** `crates/loopsettle-core/src/funding.rs`,
+    `Ledger::fund` e `with_credit_limits`, `tests/funding.rs` (três exemplos à mão e um teste de
+    propriedade: contas mais reservas conservadas, nenhum saldo abaixo de menos a linha de crédito,
+    um desfecho por pagamento), teste de regressão em `bound.rs`, `funding-windows/prefunding.csv`,
+    CLAIMS 1e2, D28. O `windows.csv` ficou idêntico byte a byte. **Achado durante os testes:** a
+    nova tentativa por evento do ponto 84 não sabia dos aportes, então um pagador abastecido
+    esperava uma janela a mais; os motores agora recebem um aviso `funded`. **Riscos:** uma
+    semente; pré-financiamento proporcional à necessidade vista depois; as linhas de crédito estão
+    testadas, mas nenhum experimento as usa ainda. **A spec 05 está completa, exceto** que o motor
+    de gridlock (M3) continua sem conferência com Bech & Soramäki (2001): EconStor,
+    publications.bof.fi e nationalbanken.dk estão fora da rede desta sessão.
+93. **Spec 08, 12/11/2026.** (a) **T2:** a circulação máxima agora usa um fluxo de custo mínimo
+    primal-dual (fluxos bloqueantes nas arestas de custo reduzido zero): 100 mil arestas de 150 s
+    para 0,2 s, 1 milhão de arestas em 7,7 s e 117 MiB (`examples/bench_cdfd_scale.rs`); mesmo
+    ótimo do resolvedor antigo e do oráculo de PL; nenhum número publicado mudou. (b) **T1:** o
+    BFF, a CDFD proporcional, a partir do Algoritmo 2 do artigo (lido no HTML do arXiv; o PDF era
+    ilegível e parte do Apêndice F veio só resumida); coluna `cdfd_bff`: 0,79 no bruto, 0,13 no
+    líquido, abaixo dos ciclos gulosos. A dinâmica local não foi implementada, e o artigo não tem
+    exemplo com valores por aresta para reproduzir. (c) **T4:** `topology` e `baseline` gravam
+    `nulls.csv` (nulo analítico de Hodge; embaralhamento de recebedores, 20 sorteios). A escada fica
+    cerca de 4 vezes acima do nulo por embaralhamento; o Hodge fica no seu nulo. O nulo por
+    embaralhamento muda também o total de cada recebedor, não só a estrutura bilateral. (d)
+    **T3:** a monotonicidade da parcela que circula em janelas aninhadas virou teste, com prova de
+    uma linha (superaditividade). (e) **T5 não rodado:** os provedores de dados de blockchain
+    respondem 403 neste ambiente.
+94. **Spec 10, 12/11/2026.** (a) **R1:** `loopsettle sort` (ordenação externa e estável; 50 milhões
+    de linhas, 1,27 GB, em ordem inversa, em 39 s com 105 MiB; UB e LB iguais aos da ordem
+    original); coluna `status` opcional (só as linhas liquidadas contam); `bound` em 50 milhões de
+    linhas em 161 s com 13 MiB. O mapeamento ISO 20022 em `data/README.md` marca o que foi conferido
+    (`IntrBkSttlmAmt`, `AccptncDtTm`, `ACSC`) e o que não foi (identificadores em
+    `DbtrAgt`/`CdtrAgt`, o campo de horário de liquidação): os guias de uso estavam fora da rede.
+    (b) **R4:** a interface web mostra a curva do piso de liquidez e analisa um arquivo de
+    pagamentos escolhido pelo usuário inteiramente no navegador (`analyze_file` no wasm; arquivos
+    de até 200 MB / 2 milhões de pagamentos). Conferido no Chromium com 1440 e 375 px de largura
+    (sem rolagem horizontal, sem erros na página) e pelo `scripts/wasm-smoke.mjs`. As capturas em
+    `docs/img/` foram regeneradas. Não feito: publicar no GitHub Pages (só quando o dono pedir;
+    CLAUDE.md, passo opcional). (c) **R5:** README com exemplo executável no `loopsettle-core` e no
+    `loopsettle-sim` (compilados e rodados como doc tests; só em inglês, como documentação de
+    crate). O módulo `testing` atrás de uma feature e o caderno em Python não foram feitos.
+95. **Várias sementes nos seis experimentos de uma semente (spec 09, E1), 12/11/2026.** `seeds.rs`;
+    `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity` e
+    `funding-windows` agora gravam `seeds.csv` e `seeds_summary.csv` (10 sementes por padrão,
+    `[experiment] seeds`), ao lado das tabelas de uma semente, que ficaram idênticas byte a byte.
+    SUMMARY §16. **Uma afirmação mudou:** no grafo bruto, a ordem entre o BFF e o netting guloso de
+    ciclos varia com a semente (BFF acima em 4 de 10), então a CLAIMS 4 não diz mais que o BFF fica
+    abaixo do netting guloso ali; no grafo líquido fica abaixo em 10 de 10. As demais afirmações de
+    uma semente se mantêm dentro dos intervalos (por exemplo, micro-ciclos de 5 s liquidam 43%
+    [41; 45] em até 2,8 s, abaixo da meta de 50%; os de 2 s, 100%). `heterogeneity` e
+    `funding-windows` usam só a menor escala nas sementes (as rodadas de 30 e 10 milhões levariam
+    dezenas de minutos); o limite apertado de 10 s no fim de semana com 1 milhão de pagamentos por
+    quinta fica em 0,03–0,07%, com IC até 0,096%. O `stress` nomeia o caso "antes do próprio pico
+    do alvo" pela posição, porque esse horário muda de uma semente para outra.

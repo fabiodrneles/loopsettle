@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Network } from "./Network";
 import { color, fmtBRL, fmtPct, lineChart } from "./canvas";
 import { detectLang, LOCALE, saveLang, STRINGS, type Lang, type Strings } from "./i18n";
-import type { EngineJson, SimParams, SimResult } from "./types";
+import type { EngineJson, FileResult, FloorPoint, SimParams, SimResult } from "./types";
 
 // Reduced mode on phones and low-end devices: smaller default runs, same model.
 const reduced =
@@ -43,6 +43,9 @@ function Slider(props: { id: string; label: string; value: number; min: number; 
   );
 }
 
+// Files above this size are refused: the browser keeps the whole file in memory.
+const MAX_FILE_BYTES = 200 * 1024 * 1024;
+
 // The worker is created inside the effect (not in useMemo): React StrictMode in dev runs
 // effect cleanup once and then re-runs the effect, so a memoized worker would stay terminated
 // and the UI would hang on "Simulando…".
@@ -65,6 +68,8 @@ export function App() {
   const [error, setError] = useState("");
   const worker = useWorker();
   const reqId = useRef(0);
+  const fileReq = useRef(0);
+  const [file, setFile] = useState<{ status: "idle" | "running" | "done" | "error"; name?: string; result?: FileResult; error?: string }>({ status: "idle" });
   const s = STRINGS[lang];
   const loc = LOCALE[lang];
 
@@ -77,6 +82,12 @@ export function App() {
     if (!worker) return;
     worker.onmessage = (ev) => {
       const m = ev.data;
+      if (m.kind === "file") {
+        if (m.id !== fileReq.current) return;
+        if (m.ok && !m.result.error) setFile((f) => ({ ...f, status: "done", result: m.result }));
+        else setFile((f) => ({ ...f, status: "error", error: m.ok ? m.result.error : m.error }));
+        return;
+      }
       if (m.id !== reqId.current) return; // a newer request superseded this one
       if (m.ok) {
         setData(m.result);
@@ -101,6 +112,17 @@ export function App() {
   }, [params, worker]);
 
   const set = (k: keyof SimParams) => (v: number) => setParams((p) => ({ ...p, [k]: v }));
+  const analyze = async (f: File | undefined) => {
+    if (!f || !worker) return;
+    if (f.size > MAX_FILE_BYTES) {
+      setFile({ status: "error", name: f.name, error: s.fileTooBig(Math.round(MAX_FILE_BYTES / 1024 / 1024)) });
+      return;
+    }
+    setFile({ status: "running", name: f.name });
+    const text = await f.text();
+    fileReq.current = reqId.current + 1_000_000 + fileReq.current + 1;
+    worker.postMessage({ id: fileReq.current, file: text });
+  };
   const toggleLang = () => {
     const next: Lang = lang === "pt" ? "en" : "pt";
     saveLang(next);
@@ -141,7 +163,10 @@ export function App() {
           {reduced && <p className="note">{s.reduced}</p>}
         </aside>
 
-        <main className="results">{data ? <Results data={data} params={params} s={s} /> : <p className="loading">{s.loading}</p>}</main>
+        <main className="results">
+          {data ? <Results data={data} params={params} s={s} /> : <p className="loading">{s.loading}</p>}
+          <FilePanel s={s} file={file} onFile={analyze} loc={loc} />
+        </main>
       </div>
 
       <footer className="foot">{s.footer(data ? Math.round(data.scale_factor).toLocaleString(loc) : "—")}</footer>
@@ -176,6 +201,14 @@ function Results({ data, params, s }: { data: SimResult; params: SimParams; s: S
           <div className="realized"><dt>{s.pvMicro(params.maxDelayMs / 1000)}</dt><dd>{fmtPct(micro.liquidity_saving_vs_ub_pct / 100, 3)}</dd></div>
         </dl>
         <p className="caption">{s.pvCaption(fmtPct(micro.settled_cycle_value_brl / Math.max(micro.settled_value_brl, 1)))}</p>
+      </section>
+
+      <section className="panel" aria-labelledby="floor-h">
+        <h2 id="floor-h">{s.floorTitle}</h2>
+        <FloorLegend s={s} />
+        <FloorChart points={data.floor} aria={s.floorAria} />
+        <FloorTable points={data.floor} s={s} />
+        <p className="caption">{s.floorCaption}</p>
       </section>
 
       <section className="panel" aria-labelledby="liq-h">
@@ -288,3 +321,92 @@ function DayChart({ data, aria, money }: { data: SimResult; aria: string; money:
   }, [data, money]);
   return <canvas ref={ref} className="chart" role="img" aria-label={aria} />;
 }
+
+// The liquidity floor curve: the most any mechanism with deadline d can save (tight bound) and
+// what netting every d realises, in % of the liquidity of real-time gross settlement.
+function FloorChart({ points, aria }: { points: FloorPoint[]; aria: string }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const draw = () =>
+      ref.current &&
+      lineChart(
+        ref.current,
+        [
+          { label: "tight bound", color: color("--circular"), points: points.map((p) => [Math.log10(p.delay_s), p.tight_bound_pct]) },
+          { label: "netting every d", color: color("--ink"), dashed: true, points: points.map((p) => [Math.log10(p.delay_s), p.netting_saving_pct]) },
+        ],
+        { xFmt: (v) => fmtDelay(10 ** v), yFmt: (v) => `${v.toFixed(2)}%`, yMin: 0 },
+      );
+    draw();
+    window.addEventListener("resize", draw);
+    return () => window.removeEventListener("resize", draw);
+  }, [points]);
+  return <canvas ref={ref} className="chart" role="img" aria-label={aria} />;
+}
+
+function FloorLegend({ s }: { s: Strings }) {
+  return (
+    <p className="legend">
+      <span className="key circ" /> {s.floorTight} &nbsp; <span className="key dashed" /> {s.floorRealised}
+    </p>
+  );
+}
+
+function fmtDelay(sec: number): string {
+  if (sec < 60) return `${Math.round(sec)} s`;
+  if (sec < 3600) return `${Math.round(sec / 60)} min`;
+  return `${Math.round(sec / 3600)} h`;
+}
+
+function FloorTable({ points, s }: { points: FloorPoint[]; s: Strings }) {
+  return (
+    <table className="tbl">
+      <thead>
+        <tr><th scope="col">{s.floorDelay}</th><th scope="col">{s.floorTight}</th><th scope="col">{s.floorRealised}</th></tr>
+      </thead>
+      <tbody>
+        {points.map((p) => (
+          <tr key={p.delay_s}>
+            <th scope="row">{fmtDelay(p.delay_s)}</th>
+            <td>{p.tight_bound_pct.toFixed(3)}%</td>
+            <td>{p.netting_saving_pct.toFixed(3)}%</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+// Analyse the user's own payment file in the browser. The file is read here and handed to the
+// worker; nothing is uploaded.
+function FilePanel({ s, file, onFile, loc }: { s: Strings; file: { status: string; name?: string; result?: FileResult; error?: string }; onFile: (f: File | undefined) => void; loc: string }) {
+  const r = file.result;
+  return (
+    <section className="panel" aria-labelledby="file-h">
+      <h2 id="file-h">{s.fileTitle}</h2>
+      <p className="caption">{s.fileIntro}</p>
+      <div className="field">
+        <label htmlFor="payfile">{s.fileLabel}</label>
+        <input id="payfile" type="file" accept=".csv,text/csv" onChange={(e) => onFile(e.target.files?.[0])} />
+      </div>
+      <p className="note">{s.filePrivacy}</p>
+      <p className={`status ${file.status === "error" ? "error" : ""}`} role="status" aria-live="polite">
+        {file.status === "running" && s.fileRunning(file.name ?? "")}
+        {file.status === "error" && s.fileFailed(file.error ?? "")}
+        {file.status === "done" && r && s.fileDone(r.payments.toLocaleString(loc), r.participants, r.span_hours.toFixed(1), r.rows_skipped + r.rows_skipped_status)}
+      </p>
+      {file.status === "done" && r && (
+        <>
+          <dl className="ladder">
+            <div><dt>{s.fileUb}</dt><dd>{r.ub.toLocaleString(loc, { maximumFractionDigits: 2 })}</dd></div>
+            <div><dt>{s.fileLb}</dt><dd>{r.lb.toLocaleString(loc, { maximumFractionDigits: 2 })}</dd></div>
+          </dl>
+          <FloorLegend s={s} />
+          <FloorChart points={r.floor} aria={s.floorAria} />
+          <FloorTable points={r.floor} s={s} />
+        </>
+      )}
+    </section>
+  );
+}
+

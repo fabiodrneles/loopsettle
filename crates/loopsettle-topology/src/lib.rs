@@ -6,17 +6,20 @@
 //! |---|---|---|
 //! | Hodge (diagnostic) | [`hodge`] | energy of divergence-free flow; may overstate what can be netted |
 //! | CDFD maximum (static ceiling) | [`cdfd`] | largest circulation with `0 <= c <= F` |
+//! | CDFD proportional (BFF) | [`cdfd_bff`] | circulation that keeps each node's flow proportions |
 //! | Cycle netting (executable) | [`netting`] | greedy cancellation of the minimum of each cycle |
 //!
 //! [`analyze`] computes all three side by side (the "ladder").
 
 pub mod cdfd;
+pub mod cdfd_bff;
 pub mod graph;
 pub mod hodge;
 pub mod linalg;
 pub mod netting;
 
 pub use cdfd::{cdfd_max, Cdfd};
+pub use cdfd_bff::{cdfd_bff, CdfdBff};
 pub use graph::{Edge, FlowGraph};
 pub use hodge::{hodge, Hodge, HodgeConfig};
 pub use netting::{cycle_netting, NettingResult};
@@ -39,6 +42,8 @@ pub struct Ladder {
     pub hodge_triangles_capped: bool,
     /// CDFD maximum circulation / total flow.
     pub cdfd_max: f64,
+    /// CDFD proportional (BFF) circulation / total flow.
+    pub cdfd_bff: f64,
     /// Greedy cycle netting / total flow.
     pub cycles: f64,
     pub cycles_found: usize,
@@ -56,6 +61,7 @@ impl Ladder {
             .set("hodge_triangles", self.hodge_triangles)
             .set("hodge_triangles_capped", self.hodge_triangles_capped)
             .set("cdfd_max", self.cdfd_max)
+            .set("cdfd_bff", self.cdfd_bff)
             .set("cycle_netting", self.cycles)
             .set("cycles_found", self.cycles_found)
     }
@@ -85,7 +91,10 @@ impl TopologyReport {
             .set("gross", self.gross.to_json())
             .set("net", self.net.to_json())
             .set("bilateral_share", self.bilateral_share)
-            .set("hodge_potential_vs_net_position_corr", self.potential_vs_net_corr)
+            .set(
+                "hodge_potential_vs_net_position_corr",
+                self.potential_vs_net_corr,
+            )
             .set("cg_gradient_iterations", self.cg_gradient.0)
             .set("cg_gradient_rel_residual", self.cg_gradient.1)
             .set("cg_curl_iterations", self.cg_curl.0)
@@ -95,7 +104,13 @@ impl TopologyReport {
 
 fn ladder(g: &FlowGraph, h: &Hodge) -> Ladder {
     let total = g.total_flow();
-    let frac = |x: i128| if total == 0 { 0.0 } else { x as f64 / total as f64 };
+    let frac = |x: i128| {
+        if total == 0 {
+            0.0
+        } else {
+            x as f64 / total as f64
+        }
+    };
     let c = cdfd_max(g);
     let nt = cycle_netting(g, false);
     // Hodge always works on the net flow; express its L1 cyclic mass relative to *this*
@@ -105,12 +120,21 @@ fn ladder(g: &FlowGraph, h: &Hodge) -> Ladder {
         nodes: g.n,
         edges: g.edges.len(),
         total_flow: total,
-        hodge_l1: if total == 0 { 0.0 } else { hodge_l1_mass / total as f64 },
+        hodge_l1: if total == 0 {
+            0.0
+        } else {
+            hodge_l1_mass / total as f64
+        },
         hodge_curl_l2: h.curl_fraction_l2(),
         hodge_cyclic_l2: h.cyclic_fraction_l2(),
         hodge_triangles: h.triangles,
         hodge_triangles_capped: h.triangles_capped,
         cdfd_max: frac(c.circular_total),
+        cdfd_bff: if total == 0 {
+            0.0
+        } else {
+            cdfd_bff(g).circular_total / total as f64
+        },
         cycles: frac(nt.cancelled_total),
         cycles_found: nt.cycles,
     }
@@ -133,7 +157,11 @@ pub fn analyze(g: &FlowGraph, cfg: &HodgeConfig) -> TopologyReport {
     TopologyReport {
         gross: gross_l,
         net: net_l,
-        bilateral_share: if g.total_flow() == 0 { 0.0 } else { bilateral as f64 / g.total_flow() as f64 },
+        bilateral_share: if g.total_flow() == 0 {
+            0.0
+        } else {
+            bilateral as f64 / g.total_flow() as f64
+        },
         potential_vs_net_corr: pearson(&h.potential, &net_pos),
         cg_gradient: (h.cg_gradient.iterations, h.cg_gradient.rel_residual),
         cg_curl: (h.cg_curl.iterations, h.cg_curl.rel_residual),
@@ -153,5 +181,9 @@ pub fn pearson(a: &[f64], b: &[f64]) -> f64 {
         saa += (x - ma) * (x - ma);
         sbb += (y - mb) * (y - mb);
     }
-    if saa == 0.0 || sbb == 0.0 { 0.0 } else { sab / (saa * sbb).sqrt() }
+    if saa == 0.0 || sbb == 0.0 {
+        0.0
+    } else {
+        sab / (saa * sbb).sqrt()
+    }
 }

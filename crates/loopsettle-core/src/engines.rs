@@ -4,14 +4,15 @@
 use crate::engine::{SettlementEngine, Sink};
 use crate::ledger::Ledger;
 use crate::types::{Cents, ParticipantId, Payment, SettleKind, TimeMs, MS_PER_DAY};
-use std::collections::{BTreeMap, VecDeque};
+use std::cmp::Reverse;
+use std::collections::{BTreeMap, BinaryHeap, VecDeque};
 
 // =======================================================================================
 // DeferredNet
 // =======================================================================================
 
 /// Deferred net settlement at fixed times (`cycles_per_day` evenly spaced cycles, the last
-/// one at the end of each day; UPI-style with 10 cycles/day as a reference).
+/// one exactly at the end of each day; UPI-style with 10 cycles/day as a reference).
 ///
 /// Every payment settles in the next cycle, so its settlement time is known on arrival:
 /// the engine reports it immediately and keeps only the per-participant net deltas
@@ -20,7 +21,8 @@ use std::collections::{BTreeMap, VecDeque};
 #[derive(Clone, Debug)]
 pub struct DeferredNet {
     pub cycles_per_day: u32,
-    interval: TimeMs,
+    /// index of the next cycle (1 = first cycle of day 0)
+    next_index: u64,
     next_cycle: TimeMs,
     deltas: Vec<Cents>,
     pending: usize,
@@ -29,8 +31,26 @@ pub struct DeferredNet {
 impl DeferredNet {
     pub fn new(cycles_per_day: u32, participants: usize) -> Self {
         assert!(cycles_per_day >= 1);
-        let interval = MS_PER_DAY / cycles_per_day as TimeMs;
-        DeferredNet { cycles_per_day, interval, next_cycle: interval, deltas: vec![0; participants], pending: 0 }
+        let mut d = DeferredNet {
+            cycles_per_day,
+            next_index: 1,
+            next_cycle: 0,
+            deltas: vec![0; participants],
+            pending: 0,
+        };
+        d.next_cycle = d.cycle_time(1);
+        d
+    }
+    /// Time of cycle `k >= 1`: cycle `j` of a day is at `floor(j * day / cycles_per_day)`, so
+    /// the last cycle of every day falls exactly at the end of the day even when
+    /// `cycles_per_day` does not divide it (no rounding error accumulates).
+    fn cycle_time(&self, k: u64) -> TimeMs {
+        let c = self.cycles_per_day as u64;
+        (k / c) * MS_PER_DAY + (k % c) * MS_PER_DAY / c
+    }
+    /// Longest gap between two consecutive cycles = the engine's maximum settlement delay.
+    pub fn max_delay_ms(&self) -> TimeMs {
+        MS_PER_DAY.div_ceil(self.cycles_per_day as TimeMs)
     }
     fn settle_batch(&mut self, ledger: &mut Ledger) {
         if self.pending > 0 {
@@ -48,7 +68,8 @@ impl SettlementEngine for DeferredNet {
     fn advance_to(&mut self, t: TimeMs, ledger: &mut Ledger, _s: &mut dyn Sink) {
         while self.next_cycle <= t {
             self.settle_batch(ledger);
-            self.next_cycle += self.interval;
+            self.next_index += 1;
+            self.next_cycle = self.cycle_time(self.next_index);
         }
     }
     fn submit(&mut self, p: Payment, _l: &mut Ledger, sink: &mut dyn Sink) {
@@ -66,6 +87,84 @@ impl SettlementEngine for DeferredNet {
 }
 
 // =======================================================================================
+// HoldToDeadline
+// =======================================================================================
+
+/// Holds each payment for exactly `delay_ms` and then settles it gross (rejects it if the
+/// payer lacks funds). No netting at all: an instrument, not a proposal. It separates the
+/// effect of *delay* from the effect of *offsetting*, and with a single holding participant it
+/// attains that participant's liquidity floor exactly (`docs/METHODOLOGY.md`, section 9b):
+/// its own payments leave as late as allowed while everything it is paid arrives at once.
+///
+/// `only = Some(i)`: only participant `i` holds its payments; everybody else settles on arrival.
+pub struct HoldToDeadline {
+    pub delay_ms: TimeMs,
+    pub only: Option<ParticipantId>,
+    held: VecDeque<Payment>,
+}
+
+impl HoldToDeadline {
+    pub fn new(delay_ms: TimeMs, only: Option<ParticipantId>) -> Self {
+        HoldToDeadline {
+            delay_ms,
+            only,
+            held: VecDeque::new(),
+        }
+    }
+    fn release(
+        &mut self,
+        until: TimeMs,
+        inclusive: bool,
+        ledger: &mut Ledger,
+        sink: &mut dyn Sink,
+    ) {
+        while let Some(p) = self.held.front() {
+            let due = p.t_arrival + self.delay_ms;
+            if due > until || (due == until && !inclusive) {
+                break;
+            }
+            let p = self.held.pop_front().unwrap();
+            if ledger.transfer(p.payer, p.payee, p.amount) {
+                sink.settled(&p, due, SettleKind::Gross);
+            } else {
+                sink.rejected(&p, due);
+            }
+        }
+    }
+}
+
+impl SettlementEngine for HoldToDeadline {
+    fn name(&self) -> String {
+        match self.only {
+            Some(i) => format!("hold_d{}_only{}", self.delay_ms, i),
+            None => format!("hold_d{}", self.delay_ms),
+        }
+    }
+    /// Releases payments due strictly before `t`. Those due exactly at `t` wait until the
+    /// clock moves past `t`, so that everything arriving at `t` is applied first: a payment
+    /// due at `t` and a receipt arriving at `t` then meet, as in the definition of the floor.
+    fn advance_to(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        self.release(t, false, ledger, sink);
+    }
+    fn submit(&mut self, p: Payment, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        let holds = self.delay_ms > 0 && self.only.map(|i| i == p.payer).unwrap_or(true);
+        if holds {
+            self.held.push_back(p);
+        } else if ledger.transfer(p.payer, p.payee, p.amount) {
+            sink.settled(&p, p.t_arrival, SettleKind::Gross);
+        } else {
+            sink.rejected(&p, p.t_arrival);
+        }
+    }
+    fn finish(&mut self, _t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        self.release(TimeMs::MAX, true, ledger, sink);
+    }
+    fn queued(&self) -> usize {
+        self.held.len()
+    }
+}
+
+// =======================================================================================
 // AtomicMicroCycle
 // =======================================================================================
 
@@ -78,6 +177,20 @@ pub enum QueueMode {
     QueueOnShortfall,
 }
 
+/// Order in which one payer's queued payments may settle gross in `QueueOnShortfall`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum QueueDiscipline {
+    /// A payment that fits settles even if an older, larger payment of the same payer is
+    /// still queued (bypass FIFO; DECISIONS.md D13). The default.
+    #[default]
+    BypassFifo,
+    /// A payer's payments settle gross strictly in arrival order: a new payment queues behind
+    /// anything the payer already has queued, and a retry stops at the payer's first payment
+    /// that does not fit. Cycles may still settle a queued payment out of order (that is
+    /// what a liquidity-saving mechanism is for).
+    StrictFifoPerPayer,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct MicroCycleConfig {
     pub window_ms: TimeMs,
@@ -85,11 +198,34 @@ pub struct MicroCycleConfig {
     pub mode: QueueMode,
     /// Longest cycle searched (2 = bilateral only). Bounded to keep the search cheap.
     pub max_cycle_len: usize,
+    /// Only used by `QueueOnShortfall`.
+    pub discipline: QueueDiscipline,
+    /// `false` turns the cycle search off: with `QueueOnShortfall` the engine is then a plain
+    /// queue (settle gross when funds allow, retry every window, reject at the deadline) — the
+    /// "FIFO queue" baseline of the liquidity-saving-mechanism literature.
+    pub search_cycles: bool,
+    /// Use the slow, obviously-correct gross retry (every queued payment visited in every
+    /// pass) instead of the event-driven one. Same results by construction; kept so the two
+    /// can be compared in tests. Leave `false`.
+    pub reference_retry: bool,
+    /// Run a multilateral gridlock resolution at every window instead of the cycle search:
+    /// settle, simultaneously, the largest set of queued payments that respects each payer's
+    /// queue order and leaves no balance negative (see `run_gridlock`).
+    pub gridlock: bool,
 }
 
 impl MicroCycleConfig {
     pub fn new(window_ms: TimeMs, max_delay_ms: TimeMs, mode: QueueMode) -> Self {
-        MicroCycleConfig { window_ms, max_delay_ms, mode, max_cycle_len: 6 }
+        MicroCycleConfig {
+            window_ms,
+            max_delay_ms,
+            mode,
+            max_cycle_len: 6,
+            discipline: QueueDiscipline::BypassFifo,
+            search_cycles: true,
+            reference_retry: false,
+            gridlock: false,
+        }
     }
 }
 
@@ -102,8 +238,14 @@ impl MicroCycleConfig {
 /// therefore every result — is deterministic (a `HashMap` iterates in random order).
 pub struct AtomicMicroCycle {
     pub cfg: MicroCycleConfig,
-    /// out[payer][payee] = FIFO of queued payments on that edge
-    out: Vec<BTreeMap<ParticipantId, VecDeque<Payment>>>,
+    /// out[payer][payee] = FIFO of queued payments on that edge, each with its queue sequence
+    /// number (the order in which payments entered the queue: arrival order)
+    out: Vec<BTreeMap<ParticipantId, VecDeque<(u64, Payment)>>>,
+    next_seq: u64,
+    /// participants whose queued payments must be retried gross at the next window: they were
+    /// credited, or one of their queued payments left the queue, since their last retry
+    pending: Vec<bool>,
+    pending_list: Vec<ParticipantId>,
     /// all queued payments in arrival order (deadline = arrival + max_delay is monotonic)
     deadlines: VecDeque<Payment>,
     next_tick: TimeMs,
@@ -121,6 +263,9 @@ impl AtomicMicroCycle {
         AtomicMicroCycle {
             cfg,
             out: vec![BTreeMap::new(); participants],
+            next_seq: 0,
+            pending: vec![false; participants],
+            pending_list: Vec::new(),
             deadlines: VecDeque::new(),
             next_tick: cfg.window_ms,
             queued: 0,
@@ -137,21 +282,38 @@ impl AtomicMicroCycle {
     }
 
     fn enqueue(&mut self, p: Payment) {
-        self.out[p.payer as usize].entry(p.payee).or_default().push_back(p);
+        self.out[p.payer as usize]
+            .entry(p.payee)
+            .or_default()
+            .push_back((self.next_seq, p));
+        self.next_seq += 1;
         self.deadlines.push_back(p);
         self.queued += 1;
+    }
+
+    /// Note that `who` may now be able to settle something it could not before (see
+    /// `retry_gross`). Cheap and idempotent.
+    fn mark(&mut self, who: ParticipantId) {
+        if !self.pending[who as usize] {
+            self.pending[who as usize] = true;
+            self.pending_list.push(who);
+        }
     }
 
     /// `true` if `p` is still queued (it is then necessarily the head of its edge: payments
     /// leave an edge queue only from the front, and older ones expire first).
     fn is_head(&self, p: &Payment) -> bool {
-        self.out[p.payer as usize].get(&p.payee).and_then(|q| q.front()).map(|h| h.id == p.id).unwrap_or(false)
+        self.out[p.payer as usize]
+            .get(&p.payee)
+            .and_then(|q| q.front())
+            .map(|h| h.1.id == p.id)
+            .unwrap_or(false)
     }
 
     fn pop_head(&mut self, payer: ParticipantId, payee: ParticipantId) -> Payment {
         let m = &mut self.out[payer as usize];
         let q = m.get_mut(&payee).expect("edge queue exists");
-        let p = q.pop_front().expect("edge queue non-empty");
+        let (_, p) = q.pop_front().expect("edge queue non-empty");
         if q.is_empty() {
             m.remove(&payee);
         }
@@ -179,7 +341,11 @@ impl AtomicMicroCycle {
             if color[root as usize] != 0 || self.out[root as usize].is_empty() {
                 continue;
             }
-            let mut stack = vec![Frame { v: root, after: None, truncated: false }];
+            let mut stack = vec![Frame {
+                v: root,
+                after: None,
+                truncated: false,
+            }];
             color[root as usize] = 1;
             path.clear();
             path.push(root);
@@ -212,7 +378,11 @@ impl AtomicMicroCycle {
                     Some(w) => {
                         color[w as usize] = 1;
                         path.push(w);
-                        stack.push(Frame { v: w, after: None, truncated: false });
+                        stack.push(Frame {
+                            v: w,
+                            after: None,
+                            truncated: false,
+                        });
                     }
                     None => {
                         let done = stack.pop().unwrap();
@@ -240,7 +410,7 @@ impl AtomicMicroCycle {
             for (i, &a) in cyc.iter().enumerate() {
                 let b = cyc[(i + 1) % cyc.len()];
                 let head = self.out[a as usize][&b].front().unwrap();
-                legs.push((a, b, head.amount));
+                legs.push((a, b, head.1.amount));
             }
             if ledger.try_batch(&legs, &mut self.scratch) {
                 let offset = legs.iter().map(|l| l.2).min().unwrap();
@@ -250,6 +420,8 @@ impl AtomicMicroCycle {
                     let p = self.pop_head(a, b);
                     ids.push(p.id);
                     sink.settled(&p, t, SettleKind::Cycle);
+                    self.mark(a); // one of its payments left the queue
+                    self.mark(b); // it was credited
                 }
                 self.cycles_settled += 1;
                 if let Some(l) = self.log.as_mut() {
@@ -272,13 +444,190 @@ impl AtomicMicroCycle {
         }
     }
 
-    /// QueueOnShortfall: retry queued payments gross in arrival order (FIFO per edge).
+    /// Multilateral gridlock resolution in the manner of Bech & Soramäki (2001).
+    ///
+    /// Each payer's queued payments are taken in arrival order. Start by assuming all of them
+    /// settle at once; while some participant would end below zero, drop the *last* payment
+    /// still included in that participant's queue; when nobody is below zero, settle what is
+    /// left simultaneously. The result is the largest set that is a prefix of every payer's
+    /// queue and feasible on a net basis (it does not depend on the order in which deficits
+    /// are fixed), and it can be empty.
+    ///
+    /// Unlike the cycle search it settles batches that are not cycles and uses the balances
+    /// that participants hold. Implemented from the description of the algorithm in secondary
+    /// sources; DECISIONS.md, D27.
+    fn run_gridlock(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        let n = self.out.len();
+        // per payer: queued payments in arrival order, as (sequence, payee, amount)
+        let mut q: Vec<Vec<(u64, ParticipantId, Cents)>> = vec![Vec::new(); n];
+        for (a, edges) in self.out.iter().enumerate() {
+            for (&b, dq) in edges {
+                q[a].extend(dq.iter().map(|(seq, p)| (*seq, b, p.amount)));
+            }
+            q[a].sort_unstable_by_key(|e| e.0);
+        }
+        let mut keep: Vec<usize> = q.iter().map(Vec::len).collect();
+        let mut pos: Vec<i128> = (0..n).map(|i| ledger.balance(i as u32) as i128).collect();
+        for (a, list) in q.iter().enumerate() {
+            for &(_, b, v) in list {
+                pos[a] -= v as i128;
+                pos[b as usize] += v as i128;
+            }
+        }
+        let mut work: Vec<usize> = (0..n).filter(|&i| pos[i] < 0).collect();
+        while let Some(i) = work.pop() {
+            // A deficit can only come from i's own included payments (balances are >= 0).
+            while pos[i] < 0 {
+                keep[i] -= 1;
+                let (_, b, v) = q[i][keep[i]];
+                pos[i] += v as i128;
+                pos[b as usize] -= v as i128;
+                if pos[b as usize] < 0 && pos[b as usize] + (v as i128) >= 0 {
+                    work.push(b as usize);
+                }
+            }
+        }
+        let mut legs: Vec<(u32, u32, Cents)> = Vec::new();
+        for (a, list) in q.iter().enumerate() {
+            legs.extend(list[..keep[a]].iter().map(|&(_, b, v)| (a as u32, b, v)));
+        }
+        if legs.is_empty() {
+            return;
+        }
+        let ok = ledger.try_batch(&legs, &mut self.scratch);
+        assert!(ok, "the gridlock solution is feasible by construction");
+        // Pop in each payer's arrival order: a prefix of a payer's queue is a prefix of each
+        // of its edges, so every popped payment is the head of its edge.
+        for (a, b, _) in legs {
+            let p = self.pop_head(a, b);
+            sink.settled(&p, t, SettleKind::Cycle);
+            self.mark(a);
+            self.mark(b);
+        }
+        self.cycles_settled += 1;
+    }
+
+    /// QueueOnShortfall: retry queued payments gross in arrival order, to a fixed point.
+    ///
+    /// **What it computes** (the definition, implemented literally by
+    /// [`Self::retry_gross_reference`]): one pass visits every queued payment in arrival order
+    /// and settles those that are at the head of their edge and fit, so several payments of
+    /// the same edge can go in one window. A settlement credits a payee that an earlier part
+    /// of the pass may have skipped for lack of funds, so passes repeat until one settles
+    /// nothing. With `StrictFifoPerPayer`, a payer is skipped for the rest of the pass after
+    /// its first payment that does not fit.
+    ///
+    /// **How.** Visiting every queued payment in every window costs O(queue) per window, which
+    /// is too slow when payments may wait for an hour. An attempt can only succeed for a payer
+    /// that was credited, or lost a queued payment (expiry, cycle), since it was last tried;
+    /// every other attempt of the definition fails and changes nothing. So only those payers
+    /// (`pending`) are visited, through a heap of edge heads ordered by queue sequence, which
+    /// reproduces the arrival order of the definition. A payer credited in the middle of a pass
+    /// joins it for its payments that come later in that order, exactly as in the definition.
+    /// `tests/engine_invariants.rs` checks that both versions produce identical settlements.
     fn retry_gross(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        let snapshot: Vec<Payment> = self.deadlines.iter().copied().filter(|p| self.is_head(p)).collect();
-        for p in snapshot {
-            if self.is_head(&p) && ledger.transfer(p.payer, p.payee, p.amount) {
-                self.pop_head(p.payer, p.payee);
+        if self.cfg.reference_retry {
+            return self.retry_gross_reference(t, ledger, sink);
+        }
+        let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        let n = self.out.len();
+        let mut in_pass = vec![false; n];
+        let mut stuck = vec![false; if strict { n } else { 0 }];
+        // (queue sequence, payer, payee) of edge heads still to visit in this pass
+        let mut heap: BinaryHeap<Reverse<(u64, ParticipantId, ParticipantId)>> = BinaryHeap::new();
+        while !self.pending_list.is_empty() && self.queued > 0 {
+            let set = std::mem::take(&mut self.pending_list);
+            in_pass.iter_mut().for_each(|b| *b = false);
+            stuck.iter_mut().for_each(|b| *b = false);
+            for &x in &set {
+                self.pending[x as usize] = false;
+                in_pass[x as usize] = true;
+                for (&payee, q) in &self.out[x as usize] {
+                    heap.push(Reverse((
+                        q.front().expect("edge queues are never empty").0,
+                        x,
+                        payee,
+                    )));
+                }
+            }
+            while let Some(Reverse((seq, x, payee))) = heap.pop() {
+                if strict && stuck[x as usize] {
+                    continue;
+                }
+                let amount = self.out[x as usize][&payee]
+                    .front()
+                    .expect("heap entries are current edge heads")
+                    .1
+                    .amount;
+                if !ledger.transfer(x, payee, amount) {
+                    if strict {
+                        stuck[x as usize] = true;
+                    }
+                    continue;
+                }
+                let p = self.pop_head(x, payee);
                 sink.settled(&p, t, SettleKind::Gross);
+                // The next payment of the same edge is now a head; it comes later in the order.
+                if let Some(next) = self.out[x as usize].get(&payee).and_then(|q| q.front()) {
+                    heap.push(Reverse((next.0, x, payee)));
+                }
+                // The payee was credited: it is retried in the next pass, and joins this one
+                // for its payments after `seq` (the definition has already visited, and failed,
+                // the earlier ones in this pass).
+                self.mark(payee);
+                if !in_pass[payee as usize] {
+                    let y = payee as usize;
+                    let oldest = self.out[y].values().map(|q| q.front().unwrap().0).min();
+                    // Strict FIFO: if its oldest payment was already visited in this pass, the
+                    // definition has marked the payer stuck for the rest of the pass.
+                    let joins = match oldest {
+                        None => false,
+                        Some(o) => !strict || o > seq,
+                    };
+                    if joins {
+                        in_pass[y] = true;
+                        for (&to, q) in &self.out[y] {
+                            let head = q.front().unwrap().0;
+                            if head > seq {
+                                heap.push(Reverse((head, payee, to)));
+                            }
+                        }
+                    } else if strict && oldest.is_some() {
+                        in_pass[y] = true;
+                        stuck[y] = true;
+                    }
+                }
+            }
+        }
+        // Nothing is queued any more, or nobody is pending: stale marks are harmless.
+    }
+
+    /// The definition of the gross retry, implemented literally (see [`Self::retry_gross`]).
+    fn retry_gross_reference(&mut self, t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
+        let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        let mut stuck = vec![false; if strict { self.out.len() } else { 0 }];
+        loop {
+            let mut progressed = false;
+            stuck.iter_mut().for_each(|b| *b = false);
+            // Index loop: `deadlines` is not modified here, and copying a `Payment` out of it
+            // ends the borrow before the queues are changed.
+            for i in 0..self.deadlines.len() {
+                let p = self.deadlines[i];
+                // Still queued <=> head of its edge *now* (older payments of the edge were
+                // visited earlier in this pass).
+                if !self.is_head(&p) || (strict && stuck[p.payer as usize]) {
+                    continue;
+                }
+                if ledger.transfer(p.payer, p.payee, p.amount) {
+                    self.pop_head(p.payer, p.payee);
+                    sink.settled(&p, t, SettleKind::Gross);
+                    progressed = true;
+                } else if strict {
+                    stuck[p.payer as usize] = true;
+                }
+            }
+            if !progressed || self.queued == 0 {
+                break;
             }
         }
     }
@@ -287,7 +636,11 @@ impl AtomicMicroCycle {
         if self.queued == 0 {
             return;
         }
-        self.run_cycles(t, ledger, sink);
+        if self.cfg.gridlock {
+            self.run_gridlock(t, ledger, sink);
+        } else if self.cfg.search_cycles {
+            self.run_cycles(t, ledger, sink);
+        }
         if self.cfg.mode == QueueMode::QueueOnShortfall && self.queued > 0 {
             self.retry_gross(t, ledger, sink);
         }
@@ -299,8 +652,10 @@ impl AtomicMicroCycle {
             return; // already settled
         }
         let p = self.pop_head(p.payer, p.payee);
+        self.mark(p.payer); // one of its payments left the queue
         if ledger.transfer(p.payer, p.payee, p.amount) {
             sink.settled(&p, t, SettleKind::Gross);
+            self.mark(p.payee);
         } else {
             sink.rejected(&p, t);
         }
@@ -313,7 +668,27 @@ impl SettlementEngine for AtomicMicroCycle {
             QueueMode::QueueAll => "all",
             QueueMode::QueueOnShortfall => "shortfall",
         };
-        format!("micro_cycle_{m}_w{}_d{}", self.cfg.window_ms, self.cfg.max_delay_ms)
+        let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
+        if self.cfg.gridlock {
+            return format!(
+                "gridlock_{}_w{}_d{}",
+                if strict { "fifo" } else { "bypass" },
+                self.cfg.window_ms,
+                self.cfg.max_delay_ms
+            );
+        }
+        if !self.cfg.search_cycles && self.cfg.mode == QueueMode::QueueOnShortfall {
+            return format!(
+                "queue_{}_d{}",
+                if strict { "fifo" } else { "bypass" },
+                self.cfg.max_delay_ms
+            );
+        }
+        let f = if strict { "_fifo" } else { "" };
+        format!(
+            "micro_cycle_{m}_w{}_d{}{f}",
+            self.cfg.window_ms, self.cfg.max_delay_ms
+        )
     }
 
     /// Fire window ticks and deadlines due at or before `t`, in time order (a tick before
@@ -328,7 +703,10 @@ impl SettlementEngine for AtomicMicroCycle {
                 }
                 self.deadlines.pop_front();
             }
-            let dl = self.deadlines.front().map(|p| p.t_arrival + self.cfg.max_delay_ms);
+            let dl = self
+                .deadlines
+                .front()
+                .map(|p| p.t_arrival + self.cfg.max_delay_ms);
             let tick = self.next_tick;
             match dl {
                 Some(d) if d <= t && d < tick => {
@@ -350,14 +728,21 @@ impl SettlementEngine for AtomicMicroCycle {
     }
 
     fn submit(&mut self, p: Payment, ledger: &mut Ledger, sink: &mut dyn Sink) {
-        if self.cfg.mode == QueueMode::QueueOnShortfall && ledger.transfer(p.payer, p.payee, p.amount) {
+        let behind_queue = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer
+            && !self.out[p.payer as usize].is_empty();
+        if self.cfg.mode == QueueMode::QueueOnShortfall
+            && !behind_queue
+            && ledger.transfer(p.payer, p.payee, p.amount)
+        {
             sink.settled(&p, p.t_arrival, SettleKind::Gross);
+            self.mark(p.payee);
             return;
         }
         if self.cfg.max_delay_ms == 0 {
             // No waiting allowed: behaves like gross settlement.
             if ledger.transfer(p.payer, p.payee, p.amount) {
                 sink.settled(&p, p.t_arrival, SettleKind::Gross);
+                self.mark(p.payee);
             } else {
                 sink.rejected(&p, p.t_arrival);
             }
@@ -368,17 +753,37 @@ impl SettlementEngine for AtomicMicroCycle {
 
     fn finish(&mut self, _t: TimeMs, ledger: &mut Ledger, sink: &mut dyn Sink) {
         // Keep the clock running until every queued payment has settled or expired.
-        if let Some(last) = self.deadlines.back().map(|p| p.t_arrival + self.cfg.max_delay_ms) {
+        if let Some(last) = self
+            .deadlines
+            .back()
+            .map(|p| p.t_arrival + self.cfg.max_delay_ms)
+        {
             self.advance_to(last, ledger, sink);
         }
-        debug_assert_eq!(self.queued, 0);
+        assert_eq!(
+            self.queued, 0,
+            "every queued payment settles or expires by its deadline"
+        );
     }
 
     fn queued(&self) -> usize {
         self.queued
     }
 
+    /// A top-up can make any queued payment settle: every payer with a queue is retried at the
+    /// next window (the event-driven retry only follows credits it made itself).
+    fn funded(&mut self) {
+        for a in 0..self.out.len() as u32 {
+            if !self.out[a as usize].is_empty() {
+                self.mark(a);
+            }
+        }
+    }
+
     fn stats(&self) -> Vec<(&'static str, f64)> {
-        vec![("cycles_settled", self.cycles_settled as f64), ("cycles_failed", self.cycles_failed as f64)]
+        vec![
+            ("cycles_settled", self.cycles_settled as f64),
+            ("cycles_failed", self.cycles_failed as f64),
+        ]
     }
 }

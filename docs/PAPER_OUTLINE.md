@@ -29,8 +29,13 @@ evidence from a calibrated Pix simulator.*
   (UB, LB, funding windows).
 
 ### 4. The delay bound
-- Theorem and proof ([`METHODOLOGY.md`](METHODOLOGY.md) §9); Figure 1 — realised saving vs bound over d
-  (`regimes/fig_bound.svg`); Table 5 — regimes, retail vs large-value (`regimes/regimes.csv`).
+- The liquidity floor: theorem and proof ([`METHODOLOGY.md`](METHODOLOGY.md) §9b), with the window form
+  (§9) as a corollary; Figure 1 — realised saving vs tight and window bounds over d
+  (`regimes/fig_bound.svg`); Table 5 — the bound over seeds and receiver bias
+  (`robustness/seeds_summary.csv`).
+- Not in this section any more: "the bound separates retail from large-value". The tight bound is
+  ≈ 0 in both (`regimes/regimes.csv`); the comparison with large-value LSM studies needs the
+  constrained-liquidity experiment (`specs/06`) and goes to the discussion as an open point until then.
 
 ### 5. Results
 - 5.1 Potential vs realizable, with seeds, scale and cycle length — Table 6 (`robustness/seeds_summary.csv`),
@@ -38,6 +43,11 @@ evidence from a calibrated Pix simulator.*
 - 5.2 Calibrated bilateral structure and intraday heterogeneity — Table 7 (`heterogeneity/heterogeneity.csv`).
 - 5.3 Funding windows: nights and the weekend — Table 8 (`funding-windows/windows.csv`).
 - 5.4 Per-bank heterogeneity, compared with the Finnish study — Table 9 (`robustness/participants_ratio.csv`).
+- 5.5 **When the result fails: fast bilateral returns** — Table 10 (`echo-sweep/echo.csv`). The condition of
+  the central claim; it belongs in the abstract.
+- 5.6 Constrained liquidity at equal service, 10 s vs one hour — Table 11 (`liquidity-frontier/equivalent_liquidity.csv`),
+  Figure 3 (`liquidity-frontier/fig_frontier.svg`).
+- 5.7 Floors vs the offline optimum — Table 12 (`optimality-gap/gap.csv`).
 
 ### 6. Discussion
 - Policy: second-scale LSMs in instant systems; where liquidity actually binds (weekends); who bears

@@ -24,7 +24,11 @@ pub struct HodgeConfig {
 
 impl Default for HodgeConfig {
     fn default() -> Self {
-        HodgeConfig { max_triangles: 500_000, tol: 1e-10, max_iter: 20_000 }
+        HodgeConfig {
+            max_triangles: 500_000,
+            tol: 1e-10,
+            max_iter: 20_000,
+        }
     }
 }
 
@@ -51,7 +55,11 @@ fn triangles(g: &FlowGraph, cap: usize) -> (Vec<Tri>, bool) {
     let mut up: Vec<Vec<u32>> = vec![Vec::new(); g.n];
     let mut idx: HashMap<(u32, u32), (u32, f64)> = HashMap::with_capacity(g.edges.len());
     for (i, e) in g.edges.iter().enumerate() {
-        let (a, b, s) = if e.from < e.to { (e.from, e.to, 1.0) } else { (e.to, e.from, -1.0) };
+        let (a, b, s) = if e.from < e.to {
+            (e.from, e.to, 1.0)
+        } else {
+            (e.to, e.from, -1.0)
+        };
         idx.insert((a, b), (i as u32, s));
         up[a as usize].push(b);
     }
@@ -93,7 +101,11 @@ pub fn hodge(g: &FlowGraph, cfg: &HodgeConfig) -> Hodge {
     let g = g.net();
     let (n, m) = (g.n, g.edges.len());
     let f: Vec<f64> = g.edges.iter().map(|e| e.flow as f64).collect();
-    let ends: Vec<(usize, usize)> = g.edges.iter().map(|e| (e.from as usize, e.to as usize)).collect();
+    let ends: Vec<(usize, usize)> = g
+        .edges
+        .iter()
+        .map(|e| (e.from as usize, e.to as usize))
+        .collect();
 
     // Gradient: L0 phi = B1 f.
     let mut rhs = vec![0.0; n];
@@ -178,7 +190,11 @@ impl Hodge {
     }
     /// Cyclic part = curl + harmonic (everything that is divergence-free).
     pub fn cyclic(&self) -> Vec<f64> {
-        self.curl.iter().zip(&self.harmonic).map(|(a, b)| a + b).collect()
+        self.curl
+            .iter()
+            .zip(&self.harmonic)
+            .map(|(a, b)| a + b)
+            .collect()
     }
     /// The spec's "circular fraction": ||curl|| / ||f|| (L2).
     pub fn curl_fraction_l2(&self) -> f64 {
@@ -201,5 +217,9 @@ impl Hodge {
 }
 
 pub(crate) fn ratio(a: f64, b: f64) -> f64 {
-    if b == 0.0 { 0.0 } else { a / b }
+    if b == 0.0 {
+        0.0
+    } else {
+        a / b
+    }
 }

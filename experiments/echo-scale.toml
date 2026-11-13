@@ -1,0 +1,20 @@
+# Does the effect of fast bilateral returns (echo-sweep, the case that fired the kill criterion)
+# fall with volume? Same case at 1 to 30 million payments a day.
+# ASSUMPTION: echoes are a stress test, not a calibrated behaviour.
+[experiment]
+name = "echo-scale"
+description = "Echo payments returned to the payer: the bound and the saving as volume grows"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 1_000_000
+calibration = "data/calibration/pix.toml"
+
+[echo_scale]
+seeds = [20260930, 1, 2, 3]
+payments_per_day = [1_000_000, 3_000_000, 10_000_000, 30_000_000]
+share = 0.2
+delay_ms = 1000
+return_prob = 1.0

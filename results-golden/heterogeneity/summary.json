@@ -1,0 +1,199 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "heterogeneity",
+  "seed": 20260930,
+  "code_version": "golden",
+  "config_file": "target/golden-config/heterogeneity.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment heterogeneity",
+  "scenario": {
+    "participants": 40,
+    "days": 1,
+    "payments_per_day": 30000,
+    "scale_factor": 7966.360437,
+    "body_median_brl": 84.57946,
+    "body_sigma": 1.4,
+    "tail_prob": 0.042962,
+    "tail_xm_brl": 1375.25637,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "kill_criterion_k1": {
+    "rule": "stop if the 10 s delay bound exceeds 2% of UB at 30M payments/day",
+    "cases": []
+  },
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0",
+      "seeds": 2,
+      "mean": 0.014761,
+      "ci95_low": -0.064524,
+      "ci95_high": 0.094046
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda0",
+      "seeds": 2,
+      "mean": 0.003599,
+      "ci95_low": -0.026633,
+      "ci95_high": 0.033832
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda0",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda0",
+      "seeds": 2,
+      "mean": 0.802376,
+      "ci95_low": 0.58118,
+      "ci95_high": 1.023572
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda0.5",
+      "seeds": 2,
+      "mean": 0.018196,
+      "ci95_low": -0.187498,
+      "ci95_high": 0.22389
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda0.5",
+      "seeds": 2,
+      "mean": 0.011476,
+      "ci95_low": -0.108836,
+      "ci95_high": 0.131789
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda0.5",
+      "seeds": 2,
+      "mean": 14.036305,
+      "ci95_low": 10.705075,
+      "ci95_high": 17.367534
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda0.5",
+      "seeds": 2,
+      "mean": 0.859637,
+      "ci95_low": 0.826325,
+      "ci95_high": 0.892949
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma0.4_lambda1",
+      "seeds": 2,
+      "mean": 0.015971,
+      "ci95_low": -0.022432,
+      "ci95_high": 0.054374
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma0.4_lambda1",
+      "seeds": 2,
+      "mean": 0.004182,
+      "ci95_low": -0.012092,
+      "ci95_high": 0.020455
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma0.4_lambda1",
+      "seeds": 2,
+      "mean": 18.018512,
+      "ci95_low": -17.826699,
+      "ci95_high": 53.863722
+    },
+    {
+      "metric": "lb_over_ub_sigma0.4_lambda1",
+      "seeds": 2,
+      "mean": 0.819815,
+      "ci95_low": 0.461363,
+      "ci95_high": 1.178267
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0",
+      "seeds": 2,
+      "mean": 0.009551,
+      "ci95_low": -0.062232,
+      "ci95_high": 0.081334
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda0",
+      "seeds": 2,
+      "mean": 0.00859,
+      "ci95_low": -0.075396,
+      "ci95_high": 0.092577
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda0",
+      "seeds": 2,
+      "mean": 9.938633,
+      "ci95_low": 0.437595,
+      "ci95_high": 19.439671
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda0",
+      "seeds": 2,
+      "mean": 0.900614,
+      "ci95_low": 0.805603,
+      "ci95_high": 0.995624
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda0.5",
+      "seeds": 2,
+      "mean": 0.00656,
+      "ci95_low": -0.06285,
+      "ci95_high": 0.075971
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda0.5",
+      "seeds": 2,
+      "mean": 0.000374,
+      "ci95_low": -0.004374,
+      "ci95_high": 0.005121
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda0.5",
+      "seeds": 2,
+      "mean": 6.939074,
+      "ci95_low": -5.563363,
+      "ci95_high": 19.44151
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda0.5",
+      "seeds": 2,
+      "mean": 0.930609,
+      "ci95_low": 0.805585,
+      "ci95_high": 1.055634
+    },
+    {
+      "metric": "tight_bound_10s_pct_sigma1_lambda1",
+      "seeds": 2,
+      "mean": 0.013304,
+      "ci95_low": -0.127597,
+      "ci95_high": 0.154205
+    },
+    {
+      "metric": "netting_10s_saving_pct_sigma1_lambda1",
+      "seeds": 2,
+      "mean": 0.007087,
+      "ci95_low": -0.062754,
+      "ci95_high": 0.076928
+    },
+    {
+      "metric": "netting_daily_saving_pct_sigma1_lambda1",
+      "seeds": 2,
+      "mean": 7.242925,
+      "ci95_low": -24.533199,
+      "ci95_high": 39.019049
+    },
+    {
+      "metric": "lb_over_ub_sigma1_lambda1",
+      "seeds": 2,
+      "mean": 0.927571,
+      "ci95_low": 0.60981,
+      "ci95_high": 1.245332
+    }
+  ]
+}

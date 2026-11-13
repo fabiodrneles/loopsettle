@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="70" y="24" font-size="15" font-weight="bold">Instant (gross) vs fixed-cycle liquidity need</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
+<text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
+<line x1="70" y1="265.3" x2="540.0" y2="265.3" stroke="#e5e5e5"/>
+<text x="64.0" y="269.3" text-anchor="end" fill="#444">0.50</text>
+<line x1="70" y1="145.7" x2="540.0" y2="145.7" stroke="#e5e5e5"/>
+<text x="64.0" y="149.7" text-anchor="end" fill="#444">1</text>
+<line x1="91.4" y1="40" x2="91.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="91.4" y="401.0" text-anchor="middle" fill="#444">1</text>
+<line x1="345.5" y1="40" x2="345.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="345.5" y="401.0" text-anchor="middle" fill="#444">10</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#333"/>
+<line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
+<text x="305.0" y="426.0" text-anchor="middle">clearing cycles per day (log scale)</text>
+<text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">liquidity instant / liquidity cycles (x)</text>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,56.4 167.9,78.4 244.4,96.7 289.1,104.6 345.5,120.5 442.1,135.0 518.6,140.9"/>
+<circle cx="91.4" cy="56.4" r="3.5" fill="#0072B2"/>
+<circle cx="167.9" cy="78.4" r="3.5" fill="#0072B2"/>
+<circle cx="244.4" cy="96.7" r="3.5" fill="#0072B2"/>
+<circle cx="289.1" cy="104.6" r="3.5" fill="#0072B2"/>
+<circle cx="345.5" cy="120.5" r="3.5" fill="#0072B2"/>
+<circle cx="442.1" cy="135.0" r="3.5" fill="#0072B2"/>
+<circle cx="518.6" cy="140.9" r="3.5" fill="#0072B2"/>
+<rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
+<text x="570.0" y="50.0">receiver bias sigma 0</text>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,73.2 167.9,94.1 244.4,101.8 289.1,117.2 345.5,122.8 442.1,135.1 518.6,139.8"/>
+<circle cx="91.4" cy="73.2" r="3.5" fill="#D55E00"/>
+<circle cx="167.9" cy="94.1" r="3.5" fill="#D55E00"/>
+<circle cx="244.4" cy="101.8" r="3.5" fill="#D55E00"/>
+<circle cx="289.1" cy="117.2" r="3.5" fill="#D55E00"/>
+<circle cx="345.5" cy="122.8" r="3.5" fill="#D55E00"/>
+<circle cx="442.1" cy="135.1" r="3.5" fill="#D55E00"/>
+<circle cx="518.6" cy="139.8" r="3.5" fill="#D55E00"/>
+<rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
+<text x="570.0" y="68.0">receiver bias sigma 0.2</text>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,86.6 167.9,97.6 244.4,110.4 289.1,120.9 345.5,123.2 442.1,137.2 518.6,141.8"/>
+<circle cx="91.4" cy="86.6" r="3.5" fill="#009E73"/>
+<circle cx="167.9" cy="97.6" r="3.5" fill="#009E73"/>
+<circle cx="244.4" cy="110.4" r="3.5" fill="#009E73"/>
+<circle cx="289.1" cy="120.9" r="3.5" fill="#009E73"/>
+<circle cx="345.5" cy="123.2" r="3.5" fill="#009E73"/>
+<circle cx="442.1" cy="137.2" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="141.8" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">receiver bias sigma 0.4</text>
+</svg>

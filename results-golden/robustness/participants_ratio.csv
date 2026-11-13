@@ -1,0 +1,3 @@
+cycles_per_day,participants_with_ratio,needs_liquidity_only_if_instant,needs_no_liquidity,ratio_p10,ratio_p25,ratio_p50,ratio_p75,ratio_p90,ratio_max
+1,15,20,5,1.001472,1.025102,1.123585,1.666589,1.91105,4.199919
+10,32,3,5,1.000067,1.026529,1.121807,1.545773,2.015337,3.476886

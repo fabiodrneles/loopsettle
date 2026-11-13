@@ -23,7 +23,10 @@
 8. **The measured delay is only the delay added by the engine.** The real processing time of the
    SPI and of payment service providers (part of the 2.8 s target in the Pix timing manual) is
    not modelled.
-9. **Proportional CDFD not implemented** (D6); the ladder uses only the maximum CDFD.
+9. **Proportional CDFD in its non-local form.** BFF (D6) is implemented with the paper's Algorithm 2
+   (stationary distributions per strongly connected component), which the paper states gives the
+   same decomposition as the local dynamics; the local dynamics themselves are not implemented, and
+   the paper has no per-edge example to reproduce, so the check is by properties only.
 10. **Incomplete external validation.** The `topology <csv>` command is ready, but the on-chain
     stablecoin sample has not been downloaded (Phase 8).
 11. **Hodge on dense graphs.** The Hodge curl fraction on the net graph (≈0.98) is dominated by
@@ -49,3 +52,12 @@
     rediscount line; open windows assume unlimited top-ups.
 16. **Large-value regime is stylised.** `regimes` uses an assumed large-value system to show how
     the bound depends on payment lumpiness; it is not calibrated to T2, Lynx or the STR.
+17. **Constrained-liquidity runs.** `liquidity-frontier` assumes that a rejected payment is not
+    retried by the payer, that balances are fixed for the day (no top-ups, no intraday credit), and,
+    for rule `ub`, that each participant's balance is proportional to its own peak of that same
+    day. Participants would adjust their balances to the design in use; the experiment measures
+    the short-run response with given balances. It uses 300,000 payments a day.
+18. **Time structure of responses.** The base generator draws arrivals independently, so a
+    participant's receipts right after it pays are there by chance. `echo-sweep` shows that the
+    central result depends on this: fast bilateral returns make second-scale netting worthwhile.
+    Echo share, delay and direction are assumptions; no public data identify them.

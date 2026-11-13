@@ -1,0 +1,713 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "potential-vs-realizable",
+  "seed": 20260930,
+  "code_version": "golden",
+  "config_file": "target/golden-config/potential-vs-realizable.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable",
+  "scenario": {
+    "participants": 40,
+    "days": 1,
+    "payments_per_day": 30000,
+    "scale_factor": 7966.360437,
+    "body_median_brl": 84.57946,
+    "body_sigma": 1.4,
+    "tail_prob": 0.042962,
+    "tail_xm_brl": 1375.25637,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "flow": {
+    "payments": 30092,
+    "gross_value_brl": 13026515.7,
+    "ub_brl": 3280489.56,
+    "lb_brl": 3009201.89,
+    "lb_over_ub": 0.917303,
+    "ub_over_gross": 0.251832,
+    "potential_offset_fraction": 0.768994
+  },
+  "topology": {
+    "gross": {
+      "nodes": 40,
+      "edges": 1062,
+      "total_flow_cents": 1302651570,
+      "hodge_l1_cyclic": 1.163908,
+      "hodge_l2_curl": 0.939013,
+      "hodge_l2_cyclic": 0.939013,
+      "hodge_triangles": 5254,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.7444,
+      "cdfd_bff": 0.709586,
+      "cycle_netting": 0.712531,
+      "cycles_found": 628
+    },
+    "net": {
+      "nodes": 40,
+      "edges": 609,
+      "total_flow_cents": 506230064,
+      "hodge_l1_cyclic": 1.421775,
+      "hodge_l2_curl": 0.939013,
+      "hodge_l2_cyclic": 0.939013,
+      "hodge_triangles": 5254,
+      "hodge_triangles_capped": false,
+      "cdfd_max": 0.284154,
+      "cdfd_bff": 0.232699,
+      "cycle_netting": 0.245513,
+      "cycles_found": 246
+    },
+    "bilateral_share": 0.611385,
+    "hodge_potential_vs_net_position_corr": 0.997737,
+    "cg_gradient_iterations": 14,
+    "cg_gradient_rel_residual": 0,
+    "cg_curl_iterations": 15,
+    "cg_curl_rel_residual": 0
+  },
+  "central": [
+    {
+      "measure": "potential_offset_fraction_bcb_style",
+      "value": 0.768994,
+      "meaning": "share of gross outflows fundable by same-day inflows, order ignored",
+      "status": "measured, no time"
+    },
+    {
+      "measure": "potential_liquidity_saving_end_of_day",
+      "value": 0.082697,
+      "meaning": "(UB - LB) / UB: saving of one end-of-day net settlement",
+      "status": "measured"
+    },
+    {
+      "measure": "static_ceiling_cdfd_max_gross",
+      "value": 0.7444,
+      "meaning": "max circulation respecting edge bounds / gross flow",
+      "status": "measured, aggregated, no time"
+    },
+    {
+      "measure": "static_greedy_cycle_netting_gross",
+      "value": 0.712531,
+      "meaning": "greedy cycle cancellation / gross flow",
+      "status": "measured, aggregated, no time"
+    },
+    {
+      "measure": "hodge_l1_cyclic_gross",
+      "value": 1.163908,
+      "meaning": "diagnostic; can exceed 1",
+      "status": "measured, aggregated, no time"
+    },
+    {
+      "measure": "realizable_liquidity_saving_micro_cycle_all_w1000_d10000",
+      "value": 0.00012,
+      "meaning": "best atomic micro-cycle config: 1 - liquidity / UB",
+      "status": "measured in time"
+    },
+    {
+      "measure": "realizable_value_in_cycles_micro_cycle_all_w1000_d10000",
+      "value": 0.089102,
+      "meaning": "value settled inside atomic cycles / settled value",
+      "status": "measured in time"
+    },
+    {
+      "measure": "realizable_liquidity_saving_deferred_net_96x",
+      "value": 0.013138,
+      "meaning": "deferred net settlement at this frequency",
+      "status": "measured in time"
+    },
+    {
+      "measure": "realizable_liquidity_saving_deferred_net_8640x",
+      "value": 0.002846,
+      "meaning": "deferred net settlement at this frequency",
+      "status": "measured in time"
+    }
+  ],
+  "engines": [
+    {
+      "name": "gross_real_time",
+      "spec": {
+        "kind": "gross"
+      },
+      "liquidity_needed_brl": 3280489.56,
+      "liquidity_saving_vs_ub_brl": 0,
+      "liquidity_saving_vs_ub_pct": 0,
+      "share_of_ub_minus_lb_recovered": 0,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 13026515.7,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 0,
+      "delay_p95_ms": 0,
+      "delay_p99_ms": 0,
+      "delay_max_ms": 0,
+      "delay_mean_ms": 0,
+      "delay_value_weighted_mean_ms": 0,
+      "share_settled_within_2800ms": 1
+    },
+    {
+      "name": "deferred_net_1x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 1
+      },
+      "liquidity_needed_brl": 3009201.89,
+      "liquidity_saving_vs_ub_brl": 271287.67,
+      "liquidity_saving_vs_ub_pct": 8.269731,
+      "share_of_ub_minus_lb_recovered": 1,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 31719424,
+      "delay_p95_ms": 60817408,
+      "delay_p99_ms": 82837504,
+      "delay_max_ms": 86393306,
+      "delay_mean_ms": 32808368.666556,
+      "delay_value_weighted_mean_ms": 33007837.212513,
+      "share_settled_within_2800ms": 0
+    },
+    {
+      "name": "deferred_net_2x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 2
+      },
+      "liquidity_needed_brl": 3025024.7,
+      "liquidity_saving_vs_ub_brl": 255464.86,
+      "liquidity_saving_vs_ub_pct": 7.7874,
+      "share_of_ub_minus_lb_recovered": 0.941675,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 18612224,
+      "delay_p95_ms": 40894464,
+      "delay_p99_ms": 42467328,
+      "delay_max_ms": 43195438,
+      "delay_mean_ms": 20106201.977735,
+      "delay_value_weighted_mean_ms": 20303369.157712,
+      "share_settled_within_2800ms": 0.000066
+    },
+    {
+      "name": "deferred_net_4x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 4
+      },
+      "liquidity_needed_brl": 3102717.41,
+      "liquidity_saving_vs_ub_brl": 177772.15,
+      "liquidity_saving_vs_ub_pct": 5.419074,
+      "share_of_ub_minus_lb_recovered": 0.65529,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 10616832,
+      "delay_p95_ms": 20447232,
+      "delay_p99_ms": 21233664,
+      "delay_max_ms": 21599228,
+      "delay_mean_ms": 10759744.447494,
+      "delay_value_weighted_mean_ms": 10577830.011738,
+      "share_settled_within_2800ms": 0.0001
+    },
+    {
+      "name": "deferred_net_10x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 10
+      },
+      "liquidity_needed_brl": 3175003.36,
+      "liquidity_saving_vs_ub_brl": 105486.2,
+      "liquidity_saving_vs_ub_pct": 3.215563,
+      "share_of_ub_minus_lb_recovered": 0.388835,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 4325376,
+      "delay_p95_ms": 8192000,
+      "delay_p99_ms": 8519680,
+      "delay_max_ms": 8639611,
+      "delay_mean_ms": 4337024.787784,
+      "delay_value_weighted_mean_ms": 4299919.000062,
+      "share_settled_within_2800ms": 0.000432
+    },
+    {
+      "name": "deferred_net_24x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 24
+      },
+      "liquidity_needed_brl": 3199911.5,
+      "liquidity_saving_vs_ub_brl": 80578.06,
+      "liquidity_saving_vs_ub_pct": 2.456282,
+      "share_of_ub_minus_lb_recovered": 0.297021,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 1802240,
+      "delay_p95_ms": 3407872,
+      "delay_p99_ms": 3538944,
+      "delay_max_ms": 3599916,
+      "delay_mean_ms": 1806162.100027,
+      "delay_value_weighted_mean_ms": 1881554.55567,
+      "share_settled_within_2800ms": 0.000598
+    },
+    {
+      "name": "deferred_net_96x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 96
+      },
+      "liquidity_needed_brl": 3237388.93,
+      "liquidity_saving_vs_ub_brl": 43100.63,
+      "liquidity_saving_vs_ub_pct": 1.313847,
+      "share_of_ub_minus_lb_recovered": 0.158874,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 450560,
+      "delay_p95_ms": 851968,
+      "delay_p99_ms": 884736,
+      "delay_max_ms": 899930,
+      "delay_mean_ms": 450329.985179,
+      "delay_value_weighted_mean_ms": 443688.220852,
+      "share_settled_within_2800ms": 0.002924
+    },
+    {
+      "name": "deferred_net_288x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 288
+      },
+      "liquidity_needed_brl": 3265758.92,
+      "liquidity_saving_vs_ub_brl": 14730.64,
+      "liquidity_saving_vs_ub_pct": 0.449038,
+      "share_of_ub_minus_lb_recovered": 0.054299,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 149504,
+      "delay_p95_ms": 282624,
+      "delay_p99_ms": 294912,
+      "delay_max_ms": 299984,
+      "delay_mean_ms": 149891.330387,
+      "delay_value_weighted_mean_ms": 148086.02164,
+      "share_settled_within_2800ms": 0.009438
+    },
+    {
+      "name": "deferred_net_1440x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 1440
+      },
+      "liquidity_needed_brl": 3269819.4,
+      "liquidity_saving_vs_ub_brl": 10670.16,
+      "liquidity_saving_vs_ub_pct": 0.325261,
+      "share_of_ub_minus_lb_recovered": 0.039332,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 29952,
+      "delay_p95_ms": 56832,
+      "delay_p99_ms": 59392,
+      "delay_max_ms": 59998,
+      "delay_mean_ms": 30016.945168,
+      "delay_value_weighted_mean_ms": 30632.841631,
+      "share_settled_within_2800ms": 0.048352
+    },
+    {
+      "name": "deferred_net_8640x",
+      "spec": {
+        "kind": "deferred",
+        "cycles_per_day": 8640
+      },
+      "liquidity_needed_brl": 3271152.78,
+      "liquidity_saving_vs_ub_brl": 9336.78,
+      "liquidity_saving_vs_ub_pct": 0.284615,
+      "share_of_ub_minus_lb_recovered": 0.034417,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 0,
+      "settled_cycle_value_brl": 0,
+      "settled_deferred_value_brl": 13026515.7,
+      "settled_cycle_count": 0,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 4992,
+      "delay_p95_ms": 9472,
+      "delay_p99_ms": 9856,
+      "delay_max_ms": 10000,
+      "delay_mean_ms": 5027.246909,
+      "delay_value_weighted_mean_ms": 5008.24874,
+      "share_settled_within_2800ms": 0.276818
+    },
+    {
+      "name": "micro_cycle_all_w500_d10000",
+      "spec": {
+        "kind": "micro",
+        "mode": "all",
+        "window_ms": 500,
+        "max_delay_ms": 10000,
+        "max_cycle_len": 6,
+        "discipline": "bypass"
+      },
+      "liquidity_needed_brl": 3280097.1,
+      "liquidity_saving_vs_ub_brl": 392.46,
+      "liquidity_saving_vs_ub_pct": 0.011963,
+      "share_of_ub_minus_lb_recovered": 0.001447,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 11843118.31,
+      "settled_cycle_value_brl": 1183397.39,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 2567,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 9984,
+      "delay_p95_ms": 9984,
+      "delay_p99_ms": 9984,
+      "delay_max_ms": 10000,
+      "delay_mean_ms": 9398.400339,
+      "delay_value_weighted_mean_ms": 9340.622404,
+      "share_settled_within_2800ms": 0.050844,
+      "cycles_settled": 1144,
+      "cycles_failed": 0
+    },
+    {
+      "name": "micro_cycle_all_w1000_d10000",
+      "spec": {
+        "kind": "micro",
+        "mode": "all",
+        "window_ms": 1000,
+        "max_delay_ms": 10000,
+        "max_cycle_len": 6,
+        "discipline": "bypass"
+      },
+      "liquidity_needed_brl": 3280097.1,
+      "liquidity_saving_vs_ub_brl": 392.46,
+      "liquidity_saving_vs_ub_pct": 0.011963,
+      "share_of_ub_minus_lb_recovered": 0.001447,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 11865827.48,
+      "settled_cycle_value_brl": 1160688.22,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 2485,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 9984,
+      "delay_p95_ms": 9984,
+      "delay_p99_ms": 9984,
+      "delay_max_ms": 10000,
+      "delay_mean_ms": 9429.930513,
+      "delay_value_weighted_mean_ms": 9365.442177,
+      "share_settled_within_2800ms": 0.048584,
+      "cycles_settled": 1110,
+      "cycles_failed": 0
+    },
+    {
+      "name": "micro_cycle_all_w1000_d5000",
+      "spec": {
+        "kind": "micro",
+        "mode": "all",
+        "window_ms": 1000,
+        "max_delay_ms": 5000,
+        "max_cycle_len": 6,
+        "discipline": "bypass"
+      },
+      "liquidity_needed_brl": 3280489.56,
+      "liquidity_saving_vs_ub_brl": 0,
+      "liquidity_saving_vs_ub_pct": 0,
+      "share_of_ub_minus_lb_recovered": 0,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 12525151.68,
+      "settled_cycle_value_brl": 501364.02,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 1103,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 4992,
+      "delay_p95_ms": 4992,
+      "delay_p99_ms": 4992,
+      "delay_max_ms": 5000,
+      "delay_mean_ms": 4878.60119,
+      "delay_value_weighted_mean_ms": 4876.357274,
+      "share_settled_within_2800ms": 0.02725,
+      "cycles_settled": 521,
+      "cycles_failed": 0
+    },
+    {
+      "name": "micro_cycle_all_w500_d2000",
+      "spec": {
+        "kind": "micro",
+        "mode": "all",
+        "window_ms": 500,
+        "max_delay_ms": 2000,
+        "max_cycle_len": 6,
+        "discipline": "bypass"
+      },
+      "liquidity_needed_brl": 3280489.56,
+      "liquidity_saving_vs_ub_brl": 0,
+      "liquidity_saving_vs_ub_pct": 0,
+      "share_of_ub_minus_lb_recovered": 0,
+      "settled_count": 30092,
+      "settled_value_brl": 13026515.7,
+      "settled_gross_value_brl": 12833388.15,
+      "settled_cycle_value_brl": 193127.55,
+      "settled_deferred_value_brl": 0,
+      "settled_cycle_count": 389,
+      "rejected_count": 0,
+      "rejected_value_brl": 0,
+      "delay_p50_ms": 2000,
+      "delay_p95_ms": 2000,
+      "delay_p99_ms": 2000,
+      "delay_max_ms": 2000,
+      "delay_mean_ms": 1982.898611,
+      "delay_value_weighted_mean_ms": 1978.782554,
+      "share_settled_within_2800ms": 1,
+      "cycles_settled": 190,
+      "cycles_failed": 0
+    }
+  ],
+  "seeds": [1,2],
+  "seeds_summary": [
+    {
+      "metric": "potential_offset_fraction",
+      "seeds": 2,
+      "mean": 0.818402,
+      "ci95_low": 0.761835,
+      "ci95_high": 0.874969
+    },
+    {
+      "metric": "eod_saving_pct",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_pct_deferred_net_1x",
+      "seeds": 2,
+      "mean": 19.762417,
+      "ci95_low": -2.357177,
+      "ci95_high": 41.882011
+    },
+    {
+      "metric": "saving_pct_deferred_net_2x",
+      "seeds": 2,
+      "mean": 16.644406,
+      "ci95_low": -16.559153,
+      "ci95_high": 49.847965
+    },
+    {
+      "metric": "saving_pct_deferred_net_4x",
+      "seeds": 2,
+      "mean": 12.821844,
+      "ci95_low": 3.471056,
+      "ci95_high": 22.172633
+    },
+    {
+      "metric": "saving_pct_deferred_net_10x",
+      "seeds": 2,
+      "mean": 8.478627,
+      "ci95_low": -27.734945,
+      "ci95_high": 44.692199
+    },
+    {
+      "metric": "saving_pct_deferred_net_24x",
+      "seeds": 2,
+      "mean": 3.431644,
+      "ci95_low": -0.338718,
+      "ci95_high": 7.202006
+    },
+    {
+      "metric": "saving_pct_deferred_net_96x",
+      "seeds": 2,
+      "mean": 0.944373,
+      "ci95_low": -4.184355,
+      "ci95_high": 6.073102
+    },
+    {
+      "metric": "saving_pct_deferred_net_288x",
+      "seeds": 2,
+      "mean": 0.434994,
+      "ci95_low": -3.081978,
+      "ci95_high": 3.951966
+    },
+    {
+      "metric": "saving_pct_deferred_net_1440x",
+      "seeds": 2,
+      "mean": 0.084815,
+      "ci95_low": -0.366263,
+      "ci95_high": 0.535893
+    },
+    {
+      "metric": "saving_pct_deferred_net_8640x",
+      "seeds": 2,
+      "mean": 0.003599,
+      "ci95_low": -0.026633,
+      "ci95_high": 0.033832
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 0.000668,
+      "ci95_low": -0.007825,
+      "ci95_high": 0.009162
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "saving_pct_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 0,
+      "ci95_low": 0,
+      "ci95_high": 0
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1x",
+      "seeds": 2,
+      "mean": 60293120,
+      "ci95_low": 60293120,
+      "ci95_high": 60293120
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_2x",
+      "seeds": 2,
+      "mean": 40894464,
+      "ci95_low": 40894464,
+      "ci95_high": 40894464
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_4x",
+      "seeds": 2,
+      "mean": 20447232,
+      "ci95_low": 20447232,
+      "ci95_high": 20447232
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_10x",
+      "seeds": 2,
+      "mean": 8192000,
+      "ci95_low": 8192000,
+      "ci95_high": 8192000
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_24x",
+      "seeds": 2,
+      "mean": 3407872,
+      "ci95_low": 3407872,
+      "ci95_high": 3407872
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_96x",
+      "seeds": 2,
+      "mean": 851968,
+      "ci95_low": 851968,
+      "ci95_high": 851968
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_288x",
+      "seeds": 2,
+      "mean": 282624,
+      "ci95_low": 282624,
+      "ci95_high": 282624
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_1440x",
+      "seeds": 2,
+      "mean": 56832,
+      "ci95_low": 56832,
+      "ci95_high": 56832
+    },
+    {
+      "metric": "p95_delay_ms_deferred_net_8640x",
+      "seeds": 2,
+      "mean": 9472,
+      "ci95_low": 9472,
+      "ci95_high": 9472
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d10000",
+      "seeds": 2,
+      "mean": 9984,
+      "ci95_low": 9984,
+      "ci95_high": 9984
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w1000_d5000",
+      "seeds": 2,
+      "mean": 4992,
+      "ci95_low": 4992,
+      "ci95_high": 4992
+    },
+    {
+      "metric": "p95_delay_ms_micro_cycle_all_w500_d2000",
+      "seeds": 2,
+      "mean": 2000,
+      "ci95_low": 2000,
+      "ci95_high": 2000
+    }
+  ]
+}

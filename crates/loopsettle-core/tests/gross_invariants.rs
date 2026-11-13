@@ -1,12 +1,18 @@
 //! Phase 1 invariants for `GrossRealTime`:
-//! 1. conservation of total balance, 3. no negative balance, 7. determinism.
+//! (1) conservation of total balance, (3) no negative balance, (7) determinism.
 //! Plus the hand-worked UB/LB example from docs/METHODOLOGY.md.
 
 use loopsettle_core::*;
 use proptest::prelude::*;
 
 fn pay(id: u64, t: u64, a: u32, b: u32, v: i64) -> Payment {
-    Payment { id, t_arrival: t, payer: a, payee: b, amount: v }
+    Payment {
+        id,
+        t_arrival: t,
+        payer: a,
+        payee: b,
+        amount: v,
+    }
 }
 
 /// Strategy: `n` participants and an arrival-sorted list of random payments.
@@ -25,7 +31,10 @@ fn payments(n: u32, max_len: usize) -> impl Strategy<Value = Vec<Payment>> {
 
 fn run_gross(ps: &[Payment], opening: Vec<i64>) -> (EngineRun, FlowStats) {
     let n = opening.len();
-    let mut runs = vec![EngineRun::new(Box::new(GrossRealTime), Ledger::new(opening))];
+    let mut runs = vec![EngineRun::new(
+        Box::new(GrossRealTime),
+        Ledger::new(opening),
+    )];
     let mut flow = FlowStats::new(n, true);
     drive(ps.iter().copied(), &mut runs, &mut flow, 0);
     (runs.pop().unwrap(), flow)
@@ -34,10 +43,18 @@ fn run_gross(ps: &[Payment], opening: Vec<i64>) -> (EngineRun, FlowStats) {
 #[test]
 fn hand_example_ub_lb() {
     // A=0, B=1, C=2. See docs/METHODOLOGY.md, "Exemplo à mão".
-    let ps = [pay(0, 1, 0, 1, 100), pay(1, 2, 1, 2, 50), pay(2, 3, 2, 0, 70), pay(3, 4, 1, 0, 30)];
+    let ps = [
+        pay(0, 1, 0, 1, 100),
+        pay(1, 2, 1, 2, 50),
+        pay(2, 3, 2, 0, 70),
+        pay(3, 4, 1, 0, 30),
+    ];
     let (run, flow) = run_gross(&ps, vec![UNLIMITED; 3]);
     assert_eq!(flow.ubs(), vec![100, 0, 20]);
-    assert_eq!((0..3).map(|p| flow.lb(p)).collect::<Vec<_>>(), vec![0, 0, 20]);
+    assert_eq!(
+        (0..3).map(|p| flow.lb(p)).collect::<Vec<_>>(),
+        vec![0, 0, 20]
+    );
     assert_eq!(flow.ub_total(), 120);
     assert_eq!(flow.lb_total(), 20);
     // Measured liquidity of the unconstrained gross engine equals UB.
@@ -95,7 +112,13 @@ proptest! {
 #[test]
 fn rng_determinism_across_runs() {
     // Invariant 7 at the source: the PRNG stream for a seed is fixed.
-    let a: Vec<u64> = { let mut r = rng::Rng::new(2024); (0..64).map(|_| r.next_u64()).collect() };
-    let b: Vec<u64> = { let mut r = rng::Rng::new(2024); (0..64).map(|_| r.next_u64()).collect() };
+    let a: Vec<u64> = {
+        let mut r = rng::Rng::new(2024);
+        (0..64).map(|_| r.next_u64()).collect()
+    };
+    let b: Vec<u64> = {
+        let mut r = rng::Rng::new(2024);
+        (0..64).map(|_| r.next_u64()).collect()
+    };
     assert_eq!(a, b);
 }

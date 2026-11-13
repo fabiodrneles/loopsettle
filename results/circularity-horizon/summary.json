@@ -1,0 +1,30 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "circularity-horizon",
+  "seed": 20260930,
+  "code_version": "0.2.0+git.12485e1",
+  "config_file": "experiments/circularity-horizon.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment circularity-horizon",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
+  "scenario": {
+    "participants": 200,
+    "days": 1,
+    "payments_per_day": 1000000,
+    "scale_factor": 238.990813,
+    "body_median_brl": 84.57946,
+    "body_sigma": 1.4,
+    "tail_prob": 0.042962,
+    "tail_xm_brl": 1375.25637,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "seeds": [20260930,1,2,3,4],
+  "ub_over_gross_mean": 0.169912,
+  "note": "circulating value = sum over windows of the maximum circulation (CDFD) of the window's aggregated flows; it counts value that could be cancelled, not liquidity saved"
+}

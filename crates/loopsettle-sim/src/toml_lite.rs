@@ -84,12 +84,23 @@ pub fn parse(src: &str) -> Result<Doc, String> {
         }
         let err = |m: &str| format!("line {}: {m}: {raw}", no + 1);
         if let Some(rest) = line.strip_prefix('[') {
-            section = rest.strip_suffix(']').ok_or_else(|| err("bad section header"))?.trim().to_string();
+            section = rest
+                .strip_suffix(']')
+                .ok_or_else(|| err("bad section header"))?
+                .trim()
+                .to_string();
             continue;
         }
-        let (k, v) = line.split_once('=').ok_or_else(|| err("expected key = value"))?;
-        let key = if section.is_empty() { k.trim().to_string() } else { format!("{section}.{}", k.trim()) };
-        doc.map.insert(key, parse_value(v.trim()).map_err(|e| err(&e))?);
+        let (k, v) = line
+            .split_once('=')
+            .ok_or_else(|| err("expected key = value"))?;
+        let key = if section.is_empty() {
+            k.trim().to_string()
+        } else {
+            format!("{section}.{}", k.trim())
+        };
+        doc.map
+            .insert(key, parse_value(v.trim()).map_err(|e| err(&e))?);
     }
     Ok(doc)
 }
@@ -110,10 +121,19 @@ fn parse_value(v: &str) -> Result<Value, String> {
     if let Some(inner) = v.strip_prefix('[') {
         let inner = inner.strip_suffix(']').ok_or("unterminated array")?;
         let items = split_top(inner);
-        return items.iter().filter(|s| !s.trim().is_empty()).map(|s| parse_value(s.trim())).collect::<Result<_, _>>().map(Value::Arr);
+        return items
+            .iter()
+            .filter(|s| !s.trim().is_empty())
+            .map(|s| parse_value(s.trim()))
+            .collect::<Result<_, _>>()
+            .map(Value::Arr);
     }
     if let Some(s) = v.strip_prefix('"') {
-        return Ok(Value::Str(s.strip_suffix('"').ok_or("unterminated string")?.to_string()));
+        return Ok(Value::Str(
+            s.strip_suffix('"')
+                .ok_or("unterminated string")?
+                .to_string(),
+        ));
     }
     match v {
         "true" => return Ok(Value::Bool(true)),
@@ -124,7 +144,10 @@ fn parse_value(v: &str) -> Result<Value, String> {
     if let Ok(i) = clean.parse::<i64>() {
         return Ok(Value::Int(i));
     }
-    clean.parse::<f64>().map(Value::Float).map_err(|_| format!("cannot parse value '{v}'"))
+    clean
+        .parse::<f64>()
+        .map(Value::Float)
+        .map_err(|_| format!("cannot parse value '{v}'"))
 }
 
 fn split_top(s: &str) -> Vec<&str> {
@@ -150,7 +173,10 @@ mod tests {
     use super::*;
     #[test]
     fn parses_subset() {
-        let d = parse("a = 1 # c\n[s]\nx = 2.5\nname = \"hi # there\"\narr = [1, 2_000, 3]\nb = true\n").unwrap();
+        let d = parse(
+            "a = 1 # c\n[s]\nx = 2.5\nname = \"hi # there\"\narr = [1, 2_000, 3]\nb = true\n",
+        )
+        .unwrap();
         assert_eq!(d.i64("a"), Some(1));
         assert_eq!(d.f64("s.x"), Some(2.5));
         assert_eq!(d.str("s.name"), Some("hi # there"));

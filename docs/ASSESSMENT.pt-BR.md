@@ -197,3 +197,64 @@ lido (W4) e o experimento de estresse foi refeito (W6, `results/stress/cases.csv
 submissão). O esqueleto revisto está em [`PAPER_OUTLINE.pt-BR.md`](PAPER_OUTLINE.pt-BR.md). O que deve
 ficar fora do texto até existirem dados reais por participante: qualquer número de economia potencial
 no Pix real além da faixa de 0,2–3%, e qualquer afirmação sobre sistemas de outros países.
+
+## Atualização 4 — o piso de liquidez (11/11/2026)
+
+Este arquivo é um registro datado; o texto acima fica como foi escrito. O que mudou desde então:
+
+- **A fraqueza D.6 ("o limite de atraso é folgado") está resolvida.** O piso de liquidez
+  ([`METHODOLOGY.pt-BR.md`](METHODOLOGY.pt-BR.md) §9b) é uma forma mais apertada do mesmo limite.
+  Para 10 s, em 10 sementes, o teto da economia vai de 0,014% do UB (σ = 1,0) a 0,138% (σ = 0), em
+  vez de 0,7–3,3%, e a compensação a cada 10 s obtém 38–46% dele
+  (`results/robustness/seeds_summary.csv`). Leia todo "0,06–3,3%" acima como a forma de janela.
+- **A reconciliação com McMahon et al. da Atualização 3 está retirada.** Ela se apoiava em o
+  limite de janela ser grande (13,7%) no sistema de alto valor estilizado. O limite apertado ali é
+  ≤ 0,004% (`results/regimes/regimes.csv`): contra a liquidação bruta em tempo real com liquidez
+  ilimitada, mecanismos de segundos economizam ≈ 0 nos dois regimes. Os 14–30% deles são medidos
+  contra uma fila FIFO com liquidez restrita. O LoopSettle ainda não simula essa base
+  (`specs/06`), então a afirmação honesta hoje é "pergunta diferente, ainda não comparada".
+- **K1 com o limite apertado:** no máximo 0,042% do UB com 30 milhões de pagamentos por dia e
+  perfis por classe (`results/heterogeneity/heterogeneity.csv`), contra o limiar de 2%.
+- **O K2 vale também para o teorema novo.** O piso é simples o bastante para já estar na
+  literatura (cálculo de redes, troca entre liquidez e atraso em RTGS). Ainda não conferido.
+- **Reprodutibilidade:** os resultados são idênticos byte a byte em Linux, Windows e macOS (CI).
+
+O veredito continua **PIVOTAR**, com uma afirmação central mais afiada: *nenhum mecanismo com
+prazo de 10 s consegue economizar mais do que cerca de 0,01–0,14% da liquidez que um sistema
+instantâneo precisa, e a compensação simples já obtém cerca de 40% desse teto.*
+
+## Atualização 5 — um critério de morte disparou: a afirmação central é condicional (12/11/2026)
+
+O `echo-sweep` (`results/echo-sweep/`) perguntou se o resultado sobrevive à circularidade de
+curto prazo, com um critério fixado antes: *a afirmação é condicional se o limite apertado de 10 s
+passar de 2% do UB com parcela de eco de até 20%.* Disparou.
+
+- Ecos que seguem **adiante** (quem recebe paga a um terceiro segundos depois): limite ≤ 0,18%
+  com parcela de até 20%. A afirmação vale; cadeias não criam liquidez recuperável.
+- Ecos que voltam **direto** (quem recebe paga de volta a quem pagou segundos depois): com 20% de
+  eco e atraso de 1 s, o limite é 4,2% do UB e a compensação a cada 10 s obtém 3,9%; com 5%, 1,2%.
+
+Então a afirmação da Atualização 4 precisa levar a sua condição: *para fluxos sem reciprocidade
+bilateral rápida, nenhum mecanismo com prazo de 10 s economiza mais do que cerca de 0,01–0,14% da
+liquidez; com ela, a economia é aproximadamente a parcela do valor retribuída dentro do prazo.* É
+uma afirmação mais estreita e mais útil: ela nomeia a única grandeza que decide a resposta, e o
+`loopsettle bound` mede essa grandeza (pelo piso de liquidez) num arquivo real de pagamentos sem
+que os dados saiam da instituição. Se os fluxos reais do Pix têm reciprocidade bilateral rápida
+(devoluções, operações de tesouraria entre as mesmas duas instituições) é a pergunta a levar a um
+banco central.
+
+Também desde a Atualização 4: com serviço igual e liquidez restrita, os desenhos de 10 s não
+economizam nada mensurável e as filas de uma hora economizam 1,1–1,4% no varejo calibrado
+(`liquidity-frontier`); os pisos por participante são iguais ao ótimo offline do sistema inteiro em
+116 de 120 instâncias pequenas e densas (`optimality-gap`).
+
+O veredito continua **PIVOTAR**. O resultado de título do artigo passa a ser o par "um limite
+apertado e atingível" mais "a condição em que ele é pequeno".
+
+**Adendo à atualização 5 (no mesmo dia).** O caso que disparou foi refeito mudando uma coisa de
+cada vez (`results/echo-sweep/sensitivity.csv`). O limite apertado de 10 s cai com o volume: 4,2%,
+2,1% e 1,2% do UB com 1, 3 e 10 milhões de pagamentos por dia, perto de 1/√volume; é 1,7% quando
+o eco repassa metade do valor e 1,8% com o viés recebedor calibrado. Com 10 milhões o limite fica
+abaixo do limiar de 2%. A condição continua (o efeito é de 30 a 100 vezes o nível sem eco, e os
+motores obtêm quase tudo), mas o peso dela na escala real provavelmente é pequeno. Isso precisa de
+uma rodada com 30 milhões ou mais antes de ser escrito como resultado.

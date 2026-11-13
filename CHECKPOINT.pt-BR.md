@@ -10,6 +10,65 @@
 
 ## Estado atual
 
+- **11/11/2026 — auditoria, piso de liquidez, specs.** Resultado novo: o piso de liquidez
+  (`bound.rs::liquidity_floors`, METHODOLOGY §9b) é a forma apertada, por participante, do limite
+  de atraso; para 10 s ele é 0,054% do UB em vez de 0,76%. A afirmação 1f foi revista por causa
+  dele. O roteiro agora está em [`specs/`](specs/README.md): 11 especificações com evidência,
+  critérios de aceite e passos de validação. **Próximo passo exato:** specs 04 (correções nos
+  motores) → 09 (sementes, CI) → 02 (propagar o limite apertado e corrigir os documentos que ainda
+  trazem o argumento antigo da 1f). Medido aqui (Linux, 4 núcleos): `cargo test --workspace`
+  passa; `experiment regimes` 3,2 s, 7 MiB; os CSVs de baseline, microcycle-sweep, robustness e
+  regimes se reproduzem byte a byte.
+- **11/11/2026, mais tarde — specs 04 e 09 executadas.** Correções nos motores com testes de
+  regressão (`tests/spec04.rs`), resultados-ouro conferidos no CI em três plataformas, sementes
+  em paralelo. **Próximo passo exato:** spec 02 FR3–FR7 (janelas de abastecimento com o limite
+  apertado, a tabela do sanduíche e os documentos que ainda trazem a afirmação 1f antiga), depois
+  a spec 06. Antes de mexer em motor ou gerador, rode `make verify`; para aceitar uma mudança de
+  resultados, rode `make golden` e faça o commit. Medido (Linux, 4 núcleos, 2 threads):
+  `robustness` 75 s, `heterogeneity` 127 s, `funding-windows` 36 s, os demais abaixo de 8 s; pico
+  de RAM de no máximo 16 MiB; checagem-ouro 50 s.
+- **11/11/2026, mais tarde ainda — specs 02 (FR1–FR6) e 06 executadas; spec 05 M1.** Experimento
+  novo `liquidity-frontier` (4 min 46 s, 20 MiB). **Próximo passo exato:** spec 03 (ótimo offline
+  em instâncias pequenas), depois spec 05 M2 (`HoldToDeadline`, que prova que o piso é atingido) e
+  M3; spec 02 FR7 e spec 10 para a interface web. Em aberto do REVIEW 84: grade de α mais fina
+  perto de 1.
+- **11/11/2026, fim da sessão — spec 03 executada.** Pisos = ótimo offline em 116 de 120
+  instâncias (`results/optimality-gap/`, 55 s). **Próximo passo exato:** spec 05 M2 e M3, spec 10
+  (relatório para dados reais, painel web), depois 07 e 08; os itens em aberto de cada spec estão
+  no topo dela.
+- **12/11/2026 — pagamentos em eco: um critério de morte disparou.** A afirmação central é
+  condicional à ausência de devoluções bilaterais rápidas (CLAIMS 1j, ASSESSMENT atualização 5,
+  REVIEW 87). Também feito: `--report` e saída por participante privada (spec 10 R2, R3), grade de
+  liquidez mais fina (REVIEW 86). **Próximo passo exato:** levar a condição para
+  `paper/paper.pt-BR.md` e `docs/PAPER_OUTLINE*.md`; depois os itens em aberto do REVIEW 87 (ecos
+  com valor parcial, outras escalas). Medido: `echo-sweep` 148 s, 10 MiB; `liquidity-frontier`
+  349 s, 20 MiB.
+- **12/11/2026, fim da sessão.** Feito desde a última entrada: `echo-scale` (o efeito do eco cai
+  com expoente −0,52 no volume), motores `gridlock` e `bilateral` (spec 05 M3, M4; D27), curva do
+  limite com 10 sementes, `circularity-horizon` (spec 08 T3), exemplo `custom_engine` (spec 10 R5),
+  busca de literatura (REFERENCES §8). **Não feito, na ordem pedida pelo dono:** spec 05 M5
+  (política de abastecimento); spec 08 T1 (BFF), T2 (escala do fluxo de custo mínimo), T4, T5; spec
+  10 R1 (ordenação externa, mapeamento ISO 20022), R4 (painel web); várias sementes em `baseline`,
+  `potential-vs-realizable`, `microcycle-sweep`, `stress`, `heterogeneity`, `funding-windows`.
+  **Próximo passo exato:** spec 05 M5, depois esses, nessa ordem. Sempre rodar `make verify` antes
+  de commitar.
+- **12/11/2026 — spec 05 completa** (M5, camada de abastecimento; M3 ainda sem conferência com o
+  artigo de 2001, cujos servidores estão bloqueados aqui). **Próximo passo exato:** spec 08 T1, T2,
+  T4, T5; spec 10 R1, R4; várias sementes nos seis experimentos antigos.
+- **12/11/2026 — spec 08 feita, exceto T5** (dados on-chain bloqueados pela rede aqui).
+  **Próximo passo exato:** spec 10 R1 (ordenação externa, mapeamento ISO 20022) e R4 (painel
+  web); várias sementes em `baseline`, `potential-vs-realizable`, `microcycle-sweep`, `stress`,
+  `heterogeneity`, `funding-windows`.
+- **12/11/2026 — spec 10 feita** (REVIEW 94). As onze specs têm agora os itens principais feitos.
+  **O que falta:** várias sementes em `baseline`, `potential-vs-realizable`, `microcycle-sweep`,
+  `stress`, `heterogeneity`, `funding-windows`; conferências que dependem de servidores bloqueados
+  aqui (o artigo de gridlock de 2001, Koponen & Soramäki 1998, guias ISO 20022, dados on-chain).
+  Para recompilar o wasm localmente sem wasm-pack: `cargo build --release --target
+  wasm32-unknown-unknown -p loopsettle-wasm` e depois `wasm-bindgen --target web --out-dir
+  web/src/wasm-pkg --no-typescript target/wasm32-unknown-unknown/release/loopsettle_wasm.wasm`.
+- **12/11/2026 — várias sementes em todos os experimentos** (REVIEW 95). O que falta depende de
+  servidores bloqueados aqui (artigo de gridlock, Koponen & Soramäki 1998, guias ISO 20022, dados
+  on-chain) ou de decisão do dono (`cargo fmt`, publicar a página, tag v0.2.0).
 - **Fase atual:** construção concluída (Fases 0–10). Fase 8 parcial (on-chain pendente).
 - **Próximo passo exato:** revisão humana guiada por `REVIEW.pt-BR.md` (69 pontos; 62–69 são da
   revisão do README de 05/11/2026). Sugestões de

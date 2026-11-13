@@ -9,7 +9,10 @@ use proptest::prelude::*;
 
 fn random_graph(n: u32, max_e: usize) -> impl Strategy<Value = FlowGraph> {
     prop::collection::vec((0..n, 1..n, 1i64..1_000), 0..max_e).prop_map(move |v| {
-        let t: Vec<(u32, u32, i64)> = v.into_iter().map(|(a, off, w)| (a, (a + off) % n, w)).collect();
+        let t: Vec<(u32, u32, i64)> = v
+            .into_iter()
+            .map(|(a, off, w)| (a, (a + off) % n, w))
+            .collect();
         FlowGraph::from_triples(n as usize, &t)
     })
 }
@@ -22,7 +25,11 @@ fn triangle_case() {
     // Executable netting: the cycle A->B->C->A carries min(10,5,5) = 5.
     let nt = cycle_netting(&g, true);
     assert_eq!(nt.cycles, 1);
-    let ab = g.edges.iter().position(|e| e.from == 0 && e.to == 1).unwrap();
+    let ab = g
+        .edges
+        .iter()
+        .position(|e| e.from == 0 && e.to == 1)
+        .unwrap();
     assert_eq!(nt.cancelled, vec![5, 5, 5].into_iter().collect::<Vec<_>>());
     assert_eq!(nt.residual[ab], 5);
 
@@ -35,7 +42,10 @@ fn triangle_case() {
         assert!((c - 20.0 / 3.0).abs() < 1e-8, "edge {k}: {c}");
     }
     assert_eq!(h.triangles, 1);
-    assert!(h.harmonic.iter().all(|x| x.abs() < 1e-8), "filled triangle -> all of it is curl");
+    assert!(
+        h.harmonic.iter().all(|x| x.abs() < 1e-8),
+        "filled triangle -> all of it is curl"
+    );
 
     // CDFD maximum: 5 per edge = 15 of 20 (75 %), same as netting here.
     let c = cdfd_max(&g);
@@ -43,7 +53,10 @@ fn triangle_case() {
     assert!(g.is_acyclic_on(&c.directional));
 
     let r = analyze(&g, &HodgeConfig::default());
-    assert!((r.net.hodge_l1 - 1.0).abs() < 1e-9, "Hodge L1 = 20/20 = 100 %");
+    assert!(
+        (r.net.hodge_l1 - 1.0).abs() < 1e-9,
+        "Hodge L1 = 20/20 = 100 %"
+    );
     assert!((r.net.cdfd_max - 0.75).abs() < 1e-12);
     assert!((r.net.cycles - 0.75).abs() < 1e-12);
 }
@@ -62,7 +75,11 @@ fn cdfd_beats_greedy_netting_example() {
 fn lp_max_circulation(g: &FlowGraph) -> f64 {
     use minilp::{ComparisonOp, OptimizationDirection, Problem};
     let mut p = Problem::new(OptimizationDirection::Maximize);
-    let vars: Vec<_> = g.edges.iter().map(|e| p.add_var(1.0, (0.0, e.flow as f64))).collect();
+    let vars: Vec<_> = g
+        .edges
+        .iter()
+        .map(|e| p.add_var(1.0, (0.0, e.flow as f64)))
+        .collect();
     for v in 0..g.n as u32 {
         let mut row = Vec::new();
         for (k, e) in g.edges.iter().enumerate() {
@@ -96,8 +113,15 @@ fn cdfd_matches_lp_oracle_on_1000_random_graphs() {
         let g = FlowGraph::from_triples(n as usize, &t);
         let c = cdfd_max(&g);
         let lp = lp_max_circulation(&g);
-        assert!((c.circular_total as f64 - lp).abs() < 1e-6 * (1.0 + lp), "case {case}: cdfd {} lp {lp} graph {g:?}", c.circular_total);
-        assert!(g.is_acyclic_on(&c.directional), "case {case}: directional part has a cycle");
+        assert!(
+            (c.circular_total as f64 - lp).abs() < 1e-6 * (1.0 + lp),
+            "case {case}: cdfd {} lp {lp} graph {g:?}",
+            c.circular_total
+        );
+        assert!(
+            g.is_acyclic_on(&c.directional),
+            "case {case}: directional part has a cycle"
+        );
     }
 }
 

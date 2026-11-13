@@ -10,3 +10,8 @@ publish = false
 
 [dependencies]
 loopsettle-core = { path = "../loopsettle-core" }
+
+# Test oracle only (CLAUDE.md, Phase 2): the linear programme of the offline optimum is solved
+# in tests and in the `optimality_gap` example, never in the library or the CLI.
+[dev-dependencies]
+minilp = "0.2"

@@ -148,8 +148,51 @@ O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensa�
 cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
 passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
 participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
-estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele
+estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (cerca de 28% da forma apertada da §9b; a compensação a cada 10 s obtém cerca de 46%)
 (`results/robustness/seeds_summary.csv`).
+
+**9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,
+`t*`. Usando todos os instantes, a afirmação fica mais forte. Seja `CO_i(s)` o valor que `i` já
+pagou até `s` e `CI_i(s)` o valor que já recebeu até `s` (horários de chegada, inclusive). Em
+qualquer motor com atraso máximo `d`, no instante `s + d` todo pagamento que chegou até `s` já
+liquidou, e nenhum recebimento liquida antes de chegar, então
+
+```text
+−y_i(s + d) ≥ CO_i(s) − CI_i(s + d)      para todo s
+piso_i(d) = max(0, max_s [CO_i(s) − CI_i(s + d)])  ≤  L_i  ≤  UB_i = piso_i(0).
+```
+
+`UB_i − piso_i(d)` nunca passa do limite de janela (tome `s = t* − d`), e o `piso_i` é atingido
+por um participante sozinho com "seguro meus pagamentos por exatamente `d` e recebo tudo na
+hora"; por isso é o melhor limite que usa só os fluxos do próprio `i` (teste `a_single_holder_needs_exactly_its_floor`, com o motor `hold:<d>:<i>`: igualdade ao centavo). É calculado em streaming
+com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
+contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
+`tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, 10 sementes),
+o limite apertado para 10 s é 0,041% do UB (IC 95% [0,025; 0,056]), contra 0,80% na forma de
+janela, e a compensação a cada 10 s obtém 48% dele (IC [40; 55]); a parcela obtida é 25% com 15
+minutos e 58% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
+estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
+apertado ali é ≤ 0,004%.
+
+**9c. O ótimo offline e o sanduíche.** O piso é um limite para um participante de cada vez; a
+soma sobre os participantes não precisa ser atingível, porque o pagamento atrasado de um é o
+recebimento atrasado de outro. A pergunta exata é um programa linear: conhecendo todos os
+pagamentos de antemão e um prazo `d`, escolher a parcela de cada pagamento liquidada em cada
+instante de `[chegada, chegada + d]` de modo que `Σ_i L_i` seja o menor possível, com
+`L_i ≥ −y_i(τ)` em todo instante e as liquidações simultâneas contadas pelo efeito líquido. O
+valor dele fica entre os dois:
+
+```text
+Σ_i piso_i(d)  ≤  PL(d)  ≤  ótimo com pagamentos inteiros  ≤  L(qualquer motor com prazo d)
+```
+
+`PL(0) = UB` e `PL(∞) = LB`. O programa é resolvido só como oráculo de teste
+(`crates/loopsettle-sim/tests/optimum.rs`: dois exemplos à mão e 300 instâncias aleatórias) e no
+exemplo `optimality_gap`. Em sistemas pequenos e densos (20 participantes, cerca de 1.500
+pagamentos numa hora, 20 sementes, prazos de 2, 10 e 60 s), o ótimo é igual à soma dos pisos em
+116 de 120 instâncias e fica a menos de 0,3% dela nas outras quatro, enquanto o melhor motor obtém
+44–61% dele (`results/optimality-gap/gap.csv`). Ou seja, a folga entre os motores e o limite está
+nos motores, não no limite.
 
 **Valor nulo de Hodge.** Para fluxos aleatórios num grafo conexo com `m` arestas e `n` nós, a
 fração esperada da norma ao quadrado fora do espaço gradiente é `(m − n + 1)/m`. No grafo
@@ -174,7 +217,55 @@ O limite de atraso da seção 9 vale dentro da janela, com `t*` o mínimo da jan
 `loopsettle_sim::bound::window_stats`; experimento `funding-windows` (quinta a segunda, perfil
 horário e volumes por dia com fonte).
 
-## 11. Rodar em dados reais
+**O piso de liquidez dentro de uma janela.** A forma apertada da seção 9b vale aqui com um termo
+a mais. A necessidade de um motor na janela é `y_i(a) − min_{a≤t<b} y_i(t)`. Recebimentos dos
+últimos `d` antes da janela podem ainda não ter liquidado quando ela abre, então
+`y_i(a) ≥ x_i(a) − I_i[a − d, a)`, e o argumento do piso dá `−y_i(t) ≥ CO_i(t − d) − CI_i(t)`.
+Juntando:
+
+```text
+necessidade_i ≥ max_{s ≥ a, s + d < b} [(CO_i(s) − CO_i(a)) − (CI_i(s + d) − CI_i(a))] − I_i[a − d, a)
+```
+
+com piso em zero; com `d = 0` é a necessidade bruta acima. Calculado por
+`loopsettle_sim::bound::window_floors` e testado contra os motores reconstruindo a posição de cada
+motor a partir dos eventos de liquidação (`engines_never_need_less_than_the_window_floor`).
+
+**Abastecimento como camada.** `loopsettle_core::funding` permite que uma política mova dinheiro
+entre as reservas do participante, fora do sistema, e a conta de liquidação, nos instantes que
+escolher (`Ledger::fund`); a conservação passa a valer para contas mais reservas.
+`PrefundClosedWindows` deixa cada participante com um saldo fixo quando uma janela fechada abre e
+com liquidez ilimitada quando ela termina; `TopUpToTarget` completa os saldos até uma meta a cada
+período dentro das janelas abertas; `Ledger::with_credit_limits` dá linhas de crédito
+intradiário. Com cada participante pré-financiado exatamente na sua maior necessidade de janela,
+o bruto não rejeita nada (teste `prefunding_policy_reproduces_the_window_need`); o
+`funding-windows/prefunding.csv` mostra o que é rejeitado abaixo disso.
+
+## 11. Liquidez restrita
+
+As seções 2 a 10 perguntam quanta liquidez um desenho *precisa* com saldos ilimitados. Um operador
+pergunta o inverso: com a liquidez que os participantes têm, quanto é rejeitado ou atrasa? O
+experimento `liquidity-frontier` fixa os saldos de abertura e roda todos os desenhos nos mesmos
+pagamentos.
+
+- **Saldos.** Regra `ub`: `α × UB_i` (usa o pico do próprio dia de cada participante, então olha
+  para trás). Regra `outflow`: `α × ΣUB × saída_i / Σsaída` (sem saber quando o pico acontece).
+- **Desenhos.** Bruto (rejeita na chegada); fila simples (`queue:fifo|bypass:<prazo>`: espera
+  recebimentos, rejeita no prazo); micro-ciclos. Cada um com prazo de 10 s e com prazo de uma
+  hora. Pagamento rejeitado não é tentado de novo (`ASSUMPTION`).
+- **Liquidez equivalente.** Para um alvo de valor rejeitado (0,01%, 0,1%, 1%), o menor `α` em
+  que o desenho atinge o alvo, com interpolação linear na grade de `α`, por semente. A economia
+  de um desenho é a diferença pareada com o bruto, `(α_bruto − α_desenho) / α_bruto`, na média das
+  sementes. É a liquidez economizada *com serviço igual*, a comparação que a literatura de
+  mecanismos de economia de liquidez faz; a economia das seções 5 e 9 é o caso particular de alvo
+  exatamente zero.
+
+A nova tentativa bruta dentro da fila é definida como passadas repetidas pela fila, em ordem de
+chegada, até uma passada não liquidar nada; a implementação visita só os participantes que
+receberam crédito desde a última tentativa e é testada para dar liquidações idênticas
+(`event_driven_retry_equals_the_reference`).
+
+## 12. Rodar em dados reais
 
 `loopsettle bound <arquivo.csv>` calcula UB, LB e o limite de atraso para vários `d`;
 `loopsettle settle <arquivo.csv>` também roda os motores de liquidação. O arquivo é lido em

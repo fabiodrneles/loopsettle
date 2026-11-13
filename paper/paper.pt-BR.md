@@ -120,9 +120,12 @@ O LoopSettle sustenta um estudo sobre liquidez em pagamentos instantâneos [@dor
 [PREENCHER quando o preprint estiver publicado]. Nesse estudo, num cenário calibrado para
 reproduzir os quartis da medida de compensação por banco do WP 619 (36%, 61% e 83%, dentro das
 faixas medidas no Pix real), micro-ciclos de até 10 segundos economizam uma fração da liquidez que
-não se distingue de zero, e o teto demonstrado para qualquer mecanismo com essa espera vai de 0,06% a
-3,3% da liquidez nas configurações testadas. Os mesmos comandos mostram por que a reordenação pode
-dar resultado em fluxos de alto valor, com poucos pagamentos grandes.
+não se distingue de zero, e o teto demonstrado para qualquer mecanismo com essa espera (o piso de
+liquidez) vai de 0,014% a 0,14% da liquidez nas configurações testadas. O resultado é condicional:
+se uma parcela relevante dos pagamentos volta direto para quem pagou em poucos segundos, a
+compensação em segundos passa a economizar liquidez (3,9% com 20% de devoluções em um segundo). A
+grandeza que decide a resposta é o valor retribuído bilateralmente dentro do prazo, que o comando
+`bound` mede num arquivo real de pagamentos.
 
 Para facilitar o reúso, o repositório traz: todos os experimentos e resultados reproduzíveis, com
 um resumo gerado por comando; os comandos `bound` e `settle`, que rodam a análise em arquivos de

@@ -7,10 +7,23 @@ use loopsettle_sim::*;
 use std::time::Instant;
 
 fn run(cfg: &ScenarioConfig) -> (u64, Vec<i64>, Vec<i64>, i128) {
-    let mut runs = vec![EngineRun::new(Box::new(GrossRealTime), Ledger::unlimited(cfg.participants))];
+    let mut runs = vec![EngineRun::new(
+        Box::new(GrossRealTime),
+        Ledger::unlimited(cfg.participants),
+    )];
     let mut flow = FlowStats::new(cfg.participants, true);
-    drive(PaymentStream::new(cfg), &mut runs, &mut flow, cfg.horizon_ms());
-    (flow.count, flow.ubs(), runs[0].ledger.balances().to_vec(), flow.gross_value)
+    drive(
+        PaymentStream::new(cfg),
+        &mut runs,
+        &mut flow,
+        cfg.horizon_ms(),
+    );
+    (
+        flow.count,
+        flow.ubs(),
+        runs[0].ledger.balances().to_vec(),
+        flow.gross_value,
+    )
 }
 
 fn main() {

@@ -28,14 +28,26 @@ fn payments(n: u32, max_len: usize) -> impl Strategy<Value = Vec<Payment>> {
             .enumerate()
             .map(|(i, (a, off, amt, dt))| {
                 t += dt;
-                Payment { id: i as u64, t_arrival: t, payer: a, payee: (a + off) % n, amount: amt }
+                Payment {
+                    id: i as u64,
+                    t_arrival: t,
+                    payer: a,
+                    payee: (a + off) % n,
+                    amount: amt,
+                }
             })
             .collect()
     })
 }
 
 /// Drive one engine step by step, checking invariants 1 and 3 after every call.
-fn drive_checked(eng: &mut dyn SettlementEngine, ps: &[Payment], ledger: &mut Ledger, rec: &mut Recorder, nonneg: bool) -> Result<(), TestCaseError> {
+fn drive_checked(
+    eng: &mut dyn SettlementEngine,
+    ps: &[Payment],
+    ledger: &mut Ledger,
+    rec: &mut Recorder,
+    nonneg: bool,
+) -> Result<(), TestCaseError> {
     let total = ledger.total();
     let check = |l: &Ledger| -> Result<(), TestCaseError> {
         prop_assert_eq!(l.total(), total);
@@ -74,9 +86,13 @@ proptest! {
         max_delay in 1u64..6_000,
         mode in mode_strategy(),
         max_len in 2usize..6,
+        strict in any::<bool>(),
+        search in prop::bool::weighted(0.8),
     ) {
         let mut cfg = MicroCycleConfig::new(window, max_delay, mode);
         cfg.max_cycle_len = max_len;
+        cfg.search_cycles = search;
+        cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
         let mut eng = AtomicMicroCycle::new(cfg, 6).with_log();
         let mut ledger = Ledger::new(opening);
         let mut rec = Recorder::default();
@@ -180,17 +196,100 @@ fn failed_batch_leaves_ledger_untouched() {
     assert!(scratch.iter().all(|&x| x == 0));
 }
 
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(600))]
+
+    /// The event-driven gross retry is the literal definition, payment by payment: same
+    /// outcome, same time and same kind for every payment, and the same final balances.
+    /// Tight liquidity and long deadlines, so queues are deep and receipts release chains.
+    #[test]
+    fn event_driven_retry_equals_the_reference(
+        ps in payments(6, 250),
+        opening in prop::collection::vec(0i64..6_000, 6),
+        window in 1u64..3_000,
+        max_delay in 1u64..60_000,
+        strict in any::<bool>(),
+        search in any::<bool>(),
+        max_len in 2usize..5,
+    ) {
+        let mut out = Vec::new();
+        for reference in [false, true] {
+            let mut cfg = MicroCycleConfig::new(window, max_delay, QueueMode::QueueOnShortfall);
+            cfg.max_cycle_len = max_len;
+            cfg.search_cycles = search;
+            cfg.reference_retry = reference;
+            cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
+            let mut eng = AtomicMicroCycle::new(cfg, 6);
+            let mut ledger = Ledger::new(opening.clone());
+            let mut rec = Recorder::default();
+            drive_checked(&mut eng, &ps, &mut ledger, &mut rec, true)?;
+            prop_assert!(!rec.dup);
+            let mut ev: Vec<(u64, TimeMs, Option<SettleKind>)> = rec.ev.iter().map(|(id, e)| (*id, e.0, e.1)).collect();
+            ev.sort_by_key(|e| e.0);
+            out.push((ev, ledger.balances().to_vec(), eng.cycles_settled));
+        }
+        prop_assert_eq!(&out[0], &out[1]);
+    }
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(300))]
+
+    /// Gridlock resolution: conservation, no negative balance, and one outcome per payment
+    /// within its deadline. (No dominance over the plain queue is claimed: only invariants.)
+    #[test]
+    fn gridlock_invariants(
+        ps in payments(6, 200),
+        opening in prop::collection::vec(0i64..6_000, 6),
+        window in 1u64..3_000,
+        max_delay in 1u64..30_000,
+        strict in any::<bool>(),
+    ) {
+        let mut cfg = MicroCycleConfig::new(window, max_delay, QueueMode::QueueOnShortfall);
+        cfg.gridlock = true;
+        cfg.discipline = if strict { QueueDiscipline::StrictFifoPerPayer } else { QueueDiscipline::BypassFifo };
+        let mut eng = AtomicMicroCycle::new(cfg, 6);
+        let mut ledger = Ledger::new(opening);
+        let mut rec = Recorder::default();
+        drive_checked(&mut eng, &ps, &mut ledger, &mut rec, true)?;
+        prop_assert!(!rec.dup);
+        prop_assert_eq!(rec.ev.len(), ps.len());
+        for p in &ps {
+            let (t, _, _) = rec.ev[&p.id];
+            prop_assert!(t >= p.t_arrival && t <= p.t_arrival + max_delay);
+        }
+    }
+}
+
 #[test]
 fn bilateral_pair_offsets_without_liquidity() {
     // A->B 100 at t=0 and B->A 100 at t=10, zero balances: gross rejects both; the
     // micro-cycle engine settles both atomically at the first window after t=10.
     let ps = [
-        Payment { id: 0, t_arrival: 0, payer: 0, payee: 1, amount: 100 },
-        Payment { id: 1, t_arrival: 10, payer: 1, payee: 0, amount: 100 },
+        Payment {
+            id: 0,
+            t_arrival: 0,
+            payer: 0,
+            payee: 1,
+            amount: 100,
+        },
+        Payment {
+            id: 1,
+            t_arrival: 10,
+            payer: 1,
+            payee: 0,
+            amount: 100,
+        },
     ];
     let mut runs = vec![
         EngineRun::new(Box::new(GrossRealTime), Ledger::new(vec![0, 0])),
-        EngineRun::new(Box::new(AtomicMicroCycle::new(MicroCycleConfig::new(100, 1_000, QueueMode::QueueAll), 2)), Ledger::new(vec![0, 0])),
+        EngineRun::new(
+            Box::new(AtomicMicroCycle::new(
+                MicroCycleConfig::new(100, 1_000, QueueMode::QueueAll),
+                2,
+            )),
+            Ledger::new(vec![0, 0]),
+        ),
     ];
     let mut flow = FlowStats::new(2, false);
     drive(ps, &mut runs, &mut flow, 0);

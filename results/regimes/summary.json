@@ -1,9 +1,13 @@
 {
+  "schema": "loopsettle.result/1",
   "experiment": "regimes",
   "seed": 20260930,
-  "code_version": "0.1.0+git.ebc6eb6",
+  "code_version": "0.2.0+git.12485e1",
   "config_file": "experiments/regimes.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment regimes",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
   "scenario": {
     "participants": 200,
     "days": 1,
@@ -25,24 +29,28 @@
       "case": "retail (Pix calibrated)",
       "avg_payment_over_avg_ub": 0.001244,
       "bound_5s_pct": 0.59196,
+      "tight_bound_5s_pct": 0.018404,
       "micro_5s_saving_pct": 0.003621
     },
     {
       "case": "large-value 2000/day",
       "avg_payment_over_avg_ub": 0.029876,
       "bound_5s_pct": 9.11626,
+      "tight_bound_5s_pct": 0,
       "micro_5s_saving_pct": 0
     },
     {
       "case": "large-value 20000/day",
       "avg_payment_over_avg_ub": 0.003933,
       "bound_5s_pct": 0.863645,
+      "tight_bound_5s_pct": 0,
       "micro_5s_saving_pct": 0
     },
     {
       "case": "large-value 200000/day",
       "avg_payment_over_avg_ub": 0.00057,
       "bound_5s_pct": 0.249322,
+      "tight_bound_5s_pct": 0.018781,
       "micro_5s_saving_pct": 0.006153
     }
   ],
