@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="70" y="24" font-size="15" font-weight="bold">Value that circulates within a window vs liquidity recoverable with that deadline</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
+<text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
+<line x1="70" y1="304.3" x2="540.0" y2="304.3" stroke="#e5e5e5"/>
+<text x="64.0" y="308.3" text-anchor="end" fill="#444">20</text>
+<line x1="70" y1="223.6" x2="540.0" y2="223.6" stroke="#e5e5e5"/>
+<text x="64.0" y="227.6" text-anchor="end" fill="#444">40</text>
+<line x1="70" y1="143.0" x2="540.0" y2="143.0" stroke="#e5e5e5"/>
+<text x="64.0" y="147.0" text-anchor="end" fill="#444">60</text>
+<line x1="70" y1="62.3" x2="540.0" y2="62.3" stroke="#e5e5e5"/>
+<text x="64.0" y="66.3" text-anchor="end" fill="#444">80</text>
+<line x1="91.4" y1="40" x2="91.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="91.4" y="401.0" text-anchor="middle" fill="#444">10</text>
+<line x1="199.9" y1="40" x2="199.9" y2="385.0" stroke="#f0f0f0"/>
+<text x="199.9" y="401.0" text-anchor="middle" fill="#444">100</text>
+<line x1="308.4" y1="40" x2="308.4" y2="385.0" stroke="#f0f0f0"/>
+<text x="308.4" y="401.0" text-anchor="middle" fill="#444">1000</text>
+<line x1="417.0" y1="40" x2="417.0" y2="385.0" stroke="#f0f0f0"/>
+<text x="417.0" y="401.0" text-anchor="middle" fill="#444">10k</text>
+<line x1="525.5" y1="40" x2="525.5" y2="385.0" stroke="#f0f0f0"/>
+<text x="525.5" y="401.0" text-anchor="middle" fill="#444">100k</text>
+<line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#333"/>
+<line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
+<text x="305.0" y="426.0" text-anchor="middle">window / deadline (s, log)</text>
+<text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">% of gross value</text>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,333.9 175.8,274.1 303.5,160.8 368.8,113.8 453.3,72.7 518.6,56.4"/>
+<circle cx="91.4" cy="333.9" r="3.5" fill="#0072B2"/>
+<circle cx="175.8" cy="274.1" r="3.5" fill="#0072B2"/>
+<circle cx="303.5" cy="160.8" r="3.5" fill="#0072B2"/>
+<circle cx="368.8" cy="113.8" r="3.5" fill="#0072B2"/>
+<circle cx="453.3" cy="72.7" r="3.5" fill="#0072B2"/>
+<circle cx="518.6" cy="56.4" r="3.5" fill="#0072B2"/>
+<rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
+<text x="570.0" y="50.0">circulating value (max circulation per window)</text>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,385.0 175.8,384.8 303.5,382.6 368.8,378.1 453.3,373.7 518.6,373.4"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#D55E00"/>
+<circle cx="175.8" cy="384.8" r="3.5" fill="#D55E00"/>
+<circle cx="303.5" cy="382.6" r="3.5" fill="#D55E00"/>
+<circle cx="368.8" cy="378.1" r="3.5" fill="#D55E00"/>
+<circle cx="453.3" cy="373.7" r="3.5" fill="#D55E00"/>
+<circle cx="518.6" cy="373.4" r="3.5" fill="#D55E00"/>
+<rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
+<text x="570.0" y="68.0">recoverable liquidity: tight bound</text>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,385.0 175.8,384.9 303.5,384.3 368.8,382.9 453.3,378.2 518.6,373.4"/>
+<circle cx="91.4" cy="385.0" r="3.5" fill="#009E73"/>
+<circle cx="175.8" cy="384.9" r="3.5" fill="#009E73"/>
+<circle cx="303.5" cy="384.3" r="3.5" fill="#009E73"/>
+<circle cx="368.8" cy="382.9" r="3.5" fill="#009E73"/>
+<circle cx="453.3" cy="378.2" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="373.4" r="3.5" fill="#009E73"/>
+<rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
+<text x="570.0" y="86.0">recovered by netting every window</text>
+</svg>
