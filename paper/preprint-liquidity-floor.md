@@ -121,32 +121,38 @@ netting at the end of the period gives `LB_i = max(0, CO_i(T) − CI_i(T))`, the
 floor_i(d) = max(0, max_{s ∈ [0, T]} [CO_i(s) − CI_i(min(s + d, T))]).
 ```
 
-**Theorem 1 (Liquidity Floor).** For every mechanism delay-bounded by *d* and every participant *i*,
-`L_i ≥ floor_i(d)`.
+**Theorem (Liquidity Floor).** Fix a deadline `d ≥ 0` and a participant *i*.
 
-*Proof.* Fix *s*. At time `s + d` (or *T*), every payment of *i* that arrived by *s* has settled, so
-*i* has paid at least `CO_i(s)`. No payment settles before it arrives, so *i* has received at most
-`CI_i(s + d)`. Hence `−y_i(s + d) ≥ CO_i(s) − CI_i(s + d)`, and `L_i ≥ −y_i(s + d)`. Take the
-maximum over *s*. ∎
+(a) *Bound.* Every mechanism delay-bounded by *d* needs `L_i ≥ floor_i(d)`.
 
-**Properties.**
+(b) *Tightness.* Some mechanism delay-bounded by *d* needs exactly `L_i = floor_i(d)`: settle every
+payment of *i* exactly *d* after its arrival (or at *T*, if earlier) and every payment to *i* on
+arrival.
+
+*Proof.* (a) Fix *s*. At time `min(s + d, T)` every payment of *i* that arrived by *s* has settled, so
+*i* has paid at least `CO_i(s)`; no payment settles before it arrives, so *i* has received at most
+`CI_i(min(s + d, T))`. Hence `−y_i(min(s + d, T)) ≥ CO_i(s) − CI_i(min(s + d, T))`, and
+`L_i ≥ −y_i(t)` for every *t*. Take the maximum over *s*.
+(b) Under that mechanism `−y_i(t) = CO_i(t − d) − CI_i(t)` for `t < T` and `CO_i(T) − CI_i(T)` at
+*T*; with `s = t − d` its maximum is the maximum in the definition of `floor_i(d)`. ∎
+
+Part (b) says the bound cannot be improved using only *i*'s own flows. It is checked to the cent in
+the simulator (test `a_single_holder_needs_exactly_its_floor`, engine `hold:<d>:<i>`).
+
+**Proposition (link with the classic bounds).**
 
 1. `floor_i(0) = UB_i` and `floor_i(d) = LB_i` for `d ≥ T` (since `CO_i` is non-decreasing, the
    maximum over *s* of `CO_i(s) − CI_i(T)` is reached at `s = T`).
 2. `floor_i(d)` is non-increasing in *d* (`CI_i` is non-decreasing).
-3. **Window form (corollary).** Let `t*_i` be the first time *i* reaches its gross-settlement
-   peak. Taking `s = t*_i − d` gives `UB_i − floor_i(d) ≤ CO_i(t*_i) − CO_i(t*_i − d)`: no
-   mechanism saves more than what *i* paid in the *d* before its peak. This weaker form is easier to
-   explain and much looser in practice (section 6).
 
-**Theorem 2 (attainment for one participant).** For each *i* there is a mechanism delay-bounded by
-*d* with `L_i = floor_i(d)`: settle every payment of *i* exactly *d* after its arrival and every
-payment to *i* on arrival.
+So the floor joins the two bounds of Koponen and Soramäki (1998) by a curve in closed form, where
+their study joins them by simulation at chosen liquidity levels.
 
-*Proof.* Under that mechanism `−y_i(t) = CO_i(t − d) − CI_i(t)`, whose maximum over *t* is
-`floor_i(d)` (substitute `s = t − d`). ∎
+**Corollary (window form).** Let `t*_i` be the first time *i* reaches its gross-settlement peak.
+Taking `s = t*_i − d` in the theorem gives `UB_i − floor_i(d) ≤ CO_i(t*_i) − CO_i(t*_i − d)`: no
+mechanism saves more than what *i* paid in the *d* before its peak. This weaker form is easier to
+explain and much looser in practice (section 6).
 
-Theorem 2 is checked to the cent in the simulator (test `a_single_holder_needs_exactly_its_floor`).
 Attainment for all participants at once is not guaranteed: one participant's delayed payment is
 another's delayed receipt. The exact system-wide question is a linear programme (all payments
 known in advance; any split of each payment over `[a, a + d]`); its value `LP(d)` satisfies
