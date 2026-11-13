@@ -1,5 +1,0 @@
-measure,observed,null_mean,null_sd,observed_over_null,null
-hodge_l2_cyclic_net,0.942809,0.333333,0,2.828427,analytic (m - n + k)/m
-cdfd_max_gross,0.75,0.6375,0.290285,1.176471,payee shuffle x20
-cdfd_bff_gross,0.75,0.6375,0.290285,1.176471,payee shuffle x20
-cycle_netting_gross,0.75,0.6375,0.290285,1.176471,payee shuffle x20
