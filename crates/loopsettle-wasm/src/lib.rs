@@ -107,6 +107,8 @@ fn micro(mode: QueueMode, w: u64, d: u64) -> EngineSpec {
         discipline: Default::default(),
         search_cycles: true,
         gridlock: false,
+        complete_netting: false,
+        retry_ms: None,
     })
 }
 

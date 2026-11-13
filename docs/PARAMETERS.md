@@ -11,7 +11,7 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 
 | Parameter | Default | Status | Source / rationale |
 |---|---|---|---|
-| `participants` | 200 | ASSUMPTION | Reduced scale; the SPI has ~900 direct and indirect participants. The 200 largest concentrate most of the volume. |
+| `participants` | 200 | ASSUMPTION | Reduced scale; the SPI had 907 participants at the end of 2025, 214 direct and 693 indirect (SPI annual report 2025; indirect ones send about 7% of interbank Pix). The 200 largest concentrate most of the volume. |
 | `days` | 1 | ASSUMPTION | Analysis period = 1 day (LB = the day's net position). |
 | `payments_per_day` | 1,000,000 | ASSUMPTION | Machine budget (CLAUDE.md, section 2). The scale factor is recorded in `scale_factor`. |
 | `scale_factor` | 238.99 | CALIBRATED | = 238,990,813 Pix payments/day (Sep 2026) ÷ 1,000,000 simulated. Each simulated payment "stands for" ~239 real payments; absolute liquidity does NOT scale linearly (see limitations). |
@@ -69,4 +69,13 @@ Honest notes: (i) concentration matches almost by construction, since the shares
 draw directly; what is validated is the implementation, not the model. (ii) The mean ticket is
 sensitive to the heavy tail (α = 1.3): the −1.5% error is sampling noise from 1 million draws.
 (iii) Nothing here calibrates the **bilateral structure** (who pays whom), which is not public:
-it is the study's main `ASSUMPTION`.
+it is the study's main `ASSUMPTION`. (iv) **Scope of the counts: interbank only.** The Olinda
+resource `EstatisticasTransacoesPix` "does not include Pix settled in the participant's books,
+i.e. transactions not sent to the SPI" (its own documentation): same-institution Pix, which never
+touches the reserves, is already out, as the simulator assumes (payer ≠ payee institution). The SPI
+annual report 2025 confirms the order of magnitude: 7.10 billion interbank Pix in December 2025.
+(v) **Value percentiles not matched.** The same report gives p50 R$ 36, p90 R$ 400, p99 R$ 3,900
+(December 2025); the amount model above gives about R$ 91, 749 and 4,908. `body_sigma` and
+`tail_prob` are therefore not consistent with the public shape (REVIEW 98, LIMITATIONS 19).
+Sources: Olinda `Pix_DadosAbertos` documentation; Banco Central do Brasil, *Relatório Anual do
+SPI 2025* (bcb.gov.br).

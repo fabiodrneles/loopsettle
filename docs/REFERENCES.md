@@ -63,7 +63,21 @@ Sources: [arXiv](https://arxiv.org/abs/2506.12546) · [WRAP Warwick](https://wra
 
 | Field | Value | Status |
 |---|---|---|
-| Reference | Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of Finland Discussion Papers 9/2001. | confirmed (classic reference) |
+| Reference | Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of Finland Discussion Papers 9/2001. | **read** (full text, copy supplied by the owner; not stored: no licence to redistribute) |
+| Algorithm | §3.3: Step 1 include every queued payment; Step 2 compute each bank's ex-post balance; Step 3 pick any bank below zero and remove the *last* payment of its queue, repeat. Optimal for the gridlock-resolution problem with the liquidity and sequence (FIFO per bank) constraints, equations 5–6; the result does not depend on which deficient bank is picked (footnote 9, appendix). Developed by Danmarks Nationalbank for KRONOS. | confirmed. **LoopSettle's `gridlock` engine is this algorithm** (`engines.rs::run_gridlock`; D27). |
+| Bounds and indicator | UB as in Koponen & Soramäki; LB = max(0, received − sent) (eq. 7); delay indicator ρ (eq. 9), the 1998 one. Liquidity levels written `L_i = α (UB_i − LB_i)` (eq. 8), α ∈ {0, 0.2, …, 1}: without the `+ LB_i` of the 1998 equation 4 and of the paper's own text ("just enough liquidity to settle all the days payments" at the lower extreme). LoopSettle follows the 1998 form. | confirmed (p. 19) |
+| Results | Danish (64 days) and Finnish (100 days) RTGS data; the algorithm reduces queuing "at all levels of liquidity, but in particular when intra-day liquidity is scarce", by up to 50% (Abstract; §6). | confirmed |
+
+## 4a. Koponen & Soramäki — intraday liquidity needs (origin of UB and LB)
+
+| Field | Value | Status |
+|---|---|---|
+| Reference | Koponen, R. & Soramäki, K. (1998). *Intraday Liquidity Needs in a Modern Interbank Payment System: A Simulation Approach*. Bank of Finland Studies E:14. https://hdl.handle.net/10419/212947 | **read** (full text from EconStor, supplied by the owner; EconStor terms forbid public redistribution, so only the citation is kept) |
+| Bounds | Equation 1: theoretical lower bound = end-of-day net debit (RTGS with queuing, no gridlock); equation 2: theoretical upper bound = largest cumulative net debit over the day (RTGS without queuing, immediate settlement). §2.3.1, Figure 2. | confirmed. **These are LoopSettle's LB and UB.** |
+| Curve between the bounds | The trade-off between B (LB) and C (UB) is obtained **by simulation**, at 11 liquidity levels `LA_i = LB_i + LL (UB_i − LB_i)` (equation 4, §6.1). No closed form for a deadline. | confirmed: the delay-bounded floor of METHODOLOGY §9b is not in this study. |
+| Indicators | ρ (settlement delay, eq. 5): sum over minutes of queued value / sum over minutes of cumulative outgoing value; π (liquidity usage, eq. 6): peak liquidity used / gross value sent. System values: numerators and denominators summed over banks. | confirmed; implemented as `RunMetrics::rho` and `metrics::pi`. |
+| Queue rules | FIFO with per-bank "closed" status (Figure 9) = LoopSettle's `StrictFifoPerPayer`; Bypass FIFO (§3.1.2) = `BypassFifo`, D13. Netting of queues (§3.1.3): all queues at once if every bank covers its net (equation 3), otherwise nothing ("illiquidity, not gridlock"). | confirmed; implemented as `netq:fifo|bypass:<window>:<delay>`. |
+| Results | Netting the queues every 20, 5 or 1 minutes "is effective in reducing settlement delay only for the higher liquidity levels and even then only with minor effect" (§7.4.3); splitting of payments works better (§7.4.4); bilateral netting of queues proposed as future research (§8.4). | confirmed |
 
 ## 4b. Johnson, McAndrews & Soramäki — deferred settlement mechanisms
 
@@ -110,12 +124,12 @@ constraint) and one full-text check.
 
 | What was found | Status |
 |---|---|
-| The two bounds without a delay parameter — the upper bound (immediate gross settlement = largest cumulative net debit position) and the lower bound (one netting at the end of the day) — are standard and attributed to Koponen & Soramäki (1998, Bank of Finland Studies E:14, sections "Theoretical bounds" and "Real bounds") and Bech & Soramäki (2001/2002). LoopSettle's UB and LB are these. | search summaries only; the 1998 study was **not read**. It must be read and cited as the origin of UB/LB. |
+| The two bounds without a delay parameter — the upper bound (immediate gross settlement = largest cumulative net debit position) and the lower bound (one netting at the end of the day) — are standard and attributed to Koponen & Soramäki (1998, Bank of Finland Studies E:14, sections "Theoretical bounds" and "Real bounds") and Bech & Soramäki (2001/2002). LoopSettle's UB and LB are these. | **read** on 13 Nov 2026 (section 4a): equations 1 and 2 of the 1998 study; neither study states a bound with a deadline. |
 | Rivadeneyra & Zhang (Bank of Canada SDP 2020-9, in `docs/references/pdf/`) compute "the minimum liquidity necessary for a given set of payments allowing for the maximum delay". | **read** (p. 10, footnote 13, and section 4.1): "maximum delay" there means delaying failed payments to the end of the day, and the minimum is found by iterative simulation. No deadline `d`, no closed form. Not the floor. |
 | Liquidity–delay trade-off by simulation: Leinonen & Soramäki (1999), Enge & Øverli (2006), Arjani (2006), Galbiati & Soramäki (2007), DNB WP 682 (2020), ECB WP 1291 (2011). | search summaries only; none is reported as stating a bound parameterised by a deadline. |
 | Network calculus (arrival curves, backlog and delay bounds). | no source found that applies it to payment-system liquidity; the floor is the analogue of a backlog bound with the roles of arrivals and service played by outflows and delayed inflows. |
 
 **Conclusion to use in the paper:** no prior statement was found, in a limited search. That is not
-evidence of novelty. Before claiming it: read Koponen & Soramäki (1998) and Bech & Soramäki
-(2002), search the Bank of Finland simulator-seminar proceedings and the *Journal of Financial
+evidence of novelty. Koponen & Soramäki (1998) and Bech & Soramäki (2001) were read on 13 Nov 2026:
+neither has it (the curve between the bounds is simulated there). Before claiming it: search the Bank of Finland simulator-seminar proceedings and the *Journal of Financial
 Market Infrastructures*, and ask one specialist. The safe wording meanwhile is "to our knowledge".

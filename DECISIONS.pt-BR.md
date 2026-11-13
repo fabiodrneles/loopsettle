@@ -293,9 +293,11 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   `docs/references/` e não foi lido); liquidação parcial; resolvedores por otimização.
 - **Por quê:** é o mecanismo clássico de economia de liquidez com que a literatura compara, e
   liquida lotes que não são ciclos, o que a busca de micro-ciclos não consegue.
-- **Ressalva:** implementado a partir da descrição do algoritmo em fontes secundárias e da
-  propriedade de prefixo e viabilidade pela qual ele é conhecido; precisa ser conferido com o
-  artigo antes de o nome "Bech-Soramäki" ser usado numa publicação.
+- **Ressalva (resolvida em 13/11/2026):** implementado a partir de descrições secundárias e depois
+  conferido com o artigo (Bank of Finland DP 9/2001, §3.3, cópia enviada pelo dono): Passo 1,
+  incluir todos os pagamentos da fila; Passo 2, calcular os saldos finais; Passo 3, tirar o último
+  pagamento de qualquer banco deficitário e repetir; o resultado não depende do banco escolhido
+  (nota 9). O `run_gridlock` é esse algoritmo; o nome "Bech-Soramäki" pode ser usado. REVIEW 97.
 - **Reverter:** não usar o motor `gridlock`; nada mais depende dele.
 
 ## D28 — Abastecimento como camada fora dos motores, com reservas fora do sistema
@@ -311,3 +313,31 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   para todos os motores de uma vez, e mantém os resultados anteriores idênticos byte a byte (sem
   política, nada muda).
 - **Reverter:** rodar sem política (o padrão).
+
+## D29 — O desenho do Banco da Finlândia como experimento: ρ, π, níveis de liquidez, compensação completa
+- **Decisão:** o `bof-replication` reproduz o desenho de Koponen & Soramäki (1998): saldo de
+  abertura `LB_i + LL (UB_i − LB_i)` em 11 níveis (a equação 4 deles), pagamentos podem esperar até
+  o fim do dia, e os desenhos são comparados por ρ (`RunMetrics::rho`, equação 5) e π
+  (`metrics::pi`, equação 6). Um motor novo, `netq:fifo|bypass:<janela>:<atraso>[:<nova_tentativa>]`,
+  é a compensação das filas deles: tudo de uma vez se todo participante cobre o seu líquido
+  (equação 3); senão, nada. `gridlock` e `netq` aceitam um intervalo próprio de nova tentativa bruta
+  (`MicroCycleConfig::batch_every`), para um desenho compensar a cada 20 minutos e tentar a fila de
+  novo a cada segundo.
+- **Escolhas internas:** (a) ρ em tempo contínuo (ms), não por minuto; (b) um pagamento rejeitado
+  conta como esperando até o fim do dia (o arcabouço de 1998 não tem rejeição: tudo liquida até o
+  fim do dia); (c) o ρ do sistema soma numeradores e denominadores entre os participantes, como o
+  texto de 1998 (os pesos ficam sendo a área das saídas acumuladas de cada pagador, não exatamente
+  a fatia de valor, como o texto diz); (d) o artigo de 2001 escreve os níveis como
+  `α (UB_i − LB_i)` (equação 8), sem `+ LB_i`; seguimos 1998 e as próprias palavras do artigo de
+  2001; (e) um cenário estilizado de alto valor com 1.500 pagamentos por dia (`ASSUMPTION`, o do
+  `regimes`) confere que a implementação reproduz o efeito publicado onde os estudos o acharam.
+- **Por que o intervalo de nova tentativa:** sem ele, "compensar a cada 20 minutos" também queria
+  dizer "tentar a fila de novo a cada 20 minutos", o que aumentava o ρ frente a uma fila tentada a
+  cada segundo (medido: +0,23 p.p. no nível mais baixo). O simulador de 1998 confere a fila a cada
+  evento.
+- **Alternativas:** ρ por minuto (mais perto do texto, mais grosseiro); excluir os rejeitados
+  (aí o ρ premiaria rejeitar); pôr os níveis no `liquidity-frontier` (mais pesado, e mudaria os
+  resultados de referência dele).
+- **Reverter:** retirar o experimento; nada mais usa `netq`, `rho`, `pi` ou `batch_every`
+  (`batch_every = 1` é o comportamento antigo, e todos os resultados de referência anteriores
+  ficaram iguais).

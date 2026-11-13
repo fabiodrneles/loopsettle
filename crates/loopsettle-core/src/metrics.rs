@@ -248,6 +248,12 @@ pub struct RunMetrics {
     pub sla_thresholds_ms: Vec<TimeMs>,
     /// number of settled payments with delay `<=` each threshold
     pub sla_counts: Vec<u64>,
+    /// exact sums for the settlement delay indicator rho (cents * ms): value times settlement
+    /// time and value times arrival time of settled payments, value times arrival time of
+    /// rejected ones
+    pub value_settle_time_sum: i128,
+    pub value_arrival_sum_settled: i128,
+    pub value_arrival_sum_rejected: i128,
 }
 
 /// The Pix "Manual de Tempos" target used across the reports: 50% settled within 2.8 s.
@@ -275,6 +281,9 @@ impl RunMetrics {
             value_delay_sum: 0.0,
             sla_thresholds_ms: vec![SLA_PIX_MS],
             sla_counts: vec![0],
+            value_settle_time_sum: 0,
+            value_arrival_sum_settled: 0,
+            value_arrival_sum_rejected: 0,
         }
     }
     /// Same, with other exact delay thresholds.
@@ -293,6 +302,26 @@ impl RunMetrics {
         } else {
             self.sla_counts[k] as f64 / self.settled_count as f64
         })
+    }
+    /// Settlement delay indicator **rho** of Koponen & Soramaki (1998, section 6.2, equation
+    /// 5), in continuous time: the integral over the day of the value waiting in the queue,
+    /// divided by the integral of the cumulative value submitted. 0 = everything settles on
+    /// arrival; 1 = nothing settles before `t_end`. A rejected payment counts as waiting until
+    /// `t_end` (it never settles; the 1998 framework has no rejections). Value-weighted over
+    /// payers, as the system rho of the study. 0 when nothing was submitted.
+    pub fn rho(&self, t_end: TimeMs) -> f64 {
+        let t = t_end as i128;
+        let waiting = self.value_settle_time_sum - self.value_arrival_sum_settled
+            + t * self.rejected_value
+            - self.value_arrival_sum_rejected;
+        let submitted = t * (self.settled_value + self.rejected_value)
+            - self.value_arrival_sum_settled
+            - self.value_arrival_sum_rejected;
+        if submitted <= 0 {
+            0.0
+        } else {
+            waiting as f64 / submitted as f64
+        }
     }
     pub fn value_weighted_mean_delay_ms(&self) -> f64 {
         if self.settled_value == 0 {
@@ -318,17 +347,64 @@ impl Sink for RunMetrics {
             }
         }
         self.value_delay_sum += p.amount as f64 * d as f64;
+        self.value_settle_time_sum += p.amount as i128 * t as i128;
+        self.value_arrival_sum_settled += p.amount as i128 * p.t_arrival as i128;
     }
     fn rejected(&mut self, p: &Payment, _t: TimeMs) {
         self.rejected_count += 1;
         self.rejected_value += p.amount as i128;
         self.rejected_value_by_payer[p.payer as usize] += p.amount;
+        self.value_arrival_sum_rejected += p.amount as i128 * p.t_arrival as i128;
+    }
+}
+
+/// Liquidity usage indicator **pi** of Koponen & Soramaki (1998, section 6.3, equation 6):
+/// liquidity used (sum of peak drawdowns) over the gross value of payments sent. 0 = no
+/// liquidity from outside the system; 1 = as much as the gross value. 0 when nothing was sent.
+pub fn pi(liquidity_used: i128, gross_value: i128) -> f64 {
+    if gross_value <= 0 {
+        0.0
+    } else {
+        liquidity_used as f64 / gross_value as f64
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn pay(t: TimeMs, v: Cents) -> Payment {
+        Payment {
+            id: 0,
+            t_arrival: t,
+            payer: 0,
+            payee: 1,
+            amount: v,
+        }
+    }
+
+    /// rho by hand. Day of 100 ms. A payment of 10 arrives at 0 and settles at 50: it waits
+    /// 10*50 = 500 out of a submitted area of 10*100 = 1000, so rho = 0.5. Immediate
+    /// settlement gives 0, rejection (never settled) gives 1.
+    #[test]
+    fn rho_by_hand() {
+        let mut m = RunMetrics::new(2);
+        m.settled(&pay(0, 10), 50, SettleKind::Gross);
+        assert_eq!(m.rho(100), 0.5);
+        let mut m = RunMetrics::new(2);
+        m.settled(&pay(20, 10), 20, SettleKind::Gross);
+        assert_eq!(m.rho(100), 0.0);
+        let mut m = RunMetrics::new(2);
+        m.rejected(&pay(20, 10), 30);
+        assert_eq!(m.rho(100), 1.0);
+        // value-weighted: 10 waits half its time, 30 none -> 500 / (1000 + 3000)
+        let mut m = RunMetrics::new(2);
+        m.settled(&pay(0, 10), 50, SettleKind::Gross);
+        m.settled(&pay(0, 30), 0, SettleKind::Gross);
+        assert_eq!(m.rho(100), 0.125);
+        assert_eq!(RunMetrics::new(2).rho(100), 0.0);
+        assert_eq!(pi(25, 100), 0.25);
+    }
 
     #[test]
     fn histogram_small_values_exact() {

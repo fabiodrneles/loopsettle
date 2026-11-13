@@ -258,6 +258,28 @@ The gross retry inside the queue is defined as repeated passes over the queue in
 until a pass settles nothing; the implementation visits only participants that were credited
 since their last retry and is tested to give identical settlements (`event_driven_retry_equals_the_reference`).
 
+## 11b. The Bank of Finland design (ρ, π, liquidity levels)
+
+The classic simulation studies of the Bank of Finland (Koponen & Soramäki 1998; Bech & Soramäki
+2001) give every bank a balance between its two bounds and let payments queue until the end of
+the day. `bof-replication` does the same, so LoopSettle's numbers can be set beside theirs.
+
+- **Liquidity level** `LL ∈ [0, 1]`: opening balance `LA_i = LB_i + LL (UB_i − LB_i)` (1998,
+  equation 4). `LL = 0` is the lower bound, `LL = 1` the upper bound.
+- **Delay indicator** ρ (1998 equation 5; 2001 equation 9): the area under the value waiting in
+  the queue over the day, divided by the area under the cumulative value submitted. In continuous
+  time, `ρ = Σ_p v_p (t_settle,p − t_arrival,p) / Σ_p v_p (T − t_arrival,p)`, with a rejected
+  payment counted as waiting until `T`. 0 = everything settles on arrival; 1 = nothing before the
+  end of the day. System ρ: numerators and denominators summed over payers.
+- **Liquidity usage** π (1998 equation 6): liquidity used (sum of peak drawdowns) / gross value.
+- **Designs.** Plain FIFO queue retried every second; complete netting of queues (1998 §3.1.3:
+  all queues at once if every bank covers its net position, otherwise nothing; `netq`) every 20,
+  5 or 1 minutes; the Bech-Soramäki gridlock resolution (largest feasible FIFO prefix; `gridlock`)
+  every minute; micro-cycles every second. All netting designs keep retrying the queue gross every
+  second (`batch_every`, D29).
+- **Scenarios.** The calibrated Pix scenario and a stylised large-value one with 1,500 payments a
+  day, the volume of the published studies (`ASSUMPTION`).
+
 ## 12. Running on real data
 
 `loopsettle bound <file.csv>` computes UB, LB and the delay bound for several `d`;

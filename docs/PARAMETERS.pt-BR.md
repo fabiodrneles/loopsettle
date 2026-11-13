@@ -11,7 +11,7 @@ Os valores **CALIBRATED/SOURCED** são preenchidos na Fase 4 a partir de
 
 | Parâmetro | Padrão | Status | Fonte / justificativa |
 |---|---|---|---|
-| `participants` | 200 | ASSUMPTION | Escala reduzida; o SPI tem ~900 participantes diretos+indiretos. Os 200 maiores concentram a maior parte do volume. |
+| `participants` | 200 | ASSUMPTION | Escala reduzida; o SPI tinha 907 participantes no fim de 2025, 214 diretos e 693 indiretos (relatório anual do SPI de 2025; os indiretos emitem cerca de 7% dos Pix interbancários). Os 200 maiores concentram a maior parte do volume. |
 | `days` | 1 | ASSUMPTION | Período de análise = 1 dia (LB = posição líquida do dia). |
 | `payments_per_day` | 1.000.000 | ASSUMPTION | Orçamento da máquina (seção 2). O fator de escala é registrado em `scale_factor`. |
 | `scale_factor` | 238,99 | CALIBRATED | = 238.990.813 Pix/dia (set/2026) ÷ 1.000.000 simulados. Cada pagamento simulado "representa" ~239 pagamentos reais; a liquidez absoluta NÃO escala linearmente (ver limitações). |
@@ -69,4 +69,13 @@ Notas honestas: (i) a concentração bate quase por construção, pois as partic
 alimentam diretamente o sorteio do pagador; o que se valida é a implementação, não o modelo.
 (ii) O ticket médio é sensível à cauda pesada (α = 1,3): o erro de −1,5% é ruído amostral
 de 1 milhão de sorteios. (iii) Nada aqui calibra a **estrutura bilateral** (quem paga a quem),
-que não é pública: ela é o principal `ASSUMPTION` do estudo.
+que não é pública: ela é o principal `ASSUMPTION` do estudo. (iv) **Abrangência das contagens:
+só entre instituições.** O recurso Olinda `EstatisticasTransacoesPix` "não inclui Pix liquidados
+nos livros do participante, isto é, transações não enviadas para liquidação no SPI" (a própria
+documentação): o Pix dentro da mesma instituição, que nunca toca a reserva, já está fora, como o
+simulador supõe (instituição pagadora ≠ recebedora). O relatório anual do SPI de 2025 confirma a
+ordem de grandeza: 7,10 bilhões de Pix interbancários em dezembro de 2025. (v) **Percentis de valor
+não reproduzidos.** O mesmo relatório dá p50 R$ 36, p90 R$ 400, p99 R$ 3.900 (dezembro de 2025); o
+modelo de valores acima dá cerca de R$ 91, 749 e 4.908. Por isso `body_sigma` e `tail_prob` não são
+coerentes com a forma pública (REVIEW 98, LIMITATIONS 19). Fontes: documentação Olinda
+`Pix_DadosAbertos`; Banco Central do Brasil, *Relatório Anual do SPI 2025* (bcb.gov.br).

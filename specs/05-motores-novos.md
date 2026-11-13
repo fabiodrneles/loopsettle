@@ -41,7 +41,7 @@ instrumento: mostra que só atrasar, sem compensar, já muda a liquidez, e separ
 - **AC:** teste de igualdade `L_i = piso_i(d)` para o participante único que segura, em 5
   cenários. Isso fecha a prova de que o piso é atingível (spec 01).
 
-## M3 — Compensação parcial multilateral no estilo Bech-Soramäki — **FEITO em 12/11/2026 (a conferir com o artigo)**
+## M3 — Compensação parcial multilateral no estilo Bech-Soramäki — **FEITO em 12/11/2026, conferido com o artigo em 13/11/2026** (REVIEW 97)
 
 > `gridlock:fifo|bypass:<janela>:<atraso>` (`engines.rs::run_gridlock`, D27). Testes:
 > `m3_gridlock_resolution_by_hand`, `m3_gridlock_keeps_the_payer_queue_order`,

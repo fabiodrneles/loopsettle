@@ -6,6 +6,20 @@ whose results changed.
 
 ## [Unreleased]
 
+### Added
+- `bof-replication` experiment: the design of Koponen & Soramäki (1998) and Bech & Soramäki
+  (2001) on the Pix scenario and on a large-value one (liquidity levels between LB and UB, delay
+  indicator ρ, liquidity usage π). Results: `results/bof-replication/`; SUMMARY §17; CLAIMS 1l.
+- `netq:fifo|bypass:<window>:<delay>[:<retry>]` engine (complete netting of queues, 1998) and an
+  optional gross-retry interval for `gridlock` (`MicroCycleConfig::batch_every`).
+- `RunMetrics::rho` and `metrics::pi`.
+
+### Changed
+- Koponen & Soramäki (1998) and Bech & Soramäki (2001) read: UB/LB cited from the source; the
+  `gridlock` engine confirmed to be the 2001 algorithm (D27). No earlier result changed.
+- PARAMETERS: the Pix counts are interbank only (Olinda documentation); the value percentiles of
+  the SPI annual report 2025 are not matched yet (REVIEW 98, LIMITATIONS 19).
+
 ## [0.2.0] — 2026-11-12
 
 The post-v0.1.0 roadmap in `specs/` (audit, then specs 01 to 10). Every experiment's results were

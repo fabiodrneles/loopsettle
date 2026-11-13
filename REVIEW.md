@@ -391,3 +391,40 @@ the real laptop (i3, 4 GB).
     (the 30-million and 10-million runs would take tens of minutes); the weekend 10 s tight bound
     at 1 million payments per Thursday is 0.03–0.07%, with CIs up to 0.096%. `stress` names its
     "before the target's own peak" case by position, because that time differs between seeds.
+96. **Koponen & Soramäki (1998) read, 13 Nov 2026** (copy supplied by the owner; not stored, EconStor
+    terms). UB and LB are its equations 1 and 2 (now cited as read, `docs/REFERENCES.md` §4a); its
+    queue (Figure 9) is `StrictFifoPerPayer`; Bypass FIFO is its §3.1.2. The curve between the
+    bounds is simulated there: the delay-bounded floor (METHODOLOGY §9b) is not in it. New:
+    ρ and π (`metrics.rs`), the `netq` engine (complete netting of queues), `batch_every`, and the
+    `bof-replication` experiment (D29; METHODOLOGY §11b; SUMMARY §17; CLAIMS 1l). **Result:** in the
+    Pix scenario (300,000 payments a day, 10 seeds) no netting design reduces ρ measurably at any
+    level: at LB the plain FIFO queue has ρ = 1.42% [0.57; 2.26]; complete netting every 1, 5 or
+    20 min −0.020 pp [−0.048; +0.008]; Bech-Soramäki every minute −0.056 pp [−0.118; +0.007].
+    Netting does remove the end-of-day leftovers (rejected value 0.073% → 0). In the large-value
+    scenario (1,500 payments a day) the same code reproduces the literature: Bech-Soramäki −30%
+    of ρ at LB (12.1% → 8.5%, Δ −3.6 pp [−6.1; −1.2]), complete netting −23% (Δ −2.8 pp
+    [−5.2; −0.3]), and almost nothing from 20% of the gap upwards. **Doubt for the reviewer:**
+    1998 reports netting of queues helping "only for the higher liquidity levels"; here it helps
+    only at the lowest. Different data and structure (their levels include time-critical payments
+    and net-settlement buckets); not explained. Micro-cycles with bypass FIFO *raise* ρ in Pix
+    (+0.52 pp [+0.08; +0.97] at LB): a discipline effect (small later payments pass large earlier
+    ones, value-weighted delay grows), not a cycle effect (with FIFO: −0.007 pp [−0.061; +0.047]).
+    A first run without `batch_every` showed netq *raising* ρ: the window was also the retry
+    interval (D29). Splitting of payments (§3.1.4) is not implemented: in Pix it is not used.
+97. **Bech & Soramäki (2001) read, 13 Nov 2026** (copy supplied by the owner; not stored). The
+    algorithm of §3.3 is exactly `run_gridlock` (D27, caveat resolved): start with every queued
+    payment, remove the last payment of any deficient bank, repeat; independent of the order.
+    Spec 05 M3 is now checked. Its equation 8 writes the levels without `+ LB_i`, against its own
+    text and the 1998 equation 4; we follow 1998 (D29 d). The test of the paper's own example was not
+    added: the paper gives no numerical example.
+98. **Pix volume is interbank-only; the value distribution is not (open), 13 Nov 2026.** The owner
+    asked whether same-institution Pix (which never touches the reserves) inflates the calibration.
+    It does not: the Olinda documentation of `EstatisticasTransacoesPix` says it "does not include
+    Pix settled in the participant's books, i.e. transactions not sent to the SPI"; the SPI annual
+    report 2025 gives 7.10 billion interbank Pix in December 2025, against the 7.17 billion of
+    September 2026 used here. **New finding from the same report:** the value percentiles of
+    December 2025 are p50 R$ 36, p90 R$ 400, p99 R$ 3,900 (mean R$ 443.29). The generator matches
+    the mean but not the shape: analytically p50 R$ 91.5, p90 R$ 749, p99 R$ 4,908. A fit with
+    `body_sigma` 1.9 and `tail_prob` 0.003 (B2B value share kept at 52%) gives R$ 35.8 / 418 /
+    3,784. Not applied yet: it changes every result and needs a full rebuild (PARAMETERS note iv,
+    LIMITATIONS 19).

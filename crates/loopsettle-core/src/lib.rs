@@ -19,7 +19,7 @@ pub use engines::{
 };
 pub use funding::{FundingPolicy, PrefundClosedWindows, TopUpToTarget};
 pub use ledger::{Ledger, UNLIMITED};
-pub use metrics::{FlowStats, LogHistogram, RunMetrics, SLA_PIX_MS};
+pub use metrics::{pi, FlowStats, LogHistogram, RunMetrics, SLA_PIX_MS};
 pub use types::*;
 
 /// One engine together with its own ledger and metrics.

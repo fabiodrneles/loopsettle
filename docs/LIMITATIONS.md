@@ -61,3 +61,9 @@
     participant's receipts right after it pays are there by chance. `echo-sweep` shows that the
     central result depends on this: fast bilateral returns make second-scale netting worthwhile.
     Echo share, delay and direction are assumptions; no public data identify them.
+19. **Shape of the value distribution.** The generator matches the public mean ticket but not its
+    percentiles: the SPI annual report 2025 gives p50 R$ 36, p90 R$ 400, p99 R$ 3,900 (December
+    2025), while the model gives about R$ 91, 749 and 4,908. Typical payments are too large and
+    too uniform. A fit is known (REVIEW 98) but not applied; results that depend on the size of
+    single payments relative to liquidity (the delay bound, rejections under fixed balances) may
+    move when it is.

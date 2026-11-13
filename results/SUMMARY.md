@@ -853,3 +853,41 @@ The tables of the earlier sections for these experiments describe one seed and s
 | funding-windows | netting_saving_pct_sigma1_lambda1_weekend | 1.9634 [0.55737; 3.3695] | 0.40024–7.2361 |
 | funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.027931 [0.016851; 0.03901] | 0.009182–0.058955 |
 
+## 17. Replication of the Bank of Finland design (Koponen & Soramäki 1998; Bech & Soramäki 2001)
+_seed `20260930`, code `0.2.0+git.5abb74e-dirty`, command `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
+
+Each participant holds LB + level × (UB − LB) (1998 equation 4); payments wait in the queue until the end of the day; ρ = delay (eq. 5), π = liquidity usage (eq. 6). Reference queue: FIFO per payer, retried every 1 s. The netting designs (1998 complete, 2001 prefix, micro-cycles) use the same retry. Means over 10 seeds. Δρ = paired difference with the plain queue.
+
+| scenario | level | design | ρ [95% CI] | π | rejected (% of value) | Δρ [95% CI] |
+|---|---|---|---|---|---|---|
+| retail (Pix) | 0 | `queue_fifo_d86400000` | 1.416% [0.573; 2.259] | 17.15% | 0.073% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0.5 | `queue_fifo_d86400000` | 0.471% [0.207; 0.735] | 18.10% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w1200000_d86400000_r1000` | 1.396% [0.550; 2.242] | 17.17% | 0.000% | -0.020 [-0.048; +0.008] |
+| retail (Pix) | 0.5 | `netq_fifo_w1200000_d86400000_r1000` | 0.471% [0.207; 0.735] | 18.10% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w300000_d86400000_r1000` | 1.396% [0.550; 2.242] | 17.17% | 0.000% | -0.020 [-0.048; +0.008] |
+| retail (Pix) | 0.5 | `netq_fifo_w300000_d86400000_r1000` | 0.471% [0.207; 0.735] | 18.10% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w60000_d86400000_r1000` | 1.396% [0.550; 2.242] | 17.17% | 0.000% | -0.020 [-0.048; +0.008] |
+| retail (Pix) | 0.5 | `netq_fifo_w60000_d86400000_r1000` | 0.471% [0.207; 0.735] | 18.10% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `gridlock_fifo_w60000_d86400000_r1000` | 1.360% [0.565; 2.155] | 17.17% | 0.000% | -0.056 [-0.118; +0.007] |
+| retail (Pix) | 0.5 | `gridlock_fifo_w60000_d86400000_r1000` | 0.459% [0.208; 0.710] | 18.10% | 0.000% | -0.011 [-0.027; +0.004] |
+| retail (Pix) | 0 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 1.409% [0.519; 2.300] | 17.17% | 0.018% | -0.007 [-0.061; +0.047] |
+| retail (Pix) | 0.5 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 0.473% [0.192; 0.754] | 18.10% | 0.000% | +0.002 [-0.017; +0.022] |
+| retail (Pix) | 0 | `micro_cycle_shortfall_w1000_d86400000` | 1.939% [0.691; 3.186] | 17.08% | 0.309% | +0.523 [+0.081; +0.965] |
+| retail (Pix) | 0.5 | `micro_cycle_shortfall_w1000_d86400000` | 0.764% [0.282; 1.245] | 18.01% | 0.000% | +0.293 [+0.060; +0.526] |
+| large-value 1500/day | 0 | `queue_fifo_d86400000` | 12.149% [8.110; 16.188] | 34.40% | 1.936% | +0.000 [+0.000; +0.000] |
+| large-value 1500/day | 0.5 | `queue_fifo_d86400000` | 3.691% [2.209; 5.173] | 37.98% | 0.157% | +0.000 [+0.000; +0.000] |
+| large-value 1500/day | 0 | `netq_fifo_w1200000_d86400000_r1000` | 9.396% [5.685; 13.106] | 34.65% | 0.000% | -2.753 [-5.179; -0.327] |
+| large-value 1500/day | 0.5 | `netq_fifo_w1200000_d86400000_r1000` | 3.655% [2.169; 5.141] | 38.07% | 0.000% | -0.036 [-0.118; +0.046] |
+| large-value 1500/day | 0 | `netq_fifo_w300000_d86400000_r1000` | 9.381% [5.671; 13.090] | 34.65% | 0.000% | -2.768 [-5.203; -0.334] |
+| large-value 1500/day | 0.5 | `netq_fifo_w300000_d86400000_r1000` | 3.643% [2.155; 5.131] | 38.07% | 0.000% | -0.048 [-0.156; +0.059] |
+| large-value 1500/day | 0 | `netq_fifo_w60000_d86400000_r1000` | 9.369% [5.656; 13.082] | 34.65% | 0.000% | -2.780 [-5.223; -0.337] |
+| large-value 1500/day | 0.5 | `netq_fifo_w60000_d86400000_r1000` | 3.641% [2.152; 5.129] | 38.07% | 0.000% | -0.050 [-0.159; +0.059] |
+| large-value 1500/day | 0 | `gridlock_fifo_w60000_d86400000_r1000` | 8.542% [5.663; 11.421] | 34.65% | 0.000% | -3.607 [-6.062; -1.152] |
+| large-value 1500/day | 0.5 | `gridlock_fifo_w60000_d86400000_r1000` | 3.402% [2.268; 4.535] | 38.08% | 0.000% | -0.289 [-0.684; +0.106] |
+| large-value 1500/day | 0 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 11.444% [5.517; 17.371] | 34.65% | 0.292% | -0.705 [-4.293; +2.882] |
+| large-value 1500/day | 0.5 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 3.547% [2.079; 5.016] | 38.09% | 0.000% | -0.143 [-0.256; -0.031] |
+| large-value 1500/day | 0 | `micro_cycle_shortfall_w1000_d86400000` | 10.240% [5.977; 14.503] | 34.54% | 0.639% | -1.909 [-5.553; +1.735] |
+| large-value 1500/day | 0.5 | `micro_cycle_shortfall_w1000_d86400000` | 3.845% [2.420; 5.270] | 37.64% | 0.000% | +0.154 [-0.748; +1.057] |
+
+Figure: [`bof-replication/fig_bof_retail.svg`](bof-replication/fig_bof_retail.svg), [`bof-replication/fig_bof_large_value.svg`](bof-replication/fig_bof_large_value.svg)
+

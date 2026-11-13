@@ -116,6 +116,9 @@ PT = {
     "h16": "## 16. Várias sementes nos experimentos de uma semente",
     "sd_intro": "As tabelas das seções anteriores destes experimentos descrevem uma semente e ficam como ilustração. Aqui, as métricas principais em 10 sementes (média e IC 95%); todas as métricas estão em `<experimento>/seeds_summary.csv` e cada semente em `<experimento>/seeds.csv`. `heterogeneity` e `funding-windows` usam só a menor escala.",
     "c_sd": ["experimento", "métrica", "média [IC 95%]", "mín.–máx."],
+    "h17": "## 17. Replicação do desenho do Banco da Finlândia (Koponen & Soramäki 1998; Bech & Soramäki 2001)",
+    "bof_intro": "Cada participante tem LB + nível × (UB − LB) (equação 4 de 1998); pagamentos esperam na fila até o fim do dia; ρ = atraso (eq. 5), π = uso de liquidez (eq. 6). Fila de referência: FIFO por pagador, nova tentativa a cada 1 s. As compensações (completa de 1998, prefixo de 2001, micro-ciclos) usam a mesma nova tentativa. Médias de {} sementes. Δρ = diferença pareada com a fila simples.",
+    "c_bof": ["cenário", "nível", "mecanismo", "ρ [IC 95%]", "π", "rejeitado (% do valor)", "Δρ [IC 95%]"],
     "h14": "## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)",
     "ec_intro": "Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.",
     "c_ec": ["parcela de eco", "atraso do eco (s)", "retorno", "motor", "economia [IC 95%]", "limite apertado [IC 95%]", "valor em ciclos", "LB/UB"],
@@ -213,6 +216,9 @@ EN = {
     "h16": "## 16. Several seeds in the one-seed experiments",
     "sd_intro": "The tables of the earlier sections for these experiments describe one seed and stay as illustrations. Here, the headline metrics over 10 seeds (mean and 95% CI); every metric is in `<experiment>/seeds_summary.csv` and every seed in `<experiment>/seeds.csv`. `heterogeneity` and `funding-windows` use the smallest scale only.",
     "c_sd": ["experiment", "metric", "mean [95% CI]", "min–max"],
+    "h17": "## 17. Replication of the Bank of Finland design (Koponen & Soramäki 1998; Bech & Soramäki 2001)",
+    "bof_intro": "Each participant holds LB + level × (UB − LB) (1998 equation 4); payments wait in the queue until the end of the day; ρ = delay (eq. 5), π = liquidity usage (eq. 6). Reference queue: FIFO per payer, retried every 1 s. The netting designs (1998 complete, 2001 prefix, micro-cycles) use the same retry. Means over {} seeds. Δρ = paired difference with the plain queue.",
+    "c_bof": ["scenario", "level", "design", "ρ [95% CI]", "π", "rejected (% of value)", "Δρ [95% CI]"],
     "h14": "## 14. Echo payments: short-horizon circularity (the hardest test of the central claim)",
     "ec_intro": "A share of all payments is a response to a receipt: the payee pays the same amount shortly after, to a payee drawn as usual (return 0) or straight back to the payer (return 1). ASSUMPTION: a stress test, not a calibrated behaviour. Means over 8 seeds, 1 million payments a day, σ = 0.4.",
     "c_ec": ["echo share", "echo delay (s)", "return", "engine", "saving [95% CI]", "tight bound [95% CI]", "value in cycles", "LB/UB"],
@@ -467,6 +473,17 @@ def build(T):
                 srows.append([exp, k, f"{float(r['mean']):.5g} [{float(r['ci95_low']):.5g}; {float(r['ci95_high']):.5g}]", f"{float(r['min']):.5g}–{float(r['max']):.5g}"])
     md.append(table(T["c_sd"], srows))
     md.append("")
+    # --- Bank of Finland design (Koponen & Soramaki 1998)
+    if os.path.exists(os.path.join(ROOT, "bof-replication", "bof.csv")):
+        s = load("bof-replication")
+        br = rows("bof-replication", "bof.csv")
+        md += [T["h17"], meta(s, T), "", T["bof_intro"].format(br[0]["seeds"]), ""]
+        md.append(table(T["c_bof"], [[r["scenario"], r["liquidity_level"], f"`{r['engine']}`",
+                                       f"{100 * float(r['rho_mean']):.3f}% [{100 * float(r['rho_ci95_low']):.3f}; {100 * float(r['rho_ci95_high']):.3f}]",
+                                       f"{100 * float(r['pi_mean']):.2f}%", f"{float(r['rejected_value_pct_mean']):.3f}%",
+                                       f"{100 * float(r['rho_minus_first_engine_mean']):+.3f} [{100 * float(r['rho_minus_first_engine_ci95_low']):+.3f}; {100 * float(r['rho_minus_first_engine_ci95_high']):+.3f}]"]
+                                      for r in br if r["liquidity_level"] in ("0", "0.5")]))
+        md += ["", T["fig"] + " [`bof-replication/fig_bof_retail.svg`](bof-replication/fig_bof_retail.svg), [`bof-replication/fig_bof_large_value.svg`](bof-replication/fig_bof_large_value.svg)", ""]
     return "\n".join(md) + "\n"
 
 

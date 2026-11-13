@@ -63,3 +63,9 @@
     `echo-sweep` mostra que o resultado central depende disso: devoluções bilaterais rápidas
     fazem a compensação em segundos valer a pena. Parcela, atraso e direção do eco são hipóteses;
     nenhum dado público os identifica.
+19. **Forma da distribuição de valores.** O gerador acerta o ticket médio público, mas não os
+    percentis: o relatório anual do SPI de 2025 dá p50 R$ 36, p90 R$ 400, p99 R$ 3.900 (dezembro de
+    2025), e o modelo dá cerca de R$ 91, 749 e 4.908. Os pagamentos típicos saem grandes e uniformes
+    demais. Um ajuste é conhecido (REVIEW 98), mas não foi aplicado; resultados que dependem do
+    tamanho de cada pagamento frente à liquidez (o limite por prazo, as rejeições com saldos fixos)
+    podem mudar quando for.
