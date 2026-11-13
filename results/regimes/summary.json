@@ -1,0 +1,58 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "regimes",
+  "seed": 20260930,
+  "code_version": "0.2.0+git.726536d",
+  "config_file": "experiments/regimes.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment regimes",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
+  "scenario": {
+    "participants": 200,
+    "days": 1,
+    "payments_per_day": 1000000,
+    "scale_factor": 238.990813,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "cases": [
+    {
+      "case": "retail (Pix calibrated)",
+      "avg_payment_over_avg_ub": 0.000917,
+      "bound_5s_pct": 0.486475,
+      "tight_bound_5s_pct": 0.009827,
+      "micro_5s_saving_pct": 0.001873
+    },
+    {
+      "case": "large-value 2000/day",
+      "avg_payment_over_avg_ub": 0.029876,
+      "bound_5s_pct": 9.11626,
+      "tight_bound_5s_pct": 0,
+      "micro_5s_saving_pct": 0
+    },
+    {
+      "case": "large-value 20000/day",
+      "avg_payment_over_avg_ub": 0.003933,
+      "bound_5s_pct": 0.863645,
+      "tight_bound_5s_pct": 0,
+      "micro_5s_saving_pct": 0
+    },
+    {
+      "case": "large-value 200000/day",
+      "avg_payment_over_avg_ub": 0.00057,
+      "bound_5s_pct": 0.249322,
+      "tight_bound_5s_pct": 0.018781,
+      "micro_5s_saving_pct": 0.006153
+    }
+  ],
+  "note": "McMahon et al. (2024) report 14-30% savings from payment reordering with delays under 5 s in T2 (large-value); this experiment asks whether the delay bound separates the two regimes"
+}

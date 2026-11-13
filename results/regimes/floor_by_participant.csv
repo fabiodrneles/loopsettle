@@ -1,0 +1,5 @@
+max_delay_s,participants_with_ub,tight_bound_pct_of_own_ub_p10,p50,p90,max,share_of_total_bound_in_top5_participants
+10,186,0,0,0.035577,30.392222,0.707846
+60,186,0,0,0.995181,100,0.662948
+900,186,0,2.018495,44.635759,100,0.738741
+3600,186,0.352058,21.221441,100,100,0.723932
