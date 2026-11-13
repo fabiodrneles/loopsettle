@@ -1,0 +1,206 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "echo-sweep",
+  "seed": 20260930,
+  "code_version": "0.2.0+git.726536d",
+  "config_file": "experiments/echo-sweep.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment echo-sweep",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
+  "scenario": {
+    "participants": 200,
+    "days": 1,
+    "payments_per_day": 1000000,
+    "scale_factor": 238.990813,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "seeds": [20260930,1,2,3,4,5,6,7],
+  "cases_10s": [
+    {
+      "echo_share": 0,
+      "echo_delay_ms": 0,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.028404,
+      "tight_bound_10s_pct_ci95_high": 0.043712,
+      "netting_every_10s_saving_pct_mean": 0.012718,
+      "lb_over_ub_mean": 0.853567
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.039341,
+      "tight_bound_10s_pct_ci95_high": 0.057884,
+      "netting_every_10s_saving_pct_mean": 0.013021,
+      "lb_over_ub_mean": 0.843854
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 1.215982,
+      "tight_bound_10s_pct_ci95_high": 2.594086,
+      "netting_every_10s_saving_pct_mean": 1.109093,
+      "lb_over_ub_mean": 0.82386
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.038434,
+      "tight_bound_10s_pct_ci95_high": 0.05645,
+      "netting_every_10s_saving_pct_mean": 0.012749,
+      "lb_over_ub_mean": 0.843923
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 0.39379,
+      "tight_bound_10s_pct_ci95_high": 0.563805,
+      "netting_every_10s_saving_pct_mean": 0.205594,
+      "lb_over_ub_mean": 0.82382
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.048807,
+      "tight_bound_10s_pct_ci95_high": 0.07873,
+      "netting_every_10s_saving_pct_mean": 0.023868,
+      "lb_over_ub_mean": 0.843712
+    },
+    {
+      "echo_share": 0.05,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 0.075259,
+      "tight_bound_10s_pct_ci95_high": 0.115463,
+      "netting_every_10s_saving_pct_mean": 0.045089,
+      "lb_over_ub_mean": 0.823808
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.064349,
+      "tight_bound_10s_pct_ci95_high": 0.117539,
+      "netting_every_10s_saving_pct_mean": 0.043798,
+      "lb_over_ub_mean": 0.849132
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 7.564234,
+      "tight_bound_10s_pct_ci95_high": 10.841313,
+      "netting_every_10s_saving_pct_mean": 7.134795,
+      "lb_over_ub_mean": 0.764493
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.038582,
+      "tight_bound_10s_pct_ci95_high": 0.058489,
+      "netting_every_10s_saving_pct_mean": 0.016012,
+      "lb_over_ub_mean": 0.849123
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 4.211599,
+      "tight_bound_10s_pct_ci95_high": 5.658533,
+      "netting_every_10s_saving_pct_mean": 3.07369,
+      "lb_over_ub_mean": 0.76534
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.033691,
+      "tight_bound_10s_pct_ci95_high": 0.047971,
+      "netting_every_10s_saving_pct_mean": 0.010869,
+      "lb_over_ub_mean": 0.848719
+    },
+    {
+      "echo_share": 0.2,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 1.418722,
+      "tight_bound_10s_pct_ci95_high": 2.490885,
+      "netting_every_10s_saving_pct_mean": 0.672039,
+      "lb_over_ub_mean": 0.764179
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 1.228992,
+      "tight_bound_10s_pct_ci95_high": 2.335421,
+      "netting_every_10s_saving_pct_mean": 1.204455,
+      "lb_over_ub_mean": 0.784226
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 1000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 99.984654,
+      "tight_bound_10s_pct_ci95_high": 100.001138,
+      "netting_every_10s_saving_pct_mean": 74.286286,
+      "lb_over_ub_mean": 0.000012
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.545063,
+      "tight_bound_10s_pct_ci95_high": 1.24115,
+      "netting_every_10s_saving_pct_mean": 0.057583,
+      "lb_over_ub_mean": 0.783958
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 10000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 49.454081,
+      "tight_bound_10s_pct_ci95_high": 57.04065,
+      "netting_every_10s_saving_pct_mean": 25.799723,
+      "lb_over_ub_mean": 0.000142
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 0,
+      "tight_bound_10s_pct_mean": 0.132852,
+      "tight_bound_10s_pct_ci95_high": 0.2267,
+      "netting_every_10s_saving_pct_mean": 0.052258,
+      "lb_over_ub_mean": 0.782715
+    },
+    {
+      "echo_share": 0.5,
+      "echo_delay_ms": 60000,
+      "echo_return_prob": 1,
+      "tight_bound_10s_pct_mean": 10.891516,
+      "tight_bound_10s_pct_ci95_high": 17.596173,
+      "netting_every_10s_saving_pct_mean": 7.54377,
+      "lb_over_ub_mean": 0.002311
+    }
+  ],
+  "kill_criterion": {
+    "rule": "the claim is conditional if the 10 s tight bound (upper end of its 95% CI) exceeds 2% of UB for an echo share of at most 20%",
+    "worst_ci95_high_pct": 10.841313,
+    "fires": true
+  }
+}
