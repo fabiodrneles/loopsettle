@@ -337,3 +337,21 @@ Each entry: what was decided, alternatives, why, and how to revert.
   its reference results).
 - **Revert:** drop the experiment; nothing else uses `netq`, `rho`, `pi` or `batch_every`
   (`batch_every = 1` is the old behaviour, and all earlier reference results are unchanged).
+
+## D30 — The value distribution is fitted to the public percentiles
+- **Decision:** with `[value_percentiles]` in the calibration file, `calibrate::apply` fits the
+  body dispersion (`body_sigma`) and the tail's count share (`tail_prob`) to the p50, p90 and p99
+  of the value of an interbank Pix (R$ 36 / 400 / 3,900, *Relatório Anual do SPI 2025*, p. 10,
+  December 2025), by least squares of the log ratios on a grid of exact decimals (tail 0.001 to
+  0.100 by 0.001; σ 0.80 to 3.00 by 0.02), every candidate holding the mean ticket and the tail's
+  share of value (B2B, 52%). Result: σ = 1.9, tail 0.3%; p50 R$ 35.76, p90 R$ 419, p99 R$ 3,784.
+- **Before:** σ = 1.4 (`ASSUMPTION`) and tail = B2B count share (4.3%): right mean, wrong shape
+  (p50 R$ 91.5). Typical payments were 2.5 times too large.
+- **Alternatives:** fit α of the Pareto tail too (the three percentiles do not identify it: the
+  tail starts above p99); a different body law; weight the percentiles differently.
+- **Choices inside it:** the normal CDF uses a written-out `erfc` (Numerical Recipes, error
+  < 1.2e-7) so the fit does not depend on a platform's special functions; the grid is exact
+  decimals so the chosen pair is the same everywhere. The percentiles (December 2025) and the other
+  targets (September 2026) are from different months (`ASSUMPTION`).
+- **Revert:** `scenario.amounts_fit = "mean"` in an experiment file, or remove `[value_percentiles]`
+  from `data/calibration/pix.toml`. Every calibrated result changed with this decision (REVIEW 99).

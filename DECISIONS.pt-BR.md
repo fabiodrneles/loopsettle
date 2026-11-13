@@ -341,3 +341,23 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Reverter:** retirar o experimento; nada mais usa `netq`, `rho`, `pi` ou `batch_every`
   (`batch_every = 1` é o comportamento antigo, e todos os resultados de referência anteriores
   ficaram iguais).
+
+## D30 — A distribuição de valores é ajustada aos percentis públicos
+- **Decisão:** com `[value_percentiles]` no arquivo de calibração, o `calibrate::apply` ajusta a
+  dispersão do corpo (`body_sigma`) e a fração da quantidade na cauda (`tail_prob`) aos p50, p90 e
+  p99 do valor de um Pix interbancário (R$ 36 / 400 / 3.900, *Relatório Anual do SPI 2025*, p. 10,
+  dezembro de 2025), por mínimos quadrados das razões em log numa grade de decimais exatos (cauda
+  de 0,001 a 0,100 de 0,001 em 0,001; σ de 0,80 a 3,00 de 0,02 em 0,02), com todo candidato mantendo
+  o ticket médio e a parcela de valor da cauda (B2B, 52%). Resultado: σ = 1,9, cauda 0,3%; p50
+  R$ 35,76, p90 R$ 419, p99 R$ 3.784.
+- **Antes:** σ = 1,4 (`ASSUMPTION`) e cauda = participação do B2B na quantidade (4,3%): média
+  certa, forma errada (p50 R$ 91,5). Os pagamentos típicos saíam 2,5 vezes grandes demais.
+- **Alternativas:** ajustar também o α da cauda de Pareto (os três percentis não o identificam: a
+  cauda começa acima do p99); outra lei para o corpo; pesar os percentis de outro jeito.
+- **Escolhas internas:** a CDF normal usa um `erfc` escrito à mão (Numerical Recipes, erro
+  < 1,2e-7), para o ajuste não depender das funções especiais de cada plataforma; a grade é de
+  decimais exatos, para o par escolhido ser o mesmo em toda máquina. Os percentis (dezembro de 2025)
+  e os outros alvos (setembro de 2026) são de meses diferentes (`ASSUMPTION`).
+- **Reverter:** `scenario.amounts_fit = "mean"` num arquivo de experimento, ou tirar o
+  `[value_percentiles]` de `data/calibration/pix.toml`. Todos os resultados calibrados mudaram com
+  esta decisão (REVIEW 99).
