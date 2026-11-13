@@ -355,3 +355,13 @@ Each entry: what was decided, alternatives, why, and how to revert.
   targets (September 2026) are from different months (`ASSUMPTION`).
 - **Revert:** `scenario.amounts_fit = "mean"` in an experiment file, or remove `[value_percentiles]`
   from `data/calibration/pix.toml`. Every calibrated result changed with this decision (REVIEW 99).
+
+## D31 — The preprint draft is written in English only
+- **Decision:** `paper/preprint-liquidity-floor.md`, the draft of the paper on the liquidity floor,
+  exists only in English, the language of SSRN and of the target journal; it is listed as a
+  single-language document in `scripts/check_twins.py`. It is a draft for the author and the
+  reviewer, with the points that need their judgement marked `[TODO]` (CLAUDE.md, phase 10: the
+  authors write the paper).
+- **Alternatives:** a Portuguese twin (doubles the work on a text that will be rewritten); drafting
+  in Portuguese and translating at the end.
+- **Revert:** add `paper/preprint-liquidity-floor.pt-BR.md` and remove the entry from the list.

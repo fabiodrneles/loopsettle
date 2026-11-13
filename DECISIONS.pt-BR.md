@@ -361,3 +361,12 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
 - **Reverter:** `scenario.amounts_fit = "mean"` num arquivo de experimento, ou tirar o
   `[value_percentiles]` de `data/calibration/pix.toml`. Todos os resultados calibrados mudaram com
   esta decisão (REVIEW 99).
+
+## D31 — O rascunho do preprint é escrito só em inglês
+- **Decisão:** `paper/preprint-liquidity-floor.md`, o rascunho do artigo sobre o piso de liquidez,
+  existe só em inglês, a língua do SSRN e da revista-alvo; ele está na lista de documentos de um
+  idioma só em `scripts/check_twins.py`. É um rascunho para o autor e o revisor, com os pontos que
+  pedem o julgamento deles marcados `[TODO]` (CLAUDE.md, fase 10: os autores escrevem o artigo).
+- **Alternativas:** um gêmeo em português (dobra o trabalho num texto que será reescrito); escrever
+  em português e traduzir no fim.
+- **Reverter:** criar `paper/preprint-liquidity-floor.pt-BR.md` e tirar a entrada da lista.

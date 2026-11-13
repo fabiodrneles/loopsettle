@@ -1,9 +1,30 @@
 {
   "title": "LoopSettle: an open simulator of circular liquidity in instant payment systems",
   "upload_type": "software",
-  "description": "Open simulator that measures how much of the liquidity required by an instant gross settlement system (such as Brazil's Pix) is circular flow, how much of it is recoverable under real constraints, and the delay cost of recovering it with atomic micro-cycles. Synthetic flows calibrated to public Banco Central do Brasil aggregates.",
-  "creators": [{ "name": "Dorneles, Fabio D." }],
+  "description": "<p>LoopSettle measures how much of the liquidity an instant payment system (such as Brazil's Pix) requires corresponds to circular flow, how much of it can actually be recovered under real settlement rules, and at what cost in delay. It generates synthetic payment flows calibrated to public aggregates, settles them under several designs (real-time gross settlement, deferred netting, atomic micro-cycles, queues, gridlock resolution) and computes the liquidity floor: the least liquidity any mechanism that settles each payment within a deadline can need. It also runs on a user's own payment file, without the data leaving the machine. Written in Rust with no heavy dependencies; reproducible bit for bit across platforms; runs in a browser.</p>",
+  "creators": [
+    {
+      "name": "Dorneles, Fabio D."
+    }
+  ],
   "license": "Apache-2.0",
-  "keywords": ["instant payments", "Pix", "liquidity", "netting", "Hodge decomposition", "payment systems simulation"],
-  "version": "0.2.0"
+  "access_right": "open",
+  "keywords": [
+    "instant payments",
+    "Pix",
+    "payment system simulation",
+    "intraday liquidity",
+    "liquidity-saving mechanisms",
+    "netting",
+    "financial market infrastructures",
+    "liquidity floor"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/fabiodrneles/loopsettle",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "language": "eng"
 }

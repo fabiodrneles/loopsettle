@@ -13,7 +13,9 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIRS = ["", "docs", "paper", "results", "data"]
 # Single-file documents: both languages inside one file, generated logs, or working documents.
-SINGLE = {"CLAUDE.md", "CHANGELOG.md", "README.md", "data/README.md", "results/README.md", "paper/paper.pt-BR.md"}
+SINGLE = {"CLAUDE.md", "CHANGELOG.md", "README.md", "data/README.md", "results/README.md", "paper/paper.pt-BR.md",
+          # draft for submission, in the journal's language (D31)
+          "paper/preprint-liquidity-floor.md"}
 
 
 def pairs():

@@ -148,7 +148,7 @@ O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensa�
 cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
 passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
 participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
-estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (cerca de 28% da forma apertada da §9b; a compensação a cada 10 s obtém cerca de 46%)
+estimativa: no cenário calibrado, a economia dos micro-ciclos com 10 s é cerca de 0,1% dele (cerca de 6% da forma apertada da §9b, com IC que inclui zero; a compensação a cada 10 s obtém cerca de 46%)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,
@@ -168,9 +168,9 @@ hora"; por isso é o melhor limite que usa só os fluxos do próprio `i` (teste 
 com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
 contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
 `tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, 10 sementes),
-o limite apertado para 10 s é 0,041% do UB (IC 95% [0,025; 0,056]), contra 0,80% na forma de
-janela, e a compensação a cada 10 s obtém 48% dele (IC [40; 55]); a parcela obtida é 25% com 15
-minutos e 58% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
+o limite apertado para 10 s é 0,028% do UB (IC 95% [0,016; 0,041]), contra 1,30% na forma de
+janela, e a compensação a cada 10 s obtém 47% dele (IC [37; 57]); a parcela obtida é 28% com 15
+minutos e 63% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
 estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
 apertado ali é ≤ 0,004%.
 
