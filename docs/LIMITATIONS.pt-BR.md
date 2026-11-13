@@ -45,7 +45,7 @@
     sistemáticos e próprios de cada participante (folha de pagamento, credenciadoras, funding de
     fintechs) não encolheriam. Ver [`PAPER_READINESS.pt-BR.md`](PAPER_READINESS.pt-BR.md), W2.
     *Atualização (W2):* os perfis por classe agora existem (`profile_strength`, D18); com eles o
-    potencial deixa de desabar (2,8% com 30 milhões e o σ calibrado), mas os formatos são hipóteses
+    potencial deixa de desabar (9,2% com 30 milhões e σ = 0,4, o ajuste ao WP 619 desde a D30; 3,1% com σ = 1,0), mas os formatos são hipóteses
     até que se usem dados intradiários por participante.
 15. **Janelas de abastecimento simplificadas.** O `funding-windows` modela o horário do STR e o fim de
     semana, mas não feriados, o comportamento real de aportes dos participantes, os limites da
@@ -63,3 +63,9 @@
     `echo-sweep` mostra que o resultado central depende disso: devoluções bilaterais rápidas
     fazem a compensação em segundos valer a pena. Parcela, atraso e direção do eco são hipóteses;
     nenhum dado público os identifica.
+19. **Forma da distribuição de valores.** *Resolvida em parte em 13/11/2026 (D30):* o gerador agora
+    acerta o p50, o p90 e o p99 do relatório anual do SPI de 2025 (dentro de 5%), não só a média. O
+    que resta: os percentis são de dezembro de 2025 e os outros alvos, de setembro de 2026; o
+    expoente da cauda (α = 1,3) não é identificado por eles (a cauda começa acima do p99); e a
+    calibração do viés recebedor mudou junto (σ 0,4–0,8 em vez de 0,8–1,2), o que mostra o quanto o
+    ajuste ao WP 619 depende do modelo de valores.

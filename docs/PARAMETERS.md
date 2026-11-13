@@ -11,7 +11,7 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 
 | Parameter | Default | Status | Source / rationale |
 |---|---|---|---|
-| `participants` | 200 | ASSUMPTION | Reduced scale; the SPI has ~900 direct and indirect participants. The 200 largest concentrate most of the volume. |
+| `participants` | 200 | ASSUMPTION | Reduced scale; the SPI had 907 participants at the end of 2025, 214 direct and 693 indirect (SPI annual report 2025; indirect ones send about 7% of interbank Pix). The 200 largest concentrate most of the volume. |
 | `days` | 1 | ASSUMPTION | Analysis period = 1 day (LB = the day's net position). |
 | `payments_per_day` | 1,000,000 | ASSUMPTION | Machine budget (CLAUDE.md, section 2). The scale factor is recorded in `scale_factor`. |
 | `scale_factor` | 238.99 | CALIBRATED | = 238,990,813 Pix payments/day (Sep 2026) ÷ 1,000,000 simulated. Each simulated payment "stands for" ~239 real payments; absolute liquidity does NOT scale linearly (see limitations). |
@@ -21,15 +21,15 @@ The **CALIBRATED/SOURCED** values are filled in (Phase 4) from `data/calibration
 | `fintech_frac` | 0.5 | ASSUMPTION | Split of the remainder between fintechs and payment institutions. |
 | `payee_size_exp` (β) | 1.0 | ASSUMPTION | Payee drawn ∝ size^β ("gravity"). |
 | `homophily` | 0.3 | ASSUMPTION | Extra weight for a payee of the same class. |
-| `receiver_bias_sigma` | 0.4 (most experiments); **1.0 calibrated** | ASSUMPTION → **CALIBRATED** (band 0.8–1.2) | Lognormal receiver bias per participant: creates non-zero net positions (directional flow). Calibrated to the per-bank nettable-ratio quartiles of BCB WP 619 eq. (3.2) on real Pix data (p25 18–45%, median 57–80%, p75 73–90%): σ = 1.0 puts all three quartiles inside (36% / 61% / 83%) (`results/bias-calibration/`). Default kept at 0.4 for continuity (D19). |
+| `receiver_bias_sigma` | 0.4 (most experiments) | **CALIBRATED** (range 0.4–0.8 since D30; 0.8–1.2 before) | Lognormal receiver bias per participant: produces non-zero net positions (directional flow). Calibrated to the quartiles of the per-bank nettable-payment ratio of BCB WP 619, eq. (3.2), on real Pix data (p25 18–45%, median 57–80%, p75 73–90%). With the value distribution fitted to the SPI percentiles (D30), σ from 0.4 to 0.8 puts all three quartiles inside; the best fit is σ = 0.4 with payment institutions receiving 3× (40% / 61% / 82%; `results/bias-calibration/`). Before D30 the fit was σ = 1.0, which now puts the median below the range (53%). The σ = 1.0 runs are kept as a stronger-imbalance case. |
 | `pi_receiver_mult` | 1.3 | ASSUMPTION | Payment institutions (acquirers, P2B) receive relatively more. |
 | `hourly` | 24-weight profile | ASSUMPTION | Low at night, daytime plateau, late-afternoon peak. No public hourly series used yet (the BCB SPI annual report 2024 has one: W0 #16). |
 | `profile_strength` (λ) | 0 | ASSUMPTION | Strength of the class-specific intraday profiles (W2, D18); 0 = everyone follows `hourly`. Swept 0 / 0.5 / 1 in `heterogeneity`. |
 | `CLASS_OUT_PROFILE`, `CLASS_IN_PROFILE` | see `scenario.rs` | ASSUMPTION | Shapes only: payroll mornings (big banks), evening retail (fintechs), acquirers' night payouts and daytime receipts (payment institutions). Rescaled so each class keeps its daily volume. |
-| `amounts.body_median` | R$ 84.58 (calibrated) | CALIBRATED | Solves body mean = (1 − 0.5205)·449.83 / (1 − 0.04296) = R$ 225.4 with σ = 1.4. |
-| `amounts.body_sigma` | 1.4 | ASSUMPTION | Dispersion of the body. |
-| `amounts.tail_prob` | 0.04296 | SOURCED (proxy) | = B2B share of Pix count (Sep 2026). The tail represents large business payments. |
-| `amounts.tail_xm` | R$ 1,375.26 (calibrated) | CALIBRATED | Solves (bisection) tail mean = 0.5205·449.83/0.04296 = R$ 5,450, i.e. the tail carries the B2B share of value (52.05%). |
+| `amounts.body_median` | R$ 35.58 (calibrated) | CALIBRATED | Body mean = (1 − 0.5205) · 449.83 / (1 − 0.003) = R$ 216.3 with σ = 1.9. |
+| `amounts.body_sigma` | 1.9 (calibrated; 1.4 before D30) | CALIBRATED | Fitted with `tail_prob` to the public p50, p90, p99 of the value of an interbank Pix (R$ 36 / 400 / 3,900, *Relatório Anual do SPI 2025*, p. 10, Dec 2025): least squares of the log ratios on a grid, holding the mean ticket and the tail's value share (`calibrate::fit_percentiles`, D30). |
+| `amounts.tail_prob` | 0.003 (calibrated; 0.04296 = B2B count share before D30) | CALIBRATED | Share of the count in the tail of large payments, fitted with `body_sigma` (D30). The B2B count share (4.3%) no longer sets it: most B2B payments are not large. `scenario.amounts_fit = "mean"` restores the old rule. |
+| `amounts.tail_xm` | R$ 22,424 (calibrated) | CALIBRATED | Solves (bisection) tail mean = 0.5205 · 449.83 / 0.003 = R$ 78,051, i.e. the tail carries the B2B share of value (52.05%). |
 | `amounts.tail_alpha` | 1.3 | ASSUMPTION | Pareto tail exponent. |
 | `amounts.max_amount` | R$ 5,000,000 | ASSUMPTION | Tail truncation. |
 | Outage: retry | 100% resubmitted at the end | ASSUMPTION | `stress` experiment: no payment abandoned. |
@@ -55,18 +55,32 @@ Source: `data/calibration/pix.toml` (generated by `python data/fetch_pix.py --mo
 
 | Aggregate | Real | Simulated | Relative error |
 |---|---|---|---|
-| Pix payments per day (scaled) | 238,990,813 | 239,041,001 | +0.02% |
-| Value per day, R$ (scaled) | 107.5 bn | 105.9 bn | −1.47% |
-| Mean ticket, R$ | 449.83 | 443.14 | −1.49% |
-| Share of count in the tail (B2B proxy) | 0.04296 | 0.04246 | −1.18% |
-| Share of value in the tail (B2B proxy) | 0.5205 | 0.5142 | −1.21% |
-| Top 5 (share) | 0.5603 | 0.5598 | −0.09% |
-| Top 10 | 0.7895 | 0.7893 | −0.03% |
-| Top 20 | 0.9221 | 0.9216 | −0.05% |
-| HHI | 0.0860 | 0.0859 | −0.09% |
+| Pix payments per day (scaled) | 238,990,813 | 238,900,714 | −0.04% |
+| Value per day, R$ (scaled) | 107.5 bn | 109.6 bn | +1.91% |
+| Mean ticket, R$ | 449.83 | 458.60 | +1.95% |
+| Share of count in the tail (fitted) | 0.003 | 0.00304 | +1.23% |
+| Share of value in the tail (B2B proxy) | 0.5205 | 0.5291 | +1.64% |
+| Value p50, R$ (SPI report, Dec 2025) | 36 | 35.76 | −0.67% |
+| Value p90, R$ | 400 | 419.14 | +4.79% |
+| Value p99, R$ | 3,900 | 3,783.69 | −2.98% |
+| Top 5 (share) | 0.5603 | 0.5603 | +0.00% |
+| Top 10 | 0.7895 | 0.7895 | −0.01% |
+| Top 20 | 0.9221 | 0.9222 | +0.01% |
+| HHI | 0.0860 | 0.0860 | +0.05% |
 
 Honest notes: (i) concentration matches almost by construction, since the shares feed the payer
 draw directly; what is validated is the implementation, not the model. (ii) The mean ticket is
-sensitive to the heavy tail (α = 1.3): the −1.5% error is sampling noise from 1 million draws.
+sensitive to the heavy tail (α = 1.3), now carried by 0.3% of payments: the +1.95% error is
+sampling noise from 1 million draws (about 3,000 of them in the tail; it was −1.5% before D30).
 (iii) Nothing here calibrates the **bilateral structure** (who pays whom), which is not public:
-it is the study's main `ASSUMPTION`.
+it is the study's main `ASSUMPTION`. (iv) **Scope of the counts: interbank only.** The Olinda
+resource `EstatisticasTransacoesPix` "does not include Pix settled in the participant's books,
+i.e. transactions not sent to the SPI" (its own documentation): same-institution Pix, which never
+touches the reserves, is already out, as the simulator assumes (payer ≠ payee institution). The SPI
+annual report 2025 confirms the order of magnitude: 7.10 billion interbank Pix in December 2025.
+(v) **Value percentiles.** The same report gives p50 R$ 36, p90 R$ 400, p99 R$ 3,900 (December
+2025). Before D30 the amount model gave about R$ 91, 749 and 4,908; `body_sigma` and `tail_prob`
+are now fitted to them (table above; REVIEW 98). The percentiles are of December 2025 and the
+other targets of September 2026 (`ASSUMPTION`: the shape changes slowly).
+Sources: Olinda `Pix_DadosAbertos` documentation; Banco Central do Brasil, *Relatório Anual do
+SPI 2025* (bcb.gov.br).

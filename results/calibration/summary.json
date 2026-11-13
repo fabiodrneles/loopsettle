@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "calibration",
   "seed": 20260930,
-  "code_version": "0.2.0+git.12485e1",
+  "code_version": "0.2.0+git.b8fec3d",
   "config_file": "experiments/calibration.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment calibration",
   "platform": "x86_64-linux",
@@ -14,10 +14,10 @@
     "days": 1,
     "payments_per_day": 1000000,
     "scale_factor": 238.990813,
-    "body_median_brl": 84.57946,
-    "body_sigma": 1.4,
-    "tail_prob": 0.042962,
-    "tail_xm_brl": 1375.25637,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
     "tail_alpha": 1.3,
     "max_amount_brl": 5000000,
     "analytic_mean_ticket_brl": 449.8282,
@@ -29,65 +29,86 @@
     {
       "aggregate": "daily_count (scaled)",
       "real": 238990813.1,
-      "simulated": 239041001.170751,
-      "relative_error": 0.00021,
+      "simulated": 238900713.563461,
+      "relative_error": -0.000377,
       "note": "SOURCED; sim count x scale factor"
     },
     {
       "aggregate": "daily_value_brl (scaled)",
       "real": 107504810067.899994,
-      "simulated": 105928420096.436951,
-      "relative_error": -0.014663,
+      "simulated": 109559530604.915573,
+      "relative_error": 0.019113,
       "note": "SOURCED; sim value x scale factor"
     },
     {
       "aggregate": "ticket_mean_brl",
       "real": 449.8282,
-      "simulated": 443.139125,
-      "relative_error": -0.01487,
+      "simulated": 458.598591,
+      "relative_error": 0.019497,
       "note": "SOURCED target, matched via body/tail means"
     },
     {
-      "aggregate": "tail_count_share (B2B proxy)",
-      "real": 0.042962,
-      "simulated": 0.042457,
-      "relative_error": -0.011755,
-      "note": "SOURCED proxy"
+      "aggregate": "tail_count_share",
+      "real": 0.003,
+      "simulated": 0.003037,
+      "relative_error": 0.012333,
+      "note": "CALIBRATED (percentile fit); real = fitted value"
     },
     {
       "aggregate": "tail_value_share (B2B proxy)",
       "real": 0.520536,
-      "simulated": 0.514218,
-      "relative_error": -0.012137,
+      "simulated": 0.529051,
+      "relative_error": 0.016358,
       "note": "CALIBRATED via tail_xm"
     },
     {
       "aggregate": "top5_share",
       "real": 0.560295,
-      "simulated": 0.559818,
-      "relative_error": -0.000851,
+      "simulated": 0.560319,
+      "relative_error": 0.000043,
       "note": "SOURCED (key shares, renormalised to simulated participants)"
     },
     {
       "aggregate": "top10_share",
       "real": 0.789542,
-      "simulated": 0.78929,
-      "relative_error": -0.000319,
+      "simulated": 0.789481,
+      "relative_error": -0.000078,
       "note": "SOURCED (key shares)"
     },
     {
       "aggregate": "top20_share",
       "real": 0.922101,
-      "simulated": 0.921644,
-      "relative_error": -0.000495,
+      "simulated": 0.922206,
+      "relative_error": 0.000114,
       "note": "SOURCED (key shares)"
     },
     {
       "aggregate": "hhi",
       "real": 0.085955,
-      "simulated": 0.085878,
-      "relative_error": -0.000902,
+      "simulated": 0.085996,
+      "relative_error": 0.000477,
       "note": "SOURCED (key shares)"
+    },
+    {
+      "aggregate": "value_p50_brl",
+      "real": 36,
+      "simulated": 35.76,
+      "relative_error": -0.006667,
+      "note": "SOURCED (SPI annual report 2025, Dec 2025); CALIBRATED via body_sigma and tail_prob"
+    },
+    {
+      "aggregate": "value_p90_brl",
+      "real": 400,
+      "simulated": 419.14,
+      "relative_error": 0.04785,
+      "note": "SOURCED (SPI annual report 2025, Dec 2025); CALIBRATED via body_sigma and tail_prob"
+    },
+    {
+      "aggregate": "value_p99_brl",
+      "real": 3900,
+      "simulated": 3783.69,
+      "relative_error": -0.029823,
+      "note": "SOURCED (SPI annual report 2025, Dec 2025); CALIBRATED via body_sigma and tail_prob"
     }
   ]
 }

@@ -146,7 +146,7 @@ The bound covers atomic micro-cycles with `max_delay_ms = d`, deferred netting e
 any optimal gridlock solver with the same deadline. It is computed in two streaming passes
 (`loopsettle_sim::bound::delay_bounds`) and tested participant by participant against the
 engines (`engines_never_beat_the_delay_bound`). It is a ceiling, not an estimate: in the
-calibrated scenario the realised 10 s saving is about 1.5% of it (about 28% of the tight form of §9b; netting every 10 s realises about 46%)
+calibrated scenario the realised 10 s micro-cycle saving is about 0.1% of it (about 6% of the tight form of §9b, with a CI that includes zero; netting every 10 s realises about 46%)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. The liquidity floor (tight form of the bound).** The argument above uses one instant,
@@ -166,8 +166,8 @@ once", so it is the best bound that uses only `i`'s own flows (test `a_single_ho
 one lagging and one leading pass (`loopsettle_sim::bound::liquidity_floors`), tested against the
 engines in the same test, and reported by `loopsettle bound` (`liquidity_floor`, `tight_bound`).
 In the calibrated retail scenario (`results/regimes/bound_curve.csv`, 10 seeds) the tight bound
-for 10 s is 0.041% of UB (95% CI [0.025; 0.056]) against 0.80% for the window form, and netting
-every 10 s realises 48% of it (CI [40; 55]); the share realised is 25% at 15 minutes and 58% at
+for 10 s is 0.028% of UB (95% CI [0.016; 0.041]) against 1.30% for the window form, and netting
+every 10 s realises 47% of it (CI [37; 57]); the share realised is 28% at 15 minutes and 63% at
 six hours; for a one-day delay it equals UB − LB exactly. In the stylised large-value system the
 window bound is large only because it counts the payment that makes the peak; the tight bound
 there is ≤ 0.004%.
@@ -257,6 +257,28 @@ payments.
 The gross retry inside the queue is defined as repeated passes over the queue in arrival order
 until a pass settles nothing; the implementation visits only participants that were credited
 since their last retry and is tested to give identical settlements (`event_driven_retry_equals_the_reference`).
+
+## 11b. The Bank of Finland design (ρ, π, liquidity levels)
+
+The classic simulation studies of the Bank of Finland (Koponen & Soramäki 1998; Bech & Soramäki
+2001) give every bank a balance between its two bounds and let payments queue until the end of
+the day. `bof-replication` does the same, so LoopSettle's numbers can be set beside theirs.
+
+- **Liquidity level** `LL ∈ [0, 1]`: opening balance `LA_i = LB_i + LL (UB_i − LB_i)` (1998,
+  equation 4). `LL = 0` is the lower bound, `LL = 1` the upper bound.
+- **Delay indicator** ρ (1998 equation 5; 2001 equation 9): the area under the value waiting in
+  the queue over the day, divided by the area under the cumulative value submitted. In continuous
+  time, `ρ = Σ_p v_p (t_settle,p − t_arrival,p) / Σ_p v_p (T − t_arrival,p)`, with a rejected
+  payment counted as waiting until `T`. 0 = everything settles on arrival; 1 = nothing before the
+  end of the day. System ρ: numerators and denominators summed over payers.
+- **Liquidity usage** π (1998 equation 6): liquidity used (sum of peak drawdowns) / gross value.
+- **Designs.** Plain FIFO queue retried every second; complete netting of queues (1998 §3.1.3:
+  all queues at once if every bank covers its net position, otherwise nothing; `netq`) every 20,
+  5 or 1 minutes; the Bech-Soramäki gridlock resolution (largest feasible FIFO prefix; `gridlock`)
+  every minute; micro-cycles every second. All netting designs keep retrying the queue gross every
+  second (`batch_every`, D29).
+- **Scenarios.** The calibrated Pix scenario and a stylised large-value one with 1,500 payments a
+  day, the volume of the published studies (`ASSUMPTION`).
 
 ## 12. Running on real data
 

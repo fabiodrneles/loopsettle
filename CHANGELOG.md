@@ -6,6 +6,27 @@ whose results changed.
 
 ## [Unreleased]
 
+### Added
+- `bof-replication` experiment: the design of Koponen & Soramäki (1998) and Bech & Soramäki
+  (2001) on the Pix scenario and on a large-value one (liquidity levels between LB and UB, delay
+  indicator ρ, liquidity usage π). Results: `results/bof-replication/`; SUMMARY §17; CLAIMS 1l.
+- `netq:fifo|bypass:<window>:<delay>[:<retry>]` engine (complete netting of queues, 1998) and an
+  optional gross-retry interval for `gridlock` (`MicroCycleConfig::batch_every`).
+- `RunMetrics::rho` and `metrics::pi`.
+- User guide (`docs/GUIDE.md`, `docs/GUIDE.pt-BR.md`).
+- Draft of the preprint on the liquidity floor (`paper/preprint-liquidity-floor.md`, D31) and
+  fuller Zenodo metadata (`.zenodo.json`).
+
+### Changed
+- Koponen & Soramäki (1998) and Bech & Soramäki (2001) read: UB/LB cited from the source; the
+  `gridlock` engine confirmed to be the 2001 algorithm (D27). No earlier result changed.
+- PARAMETERS: the Pix counts are interbank only (Olinda documentation).
+- **The value distribution is fitted to the p50, p90 and p99 of the SPI annual report 2025** (D30):
+  `body_sigma` 1.4 → 1.9, `tail_prob` 0.043 → 0.003. **Every calibrated result changed**
+  (REVIEW 99): micro-cycle savings 0.0116% → 0.0017% of UB, 10 s floor 0.041% → 0.028%, one daily
+  netting 7.8% → 14.4%; the WP 619 receiver-bias fit moved from σ = 1.0 to 0.4–0.8. Claims,
+  README and METHODOLOGY updated. `scenario.amounts_fit = "mean"` restores the old calibration.
+
 ## [0.2.0] — 2026-11-12
 
 The post-v0.1.0 roadmap in `specs/` (audit, then specs 01 to 10). Every experiment's results were

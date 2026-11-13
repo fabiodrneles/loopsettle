@@ -148,7 +148,7 @@ O limite vale para micro-ciclos atômicos com `max_delay_ms = d`, para compensa�
 cada `d` e para qualquer resolvedor ótimo de gridlock com o mesmo prazo. Ele é calculado em duas
 passadas em streaming (`loopsettle_sim::bound::delay_bounds`) e testado participante a
 participante contra os motores (`engines_never_beat_the_delay_bound`). É um teto, não uma
-estimativa: no cenário calibrado, a economia obtida com 10 s é cerca de 1,5% dele (cerca de 28% da forma apertada da §9b; a compensação a cada 10 s obtém cerca de 46%)
+estimativa: no cenário calibrado, a economia dos micro-ciclos com 10 s é cerca de 0,1% dele (cerca de 6% da forma apertada da §9b, com IC que inclui zero; a compensação a cada 10 s obtém cerca de 46%)
 (`results/robustness/seeds_summary.csv`).
 
 **9b. O piso de liquidez (forma apertada do limite).** O argumento acima usa um único instante,
@@ -168,9 +168,9 @@ hora"; por isso é o melhor limite que usa só os fluxos do próprio `i` (teste 
 com uma passada atrasada e uma adiantada (`loopsettle_sim::bound::liquidity_floors`), testado
 contra os motores no mesmo teste e informado por `loopsettle bound` (`liquidity_floor`,
 `tight_bound`). No cenário de varejo calibrado (`results/regimes/bound_curve.csv`, 10 sementes),
-o limite apertado para 10 s é 0,041% do UB (IC 95% [0,025; 0,056]), contra 0,80% na forma de
-janela, e a compensação a cada 10 s obtém 48% dele (IC [40; 55]); a parcela obtida é 25% com 15
-minutos e 58% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
+o limite apertado para 10 s é 0,028% do UB (IC 95% [0,016; 0,041]), contra 1,30% na forma de
+janela, e a compensação a cada 10 s obtém 47% dele (IC [37; 57]); a parcela obtida é 28% com 15
+minutos e 63% com seis horas; com atraso de um dia ele é exatamente UB − LB. No sistema de alto valor
 estilizado, o limite de janela só é grande porque conta o pagamento que faz o pico; o limite
 apertado ali é ≤ 0,004%.
 
@@ -264,6 +264,29 @@ A nova tentativa bruta dentro da fila é definida como passadas repetidas pela f
 chegada, até uma passada não liquidar nada; a implementação visita só os participantes que
 receberam crédito desde a última tentativa e é testada para dar liquidações idênticas
 (`event_driven_retry_equals_the_reference`).
+
+## 11b. O desenho do Banco da Finlândia (ρ, π, níveis de liquidez)
+
+Os estudos clássicos de simulação do Banco da Finlândia (Koponen & Soramäki 1998; Bech & Soramäki
+2001) dão a cada banco um saldo entre os seus dois limites e deixam os pagamentos na fila até o
+fim do dia. O `bof-replication` faz o mesmo, para que os números do LoopSettle possam ficar ao lado
+dos deles.
+
+- **Nível de liquidez** `LL ∈ [0, 1]`: saldo de abertura `LA_i = LB_i + LL (UB_i − LB_i)` (1998,
+  equação 4). `LL = 0` é o limite inferior; `LL = 1`, o superior.
+- **Indicador de atraso** ρ (equação 5 de 1998; equação 9 de 2001): a área sob o valor esperando na
+  fila ao longo do dia, dividida pela área sob o valor enviado acumulado. Em tempo contínuo,
+  `ρ = Σ_p v_p (t_liquidação,p − t_chegada,p) / Σ_p v_p (T − t_chegada,p)`, e um pagamento rejeitado
+  conta como esperando até `T`. 0 = tudo liquida na chegada; 1 = nada antes do fim do dia. ρ do
+  sistema: numeradores e denominadores somados entre os pagadores.
+- **Uso de liquidez** π (equação 6 de 1998): liquidez usada (soma dos picos de saque) / valor bruto.
+- **Desenhos.** Fila FIFO simples, tentada de novo a cada segundo; compensação completa das filas
+  (1998 §3.1.3: todas as filas de uma vez se todo banco cobre a sua posição líquida; senão, nada;
+  `netq`) a cada 20, 5 ou 1 minuto; a resolução de gridlock de Bech-Soramäki (maior prefixo FIFO
+  viável; `gridlock`) a cada minuto; micro-ciclos a cada segundo. Todos os desenhos de compensação
+  continuam tentando a fila bruta a cada segundo (`batch_every`, D29).
+- **Cenários.** O cenário calibrado do Pix e um estilizado de alto valor com 1.500 pagamentos por
+  dia, o volume dos estudos publicados (`ASSUMPTION`).
 
 ## 12. Rodar em dados reais
 

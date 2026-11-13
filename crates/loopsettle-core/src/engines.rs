@@ -212,6 +212,15 @@ pub struct MicroCycleConfig {
     /// settle, simultaneously, the largest set of queued payments that respects each payer's
     /// queue order and leaves no balance negative (see `run_gridlock`).
     pub gridlock: bool,
+    /// With `gridlock`: settle the whole queue at once if every participant can cover its net
+    /// position, otherwise nothing (the "netting of queues" of Koponen & Soramaki 1998,
+    /// section 3.1.3, equation 3). `false` = the largest feasible FIFO prefix (Bech-Soramaki).
+    pub complete_netting: bool,
+    /// The batch step (cycle search or gridlock resolution) runs at every `batch_every`-th
+    /// window; the gross retry of `QueueOnShortfall` runs at every window. 1 (the default) =
+    /// both at every window. Lets a design net the queues every 20 minutes while retrying them
+    /// every second, as the event-driven queue of the 1998 Bank of Finland simulator does.
+    pub batch_every: u64,
 }
 
 impl MicroCycleConfig {
@@ -225,6 +234,8 @@ impl MicroCycleConfig {
             search_cycles: true,
             reference_retry: false,
             gridlock: false,
+            complete_netting: false,
+            batch_every: 1,
         }
     }
 }
@@ -415,8 +426,7 @@ impl AtomicMicroCycle {
             if ledger.try_batch(&legs, &mut self.scratch) {
                 let offset = legs.iter().map(|l| l.2).min().unwrap();
                 let mut ids = Vec::with_capacity(legs.len());
-                for i in 0..legs.len() {
-                    let (a, b, _) = legs[i];
+                for &(a, b, _) in &legs {
                     let p = self.pop_head(a, b);
                     ids.push(p.id);
                     sink.settled(&p, t, SettleKind::Cycle);
@@ -475,6 +485,11 @@ impl AtomicMicroCycle {
             }
         }
         let mut work: Vec<usize> = (0..n).filter(|&i| pos[i] < 0).collect();
+        if self.cfg.complete_netting && !work.is_empty() {
+            // Someone cannot cover its net position: by the 1998 definition this is illiquidity,
+            // not gridlock, and the netting of queues does not run.
+            return;
+        }
         while let Some(i) = work.pop() {
             // A deficit can only come from i's own included payments (balances are >= 0).
             while pos[i] < 0 {
@@ -636,9 +651,11 @@ impl AtomicMicroCycle {
         if self.queued == 0 {
             return;
         }
-        if self.cfg.gridlock {
+        // Ticks fall on multiples of `window_ms`, so the batch instants are stateless.
+        let batch = (t / self.cfg.window_ms) % self.cfg.batch_every.max(1) == 0;
+        if batch && self.cfg.gridlock {
             self.run_gridlock(t, ledger, sink);
-        } else if self.cfg.search_cycles {
+        } else if batch && self.cfg.search_cycles {
             self.run_cycles(t, ledger, sink);
         }
         if self.cfg.mode == QueueMode::QueueOnShortfall && self.queued > 0 {
@@ -670,10 +687,21 @@ impl SettlementEngine for AtomicMicroCycle {
         };
         let strict = self.cfg.discipline == QueueDiscipline::StrictFifoPerPayer;
         if self.cfg.gridlock {
+            let every = self.cfg.batch_every.max(1);
+            let retry = if every > 1 {
+                format!("_r{}", self.cfg.window_ms)
+            } else {
+                String::new()
+            };
             return format!(
-                "gridlock_{}_w{}_d{}",
+                "{}_{}_w{}_d{}{retry}",
+                if self.cfg.complete_netting {
+                    "netq"
+                } else {
+                    "gridlock"
+                },
                 if strict { "fifo" } else { "bypass" },
-                self.cfg.window_ms,
+                self.cfg.window_ms * every,
                 self.cfg.max_delay_ms
             );
         }

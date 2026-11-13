@@ -62,6 +62,10 @@ pub const ALL: &[(&str, &str)] = &[
         "liquidity-frontier",
         "rejection and delay vs liquidity held, per design (constrained liquidity)",
     ),
+    (
+        "bof-replication",
+        "Koponen & Soramaki (1998) design: rho vs pi between LB and UB, netting of queues",
+    ),
 ];
 
 pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String> {
@@ -87,6 +91,7 @@ pub fn run(name: &str, path: &str, doc: &Doc, quick: bool) -> Result<(), String>
         "circularity-horizon" => crate::experiments8::circularity_horizon(path, doc, &cfg),
         "echo-scale" => crate::experiments7::echo_scale(path, doc, &cfg),
         "liquidity-frontier" => crate::experiments6::liquidity_frontier(path, doc, &cfg),
+        "bof-replication" => crate::experiments9::bof_replication(path, doc, &cfg),
         _ => Err(format!(
             "unknown experiment '{name}' (see `loopsettle list`)"
         )),
@@ -234,6 +239,8 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
                 discipline: Default::default(),
                 search_cycles: true,
                 gridlock: false,
+                complete_netting: false,
+                retry_ms: None,
             }));
         }
     }
@@ -299,6 +306,8 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
             discipline: Default::default(),
             search_cycles: true,
             gridlock: false,
+            complete_netting: false,
+            retry_ms: None,
         }),
         EngineSpec::Micro(MicroCycleSpec {
             mode: QueueMode::QueueAll,
@@ -308,6 +317,8 @@ fn microcycle_sweep(path: &str, doc: &Doc, cfg: &ScenarioConfig) -> Result<(), S
             discipline: Default::default(),
             search_cycles: true,
             gridlock: false,
+            complete_netting: false,
+            retry_ms: None,
         }),
     ];
     for &fr in &fracs {

@@ -14,7 +14,8 @@ calibration = "data/calibration/pix.toml"
 
 
 [heterogeneity]
-# 0.4 = previous default; 1.0 = calibrated to BCB WP 619 (experiment bias-calibration)
+# 0.4 = default and, since D30, within the BCB WP 619 fit (experiment bias-calibration);
+# 1.0 = the fit before D30, now a stronger-imbalance case
 receiver_bias_sigma = [0.4, 1.0]
 profile_strength = [0.0, 0.5, 1.0]
 payments_per_day = [1_000_000, 10_000_000, 30_000_000]

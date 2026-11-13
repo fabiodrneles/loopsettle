@@ -6,521 +6,524 @@ Gerado por `python scripts/summarize.py` a partir de `results/*/`. Não edite à
 Valores em reais são do cenário **sintético** (1 milhão de pagamentos/dia; cada pagamento simulado representa ~239 pagamentos reais). As frações são o resultado principal; valores absolutos não escalam linearmente para o Pix real.
 
 ## 1. Calibração (real vs simulado)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment calibration`._
 
 | agregado | real | simulado | erro relativo |
 |---|---|---|---|
-| daily_count (scaled) | 238 990 813 | 239 041 001 | 0.02% |
-| daily_value_brl (scaled) | 107 504 810 068 | 105 928 420 096 | -1.47% |
-| ticket_mean_brl | 449.8282 | 443.1391 | -1.49% |
-| tail_count_share (B2B proxy) | 0.0430 | 0.0425 | -1.18% |
-| tail_value_share (B2B proxy) | 0.5205 | 0.5142 | -1.21% |
-| top5_share | 0.5603 | 0.5598 | -0.09% |
-| top10_share | 0.7895 | 0.7893 | -0.03% |
-| top20_share | 0.9221 | 0.9216 | -0.05% |
-| hhi | 0.0860 | 0.0859 | -0.09% |
+| daily_count (scaled) | 238 990 813 | 238 900 714 | -0.04% |
+| daily_value_brl (scaled) | 107 504 810 068 | 109 559 530 605 | 1.91% |
+| ticket_mean_brl | 449.8282 | 458.5986 | 1.95% |
+| tail_count_share | 0.0030 | 0.0030 | 1.23% |
+| tail_value_share (B2B proxy) | 0.5205 | 0.5291 | 1.64% |
+| top5_share | 0.5603 | 0.5603 | 0.00% |
+| top10_share | 0.7895 | 0.7895 | -0.01% |
+| top20_share | 0.9221 | 0.9222 | 0.01% |
+| hhi | 0.0860 | 0.0860 | 0.05% |
+| value_p50_brl | 36.0000 | 35.7600 | -0.67% |
+| value_p90_brl | 400.0000 | 419.1400 | 4.78% |
+| value_p99_brl | 3900.0000 | 3783.6900 | -2.98% |
 
 ## 2. Baseline: liquidez e escada de circularidade
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment baseline`._
 
 | medida | valor |
 |---|---|
-| pagamentos | 1000210 |
-| volume bruto (R$) | 443 232 184 |
-| UB — liquidez do bruto em tempo real (R$) | 71 271 128 |
-| LB — posição líquida de fim de dia (R$) | 64 666 472 |
-| LB / UB | 0.9073 |
-| UB / volume bruto | 0.1608 |
-| capacidade potencial (estilo BCB) | 85.41% |
+| pagamentos | 999623 |
+| volume bruto (R$) | 458 425 699 |
+| UB — liquidez do bruto em tempo real (R$) | 100 048 774 |
+| LB — posição líquida de fim de dia (R$) | 83 912 531 |
+| LB / UB | 0.8387 |
+| UB / volume bruto | 0.2182 |
+| capacidade potencial (estilo BCB) | 81.70% |
 
 Escada (frações do fluxo total do grafo; Hodge L1 pode passar de 1):
 
 | grafo | arestas | Hodge L1 | Hodge L2 rot. | CDFD máx. | CDFD proporcional (BFF) | ciclos (guloso) | triângulos |
 |---|---|---|---|---|---|---|---|
-| gross | 10492 | 1.1835 | 0.9770 | 0.8315 | 0.7882 | 0.7955 | 113417 |
-| net | 6620 | 1.7301 | 0.9770 | 0.1742 | 0.1346 | 0.1443 | 113417 |
+| gross | 10483 | 1.2481 | 0.9795 | 0.7785 | 0.7255 | 0.7382 | 112903 |
+| net | 6602 | 1.7125 | 0.9795 | 0.2141 | 0.1714 | 0.1872 | 112903 |
 
 Valores nulos (spec 08, T4): o nulo analítico de Hodge e o nível esperado só pelos volumes de quem paga e pela popularidade de quem recebe, embaralhando o recebedor de cada par (20 sorteios):
 
 | medida | observado | nulo (média) | nulo (dp) | observado / nulo | nulo |
 |---|---|---|---|---|---|
-| hodge_l2_cyclic_net | 0.9770 | 0.9699 | 0.0000 | 1.007 | analytic (m - n + k)/m |
-| cdfd_max_gross | 0.8315 | 0.2163 | 0.0190 | 3.844 | payee shuffle x20 |
-| cdfd_bff_gross | 0.7882 | 0.1784 | 0.0196 | 4.418 | payee shuffle x20 |
-| cycle_netting_gross | 0.7955 | 0.1940 | 0.0209 | 4.100 | payee shuffle x20 |
+| hodge_l2_cyclic_net | 0.9795 | 0.9699 | 0.0000 | 1.010 | analytic (m - n + k)/m |
+| cdfd_max_gross | 0.7785 | 0.1951 | 0.0137 | 3.991 | payee shuffle x20 |
+| cdfd_bff_gross | 0.7255 | 0.1614 | 0.0153 | 4.496 | payee shuffle x20 |
+| cycle_netting_gross | 0.7382 | 0.1737 | 0.0152 | 4.250 | payee shuffle x20 |
 
 
-Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 63.2%, mediana 78.3%, p75 90.8%. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).
+Razão de pagamentos compensáveis por banco, definição do BCB WP 619 (eq. 3.2, 2·min(saídas, entradas)/(saídas + entradas)): p25 49.2%, mediana 70.5%, p75 84.5%. No Pix real, o WP 619 reporta mediana de 57% a 80%, p25 de 18% a 45% e p75 de 73% a 90% (nov/2020 em diante).
 
-Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = 6620 arestas, n = 200 nós): (m − n + 1)/m = 0.970, contra 0.977 observado — em grafo denso, a fração rotacional mede sobretudo a densidade.
+Valor nulo de Hodge (fluxos aleatórios no mesmo grafo líquido, m = 6602 arestas, n = 200 nós): (m − n + 1)/m = 0.970, contra 0.979 observado — em grafo denso, a fração rotacional mede sobretudo a densidade.
 
-Correlação potencial de Hodge × posição líquida: 0.9971.
+Correlação potencial de Hodge × posição líquida: 0.9947.
 
 Sensibilidade ao viés recebedor (principal ASSUMPTION da estrutura bilateral):
 
 | variante | motor | economia [IC 95%] | limite apertado [IC 95%] |
 |---|---|---|---|
-| 0 | 29 689 174 | 0.591 | 96.04% | 1.038 | 0.958 | 0.934 | 0.644 | 0.0480% | 9984 |
-| 0.2 | 49 241 487 | 0.798 | 91.13% | 1.105 | 0.907 | 0.864 | 0.320 | 0.0051% | 9984 |
-| 0.4 | 71 271 128 | 0.907 | 85.41% | 1.183 | 0.831 | 0.795 | 0.174 | 0.0120% | 9984 |
-| 0.8 | 110 276 702 | 0.950 | 76.35% | 1.304 | 0.696 | 0.669 | 0.068 | 0.0034% | 9984 |
+| 0 | 58 550 287 | 0.757 | 90.34% | 1.126 | 0.888 | 0.846 | 0.473 | 0.0343% | 9984 |
+| 0.2 | 80 057 185 | 0.800 | 86.03% | 1.189 | 0.838 | 0.785 | 0.305 | -0.0073% | 9984 |
+| 0.4 | 100 048 774 | 0.839 | 81.70% | 1.248 | 0.778 | 0.738 | 0.214 | 0.0041% | 9984 |
+| 0.8 | 122 079 176 | 0.918 | 75.54% | 1.329 | 0.689 | 0.651 | 0.160 | -0.0012% | 9984 |
 
 Figura: [`baseline/fig_ladder.svg`](baseline/fig_ladder.svg)
 
 ## 3. Potencial vs realizável (comparação central)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment potential-vs-realizable`._
 
 | medida | valor | significado | status |
 |---|---|---|---|
-| potential_offset_fraction_bcb_style | 0.85410 | share of gross outflows fundable by same-day inflows, order ignored | measured, no time |
-| potential_liquidity_saving_end_of_day | 0.09267 | (UB - LB) / UB: saving of one end-of-day net settlement | measured |
-| static_ceiling_cdfd_max_gross | 0.83146 | max circulation respecting edge bounds / gross flow | measured, aggregated, no time |
-| static_greedy_cycle_netting_gross | 0.79549 | greedy cycle cancellation / gross flow | measured, aggregated, no time |
-| hodge_l1_cyclic_gross | 1.18348 | diagnostic; can exceed 1 | measured, aggregated, no time |
-| realizable_liquidity_saving_micro_cycle_all_w500_d10000 | 0.00015 | best atomic micro-cycle config: 1 - liquidity / UB | measured in time |
-| realizable_value_in_cycles_micro_cycle_all_w500_d10000 | 0.63425 | value settled inside atomic cycles / settled value | measured in time |
-| realizable_liquidity_saving_deferred_net_96x | 0.00325 | deferred net settlement at this frequency | measured in time |
-| realizable_liquidity_saving_deferred_net_8640x | 0.00028 | deferred net settlement at this frequency | measured in time |
+| potential_offset_fraction_bcb_style | 0.81695 | share of gross outflows fundable by same-day inflows, order ignored | measured, no time |
+| potential_liquidity_saving_end_of_day | 0.16128 | (UB - LB) / UB: saving of one end-of-day net settlement | measured |
+| static_ceiling_cdfd_max_gross | 0.77845 | max circulation respecting edge bounds / gross flow | measured, aggregated, no time |
+| static_greedy_cycle_netting_gross | 0.73825 | greedy cycle cancellation / gross flow | measured, aggregated, no time |
+| hodge_l1_cyclic_gross | 1.24812 | diagnostic; can exceed 1 | measured, aggregated, no time |
+| realizable_liquidity_saving_micro_cycle_all_w500_d10000 | 0.00004 | best atomic micro-cycle config: 1 - liquidity / UB | measured in time |
+| realizable_value_in_cycles_micro_cycle_all_w500_d10000 | 0.62583 | value settled inside atomic cycles / settled value | measured in time |
+| realizable_liquidity_saving_deferred_net_96x | 0.01470 | deferred net settlement at this frequency | measured in time |
+| realizable_liquidity_saving_deferred_net_8640x | 0.00009 | deferred net settlement at this frequency | measured in time |
 
 Por desenho de liquidação (liquidez ilimitada; espera máxima em segundos):
 
 | espera máx. (s) | motor | liquidez (R$) | economia vs UB | fração de UB−LB recuperada | p50 (ms) | p95 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|---|
-| 0 | gross_real_time | 71 271 128 | 0.0000% | 0.0000 | 0 | 0 | 100.00% | 0.00% |
-| 86400 | deferred_net_1x | 64 666 472 | 9.2669% | 1.0000 | 31457280 | 60293120 | 0.00% | 0.00% |
-| 43200 | deferred_net_2x | 68 150 773 | 4.3781% | 0.4724 | 18350080 | 40894464 | 0.01% | 0.00% |
-| 21600 | deferred_net_4x | 68 602 509 | 3.7443% | 0.4041 | 10616832 | 20447232 | 0.01% | 0.00% |
-| 8640 | deferred_net_10x | 69 592 930 | 2.3547% | 0.2541 | 4259840 | 8192000 | 0.03% | 0.00% |
-| 3600 | deferred_net_24x | 70 519 539 | 1.0545% | 0.1138 | 1785856 | 3407872 | 0.08% | 0.00% |
-| 900 | deferred_net_96x | 71 039 610 | 0.3248% | 0.0351 | 446464 | 851968 | 0.32% | 0.00% |
-| 300 | deferred_net_288x | 71 163 915 | 0.1504% | 0.0162 | 149504 | 282624 | 0.95% | 0.00% |
-| 60 | deferred_net_1440x | 71 220 418 | 0.0712% | 0.0077 | 29952 | 56832 | 4.68% | 0.00% |
-| 10 | deferred_net_8640x | 71 251 432 | 0.0276% | 0.0030 | 4992 | 9472 | 27.96% | 0.00% |
-| 10 | micro_cycle_all_w500_d10000 | 71 260 662 | 0.0147% | 0.0016 | 4672 | 9984 | 42.99% | 63.42% |
-| 10 | micro_cycle_all_w1000_d10000 | 71 262 596 | 0.0120% | 0.0013 | 4864 | 9984 | 42.04% | 62.66% |
-| 5 | micro_cycle_all_w1000_d5000 | 71 268 147 | 0.0042% | 0.0005 | 4352 | 4992 | 41.53% | 53.51% |
-| 2 | micro_cycle_all_w500_d2000 | 71 269 961 | 0.0016% | 0.0002 | 2000 | 2000 | 100.00% | 36.23% |
+| 0 | gross_real_time | 100 048 774 | 0.0000% | 0.0000 | 0 | 0 | 100.00% | 0.00% |
+| 86400 | deferred_net_1x | 83 912 531 | 16.1284% | 1.0000 | 31457280 | 60293120 | 0.00% | 0.00% |
+| 43200 | deferred_net_2x | 90 041 894 | 10.0020% | 0.6201 | 18612224 | 40894464 | 0.01% | 0.00% |
+| 21600 | deferred_net_4x | 91 374 145 | 8.6704% | 0.5376 | 10616832 | 20447232 | 0.01% | 0.00% |
+| 8640 | deferred_net_10x | 94 518 682 | 5.5274% | 0.3427 | 4259840 | 8192000 | 0.04% | 0.00% |
+| 3600 | deferred_net_24x | 96 185 300 | 3.8616% | 0.2394 | 1785856 | 3407872 | 0.08% | 0.00% |
+| 900 | deferred_net_96x | 98 577 925 | 1.4701% | 0.0912 | 446464 | 851968 | 0.31% | 0.00% |
+| 300 | deferred_net_288x | 99 086 730 | 0.9616% | 0.0596 | 149504 | 282624 | 0.93% | 0.00% |
+| 60 | deferred_net_1440x | 99 970 617 | 0.0781% | 0.0048 | 29952 | 56832 | 4.68% | 0.00% |
+| 10 | deferred_net_8640x | 100 039 501 | 0.0093% | 0.0006 | 4992 | 9472 | 27.94% | 0.00% |
+| 10 | micro_cycle_all_w500_d10000 | 100 044 334 | 0.0044% | 0.0003 | 4608 | 9984 | 43.22% | 62.58% |
+| 10 | micro_cycle_all_w1000_d10000 | 100 044 680 | 0.0041% | 0.0003 | 4800 | 9984 | 42.22% | 62.05% |
+| 5 | micro_cycle_all_w1000_d5000 | 100 048 451 | 0.0003% | 0.0000 | 4352 | 4992 | 41.69% | 50.77% |
+| 2 | micro_cycle_all_w500_d2000 | 100 049 371 | -0.0006% | -0.0000 | 2000 | 2000 | 100.00% | 36.00% |
 
 Figura: [`potential-vs-realizable/fig_potential_vs_realizable.svg`](potential-vs-realizable/fig_potential_vs_realizable.svg)
 
 ## 4. Micro-ciclos: economia × atraso
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment microcycle-sweep`._
 
 | janela (ms) | atraso máx. (ms) | economia vs UB | p50 (ms) | p95 (ms) | p99 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|---|---|
-| 500 | 2000 | 0.0016% | 2000 | 2000 | 2000 | 100.00% | 36.23% |
-| 1000 | 2000 | 0.0011% | 2000 | 2000 | 2000 | 100.00% | 32.22% |
-| 2000 | 2000 | 0.0005% | 2000 | 2000 | 2000 | 100.00% | 25.36% |
-| 5000 | 2000 | 0.0001% | 2000 | 2000 | 2000 | 100.00% | 10.04% |
-| 10000 | 2000 | 0.0000% | 2000 | 2000 | 2000 | 100.00% | 4.98% |
-| 500 | 5000 | 0.0036% | 4096 | 4992 | 4992 | 43.07% | 54.96% |
-| 1000 | 5000 | 0.0042% | 4352 | 4992 | 4992 | 41.53% | 53.51% |
-| 2000 | 5000 | 0.0044% | 4992 | 4992 | 4992 | 38.04% | 50.61% |
-| 5000 | 5000 | 0.0047% | 4992 | 4992 | 4992 | 21.96% | 41.06% |
-| 10000 | 5000 | 0.0002% | 4992 | 4992 | 4992 | 10.98% | 21.45% |
-| 500 | 10000 | 0.0147% | 4672 | 9984 | 9984 | 42.99% | 63.42% |
-| 1000 | 10000 | 0.0120% | 4864 | 9984 | 9984 | 42.04% | 62.66% |
-| 2000 | 10000 | 0.0141% | 5376 | 9984 | 9984 | 39.85% | 61.81% |
-| 5000 | 10000 | 0.0053% | 6912 | 9984 | 9984 | 23.90% | 58.44% |
-| 10000 | 10000 | 0.0078% | 9600 | 9984 | 9984 | 13.36% | 51.89% |
+| 500 | 2000 | -0.0006% | 2000 | 2000 | 2000 | 100.00% | 36.00% |
+| 1000 | 2000 | -0.0007% | 2000 | 2000 | 2000 | 100.00% | 32.85% |
+| 2000 | 2000 | 0.0002% | 2000 | 2000 | 2000 | 100.00% | 24.44% |
+| 5000 | 2000 | 0.0001% | 2000 | 2000 | 2000 | 100.00% | 10.58% |
+| 10000 | 2000 | 0.0001% | 2000 | 2000 | 2000 | 100.00% | 5.27% |
+| 500 | 5000 | 0.0019% | 4064 | 4992 | 4992 | 43.24% | 52.57% |
+| 1000 | 5000 | 0.0003% | 4352 | 4992 | 4992 | 41.69% | 50.77% |
+| 2000 | 5000 | 0.0005% | 4928 | 4992 | 4992 | 38.19% | 49.42% |
+| 5000 | 5000 | 0.0014% | 4992 | 4992 | 4992 | 22.04% | 41.11% |
+| 10000 | 5000 | 0.0009% | 4992 | 4992 | 4992 | 10.99% | 19.89% |
+| 500 | 10000 | 0.0044% | 4608 | 9984 | 9984 | 43.22% | 62.58% |
+| 1000 | 10000 | 0.0041% | 4800 | 9984 | 9984 | 42.22% | 62.05% |
+| 2000 | 10000 | 0.0027% | 5312 | 9984 | 9984 | 40.06% | 60.78% |
+| 5000 | 10000 | 0.0036% | 6848 | 9984 | 9984 | 24.00% | 57.91% |
+| 10000 | 10000 | 0.0022% | 9600 | 9984 | 9984 | 13.34% | 51.25% |
 
 Liquidez restrita (saldo inicial = fração do UB de cada participante):
 
 | fração do UB | motor | valor rejeitado | p95 (ms) | ≤ 2,8 s | valor em ciclos |
 |---|---|---|---|---|---|
-| 0.25 | gross_real_time | 22.95% | 0 | 100.00% | 0.00% |
-| 0.25 | micro_cycle_shortfall_w1000_d10000 | 23.23% | 1216 | 96.08% | 0.29% |
-| 0.25 | micro_cycle_all_w1000_d10000 | 22.43% | 9984 | 42.43% | 51.43% |
-| 0.5 | gross_real_time | 12.70% | 0 | 100.00% | 0.00% |
-| 0.5 | micro_cycle_shortfall_w1000_d10000 | 12.63% | 0 | 97.90% | 0.09% |
-| 0.5 | micro_cycle_all_w1000_d10000 | 12.46% | 9984 | 42.45% | 56.72% |
-| 0.75 | gross_real_time | 5.82% | 0 | 100.00% | 0.00% |
-| 0.75 | micro_cycle_shortfall_w1000_d10000 | 5.81% | 0 | 99.22% | 0.00% |
-| 0.75 | micro_cycle_all_w1000_d10000 | 5.82% | 9984 | 42.28% | 59.81% |
+| 0.25 | gross_real_time | 29.93% | 0 | 100.00% | 0.00% |
+| 0.25 | micro_cycle_shortfall_w1000_d10000 | 30.16% | 0 | 98.27% | 0.03% |
+| 0.25 | micro_cycle_all_w1000_d10000 | 30.23% | 9984 | 42.62% | 45.87% |
+| 0.5 | gross_real_time | 16.59% | 0 | 100.00% | 0.00% |
+| 0.5 | micro_cycle_shortfall_w1000_d10000 | 16.57% | 0 | 99.01% | 0.02% |
+| 0.5 | micro_cycle_all_w1000_d10000 | 16.52% | 9984 | 42.52% | 54.07% |
+| 0.75 | gross_real_time | 10.24% | 0 | 100.00% | 0.00% |
+| 0.75 | micro_cycle_shortfall_w1000_d10000 | 10.26% | 0 | 99.76% | 0.00% |
+| 0.75 | micro_cycle_all_w1000_d10000 | 10.25% | 9984 | 42.31% | 56.68% |
 
 Figura: [`microcycle-sweep/fig_tradeoff.svg`](microcycle-sweep/fig_tradeoff.svg)
 
 ## 5. Estresse: participante fora do ar por 30 minutos
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment stress`._
 
-Participante 0 fora de 10.0h por 30 min: 11692 pagamentos (R$ 5 866 760) adiados, em média 903 s.
+Participante 0 fora de 10.0h por 30 min: 11700 pagamentos (R$ 4 869 239) adiados, em média 896 s.
 
 | cenário | UB total (R$) | UB do participante (R$) | motor | liquidez (R$) | valor rejeitado | p95 (ms) |
 |---|---|---|---|---|---|---|
-| baseline | 71 271 128 | 3 137 734 | gross_real_time | 71 271 128 | 0.0000% | 0 |
-| baseline | 71 271 128 | 3 137 734 | micro_cycle_all_w1000_d10000 | 71 262 596 | 0.0000% | 9984 |
-| baseline | 71 271 128 | 3 137 734 | micro_cycle_shortfall_w1000_d10000 | 71 271 128 | 0.0000% | 0 |
-| baseline | 71 271 128 | 3 137 734 | deferred_net_10x | 69 592 930 | 0.0000% | 8192000 |
-| outage | 71 274 781 | 3 137 734 | gross_real_time | 71 274 781 | 0.0000% | 0 |
-| outage | 71 274 781 | 3 137 734 | micro_cycle_all_w1000_d10000 | 71 265 015 | 0.0000% | 9984 |
-| outage | 71 274 781 | 3 137 734 | micro_cycle_shortfall_w1000_d10000 | 71 274 781 | 0.0000% | 0 |
-| outage | 71 274 781 | 3 137 734 | deferred_net_10x | 69 592 930 | 0.0000% | 8192000 |
-| outage_constrained_1xUB | 71 274 781 | 3 137 734 | gross_real_time | 71 263 981 | 0.0027% | 0 |
-| outage_constrained_1xUB | 71 274 781 | 3 137 734 | micro_cycle_all_w1000_d10000 | 71 258 821 | 0.0015% | 9984 |
-| outage_constrained_1xUB | 71 274 781 | 3 137 734 | micro_cycle_shortfall_w1000_d10000 | 71 263 981 | 0.0027% | 0 |
-| outage_constrained_1xUB | 71 274 781 | 3 137 734 | deferred_net_10x | 69 592 930 | 0.0000% | 8192000 |
+| baseline | 100 048 774 | 1 521 457 | gross_real_time | 100 048 774 | 0.0000% | 0 |
+| baseline | 100 048 774 | 1 521 457 | micro_cycle_all_w1000_d10000 | 100 044 680 | 0.0000% | 9984 |
+| baseline | 100 048 774 | 1 521 457 | micro_cycle_shortfall_w1000_d10000 | 100 048 774 | 0.0000% | 0 |
+| baseline | 100 048 774 | 1 521 457 | deferred_net_10x | 94 518 682 | 0.0000% | 8192000 |
+| outage | 100 051 879 | 1 521 457 | gross_real_time | 100 051 879 | 0.0000% | 0 |
+| outage | 100 051 879 | 1 521 457 | micro_cycle_all_w1000_d10000 | 100 047 779 | 0.0000% | 9984 |
+| outage | 100 051 879 | 1 521 457 | micro_cycle_shortfall_w1000_d10000 | 100 051 879 | 0.0000% | 0 |
+| outage | 100 051 879 | 1 521 457 | deferred_net_10x | 94 518 682 | 0.0000% | 8192000 |
+| outage_constrained_1xUB | 100 051 879 | 1 521 457 | gross_real_time | 100 025 920 | 0.0061% | 0 |
+| outage_constrained_1xUB | 100 051 879 | 1 521 457 | micro_cycle_all_w1000_d10000 | 100 017 119 | 0.0074% | 9984 |
+| outage_constrained_1xUB | 100 051 879 | 1 521 457 | micro_cycle_shortfall_w1000_d10000 | 100 026 562 | 0.0059% | 0 |
+| outage_constrained_1xUB | 100 051 879 | 1 521 457 | deferred_net_10x | 94 518 682 | 0.0000% | 8192000 |
 
 Estresse redesenhado (REVIEW 39): quem cai e quando. Para cada caso, o efeito sobre a liquidez necessária dos **outros** participantes (UB com liquidez ilimitada) e, com saldo inicial igual ao UB de base de cada um, o valor rejeitado por motor (100% reenviado na volta; ASSUMPTION).
 
 | alvo | part. | posição líquida (R$) | início | pagamentos adiados | Δ UB total | Δ UB dos outros (líq.) | outros com UB maior | maior aumento (R$) | motor | valor rejeitado |
 |---|---|---|---|---|---|---|---|---|---|---|
-| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | gross_real_time | 0.0027% |
-| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | micro_cycle_shortfall_w1000_d10000 | 0.0027% |
-| largest | 0 | 6 200 684 | 10:00 | 11692 | 0.0051% | 0.0054% | 4 | 3639.74 | micro_cycle_all_w1000_d10000 | 0.0015% |
-| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | gross_real_time | 0.0000% |
-| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
-| largest | 0 | 6 200 684 | 18:00 | 13856 | -0.0003% | -0.0003% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0001% |
-| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | gross_real_time | 0.0467% |
-| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | micro_cycle_shortfall_w1000_d10000 | 0.0467% |
-| largest | 0 | 6 200 684 | before_own_peak(10:39) | 11921 | 0.0000% | 0.0000% | 1 | 7.28 | micro_cycle_all_w1000_d10000 | 0.0494% |
-| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | gross_real_time | 0.0022% |
-| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | micro_cycle_shortfall_w1000_d10000 | 0.0009% |
-| top_net_payer | 1 | -37 020 452 | 10:00 | 5532 | 0.0029% | 0.0061% | 3 | 1599.88 | micro_cycle_all_w1000_d10000 | 0.0010% |
-| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | gross_real_time | 0.0005% |
-| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | micro_cycle_shortfall_w1000_d10000 | 0.0005% |
-| top_net_payer | 1 | -37 020 452 | 18:00 | 6537 | -0.0000% | -0.0000% | 1 | 131.86 | micro_cycle_all_w1000_d10000 | 0.0006% |
-| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | gross_real_time | 0.0239% |
-| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | micro_cycle_shortfall_w1000_d10000 | 0.0221% |
-| top_net_payer | 1 | -37 020 452 | before_own_peak(23:29) | 2162 | 0.0301% | 0.0627% | 8 | 10503.51 | micro_cycle_all_w1000_d10000 | 0.0231% |
-| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | gross_real_time | 0.0000% |
-| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
-| top_net_receiver | 7 | 11 122 741 | 10:00 | 3366 | -0.0086% | -0.0086% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0001% |
-| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | gross_real_time | 0.0005% |
-| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | micro_cycle_shortfall_w1000_d10000 | 0.0005% |
-| top_net_receiver | 7 | 11 122 741 | 18:00 | 4009 | 0.0001% | 0.0001% | 1 | 85.99 | micro_cycle_all_w1000_d10000 | 0.0006% |
-| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | gross_real_time | 0.0025% |
-| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_shortfall_w1000_d10000 | 0.0025% |
-| top_net_receiver | 7 | 11 122 741 | before_own_peak(01:14) | 373 | 0.0000% | 0.0000% | 1 | 8.59 | micro_cycle_all_w1000_d10000 | 0.0822% |
+| largest | 0 | 3 214 674 | 10:00 | 11700 | 0.0031% | 0.0032% | 2 | 3099.19 | gross_real_time | 0.0061% |
+| largest | 0 | 3 214 674 | 10:00 | 11700 | 0.0031% | 0.0032% | 2 | 3099.19 | micro_cycle_shortfall_w1000_d10000 | 0.0059% |
+| largest | 0 | 3 214 674 | 10:00 | 11700 | 0.0031% | 0.0032% | 2 | 3099.19 | micro_cycle_all_w1000_d10000 | 0.0074% |
+| largest | 0 | 3 214 674 | 18:00 | 13759 | -0.0007% | -0.0007% | 1 | 43.56 | gross_real_time | 0.0013% |
+| largest | 0 | 3 214 674 | 18:00 | 13759 | -0.0007% | -0.0007% | 1 | 43.56 | micro_cycle_shortfall_w1000_d10000 | 0.0013% |
+| largest | 0 | 3 214 674 | 18:00 | 13759 | -0.0007% | -0.0007% | 1 | 43.56 | micro_cycle_all_w1000_d10000 | 0.0078% |
+| largest | 0 | 3 214 674 | before_own_peak(07:56) | 7102 | 0.0006% | 0.0006% | 4 | 508.39 | gross_real_time | 0.0256% |
+| largest | 0 | 3 214 674 | before_own_peak(07:56) | 7102 | 0.0006% | 0.0006% | 4 | 508.39 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| largest | 0 | 3 214 674 | before_own_peak(07:56) | 7102 | 0.0006% | 0.0006% | 4 | 508.39 | micro_cycle_all_w1000_d10000 | 0.0467% |
+| top_net_payer | 1 | -43 456 953 | 10:00 | 5446 | 0.0002% | 0.0004% | 1 | 238.19 | gross_real_time | 0.0005% |
+| top_net_payer | 1 | -43 456 953 | 10:00 | 5446 | 0.0002% | 0.0004% | 1 | 238.19 | micro_cycle_shortfall_w1000_d10000 | 0.0005% |
+| top_net_payer | 1 | -43 456 953 | 10:00 | 5446 | 0.0002% | 0.0004% | 1 | 238.19 | micro_cycle_all_w1000_d10000 | 0.0070% |
+| top_net_payer | 1 | -43 456 953 | 18:00 | 6599 | 0.0000% | 0.0000% | 0 | 0.00 | gross_real_time | 0.0000% |
+| top_net_payer | 1 | -43 456 953 | 18:00 | 6599 | 0.0000% | 0.0000% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| top_net_payer | 1 | -43 456 953 | 18:00 | 6599 | 0.0000% | 0.0000% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0065% |
+| top_net_payer | 1 | -43 456 953 | before_own_peak(23:27) | 2099 | 0.0004% | 0.0007% | 4 | 376.50 | gross_real_time | 0.0007% |
+| top_net_payer | 1 | -43 456 953 | before_own_peak(23:27) | 2099 | 0.0004% | 0.0007% | 4 | 376.50 | micro_cycle_shortfall_w1000_d10000 | 0.0007% |
+| top_net_payer | 1 | -43 456 953 | before_own_peak(23:27) | 2099 | 0.0004% | 0.0007% | 4 | 376.50 | micro_cycle_all_w1000_d10000 | 0.0021% |
+| top_net_receiver | 2 | 14 930 000 | 10:00 | 6743 | -0.0016% | -0.0016% | 0 | 0.00 | gross_real_time | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | 10:00 | 6743 | -0.0016% | -0.0016% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | 10:00 | 6743 | -0.0016% | -0.0016% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0065% |
+| top_net_receiver | 2 | 14 930 000 | 18:00 | 7936 | -0.0015% | -0.0015% | 0 | 0.00 | gross_real_time | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | 18:00 | 7936 | -0.0015% | -0.0015% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | 18:00 | 7936 | -0.0015% | -0.0015% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0065% |
+| top_net_receiver | 2 | 14 930 000 | before_own_peak(00:00) | 1287 | -0.0002% | -0.0002% | 0 | 0.00 | gross_real_time | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | before_own_peak(00:00) | 1287 | -0.0002% | -0.0002% | 0 | 0.00 | micro_cycle_shortfall_w1000_d10000 | 0.0000% |
+| top_net_receiver | 2 | 14 930 000 | before_own_peak(00:00) | 1287 | -0.0002% | -0.0002% | 0 | 0.00 | micro_cycle_all_w1000_d10000 | 0.0065% |
 
 ## 6. Lógica do estudo finlandês: ciclos fixos vs instantâneo
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment finland-replication`._
 
 Razão liquidez instantânea / liquidez com N ciclos por dia (média sobre sementes):
 
 | σ viés | ciclos/dia | razão média | dp | mín | máx | sementes |
 |---|---|---|---|---|---|---|
-| 0 | 1 | 1.496 | 0.177 | 1.327 | 1.691 | 5 |
-| 0 | 2 | 1.301 | 0.139 | 1.138 | 1.487 | 5 |
-| 0 | 4 | 1.188 | 0.058 | 1.111 | 1.235 | 5 |
-| 0 | 6 | 1.137 | 0.054 | 1.084 | 1.212 | 5 |
-| 0 | 10 | 1.113 | 0.035 | 1.071 | 1.152 | 5 |
-| 0 | 24 | 1.046 | 0.010 | 1.036 | 1.058 | 5 |
-| 0 | 48 | 1.031 | 0.008 | 1.021 | 1.040 | 5 |
-| 0.2 | 1 | 1.199 | 0.047 | 1.130 | 1.252 | 5 |
-| 0.2 | 2 | 1.133 | 0.035 | 1.092 | 1.165 | 5 |
-| 0.2 | 4 | 1.093 | 0.020 | 1.063 | 1.112 | 5 |
-| 0.2 | 6 | 1.072 | 0.021 | 1.043 | 1.096 | 5 |
-| 0.2 | 10 | 1.046 | 0.012 | 1.027 | 1.056 | 5 |
-| 0.2 | 24 | 1.031 | 0.019 | 1.018 | 1.063 | 5 |
-| 0.2 | 48 | 1.015 | 0.005 | 1.010 | 1.022 | 5 |
-| 0.4 | 1 | 1.095 | 0.049 | 1.036 | 1.169 | 5 |
-| 0.4 | 2 | 1.066 | 0.034 | 1.032 | 1.122 | 5 |
-| 0.4 | 4 | 1.044 | 0.016 | 1.026 | 1.069 | 5 |
-| 0.4 | 6 | 1.039 | 0.014 | 1.023 | 1.061 | 5 |
-| 0.4 | 10 | 1.026 | 0.007 | 1.015 | 1.034 | 5 |
-| 0.4 | 24 | 1.021 | 0.013 | 1.010 | 1.041 | 5 |
-| 0.4 | 48 | 1.008 | 0.002 | 1.006 | 1.009 | 5 |
+| 0 | 1 | 1.499 | 0.155 | 1.322 | 1.676 | 5 |
+| 0 | 2 | 1.334 | 0.089 | 1.235 | 1.454 | 5 |
+| 0 | 4 | 1.254 | 0.069 | 1.193 | 1.368 | 5 |
+| 0 | 6 | 1.188 | 0.068 | 1.153 | 1.309 | 5 |
+| 0 | 10 | 1.120 | 0.034 | 1.091 | 1.176 | 5 |
+| 0 | 24 | 1.068 | 0.019 | 1.051 | 1.091 | 5 |
+| 0 | 48 | 1.047 | 0.008 | 1.037 | 1.055 | 5 |
+| 0.2 | 1 | 1.287 | 0.087 | 1.225 | 1.441 | 5 |
+| 0.2 | 2 | 1.188 | 0.065 | 1.139 | 1.297 | 5 |
+| 0.2 | 4 | 1.135 | 0.040 | 1.093 | 1.193 | 5 |
+| 0.2 | 6 | 1.107 | 0.029 | 1.089 | 1.158 | 5 |
+| 0.2 | 10 | 1.078 | 0.013 | 1.066 | 1.095 | 5 |
+| 0.2 | 24 | 1.045 | 0.012 | 1.034 | 1.062 | 5 |
+| 0.2 | 48 | 1.029 | 0.011 | 1.019 | 1.048 | 5 |
+| 0.4 | 1 | 1.177 | 0.100 | 1.093 | 1.340 | 5 |
+| 0.4 | 2 | 1.129 | 0.075 | 1.070 | 1.259 | 5 |
+| 0.4 | 4 | 1.097 | 0.051 | 1.044 | 1.179 | 5 |
+| 0.4 | 6 | 1.072 | 0.034 | 1.040 | 1.128 | 5 |
+| 0.4 | 10 | 1.048 | 0.014 | 1.034 | 1.065 | 5 |
+| 0.4 | 24 | 1.027 | 0.009 | 1.019 | 1.040 | 5 |
+| 0.4 | 48 | 1.016 | 0.006 | 1.011 | 1.025 | 5 |
 
 Figura: [`finland-replication/fig_finland.svg`](finland-replication/fig_finland.svg)
 
 ## 7. Robustez: sementes, escala, comprimento do ciclo e limite de atraso
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment robustness`._
 
 R1 — várias sementes × viés recebedor (média, desvio-padrão e intervalo de 95%; limite = teto para qualquer mecanismo com esse atraso máximo):
 
 | σ viés | motor | sementes | economia média | dp (p.p.) | IC 95% | limite (janela) | LB/UB | limite apertado [IC 95%] | obtido / apertado |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | micro:all:500:2000 | 10 | 0.0057% | 0.0065 | [0.0010; 0.0103]% | 2.175% | 0.697 | 0.0301% [0.0213; 0.0390] | 0.188 |
-| 0 | micro:all:500:10000 | 10 | 0.0178% | 0.0329 | [-0.0057; 0.0414]% | 3.338% | 0.697 | 0.1376% [0.1195; 0.1557] | 0.130 |
-| 0 | deferred:8640 | 10 | 0.0563% | 0.0158 | [0.0450; 0.0676]% | 3.338% | 0.697 | 0.1376% [0.1195; 0.1557] | 0.409 |
-| 0 | deferred:96 | 10 | 1.9168% | 0.4515 | [1.5938; 2.2397]% | 25.450% | 0.697 | 9.6621% [7.9525; 11.3716] | 0.198 |
-| 0 | deferred:1 | 10 | 30.3105% | 7.2141 | [25.1502; 35.4708]% | 727.995% | 0.697 | 30.3105% [25.1502; 35.4708] | 1.000 |
-| 0.4 | micro:all:500:2000 | 10 | 0.0006% | 0.0009 | [0.0000; 0.0013]% | 0.540% | 0.922 | 0.0089% [0.0038; 0.0140] | 0.070 |
-| 0.4 | micro:all:500:10000 | 10 | 0.0116% | 0.0051 | [0.0079; 0.0152]% | 0.800% | 0.922 | 0.0406% [0.0249; 0.0563] | 0.285 |
-| 0.4 | deferred:8640 | 10 | 0.0185% | 0.0079 | [0.0129; 0.0242]% | 0.800% | 0.922 | 0.0406% [0.0249; 0.0563] | 0.457 |
-| 0.4 | deferred:96 | 10 | 0.5021% | 0.1736 | [0.3779; 0.6262]% | 8.188% | 0.922 | 2.3614% [1.2329; 3.4900] | 0.213 |
-| 0.4 | deferred:1 | 10 | 7.8040% | 4.6106 | [4.5060; 11.1020]% | 344.062% | 0.922 | 7.8040% [4.5060; 11.1020] | 1.000 |
-| 0.8 | micro:all:500:2000 | 10 | 0.0002% | 0.0006 | [-0.0002; 0.0007]% | 0.643% | 0.965 | 0.0038% [0.0008; 0.0068] | 0.062 |
-| 0.8 | micro:all:500:10000 | 10 | 0.0033% | 0.0040 | [0.0005; 0.0062]% | 0.696% | 0.965 | 0.0180% [0.0091; 0.0269] | 0.185 |
-| 0.8 | deferred:8640 | 10 | 0.0080% | 0.0050 | [0.0045; 0.0116]% | 0.696% | 0.965 | 0.0180% [0.0091; 0.0269] | 0.445 |
-| 0.8 | deferred:96 | 10 | 0.3231% | 0.3655 | [0.0617; 0.5845]% | 4.035% | 0.965 | 1.1031% [0.5214; 1.6847] | 0.293 |
-| 0.8 | deferred:1 | 10 | 3.4763% | 2.6393 | [1.5884; 5.3642]% | 222.628% | 0.965 | 3.4763% [1.5884; 5.3642] | 1.000 |
-| 1 | micro:all:500:2000 | 10 | -0.0006% | 0.0019 | [-0.0019; 0.0008]% | 0.769% | 0.977 | 0.0026% [0.0005; 0.0046] | -0.217 |
-| 1 | micro:all:500:10000 | 10 | 0.0039% | 0.0063 | [-0.0006; 0.0085]% | 0.889% | 0.977 | 0.0145% [0.0075; 0.0215] | 0.273 |
-| 1 | deferred:8640 | 10 | 0.0055% | 0.0032 | [0.0032; 0.0078]% | 0.889% | 0.977 | 0.0145% [0.0075; 0.0215] | 0.380 |
-| 1 | deferred:96 | 10 | 0.2047% | 0.2217 | [0.0461; 0.3632]% | 3.627% | 0.977 | 0.6635% [0.3334; 0.9935] | 0.308 |
-| 1 | deferred:1 | 10 | 2.3371% | 1.7073 | [1.1158; 3.5584]% | 188.333% | 0.977 | 2.3371% [1.1158; 3.5584] | 1.000 |
+| 0 | micro:all:500:2000 | 10 | 0.0000% | 0.0025 | [-0.0018; 0.0018]% | 2.354% | 0.683 | 0.0108% [0.0081; 0.0135] | 0.003 |
+| 0 | micro:all:500:10000 | 10 | 0.0108% | 0.0138 | [0.0010; 0.0207]% | 3.137% | 0.683 | 0.0755% [0.0441; 0.1069] | 0.144 |
+| 0 | deferred:8640 | 10 | 0.0410% | 0.0428 | [0.0104; 0.0716]% | 3.137% | 0.683 | 0.0755% [0.0441; 0.1069] | 0.543 |
+| 0 | deferred:96 | 10 | 2.2150% | 0.5840 | [1.7973; 2.6327]% | 24.273% | 0.683 | 7.5284% [6.5653; 8.4914] | 0.294 |
+| 0 | deferred:1 | 10 | 31.7336% | 5.8523 | [27.5474; 35.9197]% | 513.545% | 0.683 | 31.7336% [27.5474; 35.9197] | 1.000 |
+| 0.4 | micro:all:500:2000 | 10 | 0.0007% | 0.0016 | [-0.0004; 0.0018]% | 1.028% | 0.856 | 0.0036% [0.0022; 0.0049] | 0.194 |
+| 0.4 | micro:all:500:10000 | 10 | 0.0017% | 0.0144 | [-0.0086; 0.0120]% | 1.297% | 0.856 | 0.0284% [0.0158; 0.0410] | 0.061 |
+| 0.4 | deferred:8640 | 10 | 0.0132% | 0.0093 | [0.0065; 0.0198]% | 1.297% | 0.856 | 0.0284% [0.0158; 0.0410] | 0.464 |
+| 0.4 | deferred:96 | 10 | 0.8478% | 0.3510 | [0.5967; 1.0989]% | 12.945% | 0.856 | 3.0831% [2.3185; 3.8476] | 0.275 |
+| 0.4 | deferred:1 | 10 | 14.4417% | 5.2141 | [10.7120; 18.1714]% | 309.840% | 0.856 | 14.4417% [10.7120; 18.1714] | 1.000 |
+| 0.8 | micro:all:500:2000 | 10 | 0.0002% | 0.0003 | [-0.0000; 0.0004]% | 0.896% | 0.939 | 0.0021% [0.0011; 0.0031] | 0.076 |
+| 0.8 | micro:all:500:10000 | 10 | -0.0012% | 0.0075 | [-0.0065; 0.0042]% | 1.447% | 0.939 | 0.0174% [0.0059; 0.0288] | -0.068 |
+| 0.8 | deferred:8640 | 10 | 0.0095% | 0.0154 | [-0.0015; 0.0206]% | 1.447% | 0.939 | 0.0174% [0.0059; 0.0288] | 0.549 |
+| 0.8 | deferred:96 | 10 | 0.4718% | 0.2563 | [0.2885; 0.6552]% | 7.547% | 0.939 | 1.5047% [0.9007; 2.1086] | 0.314 |
+| 0.8 | deferred:1 | 10 | 6.1194% | 2.5409 | [4.3019; 7.9369]% | 209.166% | 0.939 | 6.1194% [4.3019; 7.9369] | 1.000 |
+| 1 | micro:all:500:2000 | 10 | 0.0017% | 0.0041 | [-0.0012; 0.0047]% | 0.471% | 0.954 | 0.0031% [0.0003; 0.0059] | 0.560 |
+| 1 | micro:all:500:10000 | 10 | 0.0007% | 0.0071 | [-0.0044; 0.0058]% | 0.779% | 0.954 | 0.0101% [0.0061; 0.0142] | 0.071 |
+| 1 | deferred:8640 | 10 | 0.0051% | 0.0042 | [0.0020; 0.0081]% | 0.779% | 0.954 | 0.0101% [0.0061; 0.0142] | 0.500 |
+| 1 | deferred:96 | 10 | 0.3008% | 0.1302 | [0.2077; 0.3939]% | 4.983% | 0.954 | 1.0588% [0.6322; 1.4855] | 0.284 |
+| 1 | deferred:1 | 10 | 4.5841% | 2.0673 | [3.1054; 6.0629]% | 182.947% | 0.954 | 4.5841% [3.1054; 6.0629] | 1.000 |
 
 R2 — escala (mesmo cenário, de 1 a 30 milhões de pagamentos por dia):
 
 | pagamentos/dia | fator de escala | motor | economia vs UB | limite (janela) | UB / volume | limite apertado |
 |---|---|---|---|---|---|---|
-| 1 000 000 | 239.0 | micro:all:500:2000 | 0.0016% | 0.567% | 0.1608 | 0.0062% |
-| 1 000 000 | 239.0 | micro:all:500:10000 | 0.0147% | 0.761% | 0.1608 | 0.0541% |
-| 1 000 000 | 239.0 | deferred:8640 | 0.0276% | 0.761% | 0.1608 | 0.0541% |
-| 1 000 000 | 239.0 | deferred:96 | 0.3248% | 7.956% | 0.1608 | 3.1979% |
-| 1 000 000 | 239.0 | deferred:1 | 9.2669% | 275.951% | 0.1608 | 9.2669% |
-| 3 000 000 | 79.7 | micro:all:500:2000 | 0.0005% | 0.388% | 0.1501 | 0.0075% |
-| 3 000 000 | 79.7 | micro:all:500:10000 | 0.0027% | 0.439% | 0.1501 | 0.0398% |
-| 3 000 000 | 79.7 | deferred:8640 | 0.0092% | 0.439% | 0.1501 | 0.0398% |
-| 3 000 000 | 79.7 | deferred:96 | 0.4132% | 6.190% | 0.1501 | 2.7500% |
-| 3 000 000 | 79.7 | deferred:1 | 5.7640% | 233.968% | 0.1501 | 5.7640% |
-| 10 000 000 | 23.9 | micro:all:500:2000 | 0.0002% | 0.219% | 0.1398 | 0.0042% |
-| 10 000 000 | 23.9 | micro:all:500:10000 | -0.0004% | 0.276% | 0.1398 | 0.0203% |
-| 10 000 000 | 23.9 | deferred:8640 | 0.0078% | 0.276% | 0.1398 | 0.0203% |
-| 10 000 000 | 23.9 | deferred:96 | 0.2188% | 3.763% | 0.1398 | 1.0648% |
-| 10 000 000 | 23.9 | deferred:1 | 2.9492% | 257.365% | 0.1398 | 2.9492% |
-| 30 000 000 | 8.0 | micro:all:500:2000 | 0.0001% | 0.080% | 0.1361 | 0.0047% |
-| 30 000 000 | 8.0 | micro:all:500:10000 | -0.0016% | 0.271% | 0.1361 | 0.0242% |
-| 30 000 000 | 8.0 | deferred:8640 | 0.0052% | 0.271% | 0.1361 | 0.0242% |
-| 30 000 000 | 8.0 | deferred:96 | 0.1610% | 3.405% | 0.1361 | 1.0736% |
-| 30 000 000 | 8.0 | deferred:1 | 1.6789% | 248.574% | 0.1361 | 1.6789% |
+| 1 000 000 | 239.0 | micro:all:500:2000 | -0.0006% | 0.391% | 0.2182 | 0.0018% |
+| 1 000 000 | 239.0 | micro:all:500:10000 | 0.0044% | 0.498% | 0.2182 | 0.0231% |
+| 1 000 000 | 239.0 | deferred:8640 | 0.0093% | 0.498% | 0.2182 | 0.0231% |
+| 1 000 000 | 239.0 | deferred:96 | 1.4701% | 12.861% | 0.2182 | 3.6811% |
+| 1 000 000 | 239.0 | deferred:1 | 16.1284% | 213.377% | 0.2182 | 16.1284% |
+| 3 000 000 | 79.7 | micro:all:500:2000 | -0.0001% | 0.462% | 0.1725 | 0.0041% |
+| 3 000 000 | 79.7 | micro:all:500:10000 | -0.0055% | 0.773% | 0.1725 | 0.0271% |
+| 3 000 000 | 79.7 | deferred:8640 | 0.0099% | 0.773% | 0.1725 | 0.0271% |
+| 3 000 000 | 79.7 | deferred:96 | 1.6997% | 9.516% | 0.1725 | 4.7531% |
+| 3 000 000 | 79.7 | deferred:1 | 14.9753% | 332.995% | 0.1725 | 14.9753% |
+| 10 000 000 | 23.9 | micro:all:500:2000 | -0.0013% | 0.159% | 0.1470 | 0.0130% |
+| 10 000 000 | 23.9 | micro:all:500:10000 | 0.0152% | 0.225% | 0.1470 | 0.0715% |
+| 10 000 000 | 23.9 | deferred:8640 | 0.0147% | 0.225% | 0.1470 | 0.0715% |
+| 10 000 000 | 23.9 | deferred:96 | 0.7042% | 8.680% | 0.1470 | 3.4277% |
+| 10 000 000 | 23.9 | deferred:1 | 7.5571% | 260.986% | 0.1470 | 7.5571% |
+| 30 000 000 | 8.0 | micro:all:500:2000 | 0.0012% | 0.105% | 0.1426 | 0.0077% |
+| 30 000 000 | 8.0 | micro:all:500:10000 | -0.0072% | 0.183% | 0.1426 | 0.0329% |
+| 30 000 000 | 8.0 | deferred:8640 | 0.0131% | 0.183% | 0.1426 | 0.0329% |
+| 30 000 000 | 8.0 | deferred:96 | 0.3745% | 5.817% | 0.1426 | 1.5625% |
+| 30 000 000 | 8.0 | deferred:1 | 4.0334% | 260.634% | 0.1426 | 4.0334% |
 
 R3 — comprimento máximo do micro-ciclo (janela 0,5 s, atraso 10 s):
 
 | comprimento máx. | economia vs UB | valor em ciclos |
 |---|---|---|
-| 2 | 0.0155% | 45.45% |
-| 3 | 0.0100% | 61.08% |
-| 6 | 0.0147% | 63.42% |
-| 10 | 0.0145% | 63.47% |
+| 2 | 0.0014% | 43.00% |
+| 3 | 0.0038% | 58.47% |
+| 6 | 0.0044% | 62.58% |
+| 10 | 0.0042% | 62.66% |
 
 R5 — razão por participante: liquidez instantânea / liquidez com N ciclos por dia:
 
 | ciclos/dia | participantes com razão | só precisam no instantâneo | não precisam | p10 | mediana | p90 | máx. |
 |---|---|---|---|---|---|---|---|
-| 1 | 78 | 104 | 18 | 1.001 | 1.161 | 2.897 | 19.11 |
-| 10 | 159 | 23 | 18 | 1.000 | 1.125 | 2.777 | 22.01 |
+| 1 | 76 | 110 | 14 | 1.001 | 1.061 | 2.246 | 20.03 |
+| 10 | 162 | 24 | 14 | 1.000 | 1.061 | 2.765 | 50.92 |
 
 Figura: [`robustness/fig_scale.svg`](robustness/fig_scale.svg)
 
 ## 8. Calibração do viés recebedor no BCB WP 619 (W2b)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment bias-calibration`._
 
 Quartis da razão de pagamentos compensáveis por banco (WP 619, eq. 3.2) para cada σ e multiplicador das IPs, média de 3 sementes. Alvo, com dados reais do Pix: p25 18–45%, mediana 57–80%, p75 73–90%.
 
 | σ viés | mult. IP | p25 | mediana | p75 | quartis dentro do alvo | perda (p.p.²) | LB/UB |
 |---|---|---|---|---|---|---|---|
-| 0.4 | 1.3 | 64.3% | 80.3% | 91.2% | 0 | 1307.3 | 0.891 |
-| 0.4 | 2 | 59.2% | 76.0% | 88.4% | 2 | 874.2 | 0.895 |
-| 0.4 | 3 | 52.1% | 70.6% | 85.6% | 2 | 445.9 | 0.911 |
-| 0.6 | 1.3 | 54.7% | 73.4% | 88.4% | 2 | 611.8 | 0.934 |
-| 0.6 | 2 | 53.7% | 71.5% | 85.6% | 2 | 517.0 | 0.934 |
-| 0.6 | 3 | 49.0% | 66.6% | 84.2% | 2 | 317.3 | 0.944 |
-| 0.8 | 1.3 | 45.7% | 67.0% | 85.5% | 2 | 219.9 | 0.957 |
-| 0.8 | 2 | 44.5% | 66.3% | 84.7% | 3 | 183.8 | 0.955 |
-| 0.8 | 3 | 41.9% | 63.7% | 81.7% | 3 | 130.6 | 0.959 |
-| 1 | 1.3 | 36.2% | 61.1% | 83.3% | 3 | 79.5 | 0.966 |
-| 1 | 2 | 36.6% | 59.2% | 82.6% | 3 | 113.5 | 0.964 |
-| 1 | 3 | 34.5% | 57.6% | 78.8% | 3 | 134.7 | 0.965 |
-| 1.2 | 1.3 | 27.8% | 55.4% | 78.8% | 2 | 192.4 | 0.976 |
-| 1.2 | 2 | 29.3% | 54.3% | 81.0% | 2 | 206.6 | 0.971 |
-| 1.2 | 3 | 29.2% | 52.6% | 78.6% | 2 | 266.4 | 0.973 |
-| 1.5 | 1.3 | 17.6% | 46.3% | 72.3% | 0 | 769.8 | 0.980 |
-| 1.5 | 2 | 19.2% | 45.9% | 76.0% | 2 | 691.7 | 0.982 |
-| 1.5 | 3 | 19.6% | 45.2% | 76.5% | 2 | 711.2 | 0.979 |
-| 2 | 1.3 | 7.5% | 29.8% | 60.9% | 0 | 2499.1 | 0.986 |
-| 2 | 2 | 8.1% | 32.7% | 62.6% | 0 | 2189.2 | 0.987 |
-| 2 | 3 | 8.2% | 33.2% | 64.6% | 0 | 2072.2 | 0.988 |
-| 2.5 | 1.3 | 2.5% | 16.5% | 49.8% | 0 | 4550.5 | 0.993 |
-| 2.5 | 2 | 2.7% | 19.1% | 50.9% | 0 | 4210.9 | 0.993 |
-| 2.5 | 3 | 2.9% | 21.1% | 52.4% | 0 | 3911.8 | 0.994 |
+| 0.4 | 1.3 | 50.3% | 70.6% | 85.1% | 2 | 369.1 | 0.831 |
+| 0.4 | 2 | 45.4% | 66.2% | 84.1% | 2 | 204.9 | 0.836 |
+| 0.4 | 3 | 39.7% | 61.3% | 81.8% | 3 | 119.3 | 0.840 |
+| 0.6 | 1.3 | 44.0% | 64.4% | 81.7% | 3 | 172.9 | 0.885 |
+| 0.6 | 2 | 42.0% | 61.9% | 80.4% | 3 | 154.6 | 0.879 |
+| 0.6 | 3 | 36.1% | 57.3% | 79.1% | 3 | 152.8 | 0.887 |
+| 0.8 | 1.3 | 37.4% | 59.4% | 79.3% | 3 | 123.0 | 0.922 |
+| 0.8 | 2 | 36.0% | 57.6% | 76.6% | 3 | 163.2 | 0.928 |
+| 0.8 | 3 | 32.3% | 54.0% | 75.8% | 2 | 244.5 | 0.920 |
+| 1 | 1.3 | 29.8% | 53.0% | 77.4% | 2 | 261.0 | 0.945 |
+| 1 | 2 | 30.3% | 52.7% | 74.9% | 2 | 293.9 | 0.943 |
+| 1 | 3 | 28.6% | 51.8% | 73.1% | 2 | 356.1 | 0.942 |
+| 1.2 | 1.3 | 22.2% | 45.7% | 74.8% | 2 | 650.4 | 0.945 |
+| 1.2 | 2 | 24.3% | 46.9% | 73.1% | 2 | 588.8 | 0.945 |
+| 1.2 | 3 | 23.1% | 45.9% | 73.0% | 2 | 650.5 | 0.948 |
+| 1.5 | 1.3 | 14.3% | 37.3% | 69.0% | 0 | 1424.2 | 0.965 |
+| 1.5 | 2 | 14.8% | 38.9% | 71.2% | 0 | 1263.8 | 0.966 |
+| 1.5 | 3 | 15.0% | 37.4% | 69.9% | 0 | 1376.0 | 0.969 |
+| 2 | 1.3 | 5.2% | 23.8% | 55.9% | 0 | 3346.0 | 0.984 |
+| 2 | 2 | 5.9% | 24.4% | 59.6% | 0 | 3079.5 | 0.983 |
+| 2 | 3 | 6.0% | 26.5% | 60.8% | 0 | 2841.3 | 0.983 |
+| 2.5 | 1.3 | 1.4% | 13.5% | 42.2% | 0 | 5474.2 | 0.992 |
+| 2.5 | 2 | 1.5% | 15.1% | 44.1% | 0 | 5147.8 | 0.990 |
+| 2.5 | 3 | 1.6% | 15.7% | 48.1% | 0 | 4797.8 | 0.992 |
 
-Melhor ajuste: σ = 1, multiplicador das IPs = 1.3 (p25 36.2%, mediana 61.1%, p75 83.3%).
+Melhor ajuste: σ = 0.4, multiplicador das IPs = 3 (p25 39.7%, mediana 61.3%, p75 81.8%).
 
 ## 9. Heterogeneidade intradiária e escala (W2, critério de morte K1)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment heterogeneity`._
 
-Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 e no σ calibrado:
+Perfis intradiários por classe de instituição com intensidade λ (0 = um perfil para todos, 1 = perfis completos), em σ = 0,4 (o ajuste ao WP 619 desde a D30) e em σ = 1,0 (desequilíbrio maior):
 
 | σ viés | λ | pagamentos/dia | motor | economia vs UB | limite (janela) | LB/UB | limite apertado |
 |---|---|---|---|---|---|---|---|
-| 0.4 | 0 | 1 000 000 | micro:all:500:10000 | 0.0147% | 0.761% | 0.907 | 0.0541% |
-| 0.4 | 0 | 1 000 000 | deferred:8640 | 0.0276% | 0.761% | 0.907 | 0.0541% |
-| 0.4 | 0 | 1 000 000 | deferred:96 | 0.3248% | 7.956% | 0.907 | 3.1979% |
-| 0.4 | 0 | 1 000 000 | deferred:1 | 9.2669% | 275.951% | 0.907 | 9.2669% |
-| 0.4 | 0 | 10 000 000 | micro:all:500:10000 | -0.0004% | 0.276% | 0.971 | 0.0203% |
-| 0.4 | 0 | 10 000 000 | deferred:8640 | 0.0078% | 0.276% | 0.971 | 0.0203% |
-| 0.4 | 0 | 10 000 000 | deferred:96 | 0.2188% | 3.763% | 0.971 | 1.0648% |
-| 0.4 | 0 | 10 000 000 | deferred:1 | 2.9492% | 257.365% | 0.971 | 2.9492% |
-| 0.4 | 0 | 30 000 000 | micro:all:500:10000 | -0.0016% | 0.271% | 0.983 | 0.0242% |
-| 0.4 | 0 | 30 000 000 | deferred:8640 | 0.0052% | 0.271% | 0.983 | 0.0242% |
-| 0.4 | 0 | 30 000 000 | deferred:96 | 0.1610% | 3.405% | 0.983 | 1.0736% |
-| 0.4 | 0 | 30 000 000 | deferred:1 | 1.6789% | 248.574% | 0.983 | 1.6789% |
-| 0.4 | 0.5 | 1 000 000 | micro:all:500:10000 | 0.0172% | 2.550% | 0.852 | 0.0670% |
-| 0.4 | 0.5 | 1 000 000 | deferred:8640 | 0.0335% | 2.550% | 0.852 | 0.0670% |
-| 0.4 | 0.5 | 1 000 000 | deferred:96 | 1.2077% | 15.574% | 0.852 | 5.6440% |
-| 0.4 | 0.5 | 1 000 000 | deferred:1 | 14.7590% | 304.849% | 0.852 | 14.7590% |
-| 0.4 | 0.5 | 10 000 000 | micro:all:500:10000 | -0.0018% | 0.337% | 0.933 | 0.0385% |
-| 0.4 | 0.5 | 10 000 000 | deferred:8640 | 0.0101% | 0.337% | 0.933 | 0.0385% |
-| 0.4 | 0.5 | 10 000 000 | deferred:96 | 0.3752% | 5.998% | 0.933 | 3.1695% |
-| 0.4 | 0.5 | 10 000 000 | deferred:1 | 6.7259% | 272.271% | 0.933 | 6.7259% |
-| 0.4 | 0.5 | 30 000 000 | micro:all:500:10000 | -0.0060% | 0.464% | 0.933 | 0.0401% |
-| 0.4 | 0.5 | 30 000 000 | deferred:8640 | 0.0053% | 0.464% | 0.933 | 0.0401% |
-| 0.4 | 0.5 | 30 000 000 | deferred:96 | 0.1974% | 5.591% | 0.933 | 2.9931% |
-| 0.4 | 0.5 | 30 000 000 | deferred:1 | 6.6604% | 286.060% | 0.933 | 6.6604% |
-| 0.4 | 1 | 1 000 000 | micro:all:500:10000 | 0.0128% | 0.990% | 0.857 | 0.0616% |
-| 0.4 | 1 | 1 000 000 | deferred:8640 | 0.0241% | 0.990% | 0.857 | 0.0616% |
-| 0.4 | 1 | 1 000 000 | deferred:96 | 0.9513% | 10.635% | 0.857 | 4.3883% |
-| 0.4 | 1 | 1 000 000 | deferred:1 | 14.3374% | 298.137% | 0.857 | 14.3374% |
-| 0.4 | 1 | 10 000 000 | micro:all:500:10000 | 0.0059% | 0.436% | 0.903 | 0.0388% |
-| 0.4 | 1 | 10 000 000 | deferred:8640 | 0.0098% | 0.436% | 0.903 | 0.0388% |
-| 0.4 | 1 | 10 000 000 | deferred:96 | 0.3377% | 4.929% | 0.903 | 2.8700% |
-| 0.4 | 1 | 10 000 000 | deferred:1 | 9.6710% | 325.432% | 0.903 | 9.6710% |
-| 0.4 | 1 | 30 000 000 | micro:all:500:10000 | 0.0025% | 0.376% | 0.902 | 0.0417% |
-| 0.4 | 1 | 30 000 000 | deferred:8640 | 0.0117% | 0.376% | 0.902 | 0.0417% |
-| 0.4 | 1 | 30 000 000 | deferred:96 | 0.2144% | 4.963% | 0.902 | 2.7084% |
-| 0.4 | 1 | 30 000 000 | deferred:1 | 9.7541% | 319.580% | 0.902 | 9.7541% |
-| 1 | 0 | 1 000 000 | micro:all:500:10000 | 0.0037% | 0.378% | 0.966 | 0.0207% |
-| 1 | 0 | 1 000 000 | deferred:8640 | 0.0047% | 0.378% | 0.966 | 0.0207% |
-| 1 | 0 | 1 000 000 | deferred:96 | 0.2096% | 3.695% | 0.966 | 1.4359% |
-| 1 | 0 | 1 000 000 | deferred:1 | 3.4386% | 187.450% | 0.966 | 3.4386% |
-| 1 | 0 | 10 000 000 | micro:all:500:10000 | -0.0010% | 0.149% | 0.990 | 0.0134% |
-| 1 | 0 | 10 000 000 | deferred:8640 | 0.0052% | 0.149% | 0.990 | 0.0134% |
-| 1 | 0 | 10 000 000 | deferred:96 | 0.1292% | 1.702% | 0.990 | 0.4466% |
-| 1 | 0 | 10 000 000 | deferred:1 | 0.9660% | 178.282% | 0.990 | 0.9660% |
-| 1 | 0 | 30 000 000 | micro:all:500:10000 | 0.0001% | 0.062% | 0.998 | 0.0092% |
-| 1 | 0 | 30 000 000 | deferred:8640 | 0.0026% | 0.062% | 0.998 | 0.0092% |
-| 1 | 0 | 30 000 000 | deferred:96 | 0.0493% | 1.453% | 0.998 | 0.1473% |
-| 1 | 0 | 30 000 000 | deferred:1 | 0.2411% | 184.471% | 0.998 | 0.2411% |
-| 1 | 0.5 | 1 000 000 | micro:all:500:10000 | 0.0012% | 1.448% | 0.934 | 0.0203% |
-| 1 | 0.5 | 1 000 000 | deferred:8640 | 0.0065% | 1.448% | 0.934 | 0.0203% |
-| 1 | 0.5 | 1 000 000 | deferred:96 | 0.3304% | 5.716% | 0.934 | 2.1633% |
-| 1 | 0.5 | 1 000 000 | deferred:1 | 6.6153% | 193.797% | 0.934 | 6.6153% |
-| 1 | 0.5 | 10 000 000 | micro:all:500:10000 | -0.0021% | 0.187% | 0.979 | 0.0258% |
-| 1 | 0.5 | 10 000 000 | deferred:8640 | 0.0099% | 0.187% | 0.979 | 0.0258% |
-| 1 | 0.5 | 10 000 000 | deferred:96 | 0.0879% | 2.999% | 0.979 | 0.9915% |
-| 1 | 0.5 | 10 000 000 | deferred:1 | 2.1255% | 188.905% | 0.979 | 2.1255% |
-| 1 | 0.5 | 30 000 000 | micro:all:500:10000 | -0.0009% | 0.084% | 0.987 | 0.0217% |
-| 1 | 0.5 | 30 000 000 | deferred:8640 | 0.0036% | 0.084% | 0.987 | 0.0217% |
-| 1 | 0.5 | 30 000 000 | deferred:96 | 0.0842% | 2.914% | 0.987 | 0.7507% |
-| 1 | 0.5 | 30 000 000 | deferred:1 | 1.3235% | 204.964% | 0.987 | 1.3235% |
-| 1 | 1 | 1 000 000 | micro:all:500:10000 | 0.0093% | 0.509% | 0.944 | 0.0271% |
-| 1 | 1 | 1 000 000 | deferred:8640 | 0.0116% | 0.509% | 0.944 | 0.0271% |
-| 1 | 1 | 1 000 000 | deferred:96 | 0.3144% | 3.755% | 0.944 | 1.2237% |
-| 1 | 1 | 1 000 000 | deferred:1 | 5.5902% | 202.667% | 0.944 | 5.5902% |
-| 1 | 1 | 10 000 000 | micro:all:500:10000 | -0.0003% | 0.115% | 0.970 | 0.0244% |
-| 1 | 1 | 10 000 000 | deferred:8640 | 0.0094% | 0.115% | 0.970 | 0.0244% |
-| 1 | 1 | 10 000 000 | deferred:96 | 0.1663% | 2.671% | 0.970 | 1.4412% |
-| 1 | 1 | 10 000 000 | deferred:1 | 3.0419% | 197.235% | 0.970 | 3.0419% |
-| 1 | 1 | 30 000 000 | micro:all:500:10000 | 0.0036% | 0.065% | 0.972 | 0.0250% |
-| 1 | 1 | 30 000 000 | deferred:8640 | 0.0087% | 0.065% | 0.972 | 0.0250% |
-| 1 | 1 | 30 000 000 | deferred:96 | 0.0924% | 2.869% | 0.972 | 1.4845% |
-| 1 | 1 | 30 000 000 | deferred:1 | 2.8436% | 205.891% | 0.972 | 2.8436% |
+| 0.4 | 0 | 1 000 000 | micro:all:500:10000 | 0.0044% | 0.498% | 0.839 | 0.0231% |
+| 0.4 | 0 | 1 000 000 | deferred:8640 | 0.0093% | 0.498% | 0.839 | 0.0231% |
+| 0.4 | 0 | 1 000 000 | deferred:96 | 1.4701% | 12.861% | 0.839 | 3.6811% |
+| 0.4 | 0 | 1 000 000 | deferred:1 | 16.1284% | 213.377% | 0.839 | 16.1284% |
+| 0.4 | 0 | 10 000 000 | micro:all:500:10000 | 0.0152% | 0.225% | 0.924 | 0.0715% |
+| 0.4 | 0 | 10 000 000 | deferred:8640 | 0.0147% | 0.225% | 0.924 | 0.0715% |
+| 0.4 | 0 | 10 000 000 | deferred:96 | 0.7042% | 8.680% | 0.924 | 3.4277% |
+| 0.4 | 0 | 10 000 000 | deferred:1 | 7.5571% | 260.986% | 0.924 | 7.5571% |
+| 0.4 | 0 | 30 000 000 | micro:all:500:10000 | -0.0072% | 0.183% | 0.960 | 0.0329% |
+| 0.4 | 0 | 30 000 000 | deferred:8640 | 0.0131% | 0.183% | 0.960 | 0.0329% |
+| 0.4 | 0 | 30 000 000 | deferred:96 | 0.3745% | 5.817% | 0.960 | 1.5625% |
+| 0.4 | 0 | 30 000 000 | deferred:1 | 4.0334% | 260.634% | 0.960 | 4.0334% |
+| 0.4 | 0.5 | 1 000 000 | micro:all:500:10000 | -0.0008% | 3.242% | 0.782 | 0.0272% |
+| 0.4 | 0.5 | 1 000 000 | deferred:8640 | 0.0061% | 3.242% | 0.782 | 0.0272% |
+| 0.4 | 0.5 | 1 000 000 | deferred:96 | 1.2420% | 15.436% | 0.782 | 4.1941% |
+| 0.4 | 0.5 | 1 000 000 | deferred:1 | 21.8224% | 272.471% | 0.782 | 21.8224% |
+| 0.4 | 0.5 | 10 000 000 | micro:all:500:10000 | -0.0135% | 0.594% | 0.927 | 0.0392% |
+| 0.4 | 0.5 | 10 000 000 | deferred:8640 | 0.0116% | 0.594% | 0.927 | 0.0392% |
+| 0.4 | 0.5 | 10 000 000 | deferred:96 | 0.5320% | 7.902% | 0.927 | 3.1055% |
+| 0.4 | 0.5 | 10 000 000 | deferred:1 | 7.3060% | 243.308% | 0.927 | 7.3060% |
+| 0.4 | 0.5 | 30 000 000 | micro:all:500:10000 | -0.0047% | 0.278% | 0.932 | 0.0332% |
+| 0.4 | 0.5 | 30 000 000 | deferred:8640 | 0.0101% | 0.278% | 0.932 | 0.0332% |
+| 0.4 | 0.5 | 30 000 000 | deferred:96 | 0.2507% | 5.464% | 0.932 | 3.0382% |
+| 0.4 | 0.5 | 30 000 000 | deferred:1 | 6.8287% | 272.359% | 0.932 | 6.8287% |
+| 0.4 | 1 | 1 000 000 | micro:all:500:10000 | 0.0013% | 1.013% | 0.761 | 0.0310% |
+| 0.4 | 1 | 1 000 000 | deferred:8640 | 0.0057% | 1.013% | 0.761 | 0.0310% |
+| 0.4 | 1 | 1 000 000 | deferred:96 | 0.6641% | 12.242% | 0.761 | 3.2871% |
+| 0.4 | 1 | 1 000 000 | deferred:1 | 23.8913% | 260.566% | 0.761 | 23.8913% |
+| 0.4 | 1 | 10 000 000 | micro:all:500:10000 | 0.0101% | 0.553% | 0.900 | 0.0370% |
+| 0.4 | 1 | 10 000 000 | deferred:8640 | 0.0156% | 0.553% | 0.900 | 0.0370% |
+| 0.4 | 1 | 10 000 000 | deferred:96 | 0.5099% | 6.192% | 0.900 | 2.8066% |
+| 0.4 | 1 | 10 000 000 | deferred:1 | 10.0211% | 307.986% | 0.900 | 10.0211% |
+| 0.4 | 1 | 30 000 000 | micro:all:500:10000 | -0.0000% | 0.303% | 0.908 | 0.0370% |
+| 0.4 | 1 | 30 000 000 | deferred:8640 | 0.0117% | 0.303% | 0.908 | 0.0370% |
+| 0.4 | 1 | 30 000 000 | deferred:96 | 0.2536% | 5.608% | 0.908 | 2.7727% |
+| 0.4 | 1 | 30 000 000 | deferred:1 | 9.1658% | 335.956% | 0.908 | 9.1658% |
+| 1 | 0 | 1 000 000 | micro:all:500:10000 | 0.0028% | 0.471% | 0.934 | 0.0103% |
+| 1 | 0 | 1 000 000 | deferred:8640 | 0.0042% | 0.471% | 0.934 | 0.0103% |
+| 1 | 0 | 1 000 000 | deferred:96 | 0.5887% | 5.122% | 0.934 | 1.7371% |
+| 1 | 0 | 1 000 000 | deferred:1 | 6.6485% | 142.489% | 0.934 | 6.6485% |
+| 1 | 0 | 10 000 000 | micro:all:500:10000 | -0.0015% | 0.171% | 0.986 | 0.0278% |
+| 1 | 0 | 10 000 000 | deferred:8640 | 0.0082% | 0.171% | 0.986 | 0.0278% |
+| 1 | 0 | 10 000 000 | deferred:96 | 0.1702% | 2.805% | 0.986 | 0.4848% |
+| 1 | 0 | 10 000 000 | deferred:1 | 1.4345% | 173.708% | 0.986 | 1.4345% |
+| 1 | 0 | 30 000 000 | micro:all:500:10000 | 0.0011% | 0.127% | 0.985 | 0.0201% |
+| 1 | 0 | 30 000 000 | deferred:8640 | 0.0033% | 0.127% | 0.985 | 0.0201% |
+| 1 | 0 | 30 000 000 | deferred:96 | 0.1215% | 2.127% | 0.985 | 0.6731% |
+| 1 | 0 | 30 000 000 | deferred:1 | 1.4552% | 172.134% | 0.985 | 1.4552% |
+| 1 | 0.5 | 1 000 000 | micro:all:500:10000 | -0.0003% | 1.883% | 0.881 | 0.0121% |
+| 1 | 0.5 | 1 000 000 | deferred:8640 | 0.0044% | 1.883% | 0.881 | 0.0121% |
+| 1 | 0.5 | 1 000 000 | deferred:96 | 0.7446% | 7.216% | 0.881 | 2.5821% |
+| 1 | 0.5 | 1 000 000 | deferred:1 | 11.9318% | 209.541% | 0.881 | 11.9318% |
+| 1 | 0.5 | 10 000 000 | micro:all:500:10000 | 0.0045% | 0.543% | 0.975 | 0.0157% |
+| 1 | 0.5 | 10 000 000 | deferred:8640 | 0.0065% | 0.543% | 0.975 | 0.0157% |
+| 1 | 0.5 | 10 000 000 | deferred:96 | 0.2898% | 3.532% | 0.975 | 1.4981% |
+| 1 | 0.5 | 10 000 000 | deferred:1 | 2.4674% | 183.991% | 0.975 | 2.4674% |
+| 1 | 0.5 | 30 000 000 | micro:all:500:10000 | 0.0032% | 0.125% | 0.981 | 0.0190% |
+| 1 | 0.5 | 30 000 000 | deferred:8640 | 0.0069% | 0.125% | 0.981 | 0.0190% |
+| 1 | 0.5 | 30 000 000 | deferred:96 | 0.1177% | 2.895% | 0.981 | 1.0537% |
+| 1 | 0.5 | 30 000 000 | deferred:1 | 1.8861% | 204.956% | 0.981 | 1.8861% |
+| 1 | 1 | 1 000 000 | micro:all:500:10000 | 0.0021% | 0.499% | 0.878 | 0.0263% |
+| 1 | 1 | 1 000 000 | deferred:8640 | 0.0051% | 0.499% | 0.878 | 0.0263% |
+| 1 | 1 | 1 000 000 | deferred:96 | 0.4372% | 6.488% | 0.878 | 2.4067% |
+| 1 | 1 | 1 000 000 | deferred:1 | 12.1714% | 210.134% | 0.878 | 12.1714% |
+| 1 | 1 | 10 000 000 | micro:all:500:10000 | 0.0139% | 0.502% | 0.964 | 0.0619% |
+| 1 | 1 | 10 000 000 | deferred:8640 | 0.0134% | 0.502% | 0.964 | 0.0619% |
+| 1 | 1 | 10 000 000 | deferred:96 | 0.1898% | 3.348% | 0.964 | 1.3371% |
+| 1 | 1 | 10 000 000 | deferred:1 | 3.6467% | 192.703% | 0.964 | 3.6467% |
+| 1 | 1 | 30 000 000 | micro:all:500:10000 | 0.0018% | 0.081% | 0.969 | 0.0204% |
+| 1 | 1 | 30 000 000 | deferred:8640 | 0.0065% | 0.081% | 0.969 | 0.0204% |
+| 1 | 1 | 30 000 000 | deferred:96 | 0.1253% | 2.913% | 0.969 | 1.4060% |
+| 1 | 1 | 30 000 000 | deferred:1 | 3.1344% | 200.015% | 0.969 | 3.1344% |
 
-Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.46% na forma de janela e 0.042% na forma apertada; disparou: não.
+Critério K1 (parar se o limite de 10 s passar de 2% do UB com 30 milhões de pagamentos): pior caso 0.30% na forma de janela e 0.037% na forma apertada; disparou: não.
 
 ## 10. Janelas de abastecimento da Conta PI: noites e fim de semana (W3)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment funding-windows`._
 
 A Conta PI só recebe aportes das Reservas com o STR aberto (6h30–18h30 nos dias úteis, mais 30 minutos). Quinta a segunda, perfil horário e volumes por dia do Relatório Anual do SPI 2024. Necessidade = maior esvaziamento a partir do início da janela; compensação = uma liquidação líquida no fim da janela.
 
 | pagamentos/quinta | σ viés | λ | janela | tipo | horas | pré-financiamento (R$) | economia de compensar no fim | limite 10 s (janela) | limite 15 min (janela) | limite apertado 10 s | limite apertado 15 min |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 48 041 473 | 12.36% | 1.57% | 14.15% | 0.136% | 12.13% |
-| 1 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 28 681 900 | 13.21% | 2.68% | 30.75% | 0.285% | 16.78% |
-| 1 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 64 918 764 | 9.97% | 1.16% | 17.90% | 0.089% | 13.33% |
-| 1 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 133 609 081 | 6.45% | 0.64% | 6.41% | 0.100% | 5.36% |
-| 1 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 52 699 206 | 5.66% | 0.60% | 12.41% | 0.099% | 7.57% |
-| 1 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 54 313 565 | 13.39% | 4.74% | 22.10% | 0.149% | 12.72% |
-| 1 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 40 605 856 | 16.52% | 1.07% | 26.86% | 0.268% | 14.81% |
-| 1 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 61 242 424 | 14.39% | 1.19% | 12.05% | 0.120% | 9.98% |
-| 1 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 149 299 315 | 7.78% | 1.83% | 5.68% | 0.056% | 3.28% |
-| 1 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 55 806 414 | 14.69% | 1.57% | 20.33% | 0.127% | 12.94% |
-| 1 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 84 167 839 | 4.19% | 0.54% | 7.53% | 0.076% | 7.12% |
-| 1 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 44 320 554 | 7.18% | 1.42% | 15.37% | 0.151% | 8.25% |
-| 1 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 103 115 894 | 6.47% | 0.62% | 13.36% | 0.050% | 8.05% |
-| 1 000 000 | 1 | 0 | weekend | fechada | 59.5 | 231 824 135 | 1.31% | 0.47% | 2.68% | 0.036% | 1.31% |
-| 1 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 88 224 607 | 1.92% | 0.30% | 6.81% | 0.064% | 4.35% |
-| 1 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 87 198 188 | 8.02% | 1.09% | 16.62% | 0.079% | 8.11% |
-| 1 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 55 933 077 | 5.61% | 0.33% | 8.59% | 0.134% | 7.57% |
-| 1 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 97 899 510 | 7.21% | 0.37% | 8.05% | 0.085% | 7.53% |
-| 1 000 000 | 1 | 1 | weekend | fechada | 59.5 | 253 468 278 | 2.43% | 1.27% | 3.44% | 0.024% | 1.60% |
-| 1 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 89 259 707 | 12.53% | 0.92% | 11.66% | 0.081% | 7.16% |
-| 10 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 444 044 505 | 3.56% | 0.83% | 10.58% | 0.101% | 6.66% |
-| 10 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 207 595 537 | 6.47% | 0.96% | 28.74% | 0.404% | 14.04% |
-| 10 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 486 048 138 | 3.65% | 0.82% | 13.61% | 0.224% | 8.61% |
-| 10 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 1 235 058 181 | 1.73% | 0.52% | 5.68% | 0.095% | 2.72% |
-| 10 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 436 813 862 | 5.29% | 0.30% | 12.22% | 0.125% | 8.73% |
-| 10 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 485 132 089 | 12.19% | 1.13% | 12.14% | 0.137% | 10.41% |
-| 10 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 278 663 758 | 4.59% | 1.72% | 19.00% | 0.354% | 14.56% |
-| 10 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 543 812 921 | 9.45% | 0.28% | 13.07% | 0.133% | 9.87% |
-| 10 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 1 370 840 390 | 4.49% | 0.08% | 3.96% | 0.068% | 3.37% |
-| 10 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 487 629 172 | 12.51% | 0.44% | 11.50% | 0.144% | 10.48% |
-| 10 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 812 944 806 | 1.42% | 0.31% | 5.76% | 0.060% | 4.73% |
-| 10 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 375 281 896 | 2.00% | 0.67% | 12.67% | 0.182% | 7.25% |
-| 10 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 902 980 120 | 1.21% | 0.37% | 6.59% | 0.089% | 5.42% |
-| 10 000 000 | 1 | 0 | weekend | fechada | 59.5 | 2 340 355 049 | 0.36% | 0.16% | 1.97% | 0.029% | 1.11% |
-| 10 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 811 932 785 | 0.75% | 0.10% | 6.15% | 0.066% | 5.30% |
-| 10 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 848 160 779 | 4.97% | 0.54% | 7.96% | 0.125% | 7.54% |
-| 10 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 461 463 511 | 1.86% | 0.22% | 9.90% | 0.100% | 6.36% |
-| 10 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 956 742 931 | 3.92% | 0.46% | 8.01% | 0.095% | 7.22% |
-| 10 000 000 | 1 | 1 | weekend | fechada | 59.5 | 2 537 756 124 | 0.98% | 0.23% | 2.09% | 0.018% | 1.30% |
-| 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 835 673 583 | 5.88% | 0.23% | 8.03% | 0.095% | 7.44% |
+| 1 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 68 933 719 | 18.26% | 0.66% | 20.08% | 0.062% | 8.41% |
+| 1 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 39 239 166 | 16.45% | 5.85% | 26.49% | 0.174% | 16.22% |
+| 1 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 66 004 087 | 19.08% | 3.07% | 16.44% | 0.108% | 9.88% |
+| 1 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 159 976 150 | 18.60% | 2.65% | 10.47% | 0.045% | 8.84% |
+| 1 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 55 909 401 | 21.48% | 2.30% | 21.85% | 0.091% | 12.23% |
+| 1 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 76 136 141 | 14.69% | 1.66% | 12.92% | 0.085% | 7.25% |
+| 1 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 34 458 866 | 30.08% | 1.08% | 25.71% | 0.225% | 19.84% |
+| 1 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 71 636 046 | 16.53% | 1.90% | 15.56% | 0.083% | 11.15% |
+| 1 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 161 087 092 | 10.97% | 1.21% | 4.90% | 0.051% | 3.17% |
+| 1 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 62 619 360 | 15.00% | 1.24% | 13.34% | 0.099% | 8.47% |
+| 1 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 95 953 434 | 9.06% | 4.00% | 14.48% | 0.051% | 7.05% |
+| 1 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 49 289 507 | 8.25% | 5.15% | 18.25% | 0.180% | 8.94% |
+| 1 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 97 928 295 | 7.36% | 1.69% | 9.00% | 0.080% | 6.45% |
+| 1 000 000 | 1 | 0 | weekend | fechada | 59.5 | 256 248 166 | 6.60% | 0.50% | 4.63% | 0.023% | 4.05% |
+| 1 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 88 059 088 | 9.13% | 2.10% | 8.99% | 0.129% | 6.95% |
+| 1 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 106 560 265 | 9.80% | 0.92% | 9.27% | 0.042% | 6.29% |
+| 1 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 46 977 565 | 15.73% | 0.66% | 16.85% | 0.153% | 11.27% |
+| 1 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 107 578 591 | 10.56% | 0.98% | 10.05% | 0.064% | 7.61% |
+| 1 000 000 | 1 | 1 | weekend | fechada | 59.5 | 253 854 638 | 5.35% | 0.56% | 4.26% | 0.030% | 1.65% |
+| 1 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 92 275 385 | 11.09% | 2.10% | 9.21% | 0.064% | 7.65% |
+| 10 000 000 | 0.4 | 0 | thu_day | aberta | 12.5 | 475 456 705 | 9.21% | 0.34% | 14.38% | 0.170% | 9.40% |
+| 10 000 000 | 0.4 | 0 | thu_night | fechada | 11.5 | 228 529 792 | 12.11% | 3.40% | 31.43% | 0.495% | 19.54% |
+| 10 000 000 | 0.4 | 0 | fri_day | aberta | 12.5 | 559 750 028 | 6.88% | 1.23% | 13.29% | 0.171% | 8.85% |
+| 10 000 000 | 0.4 | 0 | weekend | fechada | 59.5 | 1 297 484 732 | 4.71% | 0.43% | 5.40% | 0.101% | 3.14% |
+| 10 000 000 | 0.4 | 0 | mon_day | aberta | 12.5 | 446 032 291 | 5.75% | 2.25% | 14.33% | 0.122% | 9.49% |
+| 10 000 000 | 0.4 | 1 | thu_day | aberta | 12.5 | 507 105 507 | 13.62% | 1.00% | 17.02% | 0.133% | 12.15% |
+| 10 000 000 | 0.4 | 1 | thu_night | fechada | 11.5 | 321 043 389 | 7.81% | 1.50% | 17.26% | 0.358% | 13.69% |
+| 10 000 000 | 0.4 | 1 | fri_day | aberta | 12.5 | 624 803 844 | 12.00% | 1.04% | 14.62% | 0.175% | 10.32% |
+| 10 000 000 | 0.4 | 1 | weekend | fechada | 59.5 | 1 357 818 558 | 6.10% | 0.17% | 4.84% | 0.066% | 3.74% |
+| 10 000 000 | 0.4 | 1 | mon_day | aberta | 12.5 | 516 561 713 | 11.83% | 1.24% | 15.70% | 0.127% | 9.40% |
+| 10 000 000 | 1 | 0 | thu_day | aberta | 12.5 | 832 719 505 | 2.07% | 0.22% | 5.85% | 0.064% | 4.41% |
+| 10 000 000 | 1 | 0 | thu_night | fechada | 11.5 | 396 237 291 | 6.52% | 0.72% | 12.81% | 0.252% | 9.41% |
+| 10 000 000 | 1 | 0 | fri_day | aberta | 12.5 | 969 133 619 | 3.07% | 0.46% | 7.00% | 0.050% | 4.96% |
+| 10 000 000 | 1 | 0 | weekend | fechada | 59.5 | 2 311 637 792 | 1.82% | 0.21% | 2.68% | 0.046% | 1.45% |
+| 10 000 000 | 1 | 0 | mon_day | aberta | 12.5 | 831 305 792 | 1.90% | 0.37% | 6.51% | 0.068% | 5.11% |
+| 10 000 000 | 1 | 1 | thu_day | aberta | 12.5 | 848 016 493 | 6.63% | 0.78% | 9.93% | 0.100% | 9.14% |
+| 10 000 000 | 1 | 1 | thu_night | fechada | 11.5 | 480 915 095 | 2.69% | 0.41% | 11.10% | 0.163% | 6.43% |
+| 10 000 000 | 1 | 1 | fri_day | aberta | 12.5 | 1 000 296 456 | 5.64% | 0.30% | 9.16% | 0.100% | 8.05% |
+| 10 000 000 | 1 | 1 | weekend | fechada | 59.5 | 2 536 274 849 | 1.62% | 0.11% | 2.36% | 0.034% | 1.60% |
+| 10 000 000 | 1 | 1 | mon_day | aberta | 12.5 | 841 091 991 | 8.31% | 0.95% | 10.65% | 0.134% | 7.80% |
 
 Pré-financiamento abaixo da necessidade (camada de abastecimento, spec 05 M5): cada participante entra nas janelas fechadas com uma fração da sua maior necessidade; com o STR aberto, aportes ilimitados. Valor rejeitado em % do valor bruto dos cinco dias, para o bruto e para filas que esperam até 1 hora (recebimentos ou reabertura). Uma semente, a menor escala.
 
 | σ viés | λ | fração da necessidade | motor | valor rejeitado |
 |---|---|---|---|---|
-| 0.4 | 0 | 0.8 | gross | 1.967% |
-| 0.4 | 0 | 0.8 | queue:fifo:3600000:1000 | 1.587% |
-| 0.4 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 1.511% |
-| 0.4 | 0 | 0.9 | gross | 1.048% |
-| 0.4 | 0 | 0.9 | queue:fifo:3600000:1000 | 0.683% |
-| 0.4 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 0.662% |
-| 0.4 | 0 | 0.95 | gross | 0.635% |
-| 0.4 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.341% |
-| 0.4 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.332% |
+| 0.4 | 0 | 0.8 | gross | 3.143% |
+| 0.4 | 0 | 0.8 | queue:fifo:3600000:1000 | 2.065% |
+| 0.4 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.057% |
+| 0.4 | 0 | 0.9 | gross | 2.411% |
+| 0.4 | 0 | 0.9 | queue:fifo:3600000:1000 | 1.248% |
+| 0.4 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.243% |
+| 0.4 | 0 | 0.95 | gross | 1.741% |
+| 0.4 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.566% |
+| 0.4 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.564% |
 | 0.4 | 0 | 1 | gross | 0.000% |
 | 0.4 | 0 | 1 | queue:fifo:3600000:1000 | 0.000% |
 | 0.4 | 0 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
-| 0.4 | 1 | 0.8 | gross | 2.641% |
-| 0.4 | 1 | 0.8 | queue:fifo:3600000:1000 | 2.263% |
-| 0.4 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.156% |
-| 0.4 | 1 | 0.9 | gross | 1.744% |
-| 0.4 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.242% |
-| 0.4 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.200% |
-| 0.4 | 1 | 0.95 | gross | 1.282% |
-| 0.4 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.661% |
-| 0.4 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.643% |
+| 0.4 | 1 | 0.8 | gross | 2.745% |
+| 0.4 | 1 | 0.8 | queue:fifo:3600000:1000 | 2.177% |
+| 0.4 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.163% |
+| 0.4 | 1 | 0.9 | gross | 1.655% |
+| 0.4 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.100% |
+| 0.4 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.088% |
+| 0.4 | 1 | 0.95 | gross | 0.845% |
+| 0.4 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.590% |
+| 0.4 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.584% |
 | 0.4 | 1 | 1 | gross | 0.000% |
 | 0.4 | 1 | 1 | queue:fifo:3600000:1000 | 0.000% |
 | 0.4 | 1 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
-| 1 | 0 | 0.8 | gross | 3.011% |
-| 1 | 0 | 0.8 | queue:fifo:3600000:1000 | 2.723% |
-| 1 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.640% |
-| 1 | 0 | 0.9 | gross | 1.495% |
-| 1 | 0 | 0.9 | queue:fifo:3600000:1000 | 1.260% |
-| 1 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.220% |
-| 1 | 0 | 0.95 | gross | 0.822% |
-| 1 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.601% |
-| 1 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.589% |
+| 1 | 0 | 0.8 | gross | 3.906% |
+| 1 | 0 | 0.8 | queue:fifo:3600000:1000 | 3.028% |
+| 1 | 0 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 3.021% |
+| 1 | 0 | 0.9 | gross | 2.481% |
+| 1 | 0 | 0.9 | queue:fifo:3600000:1000 | 1.679% |
+| 1 | 0 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.671% |
+| 1 | 0 | 0.95 | gross | 1.804% |
+| 1 | 0 | 0.95 | queue:fifo:3600000:1000 | 0.919% |
+| 1 | 0 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.926% |
 | 1 | 0 | 1 | gross | 0.000% |
 | 1 | 0 | 1 | queue:fifo:3600000:1000 | 0.000% |
 | 1 | 0 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
-| 1 | 1 | 0.8 | gross | 3.388% |
-| 1 | 1 | 0.8 | queue:fifo:3600000:1000 | 3.120% |
-| 1 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 3.041% |
-| 1 | 1 | 0.9 | gross | 1.899% |
-| 1 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.648% |
-| 1 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.619% |
-| 1 | 1 | 0.95 | gross | 1.165% |
-| 1 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.890% |
-| 1 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.874% |
+| 1 | 1 | 0.8 | gross | 3.520% |
+| 1 | 1 | 0.8 | queue:fifo:3600000:1000 | 2.972% |
+| 1 | 1 | 0.8 | micro:shortfall:1000:3600000:6:fifo | 2.948% |
+| 1 | 1 | 0.9 | gross | 2.025% |
+| 1 | 1 | 0.9 | queue:fifo:3600000:1000 | 1.529% |
+| 1 | 1 | 0.9 | micro:shortfall:1000:3600000:6:fifo | 1.520% |
+| 1 | 1 | 0.95 | gross | 1.253% |
+| 1 | 1 | 0.95 | queue:fifo:3600000:1000 | 0.719% |
+| 1 | 1 | 0.95 | micro:shortfall:1000:3600000:6:fifo | 0.715% |
 | 1 | 1 | 1 | gross | 0.000% |
 | 1 | 1 | 1 | queue:fifo:3600000:1000 | 0.000% |
 | 1 | 1 | 1 | micro:shortfall:1000:3600000:6:fifo | 0.000% |
 
 ## 11. Regimes: varejo × alto valor, e curva do limite
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment regimes`._
 
 O limite de atraso na forma de janela depende do tamanho dos pagamentos em relação à liquidez necessária; o limite apertado (UB − piso de liquidez, METHODOLOGY §9b) não: ele fica perto de zero nos dois regimes. Sistema de alto valor estilizado (ASSUMPTION): 20 participantes, mediana de R$ 1 milhão, cauda pesada.
 
 | caso | participantes | pagamentos | pagamento médio / UB médio | atraso máx. (ms) | economia micro-ciclos | limite (janela) | limite apertado |
 |---|---|---|---|---|---|---|---|
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 2000 | 0.0016% | 0.567% | 0.0062% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 5000 | 0.0036% | 0.592% | 0.0184% |
-| retail (Pix calibrated) | 200 | 1000210 | 0.0012 | 10000 | 0.0147% | 0.761% | 0.0541% |
+| retail (Pix calibrated) | 200 | 999623 | 0.0009 | 2000 | -0.0006% | 0.391% | 0.0018% |
+| retail (Pix calibrated) | 200 | 999623 | 0.0009 | 5000 | 0.0019% | 0.486% | 0.0098% |
+| retail (Pix calibrated) | 200 | 999623 | 0.0009 | 10000 | 0.0044% | 0.498% | 0.0231% |
 | large-value 2000/day | 20 | 2021 | 0.0299 | 2000 | 0.0000% | 9.116% | 0.0000% |
 | large-value 2000/day | 20 | 2021 | 0.0299 | 5000 | 0.0000% | 9.116% | 0.0000% |
 | large-value 2000/day | 20 | 2021 | 0.0299 | 10000 | 0.0000% | 13.663% | 0.0034% |
@@ -535,12 +538,12 @@ Curva do limite (W5): economia obtida pela compensação a cada d contra o limit
 
 | d (s) | ciclos/dia | economia obtida | limite janela (até 100%) | obtido / janela | limite apertado [IC 95%] | obtido / apertado [IC 95%] |
 |---|---|---|---|---|---|---|
-| 10 | 8640 | 0.0185% | 0.80% | 0.023 | 0.041% [0.025; 0.056] | 0.48 [0.40; 0.55] |
-| 60 | 1440 | 0.0690% | 1.58% | 0.044 | 0.205% [0.141; 0.269] | 0.34 [0.30; 0.38] |
-| 900 | 96 | 0.5021% | 8.19% | 0.061 | 2.361% [1.233; 3.490] | 0.25 [0.19; 0.32] |
-| 3600 | 24 | 1.8952% | 22.96% | 0.083 | 5.106% [3.089; 7.123] | 0.37 [0.30; 0.43] |
-| 21600 | 4 | 3.9985% | 100.00% | 0.029 | 7.322% [4.571; 10.073] | 0.58 [0.49; 0.67] |
-| 86400 | 1 | 7.8040% | 100.00% | 0.023 | 7.804% [4.506; 11.102] | 1.00 [1.00; 1.00] |
+| 10 | 8640 | 0.0132% | 1.30% | 0.010 | 0.028% [0.016; 0.041] | 0.47 [0.37; 0.57] |
+| 60 | 1440 | 0.0810% | 3.04% | 0.027 | 0.210% [0.164; 0.257] | 0.39 [0.30; 0.48] |
+| 900 | 96 | 0.8478% | 12.94% | 0.065 | 3.083% [2.319; 3.848] | 0.28 [0.22; 0.34] |
+| 3600 | 24 | 2.9250% | 30.73% | 0.095 | 8.558% [6.391; 10.725] | 0.36 [0.28; 0.43] |
+| 21600 | 4 | 8.6169% | 100.00% | 0.060 | 13.866% [10.267; 17.465] | 0.63 [0.57; 0.69] |
+| 86400 | 1 | 14.4417% | 100.00% | 0.047 | 14.442% [10.712; 18.171] | 1.00 [1.00; 1.00] |
 
 Figura: [`regimes/fig_bound.svg`](regimes/fig_bound.svg)
 
@@ -548,65 +551,65 @@ O limite apertado por participante (uma semente): quanto cada um poderia economi
 
 | d (s) | participantes com UB > 0 | p10 | mediana | p90 | máximo | parcela do limite total nos 5 maiores |
 |---|---|---|---|---|---|---|
-| 10 | 182 | 0.000% | 0.000% | 0.107% | 100.00% | 77.5% |
-| 60 | 182 | 0.000% | 0.000% | 2.118% | 100.00% | 78.6% |
-| 900 | 182 | 0.000% | 3.508% | 58.166% | 100.00% | 80.1% |
-| 3600 | 182 | 0.383% | 23.011% | 100.000% | 100.00% | 77.4% |
+| 10 | 186 | 0.000% | 0.000% | 0.036% | 30.39% | 70.8% |
+| 60 | 186 | 0.000% | 0.000% | 0.995% | 100.00% | 66.3% |
+| 900 | 186 | 0.000% | 2.018% | 44.636% | 100.00% | 73.9% |
+| 3600 | 186 | 0.352% | 21.221% | 100.000% | 100.00% | 72.4% |
 
 ## 12. Liquidez restrita: rejeição, atraso e liquidez equivalente
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment liquidity-frontier`._
 
 Saldos de abertura fixos (regra `ub`: α × UB de cada participante; regra `outflow`: α × UB total, repartido pelo volume de saída) e o que acontece em cada desenho. Dois horizontes: espera de até 10 s (prazo de pagamento instantâneo) e de até 1 hora (regime dos mecanismos de economia de liquidez de alto valor). Pagamento rejeitado não é tentado de novo (ASSUMPTION). Médias de 10 sementes, 300 mil pagamentos por dia.
 
 | cenário | regra | α | motor | valor rejeitado [IC 95%] | atraso p95 (s) | até 2,8 s |
 |---|---|---|---|---|---|---|
-| retail sigma 0.4 | ub | 0.8 | gross_real_time | 8.93% [7.06; 10.79] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.95 | gross_real_time | 4.24% [2.07; 6.42] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.8 | gross_real_time | 13.42% [11.25; 15.59] | 0 | 100.0% |
+| retail sigma 0.4 | ub | 0.95 | gross_real_time | 8.07% [5.67; 10.47] | 0 | 100.0% |
 | retail sigma 0.4 | ub | 1 | gross_real_time | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | queue_bypass_d10000 | 8.81% [6.89; 10.73] | 0 | 99.6% |
-| retail sigma 0.4 | ub | 0.95 | queue_bypass_d10000 | 4.21% [2.04; 6.38] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 0.8 | queue_bypass_d10000 | 13.43% [11.26; 15.61] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 0.95 | queue_bypass_d10000 | 7.99% [5.54; 10.43] | 0 | 100.0% |
 | retail sigma 0.4 | ub | 1 | queue_bypass_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 8.81% [6.89; 10.73] | 0 | 99.6% |
-| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 4.22% [2.04; 6.39] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 13.43% [11.26; 15.61] | 0 | 99.9% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 7.99% [5.54; 10.43] | 0 | 100.0% |
 | retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w500_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | micro_cycle_all_w500_d10000 | 8.76% [6.84; 10.67] | 10 | 29.0% |
-| retail sigma 0.4 | ub | 0.95 | micro_cycle_all_w500_d10000 | 4.33% [2.17; 6.50] | 10 | 29.0% |
-| retail sigma 0.4 | ub | 1 | micro_cycle_all_w500_d10000 | 0.00% [-0.00; 0.00] | 10 | 29.0% |
-| retail sigma 0.4 | ub | 0.8 | queue_bypass_d3600000 | 7.73% [5.96; 9.50] | 3 | 95.7% |
-| retail sigma 0.4 | ub | 0.95 | queue_bypass_d3600000 | 2.57% [1.28; 3.85] | 0 | 98.8% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_all_w500_d10000 | 13.41% [11.24; 15.57] | 10 | 29.1% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_all_w500_d10000 | 8.08% [5.68; 10.48] | 10 | 29.1% |
+| retail sigma 0.4 | ub | 1 | micro_cycle_all_w500_d10000 | 0.16% [-0.11; 0.43] | 10 | 29.0% |
+| retail sigma 0.4 | ub | 0.8 | queue_bypass_d3600000 | 11.17% [8.91; 13.44] | 0 | 98.1% |
+| retail sigma 0.4 | ub | 0.95 | queue_bypass_d3600000 | 4.19% [2.89; 5.49] | 0 | 99.4% |
 | retail sigma 0.4 | ub | 1 | queue_bypass_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | queue_fifo_d3600000 | 7.12% [5.36; 8.88] | 2980 | 84.8% |
-| retail sigma 0.4 | ub | 0.95 | queue_fifo_d3600000 | 1.84% [0.97; 2.72] | 314 | 94.4% |
+| retail sigma 0.4 | ub | 0.8 | queue_fifo_d3600000 | 9.58% [7.69; 11.46] | 2772 | 85.8% |
+| retail sigma 0.4 | ub | 0.95 | queue_fifo_d3600000 | 3.78% [2.43; 5.12] | 398 | 94.9% |
 | retail sigma 0.4 | ub | 1 | queue_fifo_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 7.38% [5.65; 9.11] | 3 | 95.7% |
-| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 2.51% [1.22; 3.80] | 0 | 98.8% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 11.11% [8.86; 13.35] | 0 | 98.2% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 4.13% [2.84; 5.43] | 0 | 99.4% |
 | retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w1000_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 6.47% [4.83; 8.11] | 2535 | 85.3% |
-| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 1.71% [0.82; 2.59] | 310 | 94.5% |
+| retail sigma 0.4 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 9.19% [7.26; 11.11] | 2382 | 86.6% |
+| retail sigma 0.4 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 3.77% [2.42; 5.12] | 341 | 95.1% |
 | retail sigma 0.4 | ub | 1 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | gross_real_time | 12.23% [10.07; 14.40] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.95 | gross_real_time | 4.90% [2.73; 7.07] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.8 | gross_real_time | 14.51% [11.62; 17.40] | 0 | 100.0% |
+| retail sigma 1 | ub | 0.95 | gross_real_time | 7.63% [5.34; 9.93] | 0 | 100.0% |
 | retail sigma 1 | ub | 1 | gross_real_time | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | queue_bypass_d10000 | 12.23% [10.06; 14.40] | 0 | 99.0% |
-| retail sigma 1 | ub | 0.95 | queue_bypass_d10000 | 4.88% [2.71; 7.05] | 0 | 99.8% |
+| retail sigma 1 | ub | 0.8 | queue_bypass_d10000 | 14.49% [11.60; 17.39] | 0 | 99.6% |
+| retail sigma 1 | ub | 0.95 | queue_bypass_d10000 | 7.63% [5.33; 9.93] | 0 | 99.9% |
 | retail sigma 1 | ub | 1 | queue_bypass_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 12.21% [10.04; 14.38] | 0 | 99.0% |
-| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 4.88% [2.71; 7.05] | 0 | 99.8% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w500_d10000 | 14.49% [11.60; 17.39] | 0 | 99.6% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w500_d10000 | 7.63% [5.33; 9.93] | 0 | 99.9% |
 | retail sigma 1 | ub | 1 | micro_cycle_shortfall_w500_d10000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | micro_cycle_all_w500_d10000 | 12.19% [10.02; 14.35] | 10 | 21.2% |
-| retail sigma 1 | ub | 0.95 | micro_cycle_all_w500_d10000 | 4.88% [2.71; 7.04] | 10 | 20.9% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_all_w500_d10000 | 14.49% [11.60; 17.38] | 10 | 21.1% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_all_w500_d10000 | 7.63% [5.34; 9.93] | 10 | 20.9% |
 | retail sigma 1 | ub | 1 | micro_cycle_all_w500_d10000 | 0.00% [-0.00; 0.00] | 10 | 20.8% |
-| retail sigma 1 | ub | 0.8 | queue_bypass_d3600000 | 10.57% [9.19; 11.95] | 104 | 95.1% |
-| retail sigma 1 | ub | 0.95 | queue_bypass_d3600000 | 3.40% [2.33; 4.48] | 0 | 98.8% |
+| retail sigma 1 | ub | 0.8 | queue_bypass_d3600000 | 12.78% [10.23; 15.33] | 32 | 96.6% |
+| retail sigma 1 | ub | 0.95 | queue_bypass_d3600000 | 5.26% [3.82; 6.70] | 0 | 99.0% |
 | retail sigma 1 | ub | 1 | queue_bypass_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | queue_fifo_d3600000 | 10.50% [9.07; 11.94] | 2943 | 88.8% |
-| retail sigma 1 | ub | 0.95 | queue_fifo_d3600000 | 3.12% [2.29; 3.95] | 223 | 96.1% |
+| retail sigma 1 | ub | 0.8 | queue_fifo_d3600000 | 12.65% [10.08; 15.22] | 3231 | 88.8% |
+| retail sigma 1 | ub | 0.95 | queue_fifo_d3600000 | 5.15% [3.61; 6.69] | 275 | 96.1% |
 | retail sigma 1 | ub | 1 | queue_fifo_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 10.15% [8.86; 11.44] | 171 | 94.9% |
-| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 3.30% [2.26; 4.35] | 0 | 98.8% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000 | 12.66% [10.16; 15.17] | 71 | 96.5% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000 | 5.28% [3.79; 6.77] | 0 | 99.0% |
 | retail sigma 1 | ub | 1 | micro_cycle_shortfall_w1000_d3600000 | 0.00% [0.00; 0.00] | 0 | 100.0% |
-| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 9.87% [8.58; 11.15] | 2718 | 88.7% |
-| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 2.98% [2.18; 3.79] | 220 | 96.1% |
+| retail sigma 1 | ub | 0.8 | micro_cycle_shortfall_w1000_d3600000_fifo | 12.42% [9.86; 14.99] | 2998 | 88.8% |
+| retail sigma 1 | ub | 0.95 | micro_cycle_shortfall_w1000_d3600000_fifo | 5.03% [3.52; 6.54] | 275 | 96.1% |
 | retail sigma 1 | ub | 1 | micro_cycle_shortfall_w1000_d3600000_fifo | 0.00% [0.00; 0.00] | 0 | 100.0% |
 | large-value 20000/day | ub | 0.8 | gross_real_time | 10.31% [8.45; 12.18] | 0 | 100.0% |
 | large-value 20000/day | ub | 0.95 | gross_real_time | 4.27% [3.27; 5.27] | 0 | 100.0% |
@@ -637,48 +640,48 @@ Liquidez equivalente: o menor α em que cada desenho rejeita no máximo o alvo, 
 
 | cenário | regra | alvo (valor rejeitado) | motor | sementes que atingem | α equivalente | economia vs bruto [IC 95%] |
 |---|---|---|---|---|---|---|
-| retail sigma 0.4 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9999 | 0.00% [0.00; 0.00] |
-| retail sigma 0.4 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9993 | 0.00% [0.00; 0.00] |
-| retail sigma 0.4 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9925 | 0.03% [-0.00; 0.06] |
-| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9999 | 0.00% [0.00; 0.00] |
-| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9993 | 0.00% [0.00; 0.00] |
-| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9925 | 0.03% [-0.00; 0.06] |
-| retail sigma 0.4 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 0.9999 | -0.00% [-0.00; 0.00] |
-| retail sigma 0.4 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9993 | 0.00% [-0.00; 0.00] |
-| retail sigma 0.4 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9926 | 0.03% [-0.00; 0.05] |
-| retail sigma 0.4 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9996 | 0.03% [0.02; 0.05] |
-| retail sigma 0.4 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9958 | 0.35% [0.22; 0.48] |
-| retail sigma 0.4 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9711 | 2.19% [1.42; 2.97] |
-| retail sigma 0.4 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9995 | 0.05% [0.03; 0.06] |
-| retail sigma 0.4 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9948 | 0.45% [0.30; 0.60] |
-| retail sigma 0.4 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9637 | 2.94% [2.23; 3.65] |
-| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9996 | 0.03% [0.02; 0.05] |
-| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9958 | 0.35% [0.22; 0.48] |
-| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9703 | 2.27% [1.47; 3.08] |
-| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9995 | 0.05% [0.03; 0.06] |
-| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9947 | 0.46% [0.31; 0.61] |
-| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9609 | 3.22% [2.42; 4.02] |
-| retail sigma 1 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9991 | 0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9908 | 0.02% [-0.00; 0.05] |
-| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9991 | 0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9908 | 0.02% [-0.00; 0.05] |
-| retail sigma 1 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 0.9999 | -0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9992 | 0.00% [-0.00; 0.00] |
-| retail sigma 1 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9908 | 0.01% [-0.01; 0.04] |
-| retail sigma 1 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
-| retail sigma 1 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9979 | 0.12% [0.08; 0.17] |
-| retail sigma 1 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9799 | 1.12% [0.74; 1.50] |
-| retail sigma 1 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
-| retail sigma 1 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9978 | 0.14% [0.09; 0.19] |
-| retail sigma 1 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9783 | 1.27% [0.83; 1.72] |
-| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
-| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9979 | 0.13% [0.08; 0.17] |
-| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9795 | 1.16% [0.79; 1.53] |
-| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
-| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9977 | 0.15% [0.10; 0.20] |
-| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9774 | 1.36% [0.95; 1.78] |
+| retail sigma 0.4 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 1.0000 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9998 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9976 | 0.01% [-0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 1.0000 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9998 | 0.00% [-0.00; 0.00] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9976 | 0.01% [-0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 1.0984 | -9.84% [-24.69; 5.00] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 1.0842 | -8.44% [-21.23; 4.35] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 1.0053 | -0.76% [-2.46; 0.93] |
+| retail sigma 0.4 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
+| retail sigma 0.4 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9983 | 0.15% [0.06; 0.23] |
+| retail sigma 0.4 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9876 | 1.02% [0.51; 1.52] |
+| retail sigma 0.4 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9998 | 0.02% [0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9978 | 0.19% [0.07; 0.32] |
+| retail sigma 0.4 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9839 | 1.38% [0.71; 2.05] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9998 | 0.01% [0.01; 0.02] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9983 | 0.15% [0.06; 0.23] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9876 | 1.02% [0.51; 1.52] |
+| retail sigma 0.4 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9998 | 0.02% [0.01; 0.03] |
+| retail sigma 0.4 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9978 | 0.19% [0.07; 0.32] |
+| retail sigma 0.4 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9840 | 1.37% [0.70; 2.05] |
+| retail sigma 1 | ub | 0.01% | queue_bypass_d10000 | 10/10 | 1.0000 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9997 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9968 | 0.00% [-0.00; 0.01] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w500_d10000 | 10/10 | 1.0000 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9997 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w500_d10000 | 10/10 | 0.9968 | 0.00% [-0.00; 0.01] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_all_w500_d10000 | 10/10 | 1.0000 | -0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9997 | -0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 1% | micro_cycle_all_w500_d10000 | 10/10 | 0.9968 | 0.00% [-0.00; 0.00] |
+| retail sigma 1 | ub | 0.01% | queue_bypass_d3600000 | 10/10 | 0.9999 | 0.01% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | queue_bypass_d3600000 | 10/10 | 0.9991 | 0.06% [0.02; 0.09] |
+| retail sigma 1 | ub | 1% | queue_bypass_d3600000 | 10/10 | 0.9912 | 0.56% [0.25; 0.87] |
+| retail sigma 1 | ub | 0.01% | queue_fifo_d3600000 | 10/10 | 0.9999 | 0.01% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | queue_fifo_d3600000 | 10/10 | 0.9989 | 0.08% [0.03; 0.12] |
+| retail sigma 1 | ub | 1% | queue_fifo_d3600000 | 10/10 | 0.9894 | 0.74% [0.33; 1.16] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9999 | 0.01% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9991 | 0.06% [0.02; 0.09] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000 | 10/10 | 0.9912 | 0.56% [0.25; 0.88] |
+| retail sigma 1 | ub | 0.01% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9999 | 0.01% [0.00; 0.01] |
+| retail sigma 1 | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9989 | 0.08% [0.03; 0.12] |
+| retail sigma 1 | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9892 | 0.76% [0.35; 1.18] |
 | large-value 20000/day | ub | 0.01% | queue_bypass_d10000 | 10/10 | 0.9999 | 0.00% [-0.00; 0.01] |
 | large-value 20000/day | ub | 0.1% | queue_bypass_d10000 | 10/10 | 0.9990 | 0.02% [-0.02; 0.06] |
 | large-value 20000/day | ub | 1% | queue_bypass_d10000 | 10/10 | 0.9895 | 0.28% [-0.30; 0.86] |
@@ -701,7 +704,7 @@ Liquidez equivalente: o menor α em que cada desenho rejeita no máximo o alvo, 
 | large-value 20000/day | ub | 0.1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9910 | 0.82% [0.41; 1.23] |
 | large-value 20000/day | ub | 1% | micro_cycle_shortfall_w1000_d3600000_fifo | 10/10 | 0.9398 | 5.28% [3.53; 7.03] |
 
-Coerência: a rejeição do bruto subiu quando a liquidez subiu em 2 passos da grade (esperado: 0).
+Coerência: a rejeição do bruto subiu quando a liquidez subiu em 4 passos da grade (esperado: 0).
 
 Figura: [`liquidity-frontier/fig_frontier.svg`](liquidity-frontier/fig_frontier.svg)
 
@@ -719,109 +722,109 @@ Sistema pequeno numa hora movimentada (20 participantes, cerca de 1.500 pagament
 | 1 | 60 | 1.662% | 1.658% [1.205; 2.111] | 0.986% | 0.9977 | 0.595 | 2/20 |
 
 ## 14. Pagamentos em eco: circularidade de curto prazo (teste mais duro da afirmação central)
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment echo-sweep`._
 
 Uma parcela de todos os pagamentos é resposta a um recebimento: quem recebe paga o mesmo valor pouco depois, para um recebedor qualquer (retorno 0) ou direto de volta a quem pagou (retorno 1). ASSUMPTION: teste de estresse, não comportamento calibrado. Médias de 8 sementes, 1 milhão de pagamentos por dia, σ = 0,4.
 
 | parcela de eco | atraso do eco (s) | retorno | motor | economia [IC 95%] | limite apertado [IC 95%] | valor em ciclos | LB/UB |
 |---|---|---|---|---|---|---|---|
-| 0 | 0 | 0 | micro:all:500:10000 | 0.010% [0.006; 0.014] | 0.038% [0.018; 0.058] | 64% | 0.916 |
-| 0 | 0 | 0 | deferred:8640 | 0.018% [0.011; 0.025] | 0.038% [0.018; 0.058] | 0% | 0.916 |
-| 0.05 | 1 | 0 | micro:all:500:10000 | -0.113% [-0.253; 0.027] | 0.042% [0.014; 0.070] | 65% | 0.916 |
-| 0.05 | 1 | 0 | deferred:8640 | 0.014% [0.007; 0.021] | 0.042% [0.014; 0.070] | 0% | 0.916 |
-| 0.05 | 1 | 1 | micro:all:500:10000 | 0.361% [0.161; 0.561] | 1.245% [-0.027; 2.516] | 67% | 0.898 |
-| 0.05 | 1 | 1 | deferred:8640 | 1.215% [-0.049; 2.478] | 1.245% [-0.027; 2.516] | 0% | 0.898 |
-| 0.05 | 10 | 0 | micro:all:500:10000 | -0.037% [-0.137; 0.064] | 0.041% [0.014; 0.069] | 65% | 0.916 |
-| 0.05 | 10 | 0 | deferred:8640 | 0.015% [0.006; 0.023] | 0.041% [0.014; 0.069] | 0% | 0.916 |
-| 0.05 | 10 | 1 | micro:all:500:10000 | 0.260% [0.088; 0.433] | 0.982% [-0.209; 2.173] | 66% | 0.898 |
-| 0.05 | 10 | 1 | deferred:8640 | 0.360% [0.021; 0.698] | 0.982% [-0.209; 2.173] | 0% | 0.898 |
-| 0.05 | 60 | 0 | micro:all:500:10000 | 0.007% [0.000; 0.014] | 0.041% [0.014; 0.068] | 65% | 0.916 |
-| 0.05 | 60 | 0 | deferred:8640 | 0.014% [0.005; 0.023] | 0.041% [0.014; 0.068] | 0% | 0.916 |
-| 0.05 | 60 | 1 | micro:all:500:10000 | 0.097% [-0.041; 0.236] | 0.148% [0.015; 0.281] | 65% | 0.898 |
-| 0.05 | 60 | 1 | deferred:8640 | 0.057% [0.001; 0.113] | 0.148% [0.015; 0.281] | 0% | 0.898 |
-| 0.2 | 1 | 0 | micro:all:500:10000 | -0.061% [-0.204; 0.082] | 0.180% [-0.104; 0.463] | 69% | 0.901 |
-| 0.2 | 1 | 0 | deferred:8640 | 0.156% [-0.128; 0.440] | 0.180% [-0.104; 0.463] | 0% | 0.901 |
-| 0.2 | 1 | 1 | micro:all:500:10000 | 2.512% [1.129; 3.896] | 4.211% [2.188; 6.234] | 76% | 0.867 |
-| 0.2 | 1 | 1 | deferred:8640 | 3.919% [1.993; 5.846] | 4.211% [2.188; 6.234] | 0% | 0.867 |
-| 0.2 | 10 | 0 | micro:all:500:10000 | -0.006% [-0.035; 0.022] | 0.053% [0.025; 0.080] | 68% | 0.901 |
-| 0.2 | 10 | 0 | deferred:8640 | 0.020% [0.014; 0.025] | 0.053% [0.025; 0.080] | 0% | 0.901 |
-| 0.2 | 10 | 1 | micro:all:500:10000 | 1.404% [0.271; 2.537] | 1.952% [0.691; 3.213] | 74% | 0.866 |
-| 0.2 | 10 | 1 | deferred:8640 | 1.072% [0.452; 1.691] | 1.952% [0.691; 3.213] | 0% | 0.866 |
-| 0.2 | 60 | 0 | micro:all:500:10000 | 0.005% [-0.005; 0.015] | 0.044% [0.022; 0.065] | 67% | 0.900 |
-| 0.2 | 60 | 0 | deferred:8640 | 0.019% [0.007; 0.030] | 0.044% [0.022; 0.065] | 0% | 0.900 |
-| 0.2 | 60 | 1 | micro:all:500:10000 | 0.207% [-0.000; 0.415] | 0.451% [0.045; 0.857] | 70% | 0.866 |
-| 0.2 | 60 | 1 | deferred:8640 | 0.102% [0.049; 0.155] | 0.451% [0.045; 0.857] | 0% | 0.866 |
-| 0.5 | 1 | 0 | micro:all:500:10000 | -4.489% [-7.477; -1.502] | 0.712% [-0.545; 1.970] | 77% | 0.886 |
-| 0.5 | 1 | 0 | deferred:8640 | 0.607% [-0.657; 1.872] | 0.712% [-0.545; 1.970] | 0% | 0.886 |
-| 0.5 | 1 | 1 | micro:all:500:10000 | 72.917% [66.757; 79.076] | 99.988% [99.983; 99.993] | 100% | 0.000 |
-| 0.5 | 1 | 1 | deferred:8640 | 79.970% [71.372; 88.569] | 99.988% [99.983; 99.993] | 0% | 0.000 |
-| 0.5 | 10 | 0 | micro:all:500:10000 | -1.729% [-4.914; 1.457] | 0.634% [-0.625; 1.893] | 74% | 0.885 |
-| 0.5 | 10 | 0 | deferred:8640 | 0.548% [-0.713; 1.808] | 0.634% [-0.625; 1.893] | 0% | 0.885 |
-| 0.5 | 10 | 1 | micro:all:500:10000 | 29.626% [20.211; 39.041] | 52.866% [44.353; 61.380] | 88% | 0.000 |
-| 0.5 | 10 | 1 | deferred:8640 | 32.153% [20.641; 43.665] | 52.866% [44.353; 61.380] | 0% | 0.000 |
-| 0.5 | 60 | 0 | micro:all:500:10000 | -0.101% [-0.275; 0.073] | 0.567% [-0.632; 1.766] | 71% | 0.881 |
-| 0.5 | 60 | 0 | deferred:8640 | 0.520% [-0.667; 1.708] | 0.567% [-0.632; 1.766] | 0% | 0.881 |
-| 0.5 | 60 | 1 | micro:all:500:10000 | 4.968% [1.202; 8.734] | 9.228% [3.799; 14.657] | 76% | 0.003 |
-| 0.5 | 60 | 1 | deferred:8640 | 5.792% [1.273; 10.312] | 9.228% [3.799; 14.657] | 0% | 0.003 |
+| 0 | 0 | 0 | micro:all:500:10000 | 0.002% [-0.012; 0.015] | 0.028% [0.013; 0.044] | 64% | 0.854 |
+| 0 | 0 | 0 | deferred:8640 | 0.013% [0.005; 0.021] | 0.028% [0.013; 0.044] | 0% | 0.854 |
+| 0.05 | 1 | 0 | micro:all:500:10000 | -0.025% [-0.063; 0.013] | 0.039% [0.021; 0.058] | 65% | 0.844 |
+| 0.05 | 1 | 0 | deferred:8640 | 0.013% [0.003; 0.023] | 0.039% [0.021; 0.058] | 0% | 0.844 |
+| 0.05 | 1 | 1 | micro:all:500:10000 | 1.125% [-0.256; 2.507] | 1.216% [-0.162; 2.594] | 67% | 0.824 |
+| 0.05 | 1 | 1 | deferred:8640 | 1.109% [-0.291; 2.509] | 1.216% [-0.162; 2.594] | 0% | 0.824 |
+| 0.05 | 10 | 0 | micro:all:500:10000 | -0.006% [-0.039; 0.028] | 0.038% [0.020; 0.056] | 65% | 0.844 |
+| 0.05 | 10 | 0 | deferred:8640 | 0.013% [0.002; 0.023] | 0.038% [0.020; 0.056] | 0% | 0.844 |
+| 0.05 | 10 | 1 | micro:all:500:10000 | 0.323% [0.180; 0.466] | 0.394% [0.224; 0.564] | 66% | 0.824 |
+| 0.05 | 10 | 1 | deferred:8640 | 0.206% [0.059; 0.352] | 0.394% [0.224; 0.564] | 0% | 0.824 |
+| 0.05 | 60 | 0 | micro:all:500:10000 | 0.009% [-0.015; 0.033] | 0.049% [0.019; 0.079] | 64% | 0.844 |
+| 0.05 | 60 | 0 | deferred:8640 | 0.024% [-0.001; 0.048] | 0.049% [0.019; 0.079] | 0% | 0.844 |
+| 0.05 | 60 | 1 | micro:all:500:10000 | 0.038% [-0.010; 0.086] | 0.075% [0.035; 0.115] | 65% | 0.824 |
+| 0.05 | 60 | 1 | deferred:8640 | 0.045% [-0.001; 0.091] | 0.075% [0.035; 0.115] | 0% | 0.824 |
+| 0.2 | 1 | 0 | micro:all:500:10000 | -0.644% [-1.432; 0.144] | 0.064% [0.011; 0.118] | 69% | 0.849 |
+| 0.2 | 1 | 0 | deferred:8640 | 0.044% [-0.014; 0.101] | 0.064% [0.011; 0.118] | 0% | 0.849 |
+| 0.2 | 1 | 1 | micro:all:500:10000 | 6.421% [3.271; 9.570] | 7.564% [4.287; 10.841] | 76% | 0.764 |
+| 0.2 | 1 | 1 | deferred:8640 | 7.135% [3.984; 10.286] | 7.564% [4.287; 10.841] | 0% | 0.764 |
+| 0.2 | 10 | 0 | micro:all:500:10000 | -0.947% [-1.893; -0.001] | 0.039% [0.019; 0.058] | 68% | 0.849 |
+| 0.2 | 10 | 0 | deferred:8640 | 0.016% [0.003; 0.029] | 0.039% [0.019; 0.058] | 0% | 0.849 |
+| 0.2 | 10 | 1 | micro:all:500:10000 | 2.725% [1.406; 4.044] | 4.212% [2.765; 5.659] | 73% | 0.765 |
+| 0.2 | 10 | 1 | deferred:8640 | 3.074% [1.864; 4.284] | 4.212% [2.765; 5.659] | 0% | 0.765 |
+| 0.2 | 60 | 0 | micro:all:500:10000 | -0.330% [-1.092; 0.432] | 0.034% [0.019; 0.048] | 67% | 0.849 |
+| 0.2 | 60 | 0 | deferred:8640 | 0.011% [0.007; 0.014] | 0.034% [0.019; 0.048] | 0% | 0.849 |
+| 0.2 | 60 | 1 | micro:all:500:10000 | 0.790% [-0.138; 1.718] | 1.419% [0.347; 2.491] | 70% | 0.764 |
+| 0.2 | 60 | 1 | deferred:8640 | 0.672% [-0.145; 1.489] | 1.419% [0.347; 2.491] | 0% | 0.764 |
+| 0.5 | 1 | 0 | micro:all:500:10000 | -4.422% [-7.558; -1.286] | 1.229% [0.123; 2.335] | 77% | 0.784 |
+| 0.5 | 1 | 0 | deferred:8640 | 1.204% [0.094; 2.315] | 1.229% [0.123; 2.335] | 0% | 0.784 |
+| 0.5 | 1 | 1 | micro:all:500:10000 | 70.855% [64.280; 77.429] | 99.985% [99.968; 100.001] | 100% | 0.000 |
+| 0.5 | 1 | 1 | deferred:8640 | 74.286% [68.609; 79.964] | 99.985% [99.968; 100.001] | 0% | 0.000 |
+| 0.5 | 10 | 0 | micro:all:500:10000 | -1.460% [-2.892; -0.027] | 0.545% [-0.151; 1.241] | 75% | 0.784 |
+| 0.5 | 10 | 0 | deferred:8640 | 0.058% [0.006; 0.109] | 0.545% [-0.151; 1.241] | 0% | 0.784 |
+| 0.5 | 10 | 1 | micro:all:500:10000 | 20.317% [13.619; 27.014] | 49.454% [41.868; 57.041] | 88% | 0.000 |
+| 0.5 | 10 | 1 | deferred:8640 | 25.800% [17.531; 34.068] | 49.454% [41.868; 57.041] | 0% | 0.000 |
+| 0.5 | 60 | 0 | micro:all:500:10000 | -0.080% [-0.152; -0.008] | 0.133% [0.039; 0.227] | 71% | 0.783 |
+| 0.5 | 60 | 0 | deferred:8640 | 0.052% [0.008; 0.096] | 0.133% [0.039; 0.227] | 0% | 0.783 |
+| 0.5 | 60 | 1 | micro:all:500:10000 | 3.989% [1.447; 6.530] | 10.892% [4.187; 17.596] | 76% | 0.002 |
+| 0.5 | 60 | 1 | deferred:8640 | 7.544% [-0.046; 15.134] | 10.892% [4.187; 17.596] | 0% | 0.002 |
 
-Critério de morte (the claim is conditional if the 10 s tight bound (upper end of its 95% CI) exceeds 2% of UB for an echo share of at most 20%): pior caso 6.23%; disparou: sim.
+Critério de morte (the claim is conditional if the 10 s tight bound (upper end of its 95% CI) exceeds 2% of UB for an echo share of at most 20%): pior caso 10.84%; disparou: sim.
 
 Sensibilidade do caso que disparou o critério (20% de eco, 1 s, de volta a quem pagou), mudando uma coisa de cada vez; prazo de 10 s:
 
 | variante | motor | economia [IC 95%] | limite apertado [IC 95%] |
 |---|---|---|---|
-| as in the sweep (same amount; base bias and scale) | micro:all:500:10000 | 2.512% [1.129; 3.896] | 4.211% [2.188; 6.234] |
-| as in the sweep (same amount; base bias and scale) | deferred:8640 | 3.919% [1.993; 5.846] | 4.211% [2.188; 6.234] |
-| echo passes on half of the amount | micro:all:500:10000 | 0.969% [0.365; 1.572] | 1.712% [0.696; 2.727] |
-| echo passes on half of the amount | deferred:8640 | 1.583% [0.631; 2.535] | 1.712% [0.696; 2.727] |
-| echo passes on a quarter of the amount | micro:all:500:10000 | 0.328% [0.086; 0.570] | 0.586% [0.199; 0.972] |
-| echo passes on a quarter of the amount | deferred:8640 | 0.543% [0.163; 0.922] | 0.586% [0.199; 0.972] |
-| calibrated receiver bias (sigma 1.0) | micro:all:500:10000 | 1.222% [0.334; 2.110] | 1.770% [0.714; 2.826] |
-| calibrated receiver bias (sigma 1.0) | deferred:8640 | 1.699% [0.632; 2.766] | 1.770% [0.714; 2.826] |
-| 3x the payments | micro:all:500:10000 | 1.290% [0.426; 2.154] | 2.114% [0.806; 3.423] |
-| 3x the payments | deferred:8640 | 1.905% [0.605; 3.205] | 2.114% [0.806; 3.423] |
-| 10x the payments | micro:all:500:10000 | 0.691% [0.330; 1.053] | 1.197% [0.646; 1.748] |
-| 10x the payments | deferred:8640 | 1.003% [0.521; 1.486] | 1.197% [0.646; 1.748] |
+| as in the sweep (same amount; base bias and scale) | micro:all:500:10000 | 6.421% [3.271; 9.570] | 7.564% [4.287; 10.841] |
+| as in the sweep (same amount; base bias and scale) | deferred:8640 | 7.135% [3.984; 10.286] | 7.564% [4.287; 10.841] |
+| echo passes on half of the amount | micro:all:500:10000 | 2.608% [1.063; 4.153] | 3.042% [1.497; 4.587] |
+| echo passes on half of the amount | deferred:8640 | 2.872% [1.314; 4.429] | 3.042% [1.497; 4.587] |
+| echo passes on a quarter of the amount | micro:all:500:10000 | 1.042% [0.311; 1.773] | 1.235% [0.523; 1.947] |
+| echo passes on a quarter of the amount | deferred:8640 | 1.149% [0.419; 1.878] | 1.235% [0.523; 1.947] |
+| stronger receiver bias (sigma 1.0) | micro:all:500:10000 | 3.389% [1.453; 5.326] | 4.318% [2.109; 6.527] |
+| stronger receiver bias (sigma 1.0) | deferred:8640 | 4.078% [1.962; 6.193] | 4.318% [2.109; 6.527] |
+| 3x the payments | micro:all:500:10000 | 2.627% [1.646; 3.609] | 4.476% [2.584; 6.368] |
+| 3x the payments | deferred:8640 | 4.061% [2.383; 5.740] | 4.476% [2.584; 6.368] |
+| 10x the payments | micro:all:500:10000 | 1.558% [0.909; 2.207] | 2.448% [1.594; 3.302] |
+| 10x the payments | deferred:8640 | 2.254% [1.377; 3.131] | 2.448% [1.594; 3.302] |
 
 Diagnóstico de ordem: só atrasar (hold, ordem de chegada mantida) contra motores que liquidam uns pagamentos antes e outros depois, com ecos adiante:
 
 | caso | motor | economia [IC 95%] |
 |---|---|---|
 | no echo | hold_d10000 | 0.000% [0.000; 0.000] |
-| no echo | deferred_net_8640x | 0.018% [0.011; 0.025] |
-| no echo | micro_cycle_all_w500_d10000 | 0.010% [0.006; 0.014] |
-| no echo | micro_cycle_all_w10000_d10000 | 0.006% [0.001; 0.012] |
+| no echo | deferred_net_8640x | 0.013% [0.005; 0.021] |
+| no echo | micro_cycle_all_w500_d10000 | 0.002% [-0.012; 0.015] |
+| no echo | micro_cycle_all_w10000_d10000 | -0.004% [-0.012; 0.005] |
 | 20% onward echoes at 1 s | hold_d10000 | 0.000% [0.000; 0.000] |
-| 20% onward echoes at 1 s | deferred_net_8640x | 0.156% [-0.128; 0.440] |
-| 20% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -0.061% [-0.204; 0.082] |
-| 20% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -0.778% [-2.028; 0.471] |
+| 20% onward echoes at 1 s | deferred_net_8640x | 0.044% [-0.014; 0.101] |
+| 20% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -0.644% [-1.432; 0.144] |
+| 20% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -0.814% [-1.746; 0.118] |
 | 50% onward echoes at 1 s | hold_d10000 | 0.000% [0.000; 0.000] |
-| 50% onward echoes at 1 s | deferred_net_8640x | 0.607% [-0.657; 1.872] |
-| 50% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -4.489% [-7.477; -1.502] |
-| 50% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -4.570% [-9.592; 0.452] |
+| 50% onward echoes at 1 s | deferred_net_8640x | 1.204% [0.094; 2.315] |
+| 50% onward echoes at 1 s | micro_cycle_all_w500_d10000 | -4.422% [-7.558; -1.286] |
+| 50% onward echoes at 1 s | micro_cycle_all_w10000_d10000 | -4.210% [-7.391; -1.028] |
 
-O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite apertado de 10 s em % do UB cai com expoente -0.52 no número de pagamentos; em valor, cresce com expoente 0.42.
+O mesmo caso com mais volume (experimento `echo-scale`, 4 sementes): o limite apertado de 10 s em % do UB cai com expoente -0.58 no número de pagamentos; em valor, cresce com expoente 0.30.
 
 | pagamentos/dia | economia a cada 10 s [IC 95%] | limite apertado [IC 95%] | UB / volume |
 |---|---|---|---|
-| 1 000 000 | 4.614% [0.255; 8.973] | 4.800% [0.418; 9.182] | 0.1030 |
-| 3 000 000 | 2.119% [-1.580; 5.817] | 2.441% [-1.224; 6.106] | 0.0968 |
-| 10 000 000 | 1.119% [0.336; 1.903] | 1.287% [0.592; 1.983] | 0.0894 |
-| 30 000 000 | 0.581% [0.249; 0.912] | 0.807% [0.324; 1.291] | 0.0876 |
+| 1 000 000 | 6.634% [0.220; 13.049] | 7.028% [0.592; 13.464] | 0.1319 |
+| 3 000 000 | 4.240% [0.752; 7.728] | 4.797% [0.482; 9.112] | 0.1167 |
+| 10 000 000 | 2.078% [1.255; 2.901] | 2.340% [1.530; 3.150] | 0.0984 |
+| 30 000 000 | 0.842% [0.422; 1.262] | 0.989% [0.461; 1.517] | 0.0922 |
 
 ## 15. Circularidade por horizonte: valor que circula × liquidez recuperável
-_seed `20260930`, código `0.2.0+git.12485e1`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment circularity-horizon`._
 
 Para cada largura w, o dia é cortado em janelas; dentro de cada janela calcula-se a circulação máxima (CDFD) dos fluxos agregados. A soma é o valor que *poderia ser cancelado* compensando dentro de janelas de largura w. Ao lado, para o mesmo w como prazo: o limite apertado e o que a compensação a cada w obtém. Valor cancelado não é liquidez economizada. Médias de 5 sementes.
 
 | janela / prazo (s) | valor que circula (% do bruto) [IC 95%] | só bilateral (% do bruto) | limite apertado (% do UB) | obtido a cada w (% do UB) | limite apertado (% do bruto) | circula / recuperável |
 |---|---|---|---|---|---|---|
-| 10 | 25.39% [24.48; 26.29] | 12.59% | 0.035% | 0.019% | 0.0059% | 4269 |
-| 60 | 48.05% [47.31; 48.80] | 28.44% | 0.187% | 0.059% | 0.0318% | 1509 |
-| 900 | 70.25% [69.19; 71.32] | 53.13% | 2.256% | 0.466% | 0.3833% | 183 |
-| 3600 | 76.68% [74.97; 78.38] | 62.45% | 5.863% | 2.014% | 0.9962% | 77 |
-| 21600 | 81.48% [79.20; 83.77] | 70.69% | 8.469% | 4.205% | 1.4389% | 57 |
-| 86400 | 83.44% [80.81; 86.08] | 74.73% | 8.565% | 8.565% | 1.4554% | 57 |
+| 10 | 12.66% [12.05; 13.26] | 6.30% | 0.021% | 0.009% | 0.0041% | 3096 |
+| 60 | 27.50% [26.79; 28.21] | 15.66% | 0.203% | 0.064% | 0.0399% | 690 |
+| 900 | 55.58% [53.51; 57.64] | 36.82% | 3.017% | 0.855% | 0.5917% | 94 |
+| 3600 | 67.23% [64.62; 69.83] | 48.71% | 8.684% | 2.665% | 1.7029% | 39 |
+| 21600 | 77.42% [73.45; 81.38] | 61.74% | 14.330% | 8.653% | 2.8101% | 28 |
+| 86400 | 81.45% [76.99; 85.91] | 68.06% | 14.611% | 14.611% | 2.8651% | 28 |
 
 Figura: [`circularity-horizon/fig_horizon.svg`](circularity-horizon/fig_horizon.svg)
 
@@ -831,25 +834,63 @@ As tabelas das seções anteriores destes experimentos descrevem uma semente e f
 
 | experimento | métrica | média [IC 95%] | mín.–máx. |
 |---|---|---|---|
-| baseline | ub_brl | 7.5488e+07 [6.6406e+07; 8.4571e+07] | 4.9914e+07–9.4706e+07 |
-| baseline | lb_over_ub | 0.92196 [0.88898; 0.95494] | 0.83267–0.9657 |
-| baseline | potential_offset_fraction | 0.84544 [0.82238; 0.8685] | 0.79953–0.91049 |
-| baseline | saving_deferred_1x_pct | 7.804 [4.506; 11.102] | 3.4299–16.733 |
-| baseline | net_cdfd_max | 0.19162 [0.14329; 0.23995] | 0.11711–0.36472 |
-| baseline | net_cdfd_bff | 0.14955 [0.10578; 0.19333] | 0.08589–0.30896 |
-| baseline | net_cycle_netting | 0.16046 [0.11642; 0.2045] | 0.095059–0.31903 |
-| potential-vs-realizable | saving_pct_deferred_net_96x | 0.50209 [0.37794; 0.62623] | 0.32484–0.88205 |
-| potential-vs-realizable | saving_pct_deferred_net_8640x | 0.018546 [0.012892; 0.0242] | 0.006802–0.030585 |
-| potential-vs-realizable | saving_pct_micro_cycle_all_w1000_d10000 | 0.012013 [0.007952; 0.016075] | 0.000544–0.018596 |
-| microcycle-sweep | saving_pct_micro_cycle_all_w500_d10000 | 0.011559 [0.007914; 0.015205] | 0.00099–0.01808 |
+| baseline | ub_brl | 8.8042e+07 [7.8153e+07; 9.793e+07] | 7.1912e+07–1.1291e+08 |
+| baseline | lb_over_ub | 0.85558 [0.81829; 0.89288] | 0.74625–0.91487 |
+| baseline | potential_offset_fraction | 0.83228 [0.81252; 0.85205] | 0.7948–0.87587 |
+| baseline | saving_deferred_1x_pct | 14.442 [10.712; 18.171] | 8.5128–25.375 |
+| baseline | net_cdfd_max | 0.27814 [0.23417; 0.32211] | 0.17923–0.41376 |
+| baseline | net_cdfd_bff | 0.22075 [0.18469; 0.2568] | 0.13669–0.33168 |
+| baseline | net_cycle_netting | 0.2308 [0.19247; 0.26913] | 0.13984–0.35437 |
+| potential-vs-realizable | saving_pct_deferred_net_96x | 0.84782 [0.59674; 1.0989] | 0.39349–1.4701 |
+| potential-vs-realizable | saving_pct_deferred_net_8640x | 0.013174 [0.006504; 0.019845] | 0.005115–0.03377 |
+| potential-vs-realizable | saving_pct_micro_cycle_all_w1000_d10000 | -0.00065 [-0.007513; 0.006212] | -0.019432–0.007236 |
+| microcycle-sweep | saving_pct_micro_cycle_all_w500_d10000 | 0.001727 [-0.008571; 0.012025] | -0.019569–0.033491 |
 | microcycle-sweep | share_within_2800ms_micro_cycle_all_w1000_d2000 | 1 [1; 1] | 1–1 |
-| microcycle-sweep | share_within_2800ms_micro_cycle_all_w1000_d5000 | 0.43038 [0.41131; 0.44944] | 0.37885–0.46617 |
-| microcycle-sweep | rejected_value_share_0.5xUB_gross_real_time | 0.15657 [0.13414; 0.17899] | 0.12702–0.21387 |
-| microcycle-sweep | rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000 | 0.15213 [0.1317; 0.17255] | 0.12464–0.20144 |
-| stress | others_ub_net_change_pct_largest_t0 | 0.031768 [-0.027372; 0.090909] | -2.5e-05–0.26647 |
-| stress | rejected_value_share_largest_t0_gross_real_time | 0.000172 [-2.3e-05; 0.000368] | 0–0.000863 |
-| heterogeneity | tight_bound_10s_pct_sigma1_lambda1 | 0.015886 [0.008837; 0.022935] | 0.003413–0.029974 |
-| heterogeneity | netting_daily_saving_pct_sigma1_lambda1 | 4.7974 [2.2325; 7.3624] | 0.91361–12.413 |
-| funding-windows | netting_saving_pct_sigma1_lambda1_weekend | 1.9634 [0.55737; 3.3695] | 0.40024–7.2361 |
-| funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.027931 [0.016851; 0.03901] | 0.009182–0.058955 |
+| microcycle-sweep | share_within_2800ms_micro_cycle_all_w1000_d5000 | 0.43036 [0.41148; 0.44925] | 0.37988–0.46642 |
+| microcycle-sweep | rejected_value_share_0.5xUB_gross_real_time | 0.18984 [0.16832; 0.21136] | 0.16215–0.24662 |
+| microcycle-sweep | rejected_value_share_0.5xUB_micro_cycle_all_w1000_d10000 | 0.18752 [0.16664; 0.20841] | 0.16273–0.24389 |
+| stress | others_ub_net_change_pct_largest_t0 | 0.01058 [-0.014337; 0.035497] | -0.018075–0.10387 |
+| stress | rejected_value_share_largest_t0_gross_real_time | 0.000471 [-0.000427; 0.001369] | 0–0.004018 |
+| heterogeneity | tight_bound_10s_pct_sigma1_lambda1 | 0.01803 [0.008748; 0.027313] | 0.00319–0.044026 |
+| heterogeneity | netting_daily_saving_pct_sigma1_lambda1 | 6.7812 [3.7761; 9.7863] | 1.7014–12.171 |
+| funding-windows | netting_saving_pct_sigma1_lambda1_weekend | 3.8623 [1.9828; 5.7418] | 0.87484–10.262 |
+| funding-windows | tight_bound_10s_pct_sigma1_lambda1_weekend | 0.0277 [0.019117; 0.036284] | 0.010391–0.047891 |
+
+## 17. Replicação do desenho do Banco da Finlândia (Koponen & Soramäki 1998; Bech & Soramäki 2001)
+_seed `20260930`, código `0.2.0+git.b8fec3d`, comando `cargo run --release -p loopsettle-cli -- experiment bof-replication`._
+
+Cada participante tem LB + nível × (UB − LB) (equação 4 de 1998); pagamentos esperam na fila até o fim do dia; ρ = atraso (eq. 5), π = uso de liquidez (eq. 6). Fila de referência: FIFO por pagador, nova tentativa a cada 1 s. As compensações (completa de 1998, prefixo de 2001, micro-ciclos) usam a mesma nova tentativa. Médias de 10 sementes. Δρ = diferença pareada com a fila simples.
+
+| cenário | nível | mecanismo | ρ [IC 95%] | π | rejeitado (% do valor) | Δρ [IC 95%] |
+|---|---|---|---|---|---|---|
+| retail (Pix) | 0 | `queue_fifo_d86400000` | 4.189% [2.930; 5.448] | 18.31% | 0.113% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0.5 | `queue_fifo_d86400000` | 1.613% [0.987; 2.239] | 20.64% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w1200000_d86400000_r1000` | 4.173% [2.912; 5.434] | 18.35% | 0.000% | -0.016 [-0.037; +0.005] |
+| retail (Pix) | 0.5 | `netq_fifo_w1200000_d86400000_r1000` | 1.613% [0.987; 2.239] | 20.64% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w300000_d86400000_r1000` | 4.173% [2.912; 5.434] | 18.35% | 0.000% | -0.016 [-0.037; +0.005] |
+| retail (Pix) | 0.5 | `netq_fifo_w300000_d86400000_r1000` | 1.613% [0.987; 2.239] | 20.64% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `netq_fifo_w60000_d86400000_r1000` | 4.173% [2.912; 5.434] | 18.35% | 0.000% | -0.016 [-0.037; +0.005] |
+| retail (Pix) | 0.5 | `netq_fifo_w60000_d86400000_r1000` | 1.613% [0.987; 2.239] | 20.64% | 0.000% | +0.000 [+0.000; +0.000] |
+| retail (Pix) | 0 | `gridlock_fifo_w60000_d86400000_r1000` | 4.105% [2.879; 5.332] | 18.35% | 0.000% | -0.084 [-0.170; +0.003] |
+| retail (Pix) | 0.5 | `gridlock_fifo_w60000_d86400000_r1000` | 1.604% [0.984; 2.224] | 20.64% | 0.000% | -0.009 [-0.027; +0.008] |
+| retail (Pix) | 0 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 4.137% [2.879; 5.395] | 18.32% | 0.081% | -0.052 [-0.209; +0.105] |
+| retail (Pix) | 0.5 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 1.644% [0.992; 2.296] | 20.63% | 0.000% | +0.031 [-0.031; +0.093] |
+| retail (Pix) | 0 | `micro_cycle_shortfall_w1000_d86400000` | 5.281% [3.468; 7.095] | 18.35% | 0.005% | +1.092 [+0.441; +1.744] |
+| retail (Pix) | 0.5 | `micro_cycle_shortfall_w1000_d86400000` | 2.094% [1.164; 3.024] | 20.51% | 0.000% | +0.481 [+0.095; +0.867] |
+| large-value 1500/day | 0 | `queue_fifo_d86400000` | 12.149% [8.110; 16.188] | 34.40% | 1.936% | +0.000 [+0.000; +0.000] |
+| large-value 1500/day | 0.5 | `queue_fifo_d86400000` | 3.691% [2.209; 5.173] | 37.98% | 0.157% | +0.000 [+0.000; +0.000] |
+| large-value 1500/day | 0 | `netq_fifo_w1200000_d86400000_r1000` | 9.396% [5.685; 13.106] | 34.65% | 0.000% | -2.753 [-5.179; -0.327] |
+| large-value 1500/day | 0.5 | `netq_fifo_w1200000_d86400000_r1000` | 3.655% [2.169; 5.141] | 38.07% | 0.000% | -0.036 [-0.118; +0.046] |
+| large-value 1500/day | 0 | `netq_fifo_w300000_d86400000_r1000` | 9.381% [5.671; 13.090] | 34.65% | 0.000% | -2.768 [-5.203; -0.334] |
+| large-value 1500/day | 0.5 | `netq_fifo_w300000_d86400000_r1000` | 3.643% [2.155; 5.131] | 38.07% | 0.000% | -0.048 [-0.156; +0.059] |
+| large-value 1500/day | 0 | `netq_fifo_w60000_d86400000_r1000` | 9.369% [5.656; 13.082] | 34.65% | 0.000% | -2.780 [-5.223; -0.337] |
+| large-value 1500/day | 0.5 | `netq_fifo_w60000_d86400000_r1000` | 3.641% [2.152; 5.129] | 38.07% | 0.000% | -0.050 [-0.159; +0.059] |
+| large-value 1500/day | 0 | `gridlock_fifo_w60000_d86400000_r1000` | 8.542% [5.663; 11.421] | 34.65% | 0.000% | -3.607 [-6.062; -1.152] |
+| large-value 1500/day | 0.5 | `gridlock_fifo_w60000_d86400000_r1000` | 3.402% [2.268; 4.535] | 38.08% | 0.000% | -0.289 [-0.684; +0.106] |
+| large-value 1500/day | 0 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 11.444% [5.517; 17.371] | 34.65% | 0.292% | -0.705 [-4.293; +2.882] |
+| large-value 1500/day | 0.5 | `micro_cycle_shortfall_w1000_d86400000_fifo` | 3.547% [2.079; 5.016] | 38.09% | 0.000% | -0.143 [-0.256; -0.031] |
+| large-value 1500/day | 0 | `micro_cycle_shortfall_w1000_d86400000` | 10.240% [5.977; 14.503] | 34.54% | 0.639% | -1.909 [-5.553; +1.735] |
+| large-value 1500/day | 0.5 | `micro_cycle_shortfall_w1000_d86400000` | 3.845% [2.420; 5.270] | 37.64% | 0.000% | +0.154 [-0.748; +1.057] |
+
+Figura: [`bof-replication/fig_bof_retail.svg`](bof-replication/fig_bof_retail.svg), [`bof-replication/fig_bof_large_value.svg`](bof-replication/fig_bof_large_value.svg)
 

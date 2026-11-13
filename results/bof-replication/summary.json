@@ -1,0 +1,46 @@
+{
+  "schema": "loopsettle.result/1",
+  "experiment": "bof-replication",
+  "seed": 20260930,
+  "code_version": "0.2.0+git.b8fec3d",
+  "config_file": "experiments/bof-replication.toml",
+  "command": "cargo run --release -p loopsettle-cli -- experiment bof-replication",
+  "platform": "x86_64-linux",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "cargo_lock_fnv1a64": "c410c9dc1b079fcb",
+  "scenario": {
+    "participants": 200,
+    "days": 1,
+    "payments_per_day": 300000,
+    "scale_factor": 796.636044,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
+    "tail_alpha": 1.3,
+    "max_amount_brl": 5000000,
+    "analytic_mean_ticket_brl": 449.8282,
+    "homophily": 0.3,
+    "receiver_bias_sigma": 0.4,
+    "calibrated_shares": true
+  },
+  "engines": ["queue_fifo_d86400000","netq_fifo_w1200000_d86400000_r1000","netq_fifo_w300000_d86400000_r1000","netq_fifo_w60000_d86400000_r1000","gridlock_fifo_w60000_d86400000_r1000","micro_cycle_shortfall_w1000_d86400000_fifo","micro_cycle_shortfall_w1000_d86400000"],
+  "seeds": [20260930,1,2,3,4,5,6,7,8,9],
+  "headline": [
+    {
+      "scenario": "retail (Pix)",
+      "largest_rho_reduction_vs_queue": 0.000878,
+      "largest_rho_reduction_relative": 0.024956,
+      "engine": "gridlock_fifo_w60000_d86400000_r1000",
+      "liquidity_level": 0.1
+    },
+    {
+      "scenario": "large-value 1500/day",
+      "largest_rho_reduction_vs_queue": 0.036068,
+      "largest_rho_reduction_relative": 0.296881,
+      "engine": "gridlock_fifo_w60000_d86400000_r1000",
+      "liquidity_level": 0
+    }
+  ],
+  "note": "rho and pi as in Koponen & Soramaki (1998), equations 5 and 6; levels LB + LL (UB - LB), equation 4; rejected payments count as waiting until the end of the day"
+}

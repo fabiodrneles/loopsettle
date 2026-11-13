@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "topology-triangle",
   "seed": 0,
-  "code_version": "0.2.0+git.12485e1",
+  "code_version": "0.2.0+git.b8fec3d",
   "config_file": "data/samples/triangle.csv",
   "command": "cargo run --release -p loopsettle-cli -- topology data/samples/triangle.csv",
   "platform": "x86_64-linux",

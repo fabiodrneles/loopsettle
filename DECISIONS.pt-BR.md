@@ -293,9 +293,11 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   `docs/references/` e não foi lido); liquidação parcial; resolvedores por otimização.
 - **Por quê:** é o mecanismo clássico de economia de liquidez com que a literatura compara, e
   liquida lotes que não são ciclos, o que a busca de micro-ciclos não consegue.
-- **Ressalva:** implementado a partir da descrição do algoritmo em fontes secundárias e da
-  propriedade de prefixo e viabilidade pela qual ele é conhecido; precisa ser conferido com o
-  artigo antes de o nome "Bech-Soramäki" ser usado numa publicação.
+- **Ressalva (resolvida em 13/11/2026):** implementado a partir de descrições secundárias e depois
+  conferido com o artigo (Bank of Finland DP 9/2001, §3.3, cópia enviada pelo dono): Passo 1,
+  incluir todos os pagamentos da fila; Passo 2, calcular os saldos finais; Passo 3, tirar o último
+  pagamento de qualquer banco deficitário e repetir; o resultado não depende do banco escolhido
+  (nota 9). O `run_gridlock` é esse algoritmo; o nome "Bech-Soramäki" pode ser usado. REVIEW 97.
 - **Reverter:** não usar o motor `gridlock`; nada mais depende dele.
 
 ## D28 — Abastecimento como camada fora dos motores, com reservas fora do sistema
@@ -311,3 +313,60 @@ Cada entrada: o que foi decidido, alternativas, por quê, e como reverter.
   para todos os motores de uma vez, e mantém os resultados anteriores idênticos byte a byte (sem
   política, nada muda).
 - **Reverter:** rodar sem política (o padrão).
+
+## D29 — O desenho do Banco da Finlândia como experimento: ρ, π, níveis de liquidez, compensação completa
+- **Decisão:** o `bof-replication` reproduz o desenho de Koponen & Soramäki (1998): saldo de
+  abertura `LB_i + LL (UB_i − LB_i)` em 11 níveis (a equação 4 deles), pagamentos podem esperar até
+  o fim do dia, e os desenhos são comparados por ρ (`RunMetrics::rho`, equação 5) e π
+  (`metrics::pi`, equação 6). Um motor novo, `netq:fifo|bypass:<janela>:<atraso>[:<nova_tentativa>]`,
+  é a compensação das filas deles: tudo de uma vez se todo participante cobre o seu líquido
+  (equação 3); senão, nada. `gridlock` e `netq` aceitam um intervalo próprio de nova tentativa bruta
+  (`MicroCycleConfig::batch_every`), para um desenho compensar a cada 20 minutos e tentar a fila de
+  novo a cada segundo.
+- **Escolhas internas:** (a) ρ em tempo contínuo (ms), não por minuto; (b) um pagamento rejeitado
+  conta como esperando até o fim do dia (o arcabouço de 1998 não tem rejeição: tudo liquida até o
+  fim do dia); (c) o ρ do sistema soma numeradores e denominadores entre os participantes, como o
+  texto de 1998 (os pesos ficam sendo a área das saídas acumuladas de cada pagador, não exatamente
+  a fatia de valor, como o texto diz); (d) o artigo de 2001 escreve os níveis como
+  `α (UB_i − LB_i)` (equação 8), sem `+ LB_i`; seguimos 1998 e as próprias palavras do artigo de
+  2001; (e) um cenário estilizado de alto valor com 1.500 pagamentos por dia (`ASSUMPTION`, o do
+  `regimes`) confere que a implementação reproduz o efeito publicado onde os estudos o acharam.
+- **Por que o intervalo de nova tentativa:** sem ele, "compensar a cada 20 minutos" também queria
+  dizer "tentar a fila de novo a cada 20 minutos", o que aumentava o ρ frente a uma fila tentada a
+  cada segundo (medido: +0,23 p.p. no nível mais baixo). O simulador de 1998 confere a fila a cada
+  evento.
+- **Alternativas:** ρ por minuto (mais perto do texto, mais grosseiro); excluir os rejeitados
+  (aí o ρ premiaria rejeitar); pôr os níveis no `liquidity-frontier` (mais pesado, e mudaria os
+  resultados de referência dele).
+- **Reverter:** retirar o experimento; nada mais usa `netq`, `rho`, `pi` ou `batch_every`
+  (`batch_every = 1` é o comportamento antigo, e todos os resultados de referência anteriores
+  ficaram iguais).
+
+## D30 — A distribuição de valores é ajustada aos percentis públicos
+- **Decisão:** com `[value_percentiles]` no arquivo de calibração, o `calibrate::apply` ajusta a
+  dispersão do corpo (`body_sigma`) e a fração da quantidade na cauda (`tail_prob`) aos p50, p90 e
+  p99 do valor de um Pix interbancário (R$ 36 / 400 / 3.900, *Relatório Anual do SPI 2025*, p. 10,
+  dezembro de 2025), por mínimos quadrados das razões em log numa grade de decimais exatos (cauda
+  de 0,001 a 0,100 de 0,001 em 0,001; σ de 0,80 a 3,00 de 0,02 em 0,02), com todo candidato mantendo
+  o ticket médio e a parcela de valor da cauda (B2B, 52%). Resultado: σ = 1,9, cauda 0,3%; p50
+  R$ 35,76, p90 R$ 419, p99 R$ 3.784.
+- **Antes:** σ = 1,4 (`ASSUMPTION`) e cauda = participação do B2B na quantidade (4,3%): média
+  certa, forma errada (p50 R$ 91,5). Os pagamentos típicos saíam 2,5 vezes grandes demais.
+- **Alternativas:** ajustar também o α da cauda de Pareto (os três percentis não o identificam: a
+  cauda começa acima do p99); outra lei para o corpo; pesar os percentis de outro jeito.
+- **Escolhas internas:** a CDF normal usa um `erfc` escrito à mão (Numerical Recipes, erro
+  < 1,2e-7), para o ajuste não depender das funções especiais de cada plataforma; a grade é de
+  decimais exatos, para o par escolhido ser o mesmo em toda máquina. Os percentis (dezembro de 2025)
+  e os outros alvos (setembro de 2026) são de meses diferentes (`ASSUMPTION`).
+- **Reverter:** `scenario.amounts_fit = "mean"` num arquivo de experimento, ou tirar o
+  `[value_percentiles]` de `data/calibration/pix.toml`. Todos os resultados calibrados mudaram com
+  esta decisão (REVIEW 99).
+
+## D31 — O rascunho do preprint é escrito só em inglês
+- **Decisão:** `paper/preprint-liquidity-floor.md`, o rascunho do artigo sobre o piso de liquidez,
+  existe só em inglês, a língua do SSRN e da revista-alvo; ele está na lista de documentos de um
+  idioma só em `scripts/check_twins.py`. É um rascunho para o autor e o revisor, com os pontos que
+  pedem o julgamento deles marcados `[TODO]` (CLAUDE.md, fase 10: os autores escrevem o artigo).
+- **Alternativas:** um gêmeo em português (dobra o trabalho num texto que será reescrito); escrever
+  em português e traduzir no fim.
+- **Reverter:** criar `paper/preprint-liquidity-floor.pt-BR.md` e tirar a entrada da lista.

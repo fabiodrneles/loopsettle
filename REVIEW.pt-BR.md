@@ -410,3 +410,60 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     dezenas de minutos); o limite apertado de 10 s no fim de semana com 1 milhão de pagamentos por
     quinta fica em 0,03–0,07%, com IC até 0,096%. O `stress` nomeia o caso "antes do próprio pico
     do alvo" pela posição, porque esse horário muda de uma semente para outra.
+96. **Koponen & Soramäki (1998) lido, 13/11/2026** (cópia enviada pelo dono; não guardada, termos da
+    EconStor). O UB e o LB são as equações 1 e 2 dele (agora citados como lidos,
+    `docs/REFERENCES.pt-BR.md` §4a); a fila dele (Figura 9) é o `StrictFifoPerPayer`; o Bypass FIFO
+    é a §3.1.2. Lá, a curva entre os limites é simulada: o piso por prazo (METHODOLOGY §9b) não está
+    nele. Novo: ρ e π (`metrics.rs`), o motor `netq` (compensação completa das filas),
+    `batch_every` e o experimento `bof-replication` (D29; METHODOLOGY §11b; SUMMARY §17;
+    CLAIMS 1l). **Resultado:** no cenário do Pix (300 mil pagamentos por dia, 10 sementes), nenhum
+    desenho de compensação reduz o ρ de forma mensurável em nenhum nível: no LB, a fila FIFO simples
+    tem ρ = 1,42% [0,57; 2,26]; a compensação completa a cada 1, 5 ou 20 min, −0,020 p.p.
+    [−0,048; +0,008]; Bech-Soramäki a cada minuto, −0,056 p.p. [−0,118; +0,007]. A compensação
+    elimina as sobras do fim do dia (valor rejeitado 0,073% → 0). No cenário de alto valor (1.500
+    pagamentos por dia), o mesmo código reproduz a literatura: Bech-Soramäki −30% do ρ no LB
+    (12,1% → 8,5%, Δ −3,6 p.p. [−6,1; −1,2]), compensação completa −23% (Δ −2,8 p.p. [−5,2; −0,3]),
+    e quase nada a partir de 20% do intervalo. **Dúvida para o revisor:** 1998 relata que a
+    compensação das filas ajuda "só nos níveis mais altos de liquidez"; aqui ajuda só no mais baixo.
+    Dados e estrutura diferentes (os níveis deles incluem pagamentos urgentes e lotes de compensação
+    líquida); sem explicação. Micro-ciclos com bypass FIFO *aumentam* o ρ no Pix (+0,52 p.p.
+    [+0,08; +0,97] no LB): efeito da disciplina (pagamentos pequenos posteriores passam à frente dos
+    grandes, o atraso ponderado por valor cresce), não dos ciclos (com FIFO: −0,007 p.p.
+    [−0,061; +0,047]). Uma primeira rodada sem `batch_every` mostrou o netq *aumentando* o ρ: a
+    janela era também o intervalo de nova tentativa (D29). Divisão de pagamentos (§3.1.4) não foi
+    implementada: o Pix não a usa.
+97. **Bech & Soramäki (2001) lido, 13/11/2026** (cópia enviada pelo dono; não guardada). O algoritmo
+    da §3.3 é exatamente o `run_gridlock` (D27, ressalva resolvida): começa com todos os pagamentos
+    da fila, tira o último pagamento de qualquer banco deficitário, repete; não depende da ordem.
+    A spec 05 M3 está conferida. A equação 8 escreve os níveis sem `+ LB_i`, contra o próprio texto
+    e a equação 4 de 1998; seguimos 1998 (D29 d). Não há teste do exemplo do artigo: o artigo não
+    traz exemplo numérico.
+98. **O volume do Pix é só entre instituições; a distribuição de valores não bate (em aberto),
+    13/11/2026.** O dono perguntou se o Pix dentro da mesma instituição (que nunca toca a reserva)
+    infla a calibração. Não infla: a documentação Olinda do `EstatisticasTransacoesPix` diz que ela
+    "não inclui Pix liquidados nos livros do participante, isto é, transações não enviadas para
+    liquidação no SPI"; o relatório anual do SPI de 2025 dá 7,10 bilhões de Pix interbancários em
+    dezembro de 2025, contra os 7,17 bilhões de setembro de 2026 usados aqui. **Achado novo no mesmo
+    relatório:** os percentis de valor de dezembro de 2025 são p50 R$ 36, p90 R$ 400, p99 R$ 3.900
+    (média R$ 443,29). O gerador acerta a média mas não a forma: analiticamente p50 R$ 91,5, p90
+    R$ 749, p99 R$ 4.908. Um ajuste com `body_sigma` 1,9 e `tail_prob` 0,003 (parcela de valor do B2B
+    mantida em 52%) dá R$ 35,8 / 418 / 3.784. Ainda não aplicado: muda todos os resultados e exige
+    uma reconstrução completa (PARAMETERS nota iv, LIMITATIONS 19).
+99. **Reconstrução completa com a distribuição de valores ajustada aos percentis (D30),
+    13/11/2026.** Os 16 experimentos, `topology-triangle`, `optimality-gap` (inalterado: não usa
+    calibração) e o SUMMARY (`make experiments summary`, 1.218 s). Afirmações atualizadas (CLAIMS 1,
+    1b–1h, 1j–1l, 1c, 2, 2b, 4, 8; "não pode afirmar" 10 e 14), números do README, PARAMETERS,
+    LIMITATIONS 14 e 19, ASSESSMENT atualização 6. **O que mudou de substância:** (a) o ajuste do
+    viés recebedor ao WP 619 passou de σ = 1,0 para σ 0,4–0,8 (melhor 0,4 com instituições de
+    pagamento ×3; `bias-calibration`), então o padrão σ = 0,4 passa a ser o caso calibrado e σ = 1,0,
+    um caso de desequilíbrio maior; (b) a economia dos micro-ciclos caiu (0,0116% → 0,0017%, IC
+    inclui zero) e o piso de 10 s caiu (0,041% → 0,028%): a afirmação central fica mais forte; (c)
+    uma compensação diária economiza mais (7,8% → 14,4% com 1 milhão; 4,0–9,2% com 30 milhões) e cai
+    com o volume como cerca de volume^−0,4 em vez de 1/√volume; (d) o efeito dos ecos é maior (7,6%
+    com 20% devolvidos em 1 s) e com 30 milhões é 0,99%; (e) no bof-replication, o ρ do Pix no LB é
+    4,19% (era 1,42%), ainda sem efeito significativo de nenhum desenho de compensação; os cenários
+    de alto valor (valores definidos à parte) não mudaram. **Para o revisor:** o modelo de valores
+    agora move parte da calibração do viés; um ajuste conjunto (valores e viés juntos) não foi feito.
+    Os resultados desta rodada levam a versão de código `7af6a1e-dirty` (documentos eram editados
+    durante a rodada; o código era o commitado); eles são gerados mais uma vez antes da mesclagem,
+    para a proveniência ficar limpa.

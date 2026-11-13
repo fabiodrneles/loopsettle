@@ -2,7 +2,7 @@
   "schema": "loopsettle.result/1",
   "experiment": "stress",
   "seed": 20260930,
-  "code_version": "0.2.0+git.12485e1",
+  "code_version": "0.2.0+git.b8fec3d",
   "config_file": "experiments/stress.toml",
   "command": "cargo run --release -p loopsettle-cli -- experiment stress",
   "platform": "x86_64-linux",
@@ -13,10 +13,10 @@
     "days": 1,
     "payments_per_day": 1000000,
     "scale_factor": 238.990813,
-    "body_median_brl": 84.57946,
-    "body_sigma": 1.4,
-    "tail_prob": 0.042962,
-    "tail_xm_brl": 1375.25637,
+    "body_median_brl": 35.580003,
+    "body_sigma": 1.9,
+    "tail_prob": 0.003,
+    "tail_xm_brl": 22424.016283,
     "tail_alpha": 1.3,
     "max_amount_brl": 5000000,
     "analytic_mean_ticket_brl": 449.8282,
@@ -28,27 +28,27 @@
     "participant": 0,
     "start_ms": 36000000,
     "duration_ms": 1800000,
-    "deferred_payments": 11692,
-    "deferred_value_brl": 5866760.12,
-    "mean_deferral_ms": 903390.304909
+    "deferred_payments": 11700,
+    "deferred_value_brl": 4869238.85,
+    "mean_deferral_ms": 896114.520769
   },
   "baseline_flow": {
-    "payments": 1000210,
-    "gross_value_brl": 443232184.21,
-    "ub_brl": 71271127.54,
-    "lb_brl": 64666472.32,
-    "lb_over_ub": 0.907331,
-    "ub_over_gross": 0.160799,
-    "potential_offset_fraction": 0.854102
+    "payments": 999623,
+    "gross_value_brl": 458425699.23,
+    "ub_brl": 100048774.31,
+    "lb_brl": 83912530.75,
+    "lb_over_ub": 0.838716,
+    "ub_over_gross": 0.218244,
+    "potential_offset_fraction": 0.816955
   },
   "outage_flow": {
-    "payments": 1000210,
-    "gross_value_brl": 443232184.21,
-    "ub_brl": 71274780.87,
-    "lb_brl": 64666472.32,
-    "lb_over_ub": 0.907284,
-    "ub_over_gross": 0.160807,
-    "potential_offset_fraction": 0.854102
+    "payments": 999623,
+    "gross_value_brl": 458425699.23,
+    "ub_brl": 100051878.93,
+    "lb_brl": 83912530.75,
+    "lb_over_ub": 0.83869,
+    "ub_over_gross": 0.218251,
+    "potential_offset_fraction": 0.816955
   },
   "baseline": [
     {
@@ -56,13 +56,13 @@
       "spec": {
         "kind": "gross"
       },
-      "liquidity_needed_brl": 71271127.54,
+      "liquidity_needed_brl": 100048774.31,
       "liquidity_saving_vs_ub_brl": 0,
       "liquidity_saving_vs_ub_pct": 0,
       "share_of_ub_minus_lb_recovered": 0,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 443232184.21,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 458425699.23,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
@@ -86,26 +86,26 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71262596.16,
-      "liquidity_saving_vs_ub_brl": 8531.38,
-      "liquidity_saving_vs_ub_pct": 0.01197,
-      "share_of_ub_minus_lb_recovered": 0.001292,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 165505146.54,
-      "settled_cycle_value_brl": 277727037.67,
+      "liquidity_needed_brl": 100044679.93,
+      "liquidity_saving_vs_ub_brl": 4094.38,
+      "liquidity_saving_vs_ub_pct": 0.004092,
+      "share_of_ub_minus_lb_recovered": 0.000254,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 173970658.49,
+      "settled_cycle_value_brl": 284455040.74,
       "settled_deferred_value_brl": 0,
-      "settled_cycle_count": 627413,
+      "settled_cycle_count": 630376,
       "rejected_count": 0,
       "rejected_value_brl": 0,
-      "delay_p50_ms": 4864,
+      "delay_p50_ms": 4800,
       "delay_p95_ms": 9984,
       "delay_p99_ms": 9984,
       "delay_max_ms": 10000,
-      "delay_mean_ms": 5314.523575,
-      "delay_value_weighted_mean_ms": 5298.312121,
-      "share_settled_within_2800ms": 0.420409,
-      "cycles_settled": 230099,
+      "delay_mean_ms": 5291.810003,
+      "delay_value_weighted_mean_ms": 5302.806547,
+      "share_settled_within_2800ms": 0.422194,
+      "cycles_settled": 230972,
       "cycles_failed": 0
     },
     {
@@ -118,13 +118,13 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71271127.54,
+      "liquidity_needed_brl": 100048774.31,
       "liquidity_saving_vs_ub_brl": 0,
       "liquidity_saving_vs_ub_pct": 0,
       "share_of_ub_minus_lb_recovered": 0,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 443232184.21,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 458425699.23,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
@@ -146,25 +146,25 @@
         "kind": "deferred",
         "cycles_per_day": 10
       },
-      "liquidity_needed_brl": 69592929.98,
-      "liquidity_saving_vs_ub_brl": 1678197.56,
-      "liquidity_saving_vs_ub_pct": 2.354667,
-      "share_of_ub_minus_lb_recovered": 0.254093,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
+      "liquidity_needed_brl": 94518682.48,
+      "liquidity_saving_vs_ub_brl": 5530091.83,
+      "liquidity_saving_vs_ub_pct": 5.527396,
+      "share_of_ub_minus_lb_recovered": 0.342712,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
       "settled_gross_value_brl": 0,
       "settled_cycle_value_brl": 0,
-      "settled_deferred_value_brl": 443232184.21,
+      "settled_deferred_value_brl": 458425699.23,
       "settled_cycle_count": 0,
       "rejected_count": 0,
       "rejected_value_brl": 0,
       "delay_p50_ms": 4259840,
       "delay_p95_ms": 8192000,
       "delay_p99_ms": 8519680,
-      "delay_max_ms": 8639972,
-      "delay_mean_ms": 4317013.516122,
-      "delay_value_weighted_mean_ms": 4345506.541625,
-      "share_settled_within_2800ms": 0.000329
+      "delay_max_ms": 8639997,
+      "delay_mean_ms": 4315338.423406,
+      "delay_value_weighted_mean_ms": 4282600.637851,
+      "share_settled_within_2800ms": 0.000362
     }
   ],
   "outage_unlimited": [
@@ -173,13 +173,13 @@
       "spec": {
         "kind": "gross"
       },
-      "liquidity_needed_brl": 71274780.87,
+      "liquidity_needed_brl": 100051878.93,
       "liquidity_saving_vs_ub_brl": 0,
       "liquidity_saving_vs_ub_pct": 0,
       "share_of_ub_minus_lb_recovered": 0,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 443232184.21,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 458425699.23,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
@@ -203,26 +203,26 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71265014.54,
-      "liquidity_saving_vs_ub_brl": 9766.33,
-      "liquidity_saving_vs_ub_pct": 0.013702,
-      "share_of_ub_minus_lb_recovered": 0.001478,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 164680500.39,
-      "settled_cycle_value_brl": 278551683.82,
+      "liquidity_needed_brl": 100047779.12,
+      "liquidity_saving_vs_ub_brl": 4099.81,
+      "liquidity_saving_vs_ub_pct": 0.004098,
+      "share_of_ub_minus_lb_recovered": 0.000254,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 174052829.46,
+      "settled_cycle_value_brl": 284372869.77,
       "settled_deferred_value_brl": 0,
-      "settled_cycle_count": 627669,
+      "settled_cycle_count": 630774,
       "rejected_count": 0,
       "rejected_value_brl": 0,
-      "delay_p50_ms": 4864,
+      "delay_p50_ms": 4736,
       "delay_p95_ms": 9984,
       "delay_p99_ms": 9984,
       "delay_max_ms": 10000,
-      "delay_mean_ms": 5302.091393,
-      "delay_value_weighted_mean_ms": 5279.755117,
-      "share_settled_within_2800ms": 0.422982,
-      "cycles_settled": 231404,
+      "delay_mean_ms": 5277.793983,
+      "delay_value_weighted_mean_ms": 5290.556218,
+      "share_settled_within_2800ms": 0.424956,
+      "cycles_settled": 232317,
       "cycles_failed": 0
     },
     {
@@ -235,13 +235,13 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71274780.87,
+      "liquidity_needed_brl": 100051878.93,
       "liquidity_saving_vs_ub_brl": 0,
       "liquidity_saving_vs_ub_pct": 0,
       "share_of_ub_minus_lb_recovered": 0,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
-      "settled_gross_value_brl": 443232184.21,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
+      "settled_gross_value_brl": 458425699.23,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
@@ -263,25 +263,25 @@
         "kind": "deferred",
         "cycles_per_day": 10
       },
-      "liquidity_needed_brl": 69592929.98,
-      "liquidity_saving_vs_ub_brl": 1681850.89,
-      "liquidity_saving_vs_ub_pct": 2.359672,
-      "share_of_ub_minus_lb_recovered": 0.254506,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
+      "liquidity_needed_brl": 94518682.48,
+      "liquidity_saving_vs_ub_brl": 5533196.45,
+      "liquidity_saving_vs_ub_pct": 5.530327,
+      "share_of_ub_minus_lb_recovered": 0.342839,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
       "settled_gross_value_brl": 0,
       "settled_cycle_value_brl": 0,
-      "settled_deferred_value_brl": 443232184.21,
+      "settled_deferred_value_brl": 458425699.23,
       "settled_cycle_count": 0,
       "rejected_count": 0,
       "rejected_value_brl": 0,
       "delay_p50_ms": 4259840,
       "delay_p95_ms": 8192000,
       "delay_p99_ms": 8519680,
-      "delay_max_ms": 8639972,
-      "delay_mean_ms": 4306453.294323,
-      "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000329
+      "delay_max_ms": 8639997,
+      "delay_mean_ms": 4304849.92935,
+      "delay_value_weighted_mean_ms": 4273726.441747,
+      "share_settled_within_2800ms": 0.000362
     }
   ],
   "outage_constrained": [
@@ -290,18 +290,18 @@
       "spec": {
         "kind": "gross"
       },
-      "liquidity_needed_brl": 71263981.05,
-      "liquidity_saving_vs_ub_brl": 7146.49,
-      "liquidity_saving_vs_ub_pct": 0.010027,
-      "share_of_ub_minus_lb_recovered": 0.001082,
-      "settled_count": 1000204,
-      "settled_value_brl": 443220202.48,
-      "settled_gross_value_brl": 443220202.48,
+      "liquidity_needed_brl": 100025920.15,
+      "liquidity_saving_vs_ub_brl": 22854.16,
+      "liquidity_saving_vs_ub_pct": 0.022843,
+      "share_of_ub_minus_lb_recovered": 0.001416,
+      "settled_count": 999619,
+      "settled_value_brl": 458397857.47,
+      "settled_gross_value_brl": 458397857.47,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
-      "rejected_count": 6,
-      "rejected_value_brl": 11981.73,
+      "rejected_count": 4,
+      "rejected_value_brl": 27841.76,
       "delay_p50_ms": 0,
       "delay_p95_ms": 0,
       "delay_p99_ms": 0,
@@ -320,27 +320,27 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71258820.63,
-      "liquidity_saving_vs_ub_brl": 12306.91,
-      "liquidity_saving_vs_ub_pct": 0.017268,
-      "share_of_ub_minus_lb_recovered": 0.001863,
-      "settled_count": 1000202,
-      "settled_value_brl": 443225335.24,
-      "settled_gross_value_brl": 164675709.53,
-      "settled_cycle_value_brl": 278549625.71,
+      "liquidity_needed_brl": 100017118.7,
+      "liquidity_saving_vs_ub_brl": 31655.61,
+      "liquidity_saving_vs_ub_pct": 0.03164,
+      "share_of_ub_minus_lb_recovered": 0.001962,
+      "settled_count": 999618,
+      "settled_value_brl": 458392001.79,
+      "settled_gross_value_brl": 174045177.99,
+      "settled_cycle_value_brl": 284346823.8,
       "settled_deferred_value_brl": 0,
-      "settled_cycle_count": 627665,
-      "rejected_count": 8,
-      "rejected_value_brl": 6848.97,
-      "delay_p50_ms": 4864,
+      "settled_cycle_count": 630774,
+      "rejected_count": 5,
+      "rejected_value_brl": 33697.44,
+      "delay_p50_ms": 4736,
       "delay_p95_ms": 9984,
       "delay_p99_ms": 9984,
       "delay_max_ms": 10000,
-      "delay_mean_ms": 5302.088502,
-      "delay_value_weighted_mean_ms": 5279.821607,
-      "share_settled_within_2800ms": 0.422981,
-      "cycles_settled": 231403,
-      "cycles_failed": 10
+      "delay_mean_ms": 5277.752023,
+      "delay_value_weighted_mean_ms": 5290.900685,
+      "share_settled_within_2800ms": 0.424961,
+      "cycles_settled": 232321,
+      "cycles_failed": 9
     },
     {
       "name": "micro_cycle_shortfall_w1000_d10000",
@@ -352,24 +352,24 @@
         "max_cycle_len": 6,
         "discipline": "bypass"
       },
-      "liquidity_needed_brl": 71263981.05,
-      "liquidity_saving_vs_ub_brl": 7146.49,
-      "liquidity_saving_vs_ub_pct": 0.010027,
-      "share_of_ub_minus_lb_recovered": 0.001082,
-      "settled_count": 1000204,
-      "settled_value_brl": 443220202.48,
-      "settled_gross_value_brl": 443220202.48,
+      "liquidity_needed_brl": 100026562.03,
+      "liquidity_saving_vs_ub_brl": 22212.28,
+      "liquidity_saving_vs_ub_pct": 0.022201,
+      "share_of_ub_minus_lb_recovered": 0.001377,
+      "settled_count": 999620,
+      "settled_value_brl": 458398504.78,
+      "settled_gross_value_brl": 458398504.78,
       "settled_cycle_value_brl": 0,
       "settled_deferred_value_brl": 0,
       "settled_cycle_count": 0,
-      "rejected_count": 6,
-      "rejected_value_brl": 11981.73,
+      "rejected_count": 3,
+      "rejected_value_brl": 27194.45,
       "delay_p50_ms": 0,
       "delay_p95_ms": 0,
       "delay_p99_ms": 0,
-      "delay_max_ms": 0,
-      "delay_mean_ms": 0,
-      "delay_value_weighted_mean_ms": 0,
+      "delay_max_ms": 1000,
+      "delay_mean_ms": 0.001,
+      "delay_value_weighted_mean_ms": 0.001412,
       "share_settled_within_2800ms": 1,
       "cycles_settled": 0,
       "cycles_failed": 0
@@ -380,25 +380,25 @@
         "kind": "deferred",
         "cycles_per_day": 10
       },
-      "liquidity_needed_brl": 69592929.98,
-      "liquidity_saving_vs_ub_brl": 1678197.56,
-      "liquidity_saving_vs_ub_pct": 2.354667,
-      "share_of_ub_minus_lb_recovered": 0.254093,
-      "settled_count": 1000210,
-      "settled_value_brl": 443232184.21,
+      "liquidity_needed_brl": 94518682.48,
+      "liquidity_saving_vs_ub_brl": 5530091.83,
+      "liquidity_saving_vs_ub_pct": 5.527396,
+      "share_of_ub_minus_lb_recovered": 0.342712,
+      "settled_count": 999623,
+      "settled_value_brl": 458425699.23,
       "settled_gross_value_brl": 0,
       "settled_cycle_value_brl": 0,
-      "settled_deferred_value_brl": 443232184.21,
+      "settled_deferred_value_brl": 458425699.23,
       "settled_cycle_count": 0,
       "rejected_count": 0,
       "rejected_value_brl": 0,
       "delay_p50_ms": 4259840,
       "delay_p95_ms": 8192000,
       "delay_p99_ms": 8519680,
-      "delay_max_ms": 8639972,
-      "delay_mean_ms": 4306453.294323,
-      "delay_value_weighted_mean_ms": 4334845.073133,
-      "share_settled_within_2800ms": 0.000329
+      "delay_max_ms": 8639997,
+      "delay_mean_ms": 4304849.92935,
+      "delay_value_weighted_mean_ms": 4273726.441747,
+      "share_settled_within_2800ms": 0.000362
     }
   ],
   "cases": [
@@ -407,139 +407,107 @@
       "participant": 0,
       "start": "10:00",
       "start_ms": 36000000,
-      "deferred_payments": 11692,
-      "deferred_value_brl": 5866760.12,
-      "ub_total_change_pct": 0.005126,
-      "others_ub_increase_brl": 4140.94,
-      "others_ub_decrease_brl": 487.61,
-      "others_with_higher_ub": 4,
-      "constrained_at_baseline_ub": [
-        {
-          "engine": "gross_real_time",
-          "rejected_value_share": 0.000027,
-          "rejected_payments": 6,
-          "payers_with_rejections": 5
-        },
-        {
-          "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000027,
-          "rejected_payments": 6,
-          "payers_with_rejections": 5
-        },
-        {
-          "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000015,
-          "rejected_payments": 8,
-          "payers_with_rejections": 7
-        }
-      ]
-    },
-    {
-      "target": "largest",
-      "participant": 0,
-      "start": "18:00",
-      "start_ms": 64800000,
-      "deferred_payments": 13856,
-      "deferred_value_brl": 6141044.38,
-      "ub_total_change_pct": -0.000258,
-      "others_ub_increase_brl": 0,
-      "others_ub_decrease_brl": 183.59,
-      "others_with_higher_ub": 0,
-      "constrained_at_baseline_ub": [
-        {
-          "engine": "gross_real_time",
-          "rejected_value_share": 0,
-          "rejected_payments": 0,
-          "payers_with_rejections": 0
-        },
-        {
-          "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0,
-          "rejected_payments": 0,
-          "payers_with_rejections": 0
-        },
-        {
-          "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000001,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
-        }
-      ]
-    },
-    {
-      "target": "largest",
-      "participant": 0,
-      "start": "before_own_peak(10:39)",
-      "start_ms": 38341781,
-      "deferred_payments": 11921,
-      "deferred_value_brl": 4353135.41,
-      "ub_total_change_pct": 0.00001,
-      "others_ub_increase_brl": 7.28,
+      "deferred_payments": 11700,
+      "deferred_value_brl": 4869238.85,
+      "ub_total_change_pct": 0.003103,
+      "others_ub_increase_brl": 3104.62,
       "others_ub_decrease_brl": 0,
-      "others_with_higher_ub": 1,
+      "others_with_higher_ub": 2,
       "constrained_at_baseline_ub": [
         {
           "engine": "gross_real_time",
-          "rejected_value_share": 0.000467,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
-        },
-        {
-          "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000467,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
-        },
-        {
-          "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000494,
-          "rejected_payments": 17,
-          "payers_with_rejections": 10
-        }
-      ]
-    },
-    {
-      "target": "top_net_payer",
-      "participant": 1,
-      "start": "10:00",
-      "start_ms": 36000000,
-      "deferred_payments": 5532,
-      "deferred_value_brl": 3052513.5,
-      "ub_total_change_pct": 0.002917,
-      "others_ub_increase_brl": 3022.67,
-      "others_ub_decrease_brl": 943.63,
-      "others_with_higher_ub": 3,
-      "constrained_at_baseline_ub": [
-        {
-          "engine": "gross_real_time",
-          "rejected_value_share": 0.000022,
-          "rejected_payments": 7,
-          "payers_with_rejections": 5
-        },
-        {
-          "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000009,
+          "rejected_value_share": 0.000061,
           "rejected_payments": 4,
           "payers_with_rejections": 3
         },
         {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000059,
+          "rejected_payments": 3,
+          "payers_with_rejections": 2
+        },
+        {
           "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.00001,
+          "rejected_value_share": 0.000074,
+          "rejected_payments": 5,
+          "payers_with_rejections": 4
+        }
+      ]
+    },
+    {
+      "target": "largest",
+      "participant": 0,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 13759,
+      "deferred_value_brl": 6206562.61,
+      "ub_total_change_pct": -0.000695,
+      "others_ub_increase_brl": 43.56,
+      "others_ub_decrease_brl": 738.74,
+      "others_with_higher_ub": 1,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000013,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000013,
+          "rejected_payments": 1,
+          "payers_with_rejections": 1
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000078,
+          "rejected_payments": 4,
+          "payers_with_rejections": 4
+        }
+      ]
+    },
+    {
+      "target": "largest",
+      "participant": 0,
+      "start": "before_own_peak(07:56)",
+      "start_ms": 28585218,
+      "deferred_payments": 7102,
+      "deferred_value_brl": 3579243.05,
+      "ub_total_change_pct": 0.000637,
+      "others_ub_increase_brl": 675.34,
+      "others_ub_decrease_brl": 38.34,
+      "others_with_higher_ub": 4,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000256,
           "rejected_payments": 6,
-          "payers_with_rejections": 5
+          "payers_with_rejections": 6
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0,
+          "rejected_payments": 2,
+          "payers_with_rejections": 2
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000467,
+          "rejected_payments": 9,
+          "payers_with_rejections": 9
         }
       ]
     },
     {
       "target": "top_net_payer",
       "participant": 1,
-      "start": "18:00",
-      "start_ms": 64800000,
-      "deferred_payments": 6537,
-      "deferred_value_brl": 2703441.11,
-      "ub_total_change_pct": -0.000006,
-      "others_ub_increase_brl": 131.86,
-      "others_ub_decrease_brl": 136,
+      "start": "10:00",
+      "start_ms": 36000000,
+      "deferred_payments": 5446,
+      "deferred_value_brl": 2230259.08,
+      "ub_total_change_pct": 0.000238,
+      "others_ub_increase_brl": 238.19,
+      "others_ub_decrease_brl": 0,
       "others_with_higher_ub": 1,
       "constrained_at_baseline_ub": [
         {
@@ -556,54 +524,22 @@
         },
         {
           "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000006,
-          "rejected_payments": 3,
-          "payers_with_rejections": 3
+          "rejected_value_share": 0.00007,
+          "rejected_payments": 4,
+          "payers_with_rejections": 4
         }
       ]
     },
     {
       "target": "top_net_payer",
       "participant": 1,
-      "start": "before_own_peak(23:29)",
-      "start_ms": 84599163,
-      "deferred_payments": 2162,
-      "deferred_value_brl": 985095.27,
-      "ub_total_change_pct": 0.030108,
-      "others_ub_increase_brl": 21458.48,
-      "others_ub_decrease_brl": 0,
-      "others_with_higher_ub": 8,
-      "constrained_at_baseline_ub": [
-        {
-          "engine": "gross_real_time",
-          "rejected_value_share": 0.000239,
-          "rejected_payments": 23,
-          "payers_with_rejections": 9
-        },
-        {
-          "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000221,
-          "rejected_payments": 10,
-          "payers_with_rejections": 6
-        },
-        {
-          "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000231,
-          "rejected_payments": 26,
-          "payers_with_rejections": 9
-        }
-      ]
-    },
-    {
-      "target": "top_net_receiver",
-      "participant": 7,
-      "start": "10:00",
-      "start_ms": 36000000,
-      "deferred_payments": 3366,
-      "deferred_value_brl": 1176212.41,
-      "ub_total_change_pct": -0.008582,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 6599,
+      "deferred_value_brl": 2261649.96,
+      "ub_total_change_pct": 0,
       "others_ub_increase_brl": 0,
-      "others_ub_decrease_brl": 6116.47,
+      "others_ub_decrease_brl": 0,
       "others_with_higher_ub": 0,
       "constrained_at_baseline_ub": [
         {
@@ -620,39 +556,71 @@
         },
         {
           "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000001,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
+          "rejected_value_share": 0.000065,
+          "rejected_payments": 3,
+          "payers_with_rejections": 3
+        }
+      ]
+    },
+    {
+      "target": "top_net_payer",
+      "participant": 1,
+      "start": "before_own_peak(23:27)",
+      "start_ms": 84479676,
+      "deferred_payments": 2099,
+      "deferred_value_brl": 821151.59,
+      "ub_total_change_pct": 0.000401,
+      "others_ub_increase_brl": 426.58,
+      "others_ub_decrease_brl": 25.1,
+      "others_with_higher_ub": 4,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0.000007,
+          "rejected_payments": 4,
+          "payers_with_rejections": 4
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0.000007,
+          "rejected_payments": 4,
+          "payers_with_rejections": 4
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000021,
+          "rejected_payments": 6,
+          "payers_with_rejections": 6
         }
       ]
     },
     {
       "target": "top_net_receiver",
-      "participant": 7,
-      "start": "18:00",
-      "start_ms": 64800000,
-      "deferred_payments": 4009,
-      "deferred_value_brl": 1668660.28,
-      "ub_total_change_pct": 0.000121,
-      "others_ub_increase_brl": 85.99,
-      "others_ub_decrease_brl": 0,
-      "others_with_higher_ub": 1,
+      "participant": 2,
+      "start": "10:00",
+      "start_ms": 36000000,
+      "deferred_payments": 6743,
+      "deferred_value_brl": 3360181.84,
+      "ub_total_change_pct": -0.001597,
+      "others_ub_increase_brl": 0,
+      "others_ub_decrease_brl": 1597.35,
+      "others_with_higher_ub": 0,
       "constrained_at_baseline_ub": [
         {
           "engine": "gross_real_time",
-          "rejected_value_share": 0.000005,
-          "rejected_payments": 1,
-          "payers_with_rejections": 1
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
         },
         {
           "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000005,
-          "rejected_payments": 1,
-          "payers_with_rejections": 1
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
         },
         {
           "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000006,
+          "rejected_value_share": 0.000065,
           "rejected_payments": 3,
           "payers_with_rejections": 3
         }
@@ -660,33 +628,65 @@
     },
     {
       "target": "top_net_receiver",
-      "participant": 7,
-      "start": "before_own_peak(01:14)",
-      "start_ms": 4471344,
-      "deferred_payments": 373,
-      "deferred_value_brl": 547250.34,
-      "ub_total_change_pct": 0.000012,
-      "others_ub_increase_brl": 8.59,
-      "others_ub_decrease_brl": 0,
-      "others_with_higher_ub": 1,
+      "participant": 2,
+      "start": "18:00",
+      "start_ms": 64800000,
+      "deferred_payments": 7936,
+      "deferred_value_brl": 6939086.72,
+      "ub_total_change_pct": -0.001518,
+      "others_ub_increase_brl": 0,
+      "others_ub_decrease_brl": 1518.61,
+      "others_with_higher_ub": 0,
       "constrained_at_baseline_ub": [
         {
           "engine": "gross_real_time",
-          "rejected_value_share": 0.000025,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
         },
         {
           "engine": "micro_cycle_shortfall_w1000_d10000",
-          "rejected_value_share": 0.000025,
-          "rejected_payments": 2,
-          "payers_with_rejections": 2
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
         },
         {
           "engine": "micro_cycle_all_w1000_d10000",
-          "rejected_value_share": 0.000822,
-          "rejected_payments": 5,
-          "payers_with_rejections": 5
+          "rejected_value_share": 0.000065,
+          "rejected_payments": 3,
+          "payers_with_rejections": 3
+        }
+      ]
+    },
+    {
+      "target": "top_net_receiver",
+      "participant": 2,
+      "start": "before_own_peak(00:00)",
+      "start_ms": 0,
+      "deferred_payments": 1287,
+      "deferred_value_brl": 960057.27,
+      "ub_total_change_pct": -0.000178,
+      "others_ub_increase_brl": 0,
+      "others_ub_decrease_brl": 178.03,
+      "others_with_higher_ub": 0,
+      "constrained_at_baseline_ub": [
+        {
+          "engine": "gross_real_time",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_shortfall_w1000_d10000",
+          "rejected_value_share": 0,
+          "rejected_payments": 0,
+          "payers_with_rejections": 0
+        },
+        {
+          "engine": "micro_cycle_all_w1000_d10000",
+          "rejected_value_share": 0.000065,
+          "rejected_payments": 3,
+          "payers_with_rejections": 3
         }
       ]
     }
@@ -696,254 +696,254 @@
     {
       "metric": "others_ub_net_change_pct_largest_t0",
       "seeds": 10,
-      "mean": 0.031768,
-      "ci95_low": -0.027372,
-      "ci95_high": 0.090909
+      "mean": 0.01058,
+      "ci95_low": -0.014337,
+      "ci95_high": 0.035497
     },
     {
       "metric": "rejected_value_share_largest_t0_gross_real_time",
       "seeds": 10,
-      "mean": 0.000172,
-      "ci95_low": -0.000023,
-      "ci95_high": 0.000368
+      "mean": 0.000471,
+      "ci95_low": -0.000427,
+      "ci95_high": 0.001369
     },
     {
       "metric": "rejected_value_share_largest_t0_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000151,
-      "ci95_low": -0.00005,
-      "ci95_high": 0.000351
+      "mean": 0.000459,
+      "ci95_low": -0.000441,
+      "ci95_high": 0.001359
     },
     {
       "metric": "rejected_value_share_largest_t0_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000179,
-      "ci95_low": -0.000025,
-      "ci95_high": 0.000382
+      "mean": 0.000531,
+      "ci95_low": -0.000403,
+      "ci95_high": 0.001466
     },
     {
       "metric": "others_ub_net_change_pct_largest_t1",
       "seeds": 10,
-      "mean": 0.028221,
-      "ci95_low": -0.034672,
-      "ci95_high": 0.091115
+      "mean": 0.020474,
+      "ci95_low": -0.030165,
+      "ci95_high": 0.071112
     },
     {
       "metric": "rejected_value_share_largest_t1_gross_real_time",
       "seeds": 10,
-      "mean": 0.000084,
-      "ci95_low": -0.000016,
-      "ci95_high": 0.000184
+      "mean": 0.000379,
+      "ci95_low": -0.00029,
+      "ci95_high": 0.001048
     },
     {
       "metric": "rejected_value_share_largest_t1_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000049,
-      "ci95_low": -0.000026,
-      "ci95_high": 0.000124
+      "mean": 0.000205,
+      "ci95_low": -0.000138,
+      "ci95_high": 0.000547
     },
     {
       "metric": "rejected_value_share_largest_t1_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.00011,
-      "ci95_low": -0.000006,
-      "ci95_high": 0.000225
+      "mean": 0.000307,
+      "ci95_low": -0.000086,
+      "ci95_high": 0.0007
     },
     {
       "metric": "others_ub_net_change_pct_largest_t2",
       "seeds": 10,
-      "mean": 0.023762,
-      "ci95_low": -0.040035,
-      "ci95_high": 0.087558
+      "mean": 0.063861,
+      "ci95_low": -0.018157,
+      "ci95_high": 0.145879
     },
     {
       "metric": "rejected_value_share_largest_t2_gross_real_time",
       "seeds": 10,
-      "mean": 0.00013,
-      "ci95_low": 0.000019,
-      "ci95_high": 0.000241
+      "mean": 0.000737,
+      "ci95_low": -0.000384,
+      "ci95_high": 0.001858
     },
     {
       "metric": "rejected_value_share_largest_t2_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000107,
-      "ci95_low": -0.000003,
-      "ci95_high": 0.000216
+      "mean": 0.00065,
+      "ci95_low": -0.000467,
+      "ci95_high": 0.001767
     },
     {
       "metric": "rejected_value_share_largest_t2_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000167,
-      "ci95_low": 0.000055,
-      "ci95_high": 0.000279
+      "mean": 0.00075,
+      "ci95_low": -0.000278,
+      "ci95_high": 0.001779
     },
     {
       "metric": "others_ub_net_change_pct_top_net_payer_t0",
       "seeds": 10,
-      "mean": 0.030025,
-      "ci95_low": -0.029571,
-      "ci95_high": 0.08962
+      "mean": -0.002581,
+      "ci95_low": -0.040666,
+      "ci95_high": 0.035505
     },
     {
       "metric": "rejected_value_share_top_net_payer_t0_gross_real_time",
       "seeds": 10,
-      "mean": 0.000164,
-      "ci95_low": -0.000036,
-      "ci95_high": 0.000363
+      "mean": 0.000304,
+      "ci95_low": -0.000237,
+      "ci95_high": 0.000846
     },
     {
       "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000144,
-      "ci95_low": -0.000059,
-      "ci95_high": 0.000347
+      "mean": 0.000293,
+      "ci95_low": -0.00025,
+      "ci95_high": 0.000836
     },
     {
       "metric": "rejected_value_share_top_net_payer_t0_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000173,
-      "ci95_low": -0.000034,
-      "ci95_high": 0.000379
+      "mean": 0.000371,
+      "ci95_low": -0.000207,
+      "ci95_high": 0.000948
     },
     {
       "metric": "others_ub_net_change_pct_top_net_payer_t1",
       "seeds": 10,
-      "mean": 0.032312,
-      "ci95_low": -0.032681,
-      "ci95_high": 0.097304
+      "mean": 0.017496,
+      "ci95_low": -0.033945,
+      "ci95_high": 0.068937
     },
     {
       "metric": "rejected_value_share_top_net_payer_t1_gross_real_time",
       "seeds": 10,
-      "mean": 0.000111,
-      "ci95_low": -0.000061,
-      "ci95_high": 0.000283
+      "mean": 0.000379,
+      "ci95_low": -0.00029,
+      "ci95_high": 0.001048
     },
     {
       "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000078,
-      "ci95_low": -0.000064,
-      "ci95_high": 0.000221
+      "mean": 0.000188,
+      "ci95_low": -0.000158,
+      "ci95_high": 0.000534
     },
     {
       "metric": "rejected_value_share_top_net_payer_t1_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000122,
-      "ci95_low": -0.000029,
-      "ci95_high": 0.000273
+      "mean": 0.000307,
+      "ci95_low": -0.000086,
+      "ci95_high": 0.0007
     },
     {
       "metric": "others_ub_net_change_pct_top_net_payer_t2",
       "seeds": 10,
-      "mean": 0.03302,
-      "ci95_low": -0.031188,
-      "ci95_high": 0.097228
+      "mean": 0.066181,
+      "ci95_low": -0.015138,
+      "ci95_high": 0.1475
     },
     {
       "metric": "rejected_value_share_top_net_payer_t2_gross_real_time",
       "seeds": 10,
-      "mean": 0.000117,
-      "ci95_low": 0.000036,
-      "ci95_high": 0.000198
+      "mean": 0.000669,
+      "ci95_low": -0.000471,
+      "ci95_high": 0.001809
     },
     {
       "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000093,
-      "ci95_low": 0.00002,
-      "ci95_high": 0.000166
+      "mean": 0.000626,
+      "ci95_low": -0.000497,
+      "ci95_high": 0.001749
     },
     {
       "metric": "rejected_value_share_top_net_payer_t2_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000133,
-      "ci95_low": 0.000034,
-      "ci95_high": 0.000233
+      "mean": 0.00064,
+      "ci95_low": -0.000417,
+      "ci95_high": 0.001697
     },
     {
       "metric": "others_ub_net_change_pct_top_net_receiver_t0",
       "seeds": 10,
-      "mean": -0.002034,
-      "ci95_low": -0.004038,
-      "ci95_high": -0.000031
+      "mean": -0.002722,
+      "ci95_low": -0.00666,
+      "ci95_high": 0.001216
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t0_gross_real_time",
       "seeds": 10,
-      "mean": 0.000001,
-      "ci95_low": -0.000001,
-      "ci95_high": 0.000003
+      "mean": 0.000298,
+      "ci95_low": -0.000227,
+      "ci95_high": 0.000822
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000001,
-      "ci95_low": -0.000001,
-      "ci95_high": 0.000002
+      "mean": 0.000239,
+      "ci95_low": -0.000293,
+      "ci95_high": 0.00077
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t0_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000023,
-      "ci95_low": -0.000017,
-      "ci95_high": 0.000064
+      "mean": 0.000312,
+      "ci95_low": -0.000256,
+      "ci95_high": 0.000881
     },
     {
       "metric": "others_ub_net_change_pct_top_net_receiver_t1",
       "seeds": 10,
-      "mean": -0.00839,
-      "ci95_low": -0.020798,
-      "ci95_high": 0.004018
+      "mean": -0.003518,
+      "ci95_low": -0.008594,
+      "ci95_high": 0.001557
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t1_gross_real_time",
       "seeds": 10,
-      "mean": 0.000003,
-      "ci95_low": -0.000002,
-      "ci95_high": 0.000008
+      "mean": 0.000076,
+      "ci95_low": -0.000063,
+      "ci95_high": 0.000215
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000002,
-      "ci95_low": -0.000001,
-      "ci95_high": 0.000004
+      "mean": 0.000064,
+      "ci95_low": -0.000076,
+      "ci95_high": 0.000204
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t1_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000025,
-      "ci95_low": -0.000015,
-      "ci95_high": 0.000064
+      "mean": 0.000143,
+      "ci95_low": -0.00001,
+      "ci95_high": 0.000296
     },
     {
       "metric": "others_ub_net_change_pct_top_net_receiver_t2",
       "seeds": 10,
-      "mean": -0.005627,
-      "ci95_low": -0.013565,
-      "ci95_high": 0.002311
+      "mean": -0.001463,
+      "ci95_low": -0.003774,
+      "ci95_high": 0.000849
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t2_gross_real_time",
       "seeds": 10,
-      "mean": 0.000029,
-      "ci95_low": -0.000016,
-      "ci95_high": 0.000074
+      "mean": 0.000296,
+      "ci95_low": -0.000184,
+      "ci95_high": 0.000776
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_shortfall_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000024,
-      "ci95_low": -0.000022,
-      "ci95_high": 0.000069
+      "mean": 0.000215,
+      "ci95_low": -0.00027,
+      "ci95_high": 0.0007
     },
     {
       "metric": "rejected_value_share_top_net_receiver_t2_micro_cycle_all_w1000_d10000",
       "seeds": 10,
-      "mean": 0.000152,
-      "ci95_low": -0.000036,
-      "ci95_high": 0.000339
+      "mean": 0.000839,
+      "ci95_low": -0.000202,
+      "ci95_high": 0.001881
     }
   ]
 }

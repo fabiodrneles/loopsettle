@@ -292,9 +292,11 @@ Each entry: what was decided, alternatives, why, and how to revert.
   `docs/references/` and was not read); partial settlement; optimisation-based solvers.
 - **Why:** it is the classic liquidity-saving mechanism the literature compares against, and it
   settles batches that are not cycles, which the micro-cycle search cannot.
-- **Caveat:** implemented from the description of the algorithm in secondary sources and from the
-  prefix/feasibility property it is known for; it must be checked against the paper before the
-  name "Bech-Soramäki" is used in a publication.
+- **Caveat (resolved 13 Nov 2026):** implemented from secondary descriptions, then checked against
+  the paper (Bank of Finland DP 9/2001, §3.3, copy supplied by the owner): Step 1 include every
+  queued payment, Step 2 compute ex-post balances, Step 3 remove the last payment of any deficient
+  bank and repeat; the result does not depend on the bank picked (footnote 9). `run_gridlock` is
+  this algorithm; the name "Bech-Soramäki" can be used. REVIEW 97.
 - **Revert:** do not use the `gridlock` engine; nothing else depends on it.
 
 ## D28 — Funding as a layer outside the engines, with reserves outside the system
@@ -309,3 +311,57 @@ Each entry: what was decided, alternatives, why, and how to revert.
   open) for every engine at once, and it keeps earlier results byte-identical (no policy = no
   change).
 - **Revert:** run without a policy (the default).
+
+## D29 — The Bank of Finland design as an experiment: ρ, π, liquidity levels, complete netting
+- **Decision:** `bof-replication` reproduces the design of Koponen & Soramäki (1998): opening
+  balance `LB_i + LL (UB_i − LB_i)` at 11 levels (their equation 4), payments may wait until the
+  end of the day, and designs are compared by ρ (`RunMetrics::rho`, equation 5) and π
+  (`metrics::pi`, equation 6). A new engine, `netq:fifo|bypass:<window>:<delay>[:<retry>]`, is
+  their netting of queues: everything at once if every participant covers its net (equation 3),
+  otherwise nothing. `gridlock` and `netq` take an optional gross-retry interval
+  (`MicroCycleConfig::batch_every`), so a design can net every 20 minutes while retrying the queue
+  every second.
+- **Choices inside it:** (a) ρ in continuous time (ms), not per minute; (b) a rejected payment
+  counts as waiting until the end of the day (the 1998 framework has none: everything settles by
+  the end of the day); (c) system ρ sums numerators and denominators over participants, as the
+  1998 text does (the weights are then each payer's area of cumulative outflows, not exactly its
+  share of value, as the text says); (d) the 2001 paper writes the levels as `α (UB_i − LB_i)`
+  (equation 8), without `+ LB_i`; we follow 1998 and the 2001 paper's own words; (e) a stylised
+  large-value scenario at 1,500 payments a day (`ASSUMPTION`, the one of `regimes`) checks that the
+  implementation reproduces the published effect where the published studies found it.
+- **Why the retry interval:** without it, "net every 20 minutes" also meant "retry the queue every
+  20 minutes", which raised ρ against a queue retried every second (measured: +0.23 pp at the
+  lowest level). The 1998 simulator checks its queue on every event.
+- **Alternatives:** per-minute ρ (closer to the text, coarser); excluding rejected payments (then
+  ρ would reward rejecting); adding the levels to `liquidity-frontier` (heavier, and it would change
+  its reference results).
+- **Revert:** drop the experiment; nothing else uses `netq`, `rho`, `pi` or `batch_every`
+  (`batch_every = 1` is the old behaviour, and all earlier reference results are unchanged).
+
+## D30 — The value distribution is fitted to the public percentiles
+- **Decision:** with `[value_percentiles]` in the calibration file, `calibrate::apply` fits the
+  body dispersion (`body_sigma`) and the tail's count share (`tail_prob`) to the p50, p90 and p99
+  of the value of an interbank Pix (R$ 36 / 400 / 3,900, *Relatório Anual do SPI 2025*, p. 10,
+  December 2025), by least squares of the log ratios on a grid of exact decimals (tail 0.001 to
+  0.100 by 0.001; σ 0.80 to 3.00 by 0.02), every candidate holding the mean ticket and the tail's
+  share of value (B2B, 52%). Result: σ = 1.9, tail 0.3%; p50 R$ 35.76, p90 R$ 419, p99 R$ 3,784.
+- **Before:** σ = 1.4 (`ASSUMPTION`) and tail = B2B count share (4.3%): right mean, wrong shape
+  (p50 R$ 91.5). Typical payments were 2.5 times too large.
+- **Alternatives:** fit α of the Pareto tail too (the three percentiles do not identify it: the
+  tail starts above p99); a different body law; weight the percentiles differently.
+- **Choices inside it:** the normal CDF uses a written-out `erfc` (Numerical Recipes, error
+  < 1.2e-7) so the fit does not depend on a platform's special functions; the grid is exact
+  decimals so the chosen pair is the same everywhere. The percentiles (December 2025) and the other
+  targets (September 2026) are from different months (`ASSUMPTION`).
+- **Revert:** `scenario.amounts_fit = "mean"` in an experiment file, or remove `[value_percentiles]`
+  from `data/calibration/pix.toml`. Every calibrated result changed with this decision (REVIEW 99).
+
+## D31 — The preprint draft is written in English only
+- **Decision:** `paper/preprint-liquidity-floor.md`, the draft of the paper on the liquidity floor,
+  exists only in English, the language of SSRN and of the target journal; it is listed as a
+  single-language document in `scripts/check_twins.py`. It is a draft for the author and the
+  reviewer, with the points that need their judgement marked `[TODO]` (CLAUDE.md, phase 10: the
+  authors write the paper).
+- **Alternatives:** a Portuguese twin (doubles the work on a text that will be rewritten); drafting
+  in Portuguese and translating at the end.
+- **Revert:** add `paper/preprint-liquidity-floor.pt-BR.md` and remove the entry from the list.

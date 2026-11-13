@@ -63,7 +63,21 @@ Fontes: [arXiv](https://arxiv.org/abs/2506.12546) · [WRAP Warwick](https://wrap
 
 | Campo | Valor | Status |
 |---|---|---|
-| Referência | Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of Finland Discussion Papers 9/2001. | confirmada (referência clássica) |
+| Referência | Bech, M. L. & Soramäki, K. (2001). *Gridlock Resolution in Interbank Payment Systems*. Bank of Finland Discussion Papers 9/2001. | **lida** (texto integral, cópia enviada pelo dono; não guardada: sem licença para redistribuir) |
+| Algoritmo | §3.3: Passo 1, incluir todos os pagamentos da fila; Passo 2, calcular o saldo final de cada banco; Passo 3, escolher qualquer banco abaixo de zero e tirar o *último* pagamento da fila dele, e repetir. Ótimo para o problema de resolução de gridlock com as restrições de liquidez e de sequência (FIFO por banco), equações 5–6; o resultado não depende de qual banco deficitário é escolhido (nota 9, apêndice). Desenvolvido pelo Danmarks Nationalbank para o KRONOS. | confirmada. **O motor `gridlock` do LoopSettle é esse algoritmo** (`engines.rs::run_gridlock`; D27). |
+| Limites e indicador | UB como em Koponen & Soramäki; LB = max(0, recebido − enviado) (eq. 7); indicador de atraso ρ (eq. 9), o de 1998. Níveis de liquidez escritos `L_i = α (UB_i − LB_i)` (eq. 8), α ∈ {0; 0,2; …; 1}: sem o `+ LB_i` da equação 4 de 1998 e do próprio texto do artigo ("liquidez suficiente para liquidar todos os pagamentos do dia" no extremo inferior). O LoopSettle segue a forma de 1998. | confirmada (p. 19) |
+| Resultados | Dados dos LBTR dinamarquês (64 dias) e finlandês (100 dias); o algoritmo reduz a fila "em todos os níveis de liquidez, mas em especial quando a liquidez intradiária é escassa", em até 50% (Resumo; §6). | confirmada |
+
+## 4a. Koponen & Soramäki — necessidade de liquidez intradiária (origem do UB e do LB)
+
+| Campo | Valor | Status |
+|---|---|---|
+| Referência | Koponen, R. & Soramäki, K. (1998). *Intraday Liquidity Needs in a Modern Interbank Payment System: A Simulation Approach*. Bank of Finland Studies E:14. https://hdl.handle.net/10419/212947 | **lida** (texto integral da EconStor, enviado pelo dono; os termos da EconStor proíbem redistribuição pública, então só a citação fica) |
+| Limites | Equação 1: limite inferior teórico = posição devedora líquida do fim do dia (LBTR com fila, sem gridlock); equação 2: limite superior teórico = maior posição devedora líquida acumulada no dia (LBTR sem fila, liquidação imediata). §2.3.1, Figura 2. | confirmada. **São o LB e o UB do LoopSettle.** |
+| Curva entre os limites | A troca entre B (LB) e C (UB) é obtida **por simulação**, em 11 níveis de liquidez `LA_i = LB_i + LL (UB_i − LB_i)` (equação 4, §6.1). Não há forma fechada para um prazo. | confirmada: o piso por prazo da METHODOLOGY §9b não está nesse estudo. |
+| Indicadores | ρ (atraso, eq. 5): soma ao longo dos minutos do valor na fila / soma ao longo dos minutos do valor enviado acumulado; π (uso de liquidez, eq. 6): pico de liquidez usada / valor bruto enviado. Valores do sistema: numeradores e denominadores somados entre os bancos. | confirmada; implementados como `RunMetrics::rho` e `metrics::pi`. |
+| Regras de fila | FIFO com estado "fechado" por banco (Figura 9) = `StrictFifoPerPayer` do LoopSettle; Bypass FIFO (§3.1.2) = `BypassFifo`, D13. Compensação das filas (§3.1.3): todas as filas de uma vez se todo banco cobre o seu líquido (equação 3); senão, nada ("iliquidez, não gridlock"). | confirmada; implementada como `netq:fifo|bypass:<janela>:<atraso>`. |
+| Resultados | Compensar as filas a cada 20, 5 ou 1 minuto "reduz o atraso só nos níveis mais altos de liquidez, e mesmo assim com efeito pequeno" (§7.4.3); dividir pagamentos funciona melhor (§7.4.4); compensação bilateral das filas proposta como pesquisa futura (§8.4). | confirmada |
 
 ## 4b. Johnson, McAndrews & Soramäki — mecanismos de liquidação diferida
 
@@ -110,13 +124,13 @@ atraso máximo) e uma conferência em texto integral.
 
 | O que foi achado | Situação |
 |---|---|
-| Os dois limites sem parâmetro de atraso — o superior (liquidação bruta imediata = maior posição devedora líquida acumulada) e o inferior (uma compensação no fim do dia) — são padrão e atribuídos a Koponen & Soramäki (1998, Bank of Finland Studies E:14, seções "Theoretical bounds" e "Real bounds") e a Bech & Soramäki (2001/2002). O UB e o LB do LoopSettle são esses. | só resumos de busca; o estudo de 1998 **não foi lido**. Precisa ser lido e citado como origem do UB/LB. |
+| Os dois limites sem parâmetro de atraso — o superior (liquidação bruta imediata = maior posição devedora líquida acumulada) e o inferior (uma compensação no fim do dia) — são padrão e atribuídos a Koponen & Soramäki (1998, Bank of Finland Studies E:14, seções "Theoretical bounds" e "Real bounds") e a Bech & Soramäki (2001/2002). O UB e o LB do LoopSettle são esses. | **lido** em 13/11/2026 (seção 4a): equações 1 e 2 do estudo de 1998; nenhum dos dois estudos enuncia um limite com prazo. |
 | Rivadeneyra & Zhang (Bank of Canada SDP 2020-9, em `docs/references/pdf/`) calculam "a liquidez mínima necessária para um conjunto de pagamentos permitindo o atraso máximo". | **lido** (p. 10, nota 13, e seção 4.1): "atraso máximo" ali é adiar os pagamentos que falham até o fim do dia, e o mínimo é achado por simulação iterativa. Sem prazo `d`, sem fórmula fechada. Não é o piso. |
 | Troca entre liquidez e atraso por simulação: Leinonen & Soramäki (1999), Enge & Øverli (2006), Arjani (2006), Galbiati & Soramäki (2007), DNB WP 682 (2020), ECB WP 1291 (2011). | só resumos de busca; nenhum é descrito como enunciando um limite parametrizado por um prazo. |
 | Cálculo de redes (curvas de chegada, limites de fila e de atraso). | nenhuma fonte achada que o aplique à liquidez de sistemas de pagamento; o piso é o análogo de um limite de fila em que saídas e entradas atrasadas fazem o papel de chegadas e serviço. |
 
 **Conclusão para usar no artigo:** nenhum enunciado anterior foi achado, numa busca limitada. Isso
-não é evidência de novidade. Antes de afirmá-la: ler Koponen & Soramäki (1998) e Bech & Soramäki
-(2002), buscar nos anais do seminário do simulador do Banco da Finlândia e no *Journal of Financial
+não é evidência de novidade. Koponen & Soramäki (1998) e Bech & Soramäki (2001) foram lidos em
+13/11/2026: nenhum dos dois o tem (lá, a curva entre os limites é simulada). Antes de afirmá-la: buscar nos anais do seminário do simulador do Banco da Finlândia e no *Journal of Financial
 Market Infrastructures*, e perguntar a um especialista. Até lá, a redação segura é "até onde
 sabemos".

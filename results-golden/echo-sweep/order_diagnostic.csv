@@ -1,13 +1,13 @@
 case,engine,seeds,saving_pct_mean,saving_pct_ci95_low,saving_pct_ci95_high
 no echo,hold_d10000,3,0,0,0
-no echo,deferred_net_8640x,3,0.005064,-0.003576,0.013704
-no echo,micro_cycle_all_w500_d10000,3,0.000446,-0.001472,0.002363
+no echo,deferred_net_8640x,3,0.046216,-0.126255,0.218686
+no echo,micro_cycle_all_w500_d10000,3,0,0,0
 no echo,micro_cycle_all_w10000_d10000,3,0,0,0
 20% onward echoes at 1 s,hold_d10000,3,0,0,0
-20% onward echoes at 1 s,deferred_net_8640x,3,0.016564,-0.009424,0.042553
-20% onward echoes at 1 s,micro_cycle_all_w500_d10000,3,-0.077979,-0.093609,-0.06235
-20% onward echoes at 1 s,micro_cycle_all_w10000_d10000,3,-0.030404,-0.125555,0.064748
+20% onward echoes at 1 s,deferred_net_8640x,3,0.297298,-0.960617,1.555213
+20% onward echoes at 1 s,micro_cycle_all_w500_d10000,3,1.117908,-3.672415,5.908231
+20% onward echoes at 1 s,micro_cycle_all_w10000_d10000,3,0.2946,-0.953066,1.542265
 50% onward echoes at 1 s,hold_d10000,3,0,0,0
-50% onward echoes at 1 s,deferred_net_8640x,3,1.838409,-1.779977,5.456796
-50% onward echoes at 1 s,micro_cycle_all_w500_d10000,3,0.530097,-4.05025,5.110444
-50% onward echoes at 1 s,micro_cycle_all_w10000_d10000,3,0.399429,-4.532333,5.331192
+50% onward echoes at 1 s,deferred_net_8640x,3,0.795876,-0.925459,2.517211
+50% onward echoes at 1 s,micro_cycle_all_w500_d10000,3,0.248473,-1.045499,1.542445
+50% onward echoes at 1 s,micro_cycle_all_w10000_d10000,3,0.405977,-0.887787,1.699741

@@ -197,3 +197,65 @@ fn m3_gridlock_keeps_the_payer_queue_order() {
         "the second payment waits for the first to leave the queue"
     );
 }
+
+fn netq(window: TimeMs, delay: TimeMs, n: usize) -> AtomicMicroCycle {
+    let mut cfg = MicroCycleConfig::new(window, delay, QueueMode::QueueOnShortfall);
+    cfg.gridlock = true;
+    cfg.complete_netting = true;
+    cfg.discipline = QueueDiscipline::StrictFifoPerPayer;
+    AtomicMicroCycle::new(cfg, n)
+}
+
+/// Complete netting of queues (Koponen & Soramaki 1998, section 3.1.3, equation 3) against the
+/// largest feasible prefix (Bech & Soramaki). Nobody has funds. A->B 10 and B->A 10 net to zero,
+/// but C->A 7 leaves C short by 7. The 1998 rule calls this illiquidity and nets nothing; the
+/// prefix rule drops C's payment and settles the bilateral pair. Without C's payment both
+/// rules settle everything at the first window.
+#[test]
+fn complete_netting_is_all_or_nothing() {
+    let ps = [pay(0, 0, 0, 1, 10), pay(1, 1, 1, 0, 10), pay(2, 2, 2, 0, 7)];
+    let mut ledger = Ledger::new(vec![0, 0, 0]);
+    let rec = run(&mut netq(1_000, 3_000, 3), &mut ledger, &ps);
+    for id in 0..3 {
+        assert_eq!(
+            rec.0[&id].1, None,
+            "payment {id}: complete netting must not run"
+        );
+    }
+    let mut ledger = Ledger::new(vec![0, 0, 0]);
+    let rec = run(&mut gridlock(1_000, 3_000, 3), &mut ledger, &ps);
+    assert_eq!(rec.0[&0], (1_000, Some(SettleKind::Cycle)));
+    assert_eq!(rec.0[&1], (1_000, Some(SettleKind::Cycle)));
+    assert_eq!(rec.0[&2].1, None);
+
+    let ps = [pay(0, 0, 0, 1, 10), pay(1, 1, 1, 0, 10)];
+    let mut ledger = Ledger::new(vec![0, 0, 0]);
+    let rec = run(&mut netq(1_000, 3_000, 3), &mut ledger, &ps);
+    for id in 0..2 {
+        assert_eq!(rec.0[&id], (1_000, Some(SettleKind::Cycle)), "payment {id}");
+    }
+    assert_eq!(ledger.balances(), &[0, 0, 0]);
+}
+
+/// The batch window and the gross retry are separate: netting every 20 s while retrying the
+/// queue every second. A has nothing and queues A->C 5 at t=0; B pays A 5 at t=100 (gross). With
+/// the retry every second, A->C settles gross at t=1 000; with retry only at the batch window,
+/// at t=20 000, taken by the netting step, which runs before the retry.
+#[test]
+fn batch_window_and_gross_retry_are_separate() {
+    let ps = [pay(0, 0, 0, 2, 5), pay(1, 100, 1, 0, 5)];
+    let mut ledger = Ledger::new(vec![0, 5, 0]);
+    let mut cfg = MicroCycleConfig::new(1_000, 86_400_000, QueueMode::QueueOnShortfall);
+    cfg.gridlock = true;
+    cfg.complete_netting = true;
+    cfg.discipline = QueueDiscipline::StrictFifoPerPayer;
+    cfg.batch_every = 20;
+    let mut eng = AtomicMicroCycle::new(cfg, 3);
+    assert_eq!(eng.name(), "netq_fifo_w20000_d86400000_r1000");
+    let rec = run(&mut eng, &mut ledger, &ps);
+    assert_eq!(rec.0[&0], (1_000, Some(SettleKind::Gross)));
+    let mut ledger = Ledger::new(vec![0, 5, 0]);
+    let rec = run(&mut netq(20_000, 86_400_000, 3), &mut ledger, &ps);
+    // at the batch instant the netting runs first and takes the payment (feasible on its own)
+    assert_eq!(rec.0[&0], (20_000, Some(SettleKind::Cycle)));
+}

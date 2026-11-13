@@ -1,5 +1,5 @@
 measure,observed,null_mean,null_sd,observed_over_null,null
-hodge_l2_cyclic_net,0.976952,0.96994,0,1.007229,analytic (m - n + k)/m
-cdfd_max_gross,0.831464,0.216315,0.019026,3.843772,payee shuffle x20
-cdfd_bff_gross,0.788185,0.178404,0.019593,4.417985,payee shuffle x20
-cycle_netting_gross,0.795486,0.194024,0.020894,4.099938,payee shuffle x20
+hodge_l2_cyclic_net,0.979477,0.969858,0,1.009919,analytic (m - n + k)/m
+cdfd_max_gross,0.778454,0.195076,0.013714,3.990509,payee shuffle x20
+cdfd_bff_gross,0.725454,0.161371,0.015251,4.495564,payee shuffle x20
+cycle_netting_gross,0.738249,0.173721,0.015223,4.249624,payee shuffle x20

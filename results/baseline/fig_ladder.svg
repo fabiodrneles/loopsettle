@@ -3,18 +3,18 @@
 <text x="16" y="26" font-size="15" font-weight="bold">Circularity ladder (gross graph, share of gross flow)</text>
 <text x="252.0" y="63.0" text-anchor="end">Hodge L1 (diagnostic)</text>
 <rect x="260" y="50.0" width="370.0" height="18" fill="#0072B2"/>
-<text x="636.0" y="63.0" fill="#333">1.18</text>
+<text x="636.0" y="63.0" fill="#333">1.25</text>
 <text x="252.0" y="91.0" text-anchor="end">Potential offset (BCB style)</text>
-<rect x="260" y="78.0" width="267.0" height="18" fill="#0072B2"/>
-<text x="533.0" y="91.0" fill="#333">0.85</text>
+<rect x="260" y="78.0" width="242.2" height="18" fill="#0072B2"/>
+<text x="508.2" y="91.0" fill="#333">0.82</text>
 <text x="252.0" y="119.0" text-anchor="end">CDFD maximum (static ceiling)</text>
-<rect x="260" y="106.0" width="259.9" height="18" fill="#0072B2"/>
-<text x="525.9" y="119.0" fill="#333">0.83</text>
+<rect x="260" y="106.0" width="230.8" height="18" fill="#0072B2"/>
+<text x="496.8" y="119.0" fill="#333">0.78</text>
 <text x="252.0" y="147.0" text-anchor="end">Cycle netting (greedy)</text>
-<rect x="260" y="134.0" width="248.7" height="18" fill="#0072B2"/>
-<text x="514.7" y="147.0" fill="#333">0.80</text>
+<rect x="260" y="134.0" width="218.9" height="18" fill="#0072B2"/>
+<text x="484.9" y="147.0" fill="#333">0.74</text>
 <text x="252.0" y="175.0" text-anchor="end">Bilateral netting only</text>
-<rect x="260" y="162.0" width="234.1" height="18" fill="#0072B2"/>
-<text x="500.1" y="175.0" fill="#333">0.75</text>
+<rect x="260" y="162.0" width="193.2" height="18" fill="#0072B2"/>
+<text x="459.2" y="175.0" fill="#333">0.65</text>
 <text x="445.0" y="228.0" text-anchor="middle">fraction of total flow (Hodge L1 can exceed 1)</text>
 </svg>

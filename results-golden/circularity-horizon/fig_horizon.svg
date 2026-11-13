@@ -3,14 +3,12 @@
 <text x="70" y="24" font-size="15" font-weight="bold">Value that circulates within a window vs liquidity recoverable with that deadline</text>
 <line x1="70" y1="385.0" x2="540.0" y2="385.0" stroke="#e5e5e5"/>
 <text x="64.0" y="389.0" text-anchor="end" fill="#444">0</text>
-<line x1="70" y1="302.9" x2="540.0" y2="302.9" stroke="#e5e5e5"/>
-<text x="64.0" y="306.9" text-anchor="end" fill="#444">20</text>
-<line x1="70" y1="220.7" x2="540.0" y2="220.7" stroke="#e5e5e5"/>
-<text x="64.0" y="224.7" text-anchor="end" fill="#444">40</text>
-<line x1="70" y1="138.6" x2="540.0" y2="138.6" stroke="#e5e5e5"/>
-<text x="64.0" y="142.6" text-anchor="end" fill="#444">60</text>
-<line x1="70" y1="56.4" x2="540.0" y2="56.4" stroke="#e5e5e5"/>
-<text x="64.0" y="60.4" text-anchor="end" fill="#444">80</text>
+<line x1="70" y1="293.1" x2="540.0" y2="293.1" stroke="#e5e5e5"/>
+<text x="64.0" y="297.1" text-anchor="end" fill="#444">20</text>
+<line x1="70" y1="201.3" x2="540.0" y2="201.3" stroke="#e5e5e5"/>
+<text x="64.0" y="205.3" text-anchor="end" fill="#444">40</text>
+<line x1="70" y1="109.4" x2="540.0" y2="109.4" stroke="#e5e5e5"/>
+<text x="64.0" y="113.4" text-anchor="end" fill="#444">60</text>
 <line x1="91.4" y1="40" x2="91.4" y2="385.0" stroke="#f0f0f0"/>
 <text x="91.4" y="401.0" text-anchor="middle" fill="#444">10</text>
 <line x1="199.9" y1="40" x2="199.9" y2="385.0" stroke="#f0f0f0"/>
@@ -25,31 +23,31 @@
 <line x1="70" y1="40" x2="70" y2="385.0" stroke="#333"/>
 <text x="305.0" y="426.0" text-anchor="middle">window / deadline (s, log)</text>
 <text transform="translate(18,212.5) rotate(-90)" text-anchor="middle">% of gross value</text>
-<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,380.6 175.8,350.1 303.5,200.1 368.8,134.1 453.3,76.8 518.6,56.4"/>
-<circle cx="91.4" cy="380.6" r="3.5" fill="#0072B2"/>
-<circle cx="175.8" cy="350.1" r="3.5" fill="#0072B2"/>
-<circle cx="303.5" cy="200.1" r="3.5" fill="#0072B2"/>
-<circle cx="368.8" cy="134.1" r="3.5" fill="#0072B2"/>
-<circle cx="453.3" cy="76.8" r="3.5" fill="#0072B2"/>
+<polyline fill="none" stroke="#0072B2" stroke-width="2" points="91.4,383.0 175.8,368.1 303.5,275.7 368.8,210.1 453.3,124.1 518.6,56.4"/>
+<circle cx="91.4" cy="383.0" r="3.5" fill="#0072B2"/>
+<circle cx="175.8" cy="368.1" r="3.5" fill="#0072B2"/>
+<circle cx="303.5" cy="275.7" r="3.5" fill="#0072B2"/>
+<circle cx="368.8" cy="210.1" r="3.5" fill="#0072B2"/>
+<circle cx="453.3" cy="124.1" r="3.5" fill="#0072B2"/>
 <circle cx="518.6" cy="56.4" r="3.5" fill="#0072B2"/>
 <rect x="552.0" y="40.0" width="12" height="12" fill="#0072B2"/>
 <text x="570.0" y="50.0">circulating value (max circulation per window)</text>
-<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,385.0 175.8,384.8 303.5,381.1 368.8,373.3 453.3,366.7 518.6,366.6"/>
+<polyline fill="none" stroke="#D55E00" stroke-width="2" points="91.4,385.0 175.8,384.3 303.5,380.8 368.8,370.2 453.3,351.4 518.6,347.3"/>
 <circle cx="91.4" cy="385.0" r="3.5" fill="#D55E00"/>
-<circle cx="175.8" cy="384.8" r="3.5" fill="#D55E00"/>
-<circle cx="303.5" cy="381.1" r="3.5" fill="#D55E00"/>
-<circle cx="368.8" cy="373.3" r="3.5" fill="#D55E00"/>
-<circle cx="453.3" cy="366.7" r="3.5" fill="#D55E00"/>
-<circle cx="518.6" cy="366.6" r="3.5" fill="#D55E00"/>
+<circle cx="175.8" cy="384.3" r="3.5" fill="#D55E00"/>
+<circle cx="303.5" cy="380.8" r="3.5" fill="#D55E00"/>
+<circle cx="368.8" cy="370.2" r="3.5" fill="#D55E00"/>
+<circle cx="453.3" cy="351.4" r="3.5" fill="#D55E00"/>
+<circle cx="518.6" cy="347.3" r="3.5" fill="#D55E00"/>
 <rect x="552.0" y="58.0" width="12" height="12" fill="#D55E00"/>
 <text x="570.0" y="68.0">recoverable liquidity: tight bound</text>
-<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,385.0 175.8,384.9 303.5,384.1 368.8,381.8 453.3,373.1 518.6,366.6"/>
+<polyline fill="none" stroke="#009E73" stroke-width="2" points="91.4,385.0 175.8,384.9 303.5,382.7 368.8,380.6 453.3,367.3 518.6,347.3"/>
 <circle cx="91.4" cy="385.0" r="3.5" fill="#009E73"/>
 <circle cx="175.8" cy="384.9" r="3.5" fill="#009E73"/>
-<circle cx="303.5" cy="384.1" r="3.5" fill="#009E73"/>
-<circle cx="368.8" cy="381.8" r="3.5" fill="#009E73"/>
-<circle cx="453.3" cy="373.1" r="3.5" fill="#009E73"/>
-<circle cx="518.6" cy="366.6" r="3.5" fill="#009E73"/>
+<circle cx="303.5" cy="382.7" r="3.5" fill="#009E73"/>
+<circle cx="368.8" cy="380.6" r="3.5" fill="#009E73"/>
+<circle cx="453.3" cy="367.3" r="3.5" fill="#009E73"/>
+<circle cx="518.6" cy="347.3" r="3.5" fill="#009E73"/>
 <rect x="552.0" y="76.0" width="12" height="12" fill="#009E73"/>
 <text x="570.0" y="86.0">recovered by netting every window</text>
 </svg>

@@ -1,0 +1,27 @@
+# The design of Koponen & Soramaki (1998, Bank of Finland Studies E:14) on the calibrated Pix
+# scenario: every participant holds LB_i + LL (UB_i - LB_i) at liquidity level LL (equation 4),
+# payments may queue until the end of the day, and designs are compared by the settlement delay
+# indicator rho (equation 5) and the liquidity usage indicator pi (equation 6). The question is
+# whether their finding holds for an instant-payment flow: netting the queues every 20, 5 or 1
+# minutes reduces delay "only with minor effect" (section 7.4.3).
+#
+# Scale: 300,000 payments a day, as liquidity-frontier, so that 10 seeds x 11 levels x 7 engines
+# fit the time budget of the reference machine.
+[experiment]
+name = "bof-replication"
+description = "Koponen & Soramaki (1998) design on the Pix scenario: rho vs pi, netting of queues"
+
+[scenario]
+seed = 20260930
+participants = 200
+days = 1
+payments_per_day = 300_000
+calibration = "data/calibration/pix.toml"
+
+[bof]
+seeds = [20260930, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+levels = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# first engine = reference (plain FIFO queue, the 1998 "RTGS with queuing"); then complete netting
+# of queues every 20, 5 and 1 minutes (1998), the largest feasible FIFO prefix every minute
+# (Bech-Soramaki), and LoopSettle's cycle search every second with and without FIFO per payer
+engines = ["queue:fifo:86400000:1000", "netq:fifo:1200000:86400000:1000", "netq:fifo:300000:86400000:1000", "netq:fifo:60000:86400000:1000", "gridlock:fifo:60000:86400000:1000", "micro:shortfall:1000:86400000:6:fifo", "micro:shortfall:1000:86400000"]

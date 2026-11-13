@@ -31,6 +31,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TOP = 5_000_000
 
 
+
+# Value percentiles of interbank Pix (not in the Olinda API): Banco Central do Brasil, Relatorio
+# Anual do SPI 2025, p. 10, December 2025. Copied by hand; update when a new report is out.
+VALUE_PERCENTILES = """
+[value_percentiles]
+# Banco Central do Brasil, Relatorio Anual do SPI 2025, p. 10 (PDF): December 2025, interbank Pix
+# settled in the SPI. "Metade das transacoes (percentil 50) teve valor inferior a R$36,00; 90%
+# ficaram abaixo de R$400,00; e 99%, abaixo de R$3.900,00." Not available in the Olinda API:
+# copied by hand, written by data/fetch_pix.py as a constant.
+source = "Relatorio Anual do SPI 2025, p. 10"
+month = 202512
+p50_brl = 36.0
+p90_brl = 400.0
+p99_brl = 3900.0
+"""
+
 def get_json(url, tries=5):
     for k in range(tries):
         try:
@@ -140,6 +156,7 @@ def main():
         f.write("# key shares by rank (descending), first --top participants\n")
         f.write("shares = [" + ", ".join(f"{s:.8g}" for s in shares[: a.top]) + "]\n")
         f.write("segments = [" + ", ".join('"' + seg[i].replace('"', "'") + '"' for i, _ in ranked[: a.top]) + "]\n")
+        f.write(VALUE_PERCENTILES)
     print(f"wrote {out}: {qty} tx, R$ {val:,.0f}, ticket R$ {val / qty:.2f}, {len(ranked)} participants", file=sys.stderr)
 
 

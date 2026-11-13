@@ -35,6 +35,12 @@ pub struct MicroCycleSpec {
     pub search_cycles: bool,
     /// multilateral gridlock resolution at every window (`gridlock:fifo|bypass:<window>:<delay>`)
     pub gridlock: bool,
+    /// with `gridlock`: net the whole queue or nothing (Koponen & Soramaki 1998, section 3.1.3;
+    /// `netq:fifo|bypass:<window>:<delay>`) instead of the largest feasible FIFO prefix
+    pub complete_netting: bool,
+    /// gross retry interval for `gridlock`/`netq` when it differs from the batch window
+    /// (optional fifth field, ms; `None` = retry at every batch window)
+    pub retry_ms: Option<TimeMs>,
 }
 
 impl EngineSpec {
@@ -89,7 +95,21 @@ impl EngineSpec {
                     discipline,
                     search_cycles: false,
                     gridlock: false,
+                    complete_netting: false,
+                    retry_ms: None,
                 }))
+            }
+            // Queue + complete netting of all queues every window, or nothing (Koponen &
+            // Soramaki 1998, section 3.1.3, equation 3).
+            "netq" => {
+                let g = Self::parse(&s.replacen("netq", "gridlock", 1))?;
+                match g {
+                    EngineSpec::Micro(mut m) => {
+                        m.complete_netting = true;
+                        Ok(EngineSpec::Micro(m))
+                    }
+                    _ => unreachable!("gridlock parses to Micro"),
+                }
             }
             // Queue + multilateral gridlock resolution every window (Bech-Soramäki style).
             "gridlock" => {
@@ -98,13 +118,21 @@ impl EngineSpec {
                     Some("bypass") => QueueDiscipline::BypassFifo,
                     _ => {
                         return Err(format!(
-                        "engine '{s}': expected gridlock:fifo|bypass:<window_ms>:<max_delay_ms>"
+                        "engine '{s}': expected gridlock|netq:fifo|bypass:<window_ms>:<max_delay_ms>[:<retry_ms>]"
                     ))
                     }
                 };
-                if parts.len() != 4 || num(2)? == 0 {
+                let retry_ms = if parts.len() == 5 {
+                    Some(num(4)?)
+                } else {
+                    None
+                };
+                if !(parts.len() == 4 || parts.len() == 5)
+                    || num(2)? == 0
+                    || retry_ms.is_some_and(|r| r == 0 || num(2).unwrap_or(1) % r != 0)
+                {
                     return Err(format!(
-                        "engine '{s}': expected gridlock:fifo|bypass:<window_ms>:<max_delay_ms>"
+                        "engine '{s}': expected gridlock|netq:fifo|bypass:<window_ms>:<max_delay_ms>[:<retry_ms>]"
                     ));
                 }
                 Ok(EngineSpec::Micro(MicroCycleSpec {
@@ -115,6 +143,8 @@ impl EngineSpec {
                     discipline,
                     search_cycles: false,
                     gridlock: true,
+                    complete_netting: false,
+                    retry_ms,
                 }))
             }
             // Bilateral offsetting only: the micro-cycle engine restricted to cycles of two.
@@ -153,6 +183,8 @@ impl EngineSpec {
                     discipline,
                     search_cycles: true,
                     gridlock: false,
+                    complete_netting: false,
+                    retry_ms: None,
                 }))
             }
             _ => Err(format!("unknown engine '{s}'")),
@@ -172,6 +204,11 @@ impl EngineSpec {
                 c.discipline = m.discipline;
                 c.search_cycles = m.search_cycles;
                 c.gridlock = m.gridlock;
+                c.complete_netting = m.complete_netting;
+                if let Some(r) = m.retry_ms {
+                    c.batch_every = m.window_ms / r;
+                    c.window_ms = r;
+                }
                 Box::new(AtomicMicroCycle::new(c, n))
             }
         }
@@ -190,36 +227,44 @@ impl EngineSpec {
                     None => j,
                 }
             }
-            EngineSpec::Micro(m) => Json::obj()
-                .set(
-                    "kind",
-                    if m.gridlock {
-                        "gridlock"
-                    } else if m.search_cycles {
-                        "micro"
-                    } else {
-                        "queue"
-                    },
-                )
-                .set(
-                    "mode",
-                    if m.mode == QueueMode::QueueAll {
-                        "all"
-                    } else {
-                        "shortfall"
-                    },
-                )
-                .set("window_ms", m.window_ms)
-                .set("max_delay_ms", m.max_delay_ms)
-                .set("max_cycle_len", m.max_cycle_len)
-                .set(
-                    "discipline",
-                    if m.discipline == QueueDiscipline::StrictFifoPerPayer {
-                        "fifo"
-                    } else {
-                        "bypass"
-                    },
-                ),
+            EngineSpec::Micro(m) => {
+                let j = Json::obj()
+                    .set(
+                        "kind",
+                        if m.gridlock && m.complete_netting {
+                            "netq"
+                        } else if m.gridlock {
+                            "gridlock"
+                        } else if m.search_cycles {
+                            "micro"
+                        } else {
+                            "queue"
+                        },
+                    )
+                    .set(
+                        "mode",
+                        if m.mode == QueueMode::QueueAll {
+                            "all"
+                        } else {
+                            "shortfall"
+                        },
+                    )
+                    .set("window_ms", m.window_ms)
+                    .set("max_delay_ms", m.max_delay_ms)
+                    .set("max_cycle_len", m.max_cycle_len)
+                    .set(
+                        "discipline",
+                        if m.discipline == QueueDiscipline::StrictFifoPerPayer {
+                            "fifo"
+                        } else {
+                            "bypass"
+                        },
+                    );
+                match m.retry_ms {
+                    Some(r) => j.set("retry_ms", r),
+                    None => j,
+                }
+            }
         }
     }
 }
