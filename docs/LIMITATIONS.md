@@ -45,7 +45,7 @@
     imbalances (payroll, acquirers, fintech funding) would not. See
     [`PAPER_READINESS.md`](PAPER_READINESS.md), W2.
     *Update (W2):* class-specific profiles are now available (`profile_strength`, D18); with them
-    the potential no longer collapses (2.8% at 30M with the calibrated σ), but their shapes are
+    the potential no longer collapses (9.2% at 30M with σ = 0.4, the WP 619 fit since D30; 3.1% with σ = 1.0), but their shapes are
     assumptions until per-participant intraday data are used.
 15. **Funding windows simplified.** `funding-windows` models STR hours and the weekend, but not
     holidays, participants' actual top-up behaviour, the Conta PI remuneration limits, or the
@@ -61,9 +61,9 @@
     participant's receipts right after it pays are there by chance. `echo-sweep` shows that the
     central result depends on this: fast bilateral returns make second-scale netting worthwhile.
     Echo share, delay and direction are assumptions; no public data identify them.
-19. **Shape of the value distribution.** The generator matches the public mean ticket but not its
-    percentiles: the SPI annual report 2025 gives p50 R$ 36, p90 R$ 400, p99 R$ 3,900 (December
-    2025), while the model gives about R$ 91, 749 and 4,908. Typical payments are too large and
-    too uniform. A fit is known (REVIEW 98) but not applied; results that depend on the size of
-    single payments relative to liquidity (the delay bound, rejections under fixed balances) may
-    move when it is.
+19. **Shape of the value distribution.** *Resolved in part on 13 Nov 2026 (D30):* the generator
+    now matches the p50, p90 and p99 of the SPI annual report 2025 (within 5%), not only the mean.
+    What remains: the percentiles are of December 2025 and the other targets of September 2026;
+    the tail exponent (α = 1.3) is not identified by them (the tail starts above p99); and the
+    receiver-bias calibration moved with the change (σ 0.4–0.8 instead of 0.8–1.2), which shows how
+    much the WP 619 fit depends on the amount model.

@@ -428,3 +428,20 @@ the real laptop (i3, 4 GB).
     `body_sigma` 1.9 and `tail_prob` 0.003 (B2B value share kept at 52%) gives R$ 35.8 / 418 /
     3,784. Not applied yet: it changes every result and needs a full rebuild (PARAMETERS note iv,
     LIMITATIONS 19).
+99. **Full rerun with the percentile-fitted value distribution (D30), 13 Nov 2026.** All 16
+    experiments, `topology-triangle`, `optimality-gap` (unchanged: not calibrated) and SUMMARY
+    (`make experiments summary`, 1,218 s). Claims updated (CLAIMS 1, 1b–1h, 1j–1l, 1c, 2, 2b, 4, 8;
+    "cannot claim" 10 and 14), README numbers, PARAMETERS, LIMITATIONS 14 and 19, ASSESSMENT
+    update 6. **What changed in substance:** (a) the WP 619 receiver-bias fit moved from σ = 1.0 to
+    σ 0.4–0.8 (best 0.4 with payment institutions ×3; `bias-calibration`), so the default σ = 0.4 is
+    now the calibrated case and σ = 1.0 a stronger-imbalance case; (b) micro-cycle savings fell
+    (0.0116% → 0.0017%, CI includes zero) and the 10 s floor fell (0.041% → 0.028%): the central
+    claim is stronger; (c) one daily netting saves more (7.8% → 14.4% at 1M; 4.0–9.2% at 30M) and
+    falls with volume as about volume^−0.4 instead of 1/√volume; (d) the echo effect is larger
+    (7.6% at 20% returned within 1 s) and at 30M is 0.99%; (e) the bof-replication Pix ρ at LB is
+    4.19% (was 1.42%), still no significant effect of any netting design; large-value scenarios
+    (amounts set explicitly) are unchanged. **For the reviewer:** the amount model now drives part
+    of the bias calibration; a joint fit (amounts and bias together) was not done. The results in
+    this rerun carry the code version `7af6a1e-dirty` (documents were being edited during the run;
+    the code was the committed one); they are regenerated once more before merging so the
+    provenance is clean.

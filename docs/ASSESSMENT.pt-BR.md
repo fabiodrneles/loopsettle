@@ -258,3 +258,24 @@ o eco repassa metade do valor e 1,8% com o viés recebedor calibrado. Com 10 mil
 abaixo do limiar de 2%. A condição continua (o efeito é de 30 a 100 vezes o nível sem eco, e os
 motores obtêm quase tudo), mas o peso dela na escala real provavelmente é pequeno. Isso precisa de
 uma rodada com 30 milhões ou mais antes de ser escrito como resultado.
+
+## Atualização 6 — a distribuição de valores segue os percentis públicos (13/11/2026)
+
+O relatório anual do SPI de 2025 dá os percentis do valor de um Pix interbancário (p50 R$ 36, p90
+R$ 400, p99 R$ 3.900). O gerador acertava a média, mas punha os pagamentos típicos 2,5 vezes acima
+(p50 R$ 91). A D30 ajusta a forma; todos os experimentos foram refeitos (REVIEW 99). O que mudou:
+
+- **A afirmação central se mantém e fica mais forte.** Micro-ciclos de até 10 s economizam 0,0017%
+  do UB [−0,009; 0,012] (eram 0,0116%); o piso de liquidez de 10 s é 0,028% do UB com σ = 0,4
+  (era 0,041%).
+- **A calibração do viés recebedor mudou.** σ 0,4–0,8 agora se ajusta ao WP 619 (melhor 0,4);
+  σ = 1,0 não se ajusta mais. O padrão σ = 0,4 passa a ser calibrado, e frases que diziam "σ = 1,0
+  calibrado" passam a dizer "σ = 1,0, um desequilíbrio maior".
+- **Horizontes longos economizam mais que antes.** Uma compensação diária: 14,4% do UB com σ = 0,4
+  e 1 milhão de pagamentos (eram 7,8%); 4,0–9,2% com 30 milhões e o σ calibrado (eram 0,2–2,8% com
+  a calibração antiga). O potencial continua caindo com o volume, mais devagar (cerca de
+  volume^−0,4).
+- **A condição dos ecos fica mais forte.** Com 20% dos pagamentos devolvidos em até um segundo, o
+  limite de 10 s é 7,6% do UB (era 4,2%); com 30 milhões de pagamentos por dia é 0,99%, abaixo do
+  limiar de 2% do critério de morte, caindo com expoente −0,58.
+- **O K1 continua sem disparar** (limite de janela de 10 s ≤ 0,30% com 30 milhões; limiar de 2%).

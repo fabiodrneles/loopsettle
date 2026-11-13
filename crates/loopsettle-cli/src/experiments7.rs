@@ -165,7 +165,7 @@ pub fn echo_sweep(path: &str, doc: &Doc, base: &ScenarioConfig) -> Result<(), St
             },
         ),
         (
-            "calibrated receiver bias (sigma 1.0)",
+            "stronger receiver bias (sigma 1.0)",
             ScenarioConfig {
                 receiver_bias_sigma: 1.0,
                 ..fired.clone()

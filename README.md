@@ -58,7 +58,10 @@ economizada de verdade** quando se respeita a ordem em que os pagamentos acontec
 ### O que há de novo na versão 0.2.0
 
 A versão 0.2.0 ([CHANGELOG](CHANGELOG.md)) executou o roteiro de [`specs/`](specs/README.md): uma
-auditoria do código e dez especificações. O que mudou, em resumo:
+auditoria do código e dez especificações. O que mudou, em resumo (os números abaixo são os da
+versão 0.2.0; depois dela, a distribuição de valores passou a seguir os percentis do Banco Central,
+D30, e os números atuais estão em [O resultado principal](#o-resultado-principal) e em
+[`docs/CLAIMS.pt-BR.md`](docs/CLAIMS.pt-BR.md)):
 
 **Resultados novos**
 
@@ -150,27 +153,27 @@ experiência instantânea do usuário?
 No cenário sintético calibrado com dados públicos do Pix (200 participantes; 10 sementes; de 1 a
 30 milhões de pagamentos por dia):
 
-- **85% do volume** de pagamentos poderia ser "compensado" pela medida potencial (entradas e
+- **83% do volume** de pagamentos poderia ser "compensado" pela medida potencial (entradas e
   saídas do mesmo dia, sem olhar a ordem no tempo).
 - **Micro-ciclos atômicos de até 10 s liquidam até 63% do valor dentro de ciclos, mas
-  economizam cerca de 0,01% da liquidez** (0,0116%, IC 95% [0,008; 0,015]%), qualquer que seja
-  o tamanho máximo do ciclo, e a economia vai a zero quando o volume cresce.
+  economizam quase nada da liquidez** (0,0017%, IC 95% [−0,009; 0,012]%, que inclui zero),
+  qualquer que seja o tamanho máximo do ciclo, e a economia fica em zero quando o volume cresce.
 - **Isso depende de como os pagamentos se respondem no tempo.** Se 20% dos pagamentos forem
   devolvidos direto a quem pagou em cerca de um segundo, compensar a cada 10 s passa a economizar
-  3,9% da liquidez (teto de 4,2%); se a resposta seguir adiante para terceiros, nada muda
-  (`results/echo-sweep/`). O efeito encolhe com o volume (teto de 4,2%, 2,1% e 1,2% com 1, 3 e 10
-  milhões de pagamentos por dia). Quanto disso existe no Pix real, os dados públicos não dizem.
+  7,1% da liquidez (teto de 7,6%); se a resposta seguir adiante para terceiros, nada muda
+  (`results/echo-sweep/`). O efeito encolhe com o volume (teto de 7,0%, 4,8%, 2,3% e 1,0% com 1, 3,
+  10 e 30 milhões de pagamentos por dia). Quanto disso existe no Pix real, os dados públicos não dizem.
 - **Há um teto demonstrável:** um mecanismo que segura cada pagamento por no máximo *d* nunca
   precisa de menos liquidez do que o **piso de liquidez** de cada participante: o maior valor de
   "tudo o que ele pagou até um instante, menos tudo o que recebeu até *d* depois". Para 10 s, em
-  10 sementes, esse teto de economia vai de 0,014% da liquidez (estrutura calibrada ao WP 619) a
-  0,14% (sem viés recebedor), e a compensação a cada 10 s obtém de 38% a 46% dele. Uma forma
-  mais simples e mais folgada do mesmo limite (o valor pago nos *d* segundos antes do pico) dá
-  0,7% a 3,3%.
-- Compensar em horizontes maiores economiza mais (0,5% a cada 15 minutos; 7,8% uma vez por dia,
+  10 sementes, esse teto de economia vai de 0,010% da liquidez (σ = 1,0) a 0,075% (sem viés
+  recebedor), com 0,028% no viés que se ajusta ao BCB WP 619 (σ = 0,4), e a compensação a cada
+  10 s obtém de 46% a 55% dele. Uma forma mais simples e mais folgada do mesmo limite (o valor
+  pago nos *d* segundos antes do pico) dá 0,8% a 3,1%.
+- Compensar em horizontes maiores economiza mais (0,85% a cada 15 minutos; 14,4% uma vez por dia,
   com 1 milhão de pagamentos), **mas esse "potencial" encolhe com o volume**. Com a estrutura
   bilateral calibrada em dados reais do Pix (BCB WP 619) e 30 milhões de pagamentos por dia, uma
-  compensação diária recupera **entre 0,2% e 2,8%** da liquidez, conforme o quanto os bancos têm
+  compensação diária recupera **entre 4,0% e 9,2%** da liquidez, conforme o quanto os bancos têm
   padrões intradiários diferentes entre si — a pergunta que só dados por participante respondem
   ([avaliação](docs/ASSESSMENT.pt-BR.md)).
 - **A restrição real é o fim de semana.** A Conta PI só recebe aportes com o STR aberto (dias
@@ -327,7 +330,7 @@ entre si**, e o LoopSettle tem um motor para cada modelo:
   migração.
 - **No México**, o SPEI já roda um algoritmo de compensação a cada 1,9 s em média: é o análogo real
   mais próximo dos micro-ciclos atômicos.
-- **Os números** (0,01%, 0,5%, 7,8%) vêm do cenário calibrado com o Pix e não valem
+- **Os números** (≈ 0%, 0,85%, 14,4%) vêm do cenário calibrado com o Pix e não valem
   automaticamente para outro país: recalibrar exige os agregados públicos dele.
 
 Tabela completa, com operador, data de início, modelo de liquidação e fonte de cada sistema, em
@@ -337,18 +340,18 @@ Tabela completa, com operador, data de início, modelo de liquidação e fonte d
 
 | Medida | Valor |
 |---|---|
-| Erro da calibração frente aos agregados públicos do Pix | ≤ 1,5% em todos os 9 agregados |
-| Liquidez do bruto em tempo real (UB) / volume bruto | 16,1% |
-| Liquidez com uma compensação diária (LB) / UB | 0,91 |
-| Escada de circularidade (grafo bruto): Hodge L1 → CDFD → ciclos | 1,18 → 0,83 → 0,80 |
-| Escada de circularidade (grafo líquido): Hodge L2 → CDFD → ciclos | 0,98 → 0,17 → 0,14 |
-| Instantâneo vs 1 ciclo por dia (lógica do estudo finlandês) | 1,10× (σ = 0,4) a 1,50× (σ = 0) a liquidez |
-| Instantâneo vs 6 ciclos por dia (a base do STEP2) | 1,04× a 1,14× |
+| Erro da calibração frente aos agregados públicos do Pix (inclui os percentis de valor) | ≤ 4,8% em todos os 12 agregados |
+| Liquidez do bruto em tempo real (UB) / volume bruto | 21,8% |
+| Liquidez com uma compensação diária (LB) / UB | 0,84 |
+| Escada de circularidade (grafo bruto): Hodge L1 → CDFD → ciclos | 1,25 → 0,78 → 0,74 |
+| Escada de circularidade (grafo líquido): Hodge L2 → CDFD → ciclos | 0,98 → 0,21 → 0,19 |
+| Instantâneo vs 1 ciclo por dia (lógica do estudo finlandês) | 1,18× (σ = 0,4) a 1,50× (σ = 0) a liquidez |
+| Instantâneo vs 6 ciclos por dia (a base do STEP2) | 1,07× a 1,19× |
 | Micro-ciclos com espera de 2 s: meta do Pix de 50% em até 2,8 s | cumprida (100%) |
 | Micro-ciclos com espera de 10 s: mesma meta | não cumprida (43%) |
-| Economia dos micro-ciclos de até 10 s † | 0,0116% do UB, IC 95% [0,008; 0,015]% |
-| Teto para qualquer mecanismo de até 10 s † | 0,80% do UB (0,27% com 30 milhões de pagamentos) |
-| Economia de uma compensação diária † | 7,8%, IC 95% [4,5; 11,1]% (1,7% com 30 milhões) |
+| Economia dos micro-ciclos de até 10 s † | 0,0017% do UB, IC 95% [−0,009; 0,012]% |
+| Teto para qualquer mecanismo de até 10 s (piso de liquidez) † | 0,028% do UB, IC 95% [0,016; 0,041]% (0,033% com 30 milhões de pagamentos) |
+| Economia de uma compensação diária † | 14,4%, IC 95% [10,7; 18,2]% (4,0% com 30 milhões) |
 
 <sub>Linhas sem marca: semente `20260930`, 1 milhão de pagamentos por dia. † 10 sementes, σ = 0,4 (`results/robustness/`).</sub>
 
@@ -893,7 +896,9 @@ saved** once the order in which payments arrive is respected.
 ### What's new in version 0.2.0
 
 Version 0.2.0 ([CHANGELOG](CHANGELOG.md)) carried out the roadmap in [`specs/`](specs/README.md): an
-audit of the code and ten specifications. What changed, in short:
+audit of the code and ten specifications. What changed, in short (the numbers below are those of
+version 0.2.0; since then the value distribution follows the central bank's percentiles, D30, and
+the current numbers are in [Key finding](#key-finding) and [`docs/CLAIMS.md`](docs/CLAIMS.md)):
 
 **New results**
 
@@ -982,27 +987,28 @@ experience?
 In a synthetic scenario calibrated to public Pix aggregates (200 participants; 10 seeds; 1 to 30
 million payments per day):
 
-- **85% of payment volume** is nettable under the potential measure (same-day inflows vs
+- **83% of payment volume** is nettable under the potential measure (same-day inflows vs
   outflows, ignoring time order).
-- **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save about
-  0.01% of liquidity** (0.0116%, 95% CI [0.008; 0.015]%), whatever the maximum cycle length,
-  and the saving goes to zero as volume grows.
+- **Atomic micro-cycles of up to 10 s settle up to 63% of value inside cycles, yet save almost
+  nothing of liquidity** (0.0017%, 95% CI [−0.009; 0.012]%, which includes zero), whatever the
+  maximum cycle length, and the saving stays at zero as volume grows.
 - **This depends on how payments respond to each other in time.** If 20% of payments are returned
-  straight to the payer within about a second, netting every 10 s saves 3.9% of liquidity (ceiling
-  4.2%); if the response goes onwards to third parties, nothing changes (`results/echo-sweep/`).
-  The effect shrinks with volume (ceiling 4.2%, 2.1% and 1.2% at 1, 3 and 10 million payments a day).
+  straight to the payer within about a second, netting every 10 s saves 7.1% of liquidity (ceiling
+  7.6%); if the response goes onwards to third parties, nothing changes (`results/echo-sweep/`).
+  The effect shrinks with volume (ceiling 7.0%, 4.8%, 2.3% and 1.0% at 1, 3, 10 and 30 million
+  payments a day).
   How much of this exists in real Pix is not known from public data.
 - **There is a provable ceiling:** a mechanism that holds each payment for at most *d* never
   needs less liquidity than each participant's **liquidity floor**: the largest value of
   "everything it has paid by some instant, minus everything it has received by *d* later". For
-  10 s, over 10 seeds, that ceiling on the saving ranges from 0.014% of the liquidity (structure
-  calibrated to WP 619) to 0.14% (no receiver bias), and netting every 10 s realises 38% to 46%
-  of it. A simpler, looser form of the same bound (the value paid in the *d* seconds before the
-  peak) gives 0.7% to 3.3%.
-- Netting over longer horizons saves more (0.5% every 15 minutes; 7.8% once a day, at 1 million
+  10 s, over 10 seeds, that ceiling on the saving ranges from 0.010% of the liquidity (σ = 1.0) to
+  0.075% (no receiver bias), with 0.028% at the bias that fits BCB WP 619 (σ = 0.4), and netting
+  every 10 s realises 46% to 55% of it. A simpler, looser form of the same bound (the value paid
+  in the *d* seconds before the peak) gives 0.8% to 3.1%.
+- Netting over longer horizons saves more (0.85% every 15 minutes; 14.4% once a day, at 1 million
   payments), **but that "potential" shrinks with volume**. With the bilateral structure calibrated
   to real Pix data (BCB WP 619) and 30 million payments a day, one daily netting recovers **between
-  0.2% and 2.8%** of the liquidity, depending on how differently banks behave during the day — the
+  4.0% and 9.2%** of the liquidity, depending on how differently banks behave during the day — the
   question only per-participant data can answer ([assessment](docs/ASSESSMENT.md)).
 - **The real constraint is the weekend.** The Conta PI can only be topped up while the STR is open
   (business days, 6:30–18:30), so banks prefund the nights and the 59.5 weekend hours — about 2.7×
@@ -1154,7 +1160,7 @@ has an engine for each model:
   system whose migration cost the Finnish study's logic measures.
 - **In Mexico**, SPEI already runs a clearing algorithm every 1.9 s on average: the closest
   real-world analogue of atomic micro-cycles.
-- **The numbers** (0.01%, 0.5%, 7.8%) come from the scenario calibrated to Pix and do not carry
+- **The numbers** (≈ 0%, 0.85%, 14.4%) come from the scenario calibrated to Pix and do not carry
   over automatically to another country: re-calibrating requires that country's public aggregates.
 
 Full table, with operator, start date, settlement model and source for each system, in
@@ -1164,18 +1170,18 @@ Full table, with operator, start date, settlement model and source for each syst
 
 | Measure | Value |
 |---|---|
-| Calibration error against public Pix aggregates | ≤ 1.5% on all 9 aggregates |
-| Real-time gross liquidity (UB) / gross volume | 16.1% |
-| One daily netting (LB) / UB | 0.91 |
-| Circularity ladder (gross graph): Hodge L1 → CDFD → cycles | 1.18 → 0.83 → 0.80 |
-| Circularity ladder (net graph): Hodge L2 → CDFD → cycles | 0.98 → 0.17 → 0.14 |
-| Instant vs 1 cycle per day (Finnish study logic) | 1.10× (σ = 0.4) to 1.50× (σ = 0) the liquidity |
-| Instant vs 6 cycles per day (the STEP2 baseline) | 1.04× to 1.14× |
+| Calibration error against public Pix aggregates (including the value percentiles) | ≤ 4.8% on all 12 aggregates |
+| Real-time gross liquidity (UB) / gross volume | 21.8% |
+| One daily netting (LB) / UB | 0.84 |
+| Circularity ladder (gross graph): Hodge L1 → CDFD → cycles | 1.25 → 0.78 → 0.74 |
+| Circularity ladder (net graph): Hodge L2 → CDFD → cycles | 0.98 → 0.21 → 0.19 |
+| Instant vs 1 cycle per day (Finnish study logic) | 1.18× (σ = 0.4) to 1.50× (σ = 0) the liquidity |
+| Instant vs 6 cycles per day (the STEP2 baseline) | 1.07× to 1.19× |
 | Micro-cycles with 2 s wait: Pix target of 50% within 2.8 s | met (100%) |
 | Micro-cycles with 10 s wait: same target | missed (43%) |
-| Saving of micro-cycles up to 10 s † | 0.0116% of UB, 95% CI [0.008; 0.015]% |
-| Ceiling for any mechanism up to 10 s † | 0.80% of UB (0.27% at 30 million payments) |
-| Saving of one daily netting † | 7.8%, 95% CI [4.5; 11.1]% (1.7% at 30 million) |
+| Saving of micro-cycles up to 10 s † | 0.0017% of UB, 95% CI [−0.009; 0.012]% |
+| Ceiling for any mechanism up to 10 s (liquidity floor) † | 0.028% of UB, 95% CI [0.016; 0.041]% (0.033% at 30 million payments) |
+| Saving of one daily netting † | 14.4%, 95% CI [10.7; 18.2]% (4.0% at 30 million) |
 
 <sub>Unmarked rows: seed `20260930`, 1 million payments per day. † 10 seeds, σ = 0.4 (`results/robustness/`).</sub>
 

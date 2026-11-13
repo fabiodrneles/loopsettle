@@ -449,3 +449,21 @@ geradas por `node scripts/screenshots.cjs`). Falta testar no notebook real (i3, 
     R$ 749, p99 R$ 4.908. Um ajuste com `body_sigma` 1,9 e `tail_prob` 0,003 (parcela de valor do B2B
     mantida em 52%) dá R$ 35,8 / 418 / 3.784. Ainda não aplicado: muda todos os resultados e exige
     uma reconstrução completa (PARAMETERS nota iv, LIMITATIONS 19).
+99. **Reconstrução completa com a distribuição de valores ajustada aos percentis (D30),
+    13/11/2026.** Os 16 experimentos, `topology-triangle`, `optimality-gap` (inalterado: não usa
+    calibração) e o SUMMARY (`make experiments summary`, 1.218 s). Afirmações atualizadas (CLAIMS 1,
+    1b–1h, 1j–1l, 1c, 2, 2b, 4, 8; "não pode afirmar" 10 e 14), números do README, PARAMETERS,
+    LIMITATIONS 14 e 19, ASSESSMENT atualização 6. **O que mudou de substância:** (a) o ajuste do
+    viés recebedor ao WP 619 passou de σ = 1,0 para σ 0,4–0,8 (melhor 0,4 com instituições de
+    pagamento ×3; `bias-calibration`), então o padrão σ = 0,4 passa a ser o caso calibrado e σ = 1,0,
+    um caso de desequilíbrio maior; (b) a economia dos micro-ciclos caiu (0,0116% → 0,0017%, IC
+    inclui zero) e o piso de 10 s caiu (0,041% → 0,028%): a afirmação central fica mais forte; (c)
+    uma compensação diária economiza mais (7,8% → 14,4% com 1 milhão; 4,0–9,2% com 30 milhões) e cai
+    com o volume como cerca de volume^−0,4 em vez de 1/√volume; (d) o efeito dos ecos é maior (7,6%
+    com 20% devolvidos em 1 s) e com 30 milhões é 0,99%; (e) no bof-replication, o ρ do Pix no LB é
+    4,19% (era 1,42%), ainda sem efeito significativo de nenhum desenho de compensação; os cenários
+    de alto valor (valores definidos à parte) não mudaram. **Para o revisor:** o modelo de valores
+    agora move parte da calibração do viés; um ajuste conjunto (valores e viés juntos) não foi feito.
+    Os resultados desta rodada levam a versão de código `7af6a1e-dirty` (documentos eram editados
+    durante a rodada; o código era o commitado); eles são gerados mais uma vez antes da mesclagem,
+    para a proveniência ficar limpa.

@@ -254,3 +254,22 @@ passes on half the amount and 1.8% with the calibrated receiver bias. At 10 mill
 below the 2% threshold. The condition stands (the effect is 30 to 100 times the no-echo level and
 engines realise almost all of it), but its weight at real scale is probably small. This needs a
 run at 30 million or more before it is written as a result.
+
+## Update 6 — the value distribution follows the public percentiles (13 Nov 2026)
+
+The SPI annual report 2025 gives the percentiles of the value of an interbank Pix (p50 R$ 36, p90
+R$ 400, p99 R$ 3,900). The generator matched the mean but put typical payments 2.5 times too high
+(p50 R$ 91). D30 fits the shape; every experiment was rerun (REVIEW 99). What it changed:
+
+- **The central claim holds and gets stronger.** Micro-cycles of up to 10 s save 0.0017% of UB
+  [−0.009; 0.012] (was 0.0116%); the 10 s liquidity floor is 0.028% of UB at σ = 0.4 (was 0.041%).
+- **The receiver-bias calibration moved.** σ 0.4–0.8 now fits WP 619 (best 0.4); σ = 1.0 no
+  longer does. The default σ = 0.4 is therefore calibrated, and statements that said "calibrated
+  σ = 1.0" now read "σ = 1.0, a stronger imbalance".
+- **Longer horizons save more than before.** One daily netting: 14.4% of UB at σ = 0.4 and
+  1 million payments (was 7.8%); 4.0–9.2% at 30 million with the calibrated σ (was 0.2–2.8% with
+  the old calibration). The potential still shrinks with volume, more slowly (about volume^−0.4).
+- **The echo condition is stronger.** With 20% of payments returned within a second, the 10 s
+  bound is 7.6% of UB (was 4.2%); at 30 million payments a day it is 0.99%, below the 2% kill
+  threshold, falling with exponent −0.58.
+- **K1 still not fired** (10 s window bound ≤ 0.30% at 30 million; 2% threshold).
