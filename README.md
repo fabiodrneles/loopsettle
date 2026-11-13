@@ -423,7 +423,7 @@ cd web && npm install && npm run wasm && npm run dev                         # i
 ```
 
 Primeira vez? Instale as ferramentas pelo guia [Instalação do zero](#instalação-do-zero), logo
-abaixo. Tudo de uma vez: `make rebuild`. Roda num Intel i3 de 4ª geração com 4 GB de RAM: cada
+abaixo. Para aprender a usar e a ler os resultados passo a passo, veja o [guia de uso](docs/GUIDE.pt-BR.md). Tudo de uma vez: `make rebuild`. Roda num Intel i3 de 4ª geração com 4 GB de RAM: cada
 experimento usa menos de 20 MiB e termina em segundos.
 
 ### Instalação do zero
@@ -794,6 +794,7 @@ arquivo foram implementados no próprio projeto.
 
 | Documento | Conteúdo |
 |---|---|
+| [`docs/GUIDE.pt-BR.md`](docs/GUIDE.pt-BR.md) | **guia de uso**: o que o simulador faz, as ideias principais, a interface, os experimentos e os seus próprios dados, e como ler cada resultado, passo a passo |
 | [`docs/INSTANT_PAYMENTS.pt-BR.md`](docs/INSTANT_PAYMENTS.pt-BR.md) | pagamentos instantâneos pelo mundo: modelo de liquidação de cada sistema e motor correspondente |
 | [`docs/ASSESSMENT.pt-BR.md`](docs/ASSESSMENT.pt-BR.md) | avaliação crítica: o resultado se sustenta? ameaças, veredito e critérios de morte |
 | [`docs/PAPER_READINESS.pt-BR.md`](docs/PAPER_READINESS.pt-BR.md) | especificação de tudo o que falta antes de escrever o artigo |
@@ -1249,7 +1250,7 @@ cd web && npm install && npm run wasm && npm run dev                         # i
 ```
 
 First time? Install the tools with the [Installation from scratch](#installation-from-scratch)
-guide just below. Everything at once: `make rebuild`. Runs on a 4th-generation Intel i3 with 4 GB
+guide just below. To learn how to use it and read its results step by step, see the [user guide](docs/GUIDE.md). Everything at once: `make rebuild`. Runs on a 4th-generation Intel i3 with 4 GB
 of RAM: each experiment uses under 20 MiB and finishes in seconds.
 
 ### Installation from scratch
@@ -1620,6 +1621,7 @@ formats are implemented in the project itself. Code and code comments are in Eng
 
 | Document | Contents |
 |---|---|
+| [`docs/GUIDE.md`](docs/GUIDE.md) | **user guide**: what the simulator does, the main ideas, the interface, the experiments and your own data, and how to read each result, step by step |
 | [`docs/INSTANT_PAYMENTS.md`](docs/INSTANT_PAYMENTS.md) | instant payment systems around the world: settlement model of each and the matching engine |
 | [`docs/ASSESSMENT.md`](docs/ASSESSMENT.md) | critical assessment: does the result hold? threats, verdict and kill criteria |
 | [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) | specification of everything needed before writing the paper |
